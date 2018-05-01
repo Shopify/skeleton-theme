@@ -1,0 +1,27 @@
+{
+  "name": "skeleton-theme",
+  "version": "1.0.0-alpha.1",
+  "private": true,
+  "author": "Shopify Inc.",
+  "description":
+    "A barebones, Slate compatible, starting point for developing Shopify themes.",
+  "keywords": ["shopify", "theme"],
+  "bugs": "https://github.com/Shopify/skeleton-theme/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Shopify/skeleton-theme.git"
+  },
+  "devDependencies": {
+    "@shopify/slate-tools": ">=1.0.0-alpha.29"
+  },
+  "scripts": {
+    "start": "slate-tools start",
+    "watch": "slate-tools start --skipFirstDeploy",
+    "build": "slate-tools build",
+    "deploy": "slate-tools build && slate-tools deploy",
+    "zip": "slate-tools build && slate-tools zip",
+    "lint": "slate-tools lint",
+    "format": "slate-tools format"
+  }
+}
