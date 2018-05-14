@@ -189,7 +189,7 @@
   version "1.0.0-beta.1"
   resolved "https://registry.yarnpkg.com/@shopify/slate-tag-webpack-plugin/-/slate-tag-webpack-plugin-1.0.0-beta.1.tgz#36e52386c1a5c3a215dc9bb8fc2646e768df3f78"
 
-"@shopify/slate-tools@>=1.0.0-alpha.29":
+"@shopify/slate-tools@>=1.0.0-beta.1":
   version "1.0.0-beta.1"
   resolved "https://registry.yarnpkg.com/@shopify/slate-tools/-/slate-tools-1.0.0-beta.1.tgz#630dce940e96fca300830cc95c15e6caaa66382d"
   dependencies:
