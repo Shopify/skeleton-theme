@@ -20,8 +20,6 @@
     "watch": "slate-tools start --skipFirstDeploy",
     "build": "slate-tools build",
     "deploy": "slate-tools build && slate-tools deploy",
-    "zip": "slate-tools build && slate-tools zip",
-    "lint": "slate-tools lint",
-    "format": "slate-tools format"
+    "zip": "slate-tools build && slate-tools zip"
   }
 }
