@@ -6,7 +6,7 @@
 
 ## System requirements
 
-You'll want to ensure you have the following already installed on your local machine before getting started with Starter theme:
+You'll want to ensure you have the following already installed on your local machine before getting started with Skeleton theme:
 
 * **Node:** The current LTS (long-term support) release. We like to use a Node Version Manager like [NVM](https://github.com/creationix/nvm).
 
@@ -14,7 +14,7 @@ You'll want to ensure you have the following already installed on your local mac
 
 ## Getting started
 
-To get started with Starter Theme, run the following command in your terminal:
+To get started with Skeleton Theme, run the following command in your terminal:
 
 ```
 $ yarn create slate-theme my-new-theme shopify/skeleton-theme
