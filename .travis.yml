@@ -1,12 +1,9 @@
 language: node_js
 node_js:
   - "8.11.1"
-before_install:
-  - chmod +x bin/accept_slate_tools
 cache:
   yarn: true
   directories:
   - node_modules
 script:
-- bin/accept_slate_tools
 - yarn build
