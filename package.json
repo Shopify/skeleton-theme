@@ -15,7 +15,7 @@
     "url": "https://github.com/Shopify/skeleton-theme.git"
   },
   "devDependencies": {
-    "@shopify/slate-tools": "1.0.0-beta.8"
+    "@shopify/slate-tools": "1.0.0-beta.12"
   },
   "scripts": {
     "start": "slate-tools start",
