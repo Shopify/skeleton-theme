@@ -1,21 +1,30 @@
 {
-  "name": "skeleton-theme",
+  "name": "agency-skeleton-theme",
   "version": "1.0.0-alpha.1",
   "private": true,
-  "author": "Shopify Inc.",
+  "author": "Pixel Union",
   "description": "A barebones, Slate compatible, starting point for developing Shopify themes.",
   "keywords": [
     "shopify",
     "theme"
   ],
   "bugs": "https://github.com/Shopify/skeleton-theme/issues",
-  "license": "MIT",
+  "license": "UNLICENCED",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Shopify/skeleton-theme.git"
+    "url": "https://github.com/pixelunion/agency-slate-skeleton.git"
   },
   "devDependencies": {
-    "@shopify/slate-tools": "1.0.0-beta.12"
+    "@shopify/slate-tools": "1.0.0-beta.12",
+    "eslint": "5.9.0",
+    "eslint-config-prettier": "3.3.0",
+    "eslint-plugin-prettier": "3.0.0",
+    "husky": "^1.2.0",
+    "lint-prepush": "^0.1.2",
+    "lint-staged": "8.1.0",
+    "prettier": "1.15.2",
+    "prettier-stylelint": "0.4.2",
+    "stylelint-config-standard": "18.2.0"
   },
   "scripts": {
     "start": "slate-tools start",
@@ -23,5 +32,24 @@
     "build": "slate-tools build",
     "deploy": "slate-tools build && slate-tools deploy",
     "zip": "slate-tools build && slate-tools zip"
+  },
+  "lint-staged": {
+    "source/**/*.{js,json,md,scss,yaml,yml}": [
+      "prettier-stylelint --write",
+      "git add"
+    ]
+  },
+  "lint-prepush": {
+    "tasks": {
+      "source/scripts/**/*.{js,jsx}": [
+        "eslint"
+      ]
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "lint-prepush",
+      "pre-commit": "lint-staged"
+    }
   }
 }
