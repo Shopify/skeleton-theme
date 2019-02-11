@@ -14,8 +14,11 @@
     "type": "git",
     "url": "https://github.com/pixelunion/agency-slate-skeleton.git"
   },
+  "dependencies": {
+    "normalize.css": "^7.0.0"
+  },
   "devDependencies": {
-    "@shopify/slate-tools": "1.0.0-beta.12",
+    "@shopify/slate-tools": "1.0.0-beta.15",
     "eslint": "5.9.0",
     "eslint-config-prettier": "3.3.0",
     "eslint-plugin-prettier": "3.0.0",
