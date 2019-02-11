@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/Shopify/skeleton-theme.svg?branch=master)](https://travis-ci.org/Shopify/skeleton-theme)
 
-# Skeleton Theme
+# Agency Slate Skeleton Theme
 
-> **Skeleton Theme and [Slate v1](https://github.com/Shopify/slate) are currently in beta!** You should expect potentially breaking changes between updates and more bugs than a finalized release. Slate v1.0 has not yet been tested on Windows.
+> **Skeleton Theme and [Slate v1](https://github.com/Shopify/slate) are currently in beta!** You should expect potentially breaking changes between updates and more bugs than a finalized release.
 
 ## System requirements
 
@@ -22,6 +22,6 @@ $ yarn create slate-theme my-new-theme pixelunion/agency-slate-skeleton
 
 For more information on connecting your new project with a Shopify store, see the [Slate docs](https://github.com/Shopify/slate/wiki/3.-Connect-to-your-store).
 
-## License
+## Commands
 
-Copyright © 2018 Shopify. See [LICENSE](https://github.com/Shopify/skeleton-theme/blob/master/LICENSE) for further details.
+https://shopify.github.io/slate/docs/commands
