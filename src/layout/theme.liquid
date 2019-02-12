@@ -7,9 +7,26 @@
   <meta name="theme-color" content="">
   <link rel="canonical" href="{{ canonical_url }}">
 
-  <title>{{ shop.name }}</title>
+  {%- capture seo_title -%}
+    {{ page_title }}
+    {%- if current_tags -%}
+      {%- assign meta_tags = current_tags | join: ', ' -%} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
+    {%- endif -%}
+    {%- if current_page != 1 -%}
+      &ndash; {{ 'general.meta.page' | t: page: current_page }}
+    {%- endif -%}
+    {%- assign escaped_page_title = page_title | escape -%}
+    {%- unless escaped_page_title contains shop.name -%}
+      &ndash; {{ shop.name }}
+    {%- endunless -%}
+  {%- endcapture -%}
+  <title>{{ seo_title | strip }}</title>
 
-  <meta name="description" content="">
+  {%- if page_description -%}
+    <meta name="description" content="{{ page_description | escape }}">
+  {%- endif -%}
+
+  {% include 'social-meta-tags' %}
 
   {% include 'style-tags', layout: 'theme' %}
 
@@ -22,8 +39,12 @@
   {{ content_for_header }}
 </head>
 
-<body>
-  {{ content_for_layout }}
+<body class="template-{{ template.name | handle }}">
+  <a class="visually-hidden" href="#main-content">{{ 'general.accessibility.skip_to_content' | t }}</a>
+  
+  <main id="main-content">
+    {{ content_for_layout }}
+  </main>
 
   {% include 'structured-data' %}
 </body>
