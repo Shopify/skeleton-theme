@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ shop.locale }}">
+<html class="no-js" lang="{{ shop.locale }}">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,6 +12,11 @@
   <meta name="description" content="">
 
   {% include 'style-tags', layout: 'theme' %}
+
+  <script>
+    document.documentElement.className = document.documentElement.className.replace('no-js', '');
+  </script>
+  {% include 'theme-object-script' %}
   {% include 'script-tags', layout: 'theme' %}
 
   {{ content_for_header }}
@@ -19,5 +24,7 @@
 
 <body>
   {{ content_for_layout }}
+
+  {% include 'structured-data' %}
 </body>
 </html>
