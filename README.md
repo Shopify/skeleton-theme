@@ -2,7 +2,7 @@
 
 # Skeleton Theme
 
-> **Skeleton Theme and [Slate v1](https://github.com/Shopify/slate) are currently in beta!** You should expect potentially breaking changes between updates and more bugs than a finalized release. Slate v1.0 has not yet been tested on Windows.
+> **Skeleton Theme and [Slate v1](https://github.com/Shopify/slate) are currently in beta!** You should expect potentially breaking changes between updates and more bugs than a finalized release. Slate v1.0 has not yet been tested on Windows. Please note that support has ended for [Slate v1](https://github.com/Shopify/slate) as of January 2020.
 
 ## System requirements
 
