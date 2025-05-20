@@ -3,7 +3,7 @@ on: [push]
 jobs:
   theme-check:
     name: Theme Check
-    runs-on: shopify-ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Theme Check
