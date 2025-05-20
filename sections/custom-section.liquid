@@ -1,0 +1,60 @@
+<div class="custom-section full-width">
+  {% if section.settings.background_image %}
+    <div class="custom-section__background">
+      {{ section.settings.background_image | image_url: width: 2000 | image_tag }}
+    </div>
+  {% endif %}
+
+  <div class="custom-section__content">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .custom-section {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+  .custom-section__background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+  }
+  .custom-section__background img {
+    position: absolute;
+    width: 100%;
+    height: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .custom-section__content {
+    display: grid;
+    grid-template-columns: var(--content-grid);
+  }
+  .custom-section__content > * {
+    grid-column: 2;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.custom_section",
+  "blocks": [{ "type": "@theme" }],
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:labels.background"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.custom_section"
+    }
+  ]
+}
+{% endschema %}

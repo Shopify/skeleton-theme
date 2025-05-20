@@ -1,0 +1,37 @@
+{% comment %}
+  This section is used in the cart template to render /cart page with an
+  overview of the items in customer's cart.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
+{% endcomment %}
+
+<h1>{{ 'cart.title' | t }}</h1>
+
+<form action="{{ routes.cart_url }}" method="post">
+  <table>
+    {% for item in cart.items %}
+      <tr>
+        <td>
+          {% render 'image', image: item.image, url: item.url %}
+        </td>
+        <td>
+          <p>{{ item.product.title }}</p>
+          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
+        </td>
+        <td>
+          <input type="text" name="updates[]" value="{{ item.quantity }}">
+          <input type="submit" value="{{ 'cart.update' | t }}">
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
+</form>
+
+{% schema %}
+{
+  "name": "t:general.cart",
+  "settings": []
+}
+{% endschema %}
