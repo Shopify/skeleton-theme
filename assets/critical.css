@@ -1,0 +1,117 @@
+/** Critical CSS for the theme. This file is included on every page. */
+
+/* Reset styles inspired by https://www.joshwcomeau.com/css/custom-css-reset/ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  min-height: 100svh;
+}
+
+html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
+  overflow: hidden;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  border-radius: var(--style-border-radius-inputs);
+}
+
+select {
+  background-color: var(--color-background);
+  color: currentcolor;
+}
+
+dialog {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+p {
+  text-wrap: pretty;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+p:empty {
+  display: none;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):first-child,
+:empty:first-child + :where(p, h1, h2, h3, h4, h5, h6) {
+  margin-block-start: 0;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):last-child,
+:where(p, h1, h2, h3, h4, h5, h6) + :has(+ :empty:last-child) {
+  margin-block-end: 0;
+}
+
+/** Theme styles below */
+body {
+  font-family: var(--font-primary--family);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/** Section layout utilities */
+
+/**
+ * Setup a grid that enables both full-width and constrained layouts
+ * depending on the class of the child elements.
+ *
+ * By default, a minimum content margin is set on the left and right
+ * sides of the section and the content is centered in the viewport to
+ * not exceed the maximum page width.
+ *
+ * When a child element is given the `full-width` class, it will span
+ * the entire viewport.
+ */
+.shopify-section {
+  --content-width: min(
+    calc(var(--page-width) - var(--page-margin) * 2),
+    calc(100% - var(--page-margin) * 2)
+  );
+  --content-margin: minmax(var(--page-margin), 1fr);
+  --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
+
+  /* This is required to make <img> elements work as background images */
+  position: relative;
+  grid-template-columns: var(--content-grid);
+  display: grid;
+  width: 100%;
+}
+
+/* Child elements, by default, are constrained to the central column of the grid. */
+.shopify-section > * {
+  grid-column: 2;
+}
+
+/* Child elements that use the full-width utility class span the entire viewport. */
+.shopify-section > .full-width {
+  grid-column: 1 / -1;
+}
