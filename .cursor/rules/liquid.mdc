@@ -498,7 +498,7 @@ alwaysApply: true
 
   <file_structure>
     - Group scripts by feature area where appropriate
-      - e.g. "facets.js" contains multiple classes related to facets, they don't each need to be their own file
+      - e.g. "collection.js" contains multiple classes related to the collection page, they don't each need to be their own file if they are all being used together consistently.
   </file_structure>
 
   <modules>
