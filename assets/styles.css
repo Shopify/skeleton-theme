@@ -28,4 +28,6 @@
 }
 .featured-products-wrapper {
   background-color: var(--grey);
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
