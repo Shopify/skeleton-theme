@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
-    <link rel="stylesheet" href="{{ 'styles.css' | asset_url | stylesheet_tag }}">
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
 
@@ -10,8 +9,12 @@
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
-
     {{ content_for_header }}
+{% comment %}Root Styles  {% endcomment %}
+
+    {{ 'styles.css' | asset_url | append: '?v=' | append: 'now' | date: '%s' | stylesheet_tag }}
+
+
   </head>
 
   <body>
@@ -19,9 +22,12 @@
 
     {{ content_for_layout }}
     {% section 'hero-banner' %}
-{% section 'featured-products' %}
-{% section 'about-section' %}
-{% section 'newsletter-signup' %}
+    
+    {% section 'featured-products' %}
+
+    {% section 'about-section' %}
+
+    {% section 'newsletter-signup' %}
 
 
     {% sections 'footer-group' %}

@@ -1,3 +1,12 @@
+:root {
+  --green: #1c4219;
+  --grey: #d0ccd0;
+  --white: #fbfcff;
+  --blue: #1c6e8c;
+  --black: #000;
+  --heading-font: "Futura Book", sans-serif;
+  --body-font: "Elgian", serif;
+}
 .product-grid {
   display: grid;
   gap: 2rem;

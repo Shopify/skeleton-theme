@@ -92,9 +92,9 @@ p:empty {
 
 /** Theme styles below */
 body {
-  font-family: var(--font-primary--family);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  font-family: var(--body-font);
+  background-color: var(--green);
+  color: var(--white);
 }
 
 /** Section layout utilities */
