@@ -13,6 +13,9 @@
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   list-style: none;
   padding: 0;
+  text-align: center;
+  transition: transform 0.3s ease;
+  will-change: transform;
 }
 
 .product-item {
@@ -26,6 +29,14 @@
   max-width: 100%;
   height: auto;
 }
+
+.product-item:hover,
+.product-item:focus-within {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 15px rgba(28, 66, 25, 0.2);
+  z-index: 10;
+}
+
 .featured-products-wrapper {
   background-color: var(--grey);
   padding-top: 3rem;
