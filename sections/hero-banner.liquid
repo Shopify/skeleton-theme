@@ -1,13 +1,12 @@
-<!-- === hero-banner.liquid === -->
-<section class="hero-banner" style="position: relative; height: 100vh; overflow: hidden;">
-<img src="{{ 'hero_image.png' | asset_url }}" alt="Andra's Garden Heaven" width="100%" height="100%" style="position: absolute; object-fit: cover; object-position: center; z-index: 1;">
-  <div class="hero-text" style="position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; padding: 2rem; background: rgba(28, 66, 25, 0.6); text-align: center;">
-    <h1 class="heading-xl" style="color: var(--white); font-size: 3rem; max-width: 800px;">Handmade Rattan Furniture for Garden Serenity</h1>
-    <p class="body-text" style="color: var(--white); font-size: 1.25rem; margin-top: 1rem; max-width: 600px;">
-      Explore our handcrafted pieces made with care, built to last, and inspired by nature.
+<section class="hero-banner" style="display: grid; grid-template-columns: 1fr 1fr; height: 100vh; overflow: hidden;">
+  <div class="hero-image" style="position: relative; z-index: 2; height: 100%;">
+    <img src="{{ 'hero_image.png' | asset_url }}" alt="Outdoor furniture"  width="100%" height="100%" style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+  </div>
+
+  <div class="hero-text" style="position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; background-image: url({{ '\BackgrndPattern.png' | asset_url }}'); background-size: cover; background-position: center; text-align: center; padding: 2rem;">
+    <h1 class="heading-xl" style="color: var(--white); font-size: 4rem; max-width: 800px; line-height: 1.2;">Andra’s<br>Garden<br>Heaven</h1>
+    <p class="body-text" style="color: var(--white); font-size: 1rem; max-width: 600px; margin-top: 2rem;">
+      Elevate your living space with our globally inspired collection of handmade furniture, where craftsmanship meets contemporary luxury.
     </p>
-    <a href="/collections/all" style="margin-top: 2rem; padding: 0.75rem 1.5rem; background: var(--white); color: var(--green); font-weight: bold; text-decoration: none; border-radius: 4px;">
-      Shop the Collection
-    </a>
   </div>
 </section>
