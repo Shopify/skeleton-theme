@@ -10,11 +10,9 @@
 {
   "sections": {
     "main": {
-      "type": "hello-world",
+      "type": "Wagwan",
       "settings": {}
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }
