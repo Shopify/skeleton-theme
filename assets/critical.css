@@ -66,6 +66,15 @@ p {
   text-wrap: pretty;
   font-family: var(--body-font);
 }
+a {
+  text-decoration: none;
+  color: var(--black);
+}
+
+a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--blue);
+}
 p,
 h1,
 h2,
