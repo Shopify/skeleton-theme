@@ -5,12 +5,23 @@
   box-sizing: border-box;
   margin: 0;
 }
+:root {
+  --green: #1c4219;
+  --grey: #d0ccd0;
+  --white: #fbfcff;
+  --blue: #1c6e8c;
+  --black: #000;
+  --heading-font: "Futura Book", sans-serif;
+  --body-font: "Elgian", serif;
+}
 
 body {
   display: flex;
   flex-direction: column;
   margin: 0;
   min-height: 100svh;
+  background-color: #1c4219;
+  color: #fbfcff;
 }
 
 html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
@@ -43,9 +54,17 @@ dialog {
   background-color: var(--color-background);
   color: var(--color-foreground);
 }
-
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--heading-font);
+}
 p {
   text-wrap: pretty;
+  font-family: var(--body-font);
 }
 p,
 h1,
@@ -97,7 +116,8 @@ body {
     calc(100% - var(--page-margin) * 2)
   );
   --content-margin: minmax(var(--page-margin), 1fr);
-  --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
+  --content-grid: var(--content-margin) var(--content-width)
+    var(--content-margin);
 
   /* This is required to make <img> elements work as background images */
   position: relative;

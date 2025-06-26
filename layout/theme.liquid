@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
+    <link rel="stylesheet" href="{{ 'styles.css' | asset_url | stylesheet_tag }}">
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
 
@@ -17,6 +18,11 @@
     {% sections 'header-group' %}
 
     {{ content_for_layout }}
+    {% section 'hero-banner' %}
+{% section 'featured-products' %}
+{% section 'about-section' %}
+{% section 'newsletter-signup' %}
+
 
     {% sections 'footer-group' %}
   </body>

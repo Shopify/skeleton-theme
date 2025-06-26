@@ -1,0 +1,15 @@
+<section class="section featured-products">
+  <div class="wrapper">
+    <h2 class="section-title">Featured Rattan Pieces</h2>
+    <ul class="product-grid">
+      {% for product in collections.frontpage.products %}
+        <li class="product-item">
+          <a href="{{ product.url }}">
+<img src="{{ product.featured_image | img_url: '600x600' }}" alt="{{ product.title }}" width="600" height="600">            <h3>{{ product.title }}</h3>
+            <p>{{ product.price | money }}</p>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
