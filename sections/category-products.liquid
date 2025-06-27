@@ -20,56 +20,8 @@
       <p class="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-bold">{{ section.settings.description }}</p>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-      {% assign tag_colors = '{"ESSENTIAL":"budget-accent","ENHANCED":"mid-tier-accent","LUXURY":"bg-yellow-400 text-black"}' | parse_json %}
       {% for product in collections[section.settings.collection].products limit: section.settings.limit %}
-        <div class="product-card p-8 shadow-2xl flex flex-col items-center" style="max-width: 320px; min-height: 540px; margin: 0 auto;">
-          {% assign tag = '' %}
-          {% for t in product.tags %}
-            {% if t == 'ESSENTIAL' or t == 'ENHANCED' or t == 'LUXURY' %}
-              {% assign tag = t %}
-              {% break %}
-            {% endif %}
-          {% endfor %}
-          {% if tag != '' %}
-            <div class="mb-2 w-full flex justify-end">
-              <span class="{{ tag_colors[tag] }} rounded-full px-4 py-2 text-sm font-black heading-font z-30 shadow-lg border border-white" style="letter-spacing: 0.05em;">{{ tag }}</span>
-            </div>
-          {% endif %}
-          <div class="relative mb-4 w-full" style="height: 260px;">
-            <div class="main-image w-full h-full flex items-center justify-center rounded-xl overflow-hidden" id="main-image-{{ product.id }}">
-              {% assign media = product.media | where: 'media_type', 'image' %}
-              {% if media.size > 0 %}
-                {% for image in media %}
-                  <img src="{{ image | img_url: '400x400' }}" alt="{{ product.title }}" class="product-main-img object-contain w-full h-full absolute left-0 top-0 transition-opacity duration-300 {% if forloop.first %}opacity-100{% else %}opacity-0{% endif %}" data-img-index="{{ forloop.index0 }}" />
-                {% endfor %}
-              {% else %}
-                <span class="text-5xl font-black text-white">?</span>
-              {% endif %}
-            </div>
-            {% if media.size > 1 %}
-              <div class="flex justify-center gap-2 mt-2">
-                {% for image in media %}
-                  <img src="{{ image | img_url: '100x100' }}" alt="{{ product.title }} thumbnail" class="product-thumb-img w-12 h-12 object-contain rounded border-2 border-transparent cursor-pointer" data-thumb-index="{{ forloop.index0 }}" style="background: #fff;" />
-                {% endfor %}
-              </div>
-            {% endif %}
-          </div>
-          <h5 class="font-black text-white mb-3 text-xl heading-font text-center">{{ product.title }}</h5>
-          <p class="text-purple-300 mb-6 text-base font-semibold text-center">{{ product.description | strip_html | truncate: 60 }}</p>
-          <div class="flex flex-col items-center w-full mb-8">
-            <span class="price-highlight font-black mb-2">{{ product.price | money }}</span>
-            <div class="flex items-center justify-center gap-2">
-              <button class="quantity-btn" type="button">-</button>
-              <span class="w-12 text-center font-black text-lg text-white">1</span>
-              <button class="quantity-btn" type="button">+</button>
-            </div>
-          </div>
-          <form action="/cart/add" method="post" class="w-full">
-            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-            <input type="hidden" name="quantity" value="1">
-            <button type="submit" class="w-full bg-white text-black py-4 rounded-btn font-black heading-font text-lg hover:bg-gray-200 transition-colors mb-4">ADD TO CART</button>
-          </form>
-        </div>
+        {% render 'product-card', product: product %}
       {% endfor %}
     </div>
   </div>
@@ -94,6 +46,49 @@ document.addEventListener('DOMContentLoaded', function() {
       // Set first thumb as active
       thumbs[0].classList.add('border-purple-500');
     }
+    // Quantity controls
+    const minus = card.querySelector('.qty-minus');
+    const plus = card.querySelector('.qty-plus');
+    const qtyInput = card.querySelector('[data-qty-input]');
+    const hiddenQtyInput = card.querySelector('.hidden-qty-input');
+    if (minus && plus && qtyInput && hiddenQtyInput) {
+      minus.addEventListener('click', function() {
+        let val = parseInt(qtyInput.value) || 1;
+        if (val > 1) val--;
+        qtyInput.value = val;
+        hiddenQtyInput.value = val;
+      });
+      plus.addEventListener('click', function() {
+        let val = parseInt(qtyInput.value) || 1;
+        val++;
+        qtyInput.value = val;
+        hiddenQtyInput.value = val;
+      });
+      qtyInput.addEventListener('input', function() {
+        let val = parseInt(qtyInput.value) || 1;
+        if (val < 1) val = 1;
+        qtyInput.value = val;
+        hiddenQtyInput.value = val;
+      });
+    }
+    // On form submit, ensure hidden input is up to date
+    const form = card.querySelector('.add-to-cart-form');
+    if (form && qtyInput && hiddenQtyInput) {
+      form.addEventListener('submit', function() {
+        hiddenQtyInput.value = qtyInput.value;
+      });
+    }
   });
 });
-</script> 
+</script>
+
+<style>
+input[type="number"].qty-input::-webkit-inner-spin-button,
+input[type="number"].qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"].qty-input {
+  -moz-appearance: textfield;
+}
+</style> 

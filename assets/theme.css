@@ -48,6 +48,9 @@
 .mx-auto {
   margin-inline: auto;
 }
+.mt-auto {
+  margin-top: auto;
+}
 .block {
   display: block;
 }
@@ -160,6 +163,10 @@
   border-bottom-style: var(--tw-border-style);
   border-bottom-width: 1px;
 }
+.border-none {
+  --tw-border-style: none;
+  border-style: none;
+}
 .border-transparent {
   border-color: transparent;
 }
@@ -168,6 +175,10 @@
 }
 .bg-gradient-to-br {
   --tw-gradient-position: to bottom right in oklab;
+  background-image: linear-gradient(var(--tw-gradient-stops));
+}
+.bg-gradient-to-r {
+  --tw-gradient-position: to right in oklab;
   background-image: linear-gradient(var(--tw-gradient-stops));
 }
 .bg-gradient-to-t {

@@ -1,190 +1,133 @@
-<div class="p-8 shadow-2xl transition-all duration-300 hover:transform hover:-translate-y-2" style="border: 1px solid #4a4a6a; background: linear-gradient(135deg, #1a1a3a 0%, #2a2a4a 100%); border-radius: 12px;" data-product-id="{{ product.id }}">
-  
-  <!-- Product Image -->
-  <div class="relative mb-8">
-    <a href="{{ product.url }}">
-      {% if product.featured_image %}
-        <img src="https://hatchcanvas.com/_/assets/ab_jSsrUAYC8lj-bzTZDqsvu/keys//{{ product.featured_image | img_url: '400x400' }}" alt="{{ product.title }}" class="w-full h-80 object-contain rounded-xl" style="background: linear-gradient(135deg, #2a2a4a 0%, #3a3a5a 100%);">
+<div class="p-8 shadow-2xl flex flex-col items-center justify-between transition-all duration-300 hover:transform hover:-translate-y-2 product-card" style="border: 1px solid #4a4a6a; background: linear-gradient(135deg, #1a1a3a 0%, #2a2a4a 100%); border-radius: 12px; max-width: 320px; min-height: 650px; margin: 0 auto;" data-product-id="{{ product.id }}">
+  {% assign tag = '' %}
+  {% assign tag_style = '' %}
+  {% for t in product.tags %}
+    {% if t == 'ESSENTIAL' %}
+      {% assign tag = t %}
+      {% assign tag_style = 'background: linear-gradient(90deg, #22c55e 0%, #166534 100%); color: #fff;' %}
+      {% break %}
+    {% elsif t == 'ENHANCED' %}
+      {% assign tag = t %}
+      {% assign tag_style = 'background: linear-gradient(90deg, #f97316 0%, #c2410c 100%); color: #fff;' %}
+      {% break %}
+    {% elsif t == 'LUXURY' %}
+      {% assign tag = t %}
+      {% assign tag_style = 'background: linear-gradient(90deg, #facc15 0%, #eab308 100%); color: #222;' %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+  {% if tag != '' %}
+    <div class="mb-3 w-full flex justify-end">
+      <span class="rounded-full px-4 py-2 text-sm font-black heading-font z-30 shadow-lg border border-white" style="letter-spacing: 0.05em; {{ tag_style }}">{{ tag }}</span>
+    </div>
+  {% endif %}
+  <div class="relative w-full flex flex-col items-center">
+    <div class="main-image w-full h-56 flex items-center justify-center rounded-xl overflow-hidden mb-2 relative z-20" id="main-image-{{ product.id }}">
+      {% assign media = product.media | where: 'media_type', 'image' %}
+      {% if media.size > 0 %}
+        {% for image in media %}
+          <img src="{{ image | img_url: '400x400' }}" alt="{{ product.title }}" class="product-main-img object-contain w-full h-full absolute left-0 top-0 transition-opacity duration-300 {% if forloop.first %}opacity-100{% else %}opacity-0{% endif %}" data-img-index="{{ forloop.index0 }}" />
+        {% endfor %}
       {% else %}
-        <div class="w-full h-80 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #2a2a4a 0%, #3a3a5a 100%);">
-          <svg class="w-20 h-20 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-        </div>
+        <span class="text-5xl font-black text-white">?</span>
       {% endif %}
-    </a>
-    
-    <!-- Sale Badge -->
-    {% if product.compare_at_price > product.price %}
-      <span class="absolute top-4 right-4 text-white px-4 py-2 text-sm font-black" style="font-family: 'Oswald', sans-serif; color: #22c55e; background: linear-gradient(135deg, #166534, #22c55e); border-radius: 6px;">
-        SALE
-      </span>
-    {% endif %}
-    
-    <!-- Tier Badge (you can customize based on collection or product tags) -->
-    {% if product.tags contains 'budget' %}
-      <span class="absolute top-4 left-4 text-white px-3 py-1 text-xs font-black" style="font-family: 'Oswald', sans-serif; background: linear-gradient(135deg, #166534, #22c55e); border-radius: 6px;">
-        BUDGET
-      </span>
-    {% elsif product.tags contains 'premium' %}
-      <span class="absolute top-4 left-4 text-white px-3 py-1 text-xs font-black" style="font-family: 'Oswald', sans-serif; background: linear-gradient(135deg, #a16207, #eab308); border-radius: 6px;">
-        PREMIUM
-      </span>
-    {% elsif product.tags contains 'mid-tier' %}
-      <span class="absolute top-4 left-4 text-white px-3 py-1 text-xs font-black" style="font-family: 'Oswald', sans-serif; background: linear-gradient(135deg, #c2410c, #f97316); border-radius: 6px;">
-        MID-TIER
-      </span>
-    {% endif %}
-  </div>
-  
-  <!-- Product Title -->
-  <h5 class="font-black text-white mb-3 text-xl" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">
-    <a href="{{ product.url }}">{{ product.title }}</a>
-  </h5>
-  
-  <!-- Product Description -->
-  <p class="text-purple-300 mb-6 text-base font-semibold">
-    {{ product.description | strip_html | truncate: 60 }}
-  </p>
-  
-  <!-- Price and Quantity Controls -->
-  <div class="flex items-center justify-between mb-8">
-    <!-- Price -->
-    <span class="font-black" style="background: linear-gradient(45deg, #e0e0ff, #c0c0e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 900; font-size: 2rem;">
-      {% if product.compare_at_price > product.price %}
-        <span class="line-through text-gray-400 text-lg mr-2">{{ product.compare_at_price | money }}</span>
+    </div>
+    <div class="flex justify-center gap-2 mt-2 mb-4 w-full z-10 relative">
+      {% if media.size > 0 %}
+        {% for image in media %}
+          <img src="{{ image | img_url: '100x100' }}" alt="{{ product.title }} thumbnail" class="product-thumb-img w-10 h-10 object-contain rounded border-2 border-transparent cursor-pointer" data-thumb-index="{{ forloop.index0 }}" style="background: #fff;" />
+        {% endfor %}
+      {% else %}
+        <img src="https://via.placeholder.com/100x100?text=No+Image" alt="No image" class="w-10 h-10 object-contain rounded border-2 border-transparent" />
       {% endif %}
-      {{ product.price | money }}
-    </span>
-    
-    <!-- Quantity Controls -->
-    <div class="flex items-center space-x-3">
-      <button class="w-12 h-12 border-2 border-purple-600 rounded-md flex items-center justify-center bg-transparent text-white font-black transition-colors hover:bg-purple-600 decrease-qty" type="button">
-        -
-      </button>
-      <span class="w-16 text-center font-black text-lg text-white qty-display">1</span>
-      <button class="w-12 h-12 border-2 border-purple-600 rounded-md flex items-center justify-center bg-transparent text-white font-black transition-colors hover:bg-purple-600 increase-qty" type="button">
-        +
-      </button>
     </div>
   </div>
-  
-  <!-- Add to Cart Form -->
-  <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="add-to-cart-form">
+  <h5 class="font-black text-white mb-2 text-lg heading-font text-center leading-tight">
+    <a href="{{ product.url }}">{{ product.title }}</a>
+  </h5>
+  <p class="text-purple-300 mb-3 text-base font-semibold text-center leading-snug" style="min-height: 4.5em;">{{ product.description | strip_html }}</p>
+  <div class="flex flex-col items-center w-full mb-3">
+    <span class="price-highlight font-black mb-2">{{ product.price | money }}</span>
+    <div class="flex items-center justify-center gap-2">
+      <button class="quantity-btn qty-minus" type="button" data-action="minus">-</button>
+      <input type="number" min="1" value="1" class="w-12 text-center font-black text-lg text-white bg-transparent border-none outline-none qty-input" name="quantity" style="appearance: textfield;" data-qty-input />
+      <button class="quantity-btn qty-plus" type="button" data-action="plus">+</button>
+    </div>
+  </div>
+  <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="w-full mt-auto add-to-cart-form">
     <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-    <input type="hidden" name="quantity" value="1" class="qty-input">
-    
+    <input type="hidden" name="quantity" value="1" class="hidden-qty-input">
     {% if product.available %}
-      <button type="submit" class="w-full bg-white text-black py-4 font-black text-lg hover:bg-gray-200 transition-colors mb-4 add-to-cart-btn" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 8px;">
-        ADD TO CART
-      </button>
+      <button type="submit" class="w-full bg-white text-black py-4 font-black text-lg hover:bg-gray-200 transition-colors mb-2 add-to-cart-btn rounded-btn heading-font" style="text-transform: uppercase; letter-spacing: 0.05em;">ADD TO CART</button>
     {% else %}
-      <button type="button" disabled class="w-full bg-gray-600 text-white py-4 font-black text-lg cursor-not-allowed" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 8px;">
-        SOLD OUT
-      </button>
+      <button type="button" disabled class="w-full bg-gray-600 text-white py-4 font-black text-lg cursor-not-allowed rounded-btn heading-font" style="text-transform: uppercase; letter-spacing: 0.05em;">SOLD OUT</button>
     {% endif %}
   </form>
-  
-  <!-- View Product Link -->
-  <a href="{{ product.url }}" class="block text-center text-purple-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">
-    VIEW DETAILS
-  </a>
-</div>
+  <a href="{{ product.url }}" class="block text-center text-purple-300 hover:text-white transition-colors font-semibold heading-font" style="text-transform: uppercase; letter-spacing: 0.05em;">VIEW DETAILS</a>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Get all product cards
-  const productCards = document.querySelectorAll('[data-product-id]');
-  
-  productCards.forEach(card => {
-    const decreaseBtn = card.querySelector('.decrease-qty');
-    const increaseBtn = card.querySelector('.increase-qty');
-    const qtyDisplay = card.querySelector('.qty-display');
-    const qtyInput = card.querySelector('.qty-input');
-    const form = card.querySelector('.add-to-cart-form');
-    
-    // Quantity controls
-    decreaseBtn.addEventListener('click', function() {
-      let qty = parseInt(qtyDisplay.textContent);
-      if (qty > 1) {
-        qty--;
-        qtyDisplay.textContent = qty;
-        qtyInput.value = qty;
-        qtyDisplay.style.transform = 'scale(0.9)';
-        setTimeout(() => qtyDisplay.style.transform = 'scale(1)', 150);
+  <style>
+    input[type="number"].qty-input::-webkit-inner-spin-button,
+    input[type="number"].qty-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"].qty-input {
+      -moz-appearance: textfield;
+    }
+  </style>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.product-card').forEach(function(card) {
+      const mainImgs = card.querySelectorAll('.product-main-img');
+      const thumbs = card.querySelectorAll('.product-thumb-img');
+      if (thumbs.length > 0) {
+        thumbs.forEach(function(thumb, idx) {
+          thumb.addEventListener('click', function() {
+            mainImgs.forEach((img, i) => {
+              img.style.opacity = (i === idx) ? '1' : '0';
+            });
+            thumbs.forEach((t, i) => {
+              t.classList.toggle('border-purple-500', i === idx);
+            });
+          });
+        });
+        // Set first thumb as active
+        thumbs[0].classList.add('border-purple-500');
+      }
+      // Quantity controls
+      const minus = card.querySelector('.qty-minus');
+      const plus = card.querySelector('.qty-plus');
+      const qtyInput = card.querySelector('[data-qty-input]');
+      const hiddenQtyInput = card.querySelector('.hidden-qty-input');
+      if (minus && plus && qtyInput && hiddenQtyInput) {
+        minus.addEventListener('click', function() {
+          let val = parseInt(qtyInput.value) || 1;
+          if (val > 1) val--;
+          qtyInput.value = val;
+          hiddenQtyInput.value = val;
+        });
+        plus.addEventListener('click', function() {
+          let val = parseInt(qtyInput.value) || 1;
+          val++;
+          qtyInput.value = val;
+          hiddenQtyInput.value = val;
+        });
+        qtyInput.addEventListener('input', function() {
+          let val = parseInt(qtyInput.value) || 1;
+          if (val < 1) val = 1;
+          qtyInput.value = val;
+          hiddenQtyInput.value = val;
+        });
+      }
+      // On form submit, ensure hidden input is up to date
+      const form = card.querySelector('.add-to-cart-form');
+      if (form && qtyInput && hiddenQtyInput) {
+        form.addEventListener('submit', function() {
+          hiddenQtyInput.value = qtyInput.value;
+        });
       }
     });
-    
-    increaseBtn.addEventListener('click', function() {
-      let qty = parseInt(qtyDisplay.textContent);
-      qty++;
-      qtyDisplay.textContent = qty;
-      qtyInput.value = qty;
-      qtyDisplay.style.transform = 'scale(1.1)';
-      setTimeout(() => qtyDisplay.style.transform = 'scale(1)', 150);
-    });
-    
-    // Add to cart form submission
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const formData = new FormData(this);
-      const button = this.querySelector('.add-to-cart-btn');
-      const originalText = button.textContent;
-      
-      // Update button state
-      button.textContent = 'ADDING...';
-      button.disabled = true;
-      
-      // Add to cart using Shopify AJAX
-      fetch('/cart/add.js', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        // Update cart count
-        fetch('/cart.js')
-          .then(response => response.json())
-          .then(cart => {
-            const cartBadge = document.querySelector('header span');
-            if (cartBadge) {
-              cartBadge.textContent = cart.item_count;
-              cartBadge.style.transform = 'scale(1.3)';
-              cartBadge.style.background = '#22c55e';
-              setTimeout(() => {
-                cartBadge.style.transform = 'scale(1)';
-                cartBadge.style.background = 'white';
-              }, 300);
-            }
-          });
-        
-        // Success state
-        button.textContent = 'ADDED!';
-        button.style.background = '#22c55e';
-        button.style.color = 'white';
-        
-        // Reset after 2 seconds
-        setTimeout(() => {
-          button.textContent = originalText;
-          button.style.background = 'white';
-          button.style.color = 'black';
-          button.disabled = false;
-        }, 2000);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        button.textContent = 'ERROR';
-        button.style.background = '#ef4444';
-        
-        setTimeout(() => {
-          button.textContent = originalText;
-          button.style.background = 'white';
-          button.style.color = 'black';
-          button.disabled = false;
-        }, 2000);
-      });
-    });
   });
-});
-</script>
+  </script>
+</div>
