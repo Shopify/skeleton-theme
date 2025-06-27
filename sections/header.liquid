@@ -42,6 +42,24 @@
       
       <!-- Cart and Mobile Menu -->
       <div class="flex items-center space-x-4">
+        <!-- Language Selector -->
+        {% if shop.published_locales.size > 1 %}
+          <form method="get" action="/locale" class="mr-2 relative">
+            <div class="relative">
+              <select name="locale_code"
+                class="appearance-none bg-gray-900 text-white font-bold text-sm px-4 py-2 pr-8 rounded-lg border-2 border-purple-600 focus:border-purple-400 outline-none transition-all"
+                style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; min-width: 110px;"
+                onchange="this.form.submit()">
+                {% for locale in shop.published_locales %}
+                  <option value="{{ locale.iso_code }}" {% if locale.iso_code == request.locale.iso_code %}selected{% endif %}>{{ locale.endonym_name | upcase }}</option>
+                {% endfor %}
+              </select>
+              <span class="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-400">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </span>
+            </div>
+          </form>
+        {% endif %}
         
         <!-- Search Button -->
         {% if section.settings.show_search %}
