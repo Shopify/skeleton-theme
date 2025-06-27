@@ -5,7 +5,7 @@
     <div class="nav-content">
       <span class="nav-text">SHOP THE SUMMER COLLECTION</span>
       <div class="search-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/>
           <path d="21 21l-4.35-4.35"/>
         </svg>
@@ -24,6 +24,7 @@
         height="800"
         loading="eager"
         class="hero-image"
+        style="gradient: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));"
       >
     </div>
 
@@ -32,8 +33,8 @@
       <div class="pattern-background" style="background-image: url('{{ 'BackgrndPattern.png' | asset_url }}');"></div>
       <div class="hero-text-content">
         <img
-          src="{{ 'WORDMARKAsset 19@3x.png' | asset_url }}"
-          alt="Andra's Garden Heaven wordmark"
+          src="{{ 'WORDMARKAsset 19@3x.png' | asset_url | image_url: '350x200' }}"
+          alt="Andra's Garden Heaven wordmark, designed by SCM Design Studio."
           width="350"
           height="200"
           class="wordmark"

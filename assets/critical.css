@@ -8,6 +8,7 @@
 }
 :root {
   --green: #1c4219;
+  --green900: #041f0b;
   --grey: #d0ccd0;
   --white: #fbfcff;
   --blue: #1c6e8c;
@@ -144,4 +145,10 @@ body {
 /* Child elements that use the full-width utility class span the entire viewport. */
 .shopify-section > .full-width {
   grid-column: 1 / -1;
+}
+
+/* Section Headings Styles */
+
+.section-title {
+  color: var(--grey);
 }

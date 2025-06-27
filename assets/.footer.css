@@ -1,0 +1,27 @@
+.footer {
+  background-color: var(--green900);
+  color: var(--white);
+  text-align: center;
+  padding: 1rem;
+  border-top: var(--white);
+  border-width: 3.5px;
+  border-style: solid none none none;
+}
+.footer__content {
+  max-width: 100vw;
+  min-height: 90vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.footer__copyright {
+  margin-bottom: 1rem;
+}
+.footer__links {
+  margin-bottom: 1rem;
+}
+.footer__payment {
+  margin-bottom: 1rem;
+}

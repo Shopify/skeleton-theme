@@ -85,9 +85,9 @@
 .pattern-background {
   position: absolute;
   inset: 0;
-  background-size: 300px 300px;
+  background-size: cover;
   background-position: center;
-  background-repeat: repeat;
+  background-repeat: no-repeat;
   opacity: 0.9;
 }
 
@@ -114,16 +114,17 @@
 .hero-description p {
   color: var(--white);
   font-family: var(--body-font);
-  font-size: 1rem;
+  font-size: 1.5rem;
   line-height: 1.5;
   margin: 0;
-  font-weight: 400;
+  font-weight: 500;
+  letter-spacing: 1px;
   max-width: 400px;
 }
 
 .underline-text {
   text-decoration: underline;
-  text-decoration-color: var(--green);
+  text-decoration-color: var(--blue);
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
 }
