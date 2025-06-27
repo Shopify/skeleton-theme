@@ -5,48 +5,62 @@
       <!-- Logo and Brand -->
       <div class="flex items-center space-x-4">
         <div class="flex items-center space-x-3">
-          <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%); border-radius: 12px; padding: 4px;">
-            <div style="background: linear-gradient(135deg, #1a1a3a 0%, #2a2a4a 100%); border-radius: 8px; padding: 8px;">
-              <a href="{{ routes.root_url }}">
-                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-              </a>
+          {% if section.settings.logo != blank %}
+            <!-- Custom Logo -->
+            <a href="{{ routes.root_url }}" class="flex items-center">
+              <img src="{{ section.settings.logo | img_url: '200x' }}" alt="{{ section.settings.brand_name | default: shop.name }}" class="h-12 w-auto">
+            </a>
+          {% else %}
+            <!-- Default Logo -->
+            <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%); border-radius: 12px; padding: 4px;">
+              <div style="background: linear-gradient(135deg, #1a1a3a 0%, #2a2a4a 100%); border-radius: 8px; padding: 8px;">
+                <a href="{{ routes.root_url }}">
+                  <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
+                </a>
+              </div>
             </div>
-          </div>
+          {% endif %}
           <div>
             <h1 class="text-3xl font-bold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-              <a href="{{ routes.root_url }}">{{ shop.name }}</a>
+              <a href="{{ routes.root_url }}">{{ section.settings.brand_name | default: shop.name }}</a>
             </h1>
-            <p class="text-xs text-purple-300 -mt-1" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">PURIFY. BALANCE. GLOW.</p>
+            {% if section.settings.tagline != blank %}
+              <p class="text-xs text-purple-300 -mt-1" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">{{ section.settings.tagline }}</p>
+            {% endif %}
           </div>
         </div>
       </div>
       
       <!-- Navigation Menu -->
       <nav class="hidden md:flex space-x-8">
-        <a href="{{ routes.root_url }}" class="text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">HOME</a>
-        <a href="{{ routes.collections_url }}" class="text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">CATEGORIES</a>
-        <a href="{{ routes.search_url }}" class="text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">SEARCH</a>
+        {% for link in section.settings.menu.links %}
+          <a href="{{ link.url }}" class="text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">{{ link.title }}</a>
+        {% endfor %}
       </nav>
       
       <!-- Cart and Mobile Menu -->
       <div class="flex items-center space-x-4">
         
         <!-- Search Button -->
-        <button class="p-2 text-gray-400 hover:text-white transition-colors" onclick="toggleSearch()">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-        </button>
+        {% if section.settings.show_search %}
+          <button class="p-2 text-gray-400 hover:text-white transition-colors" onclick="toggleSearch()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </button>
+        {% endif %}
         
         <!-- Cart Icon -->
-        <a href="{{ routes.cart_url }}" class="p-2 text-gray-400 hover:text-white transition-colors relative">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z"></path>
-          </svg>
-          <span class="absolute -top-1 -right-1 bg-white text-black text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">{{ cart.item_count }}</span>
-        </a>
+        {% if section.settings.show_cart %}
+          <a href="{{ routes.cart_url }}" class="p-2 text-gray-400 hover:text-white transition-colors relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z"></path>
+            </svg>
+            <span class="absolute -top-1 -right-1 bg-white text-black text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">{{ cart.item_count }}</span>
+          </a>
+        {% endif %}
         
         <!-- Mobile Menu Button -->
         <button class="md:hidden p-2 text-gray-400 hover:text-white transition-colors" onclick="toggleMobileMenu()">
@@ -60,9 +74,9 @@
     <!-- Mobile Menu (Hidden by default) -->
     <div id="mobile-menu" class="md:hidden hidden border-t border-purple-900 py-4">
       <div class="space-y-4">
-        <a href="{{ routes.root_url }}" class="block text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">HOME</a>
-        <a href="{{ routes.collections_url }}" class="block text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">CATEGORIES</a>
-        <a href="{{ routes.search_url }}" class="block text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">SEARCH</a>
+        {% for link in section.settings.menu.links %}
+          <a href="{{ link.url }}" class="block text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">{{ link.title }}</a>
+        {% endfor %}
       </div>
     </div>
   </div>
@@ -78,3 +92,67 @@ function toggleSearch() {
   window.location.href = '{{ routes.search_url }}';
 }
 </script>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand Name",
+      "default": "LOOKS MAX"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "PURIFY. BALANCE. GLOW."
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show Search Button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show Cart Icon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Styling"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#0a0a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header"
+    }
+  ]
+}
+{% endschema %}
