@@ -1,0 +1,99 @@
+{% comment %}
+  LooksMax – Hero Section
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Hero banner",
+  "tag": "section",
+  "class": "hero-gradient text-white py-24",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title_left",
+      "label": "Левое слово",
+      "default": "LOOKS"
+    },
+    {
+      "type": "text",
+      "id": "title_right",
+      "label": "Правое слово",
+      "default": "MAX"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Подзаголовок",
+      "default": "PURIFY. BALANCE. GLOW."
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Описание",
+      "default": "No bullshit skincare that actually works. From budget essentials to premium weapons. Build your arsenal."
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Картинка справа"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "cta",
+      "name": "Кнопка",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Текст", "default": "SHOP ALL PRODUCTS" },
+        { "type": "url",  "id": "link",  "label": "Ссылка", "default": "/" }
+      ]
+    }
+  ],
+  "max_blocks": 2,
+  "presets": [
+    { "name": "Hero banner" }
+  ]
+}
+{% endschema %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <h2 class="text-7xl font-black heading-font mb-8 leading-tight text-white brutal-text">
+        {{ section.settings.title_left }}
+        <span class="text-gray-400">{{ section.settings.title_right }}</span>
+      </h2>
+      <h3 class="text-3xl font-bold mb-6 text-gray-200 heading-font">
+        {{ section.settings.subtitle }}
+      </h3>
+      <p class="text-xl mb-10 text-gray-300 leading-relaxed font-medium">
+        {{ section.settings.description }}
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4">
+        {% for block in section.blocks %}
+          {% if block.type == 'cta' %}
+            <a href="{{ block.settings.link | default: '#' }}"
+               class="bg-white text-black px-10 py-5 rounded-btn font-black heading-font text-lg hover:bg-gray-200 transition-colors">
+              {{ block.settings.label }}
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="flex justify-center lg:justify-end">
+      {% if section.settings.hero_image != blank %}
+        <img
+          src="{{ section.settings.hero_image | image_url: width: 600 }}"
+          alt="Looks Max Hero"
+          class="w-96 h-96 rounded-2xl object-cover border-4 border-purple-400 shadow-2xl"
+        >
+      {% else %}
+        <!-- Fallback для превью -->
+        <div class="w-96 h-96 bg-gray-700/30 rounded-2xl flex items-center justify-center">
+          <span class="text-gray-400">Upload image</span>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

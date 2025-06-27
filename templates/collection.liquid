@@ -1,0 +1,90 @@
+<!-- Collection Header -->
+<section class="py-20" style="background: linear-gradient(135deg, #1a1a3a 0%, #0f0f2a 100%); border-top: 3px solid #4a4a6a; border-bottom: 3px solid #4a4a6a;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h1 class="text-6xl font-black text-white mb-6" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; text-shadow: 2px 2px 0px #000;">
+        {{ collection.title }}
+      </h1>
+      {% if collection.description != blank %}
+        <p class="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-bold">
+          {{ collection.description }}
+        </p>
+      {% endif %}
+      <div class="mt-8">
+        <span class="text-purple-300 font-semibold">{{ collection.products_count }} products</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Filters and Sorting -->
+<section class="py-8" style="background: linear-gradient(135deg, #0f0f2a 0%, #1a1a3a 100%);">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+      
+      <!-- Filter Tags -->
+      <div class="flex flex-wrap gap-2">
+        <a href="{{ collection.url }}" class="px-4 py-2 text-sm font-bold transition-colors {% unless current_tags %}bg-purple-600 text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600{% endunless %}" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; border-radius: 6px;">
+          ALL
+        </a>
+        {% for tag in collection.all_tags %}
+          {% assign tag_url = collection.url | append: '/' | append: tag | handle %}
+          <a href="{{ tag_url }}" class="px-4 py-2 text-sm font-bold transition-colors {% if current_tags contains tag %}bg-purple-600 text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600{% endif %}" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; border-radius: 6px;">
+            {{ tag }}
+          </a>
+        {% endfor %}
+      </div>
+      
+      <!-- Sort Options -->
+      <div class="flex items-center space-x-4">
+        <label class="text-gray-300 font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase;">SORT BY:</label>
+        <select onchange="window.location.href=this.value" class="bg-gray-700 text-white px-4 py-2 font-semibold" style="font-family: 'Oswald', sans-serif; border-radius: 6px;">
+          <option value="{{ collection.url }}?sort_by=manual" {% if collection.sort_by == 'manual' %}selected{% endif %}>FEATURED</option>
+          <option value="{{ collection.url }}?sort_by=price-ascending" {% if collection.sort_by == 'price-ascending' %}selected{% endif %}>PRICE: LOW TO HIGH</option>
+          <option value="{{ collection.url }}?sort_by=price-descending" {% if collection.sort_by == 'price-descending' %}selected{% endif %}>PRICE: HIGH TO LOW</option>
+          <option value="{{ collection.url }}?sort_by=title-ascending" {% if collection.sort_by == 'title-ascending' %}selected{% endif %}>NAME: A-Z</option>
+          <option value="{{ collection.url }}?sort_by=created-descending" {% if collection.sort_by == 'created-descending' %}selected{% endif %}>NEWEST</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Products Grid -->
+<section class="py-20" style="background: linear-gradient(135deg, #0f0f2a 0%, #1a1a3a 100%);">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {% if collection.products.size > 0 %}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {% for product in collection.products %}
+          {% render 'product-card', product: product %}
+        {% endfor %}
+      </div>
+      
+      <!-- Pagination -->
+      {% if paginate.pages > 1 %}
+        <div class="mt-16">
+          {% render 'pagination', paginate: paginate %}
+        </div>
+      {% endif %}
+      
+    {% else %}
+      <!-- Empty State -->
+      <div class="text-center py-20">
+        <svg class="w-24 h-24 text-gray-400 mx-auto mb-8" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        <h3 class="text-3xl font-black text-white mb-4" style="font-family: 'Oswald', sans-serif; text-transform: uppercase;">
+          NO PRODUCTS FOUND
+        </h3>
+        <p class="text-gray-300 mb-8 font-semibold">
+          Sorry, there are no products in this collection matching your criteria.
+        </p>
+        <a href="{{ collections['all'].url }}" class="bg-white text-black px-8 py-3 font-black transition-colors hover:bg-gray-200" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 8px;">
+          VIEW ALL PRODUCTS
+        </a>
+      </div>
+    {% endif %}
+    
+  </div>
+</section>

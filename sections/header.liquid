@@ -1,66 +1,80 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
-
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
-
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
-    {% endif %}
-
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
-      {% endif %}
-
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+<header class="shadow-xl sticky top-0 z-50 border-b border-purple-900" style="background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2a 100%);">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      
+      <!-- Logo and Brand -->
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-3">
+          <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%); border-radius: 12px; padding: 4px;">
+            <div style="background: linear-gradient(135deg, #1a1a3a 0%, #2a2a4a 100%); border-radius: 8px; padding: 8px;">
+              <a href="{{ routes.root_url }}">
+                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+              <a href="{{ routes.root_url }}">{{ shop.name }}</a>
+            </h1>
+            <p class="text-xs text-purple-300 -mt-1" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">PURIFY. BALANCE. GLOW.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Navigation Menu -->
+      <nav class="hidden md:flex space-x-8">
+        <a href="{{ routes.root_url }}" class="text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">HOME</a>
+        <a href="{{ routes.collections_url }}" class="text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">CATEGORIES</a>
+        <a href="{{ routes.search_url }}" class="text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">SEARCH</a>
+      </nav>
+      
+      <!-- Cart and Mobile Menu -->
+      <div class="flex items-center space-x-4">
+        
+        <!-- Search Button -->
+        <button class="p-2 text-gray-400 hover:text-white transition-colors" onclick="toggleSearch()">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </button>
+        
+        <!-- Cart Icon -->
+        <a href="{{ routes.cart_url }}" class="p-2 text-gray-400 hover:text-white transition-colors relative">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z"></path>
+          </svg>
+          <span class="absolute -top-1 -right-1 bg-white text-black text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">{{ cart.item_count }}</span>
+        </a>
+        
+        <!-- Mobile Menu Button -->
+        <button class="md:hidden p-2 text-gray-400 hover:text-white transition-colors" onclick="toggleMobileMenu()">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Menu (Hidden by default) -->
+    <div id="mobile-menu" class="md:hidden hidden border-t border-purple-900 py-4">
+      <div class="space-y-4">
+        <a href="{{ routes.root_url }}" class="block text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">HOME</a>
+        <a href="{{ routes.collections_url }}" class="block text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">CATEGORIES</a>
+        <a href="{{ routes.search_url }}" class="block text-gray-300 hover:text-white transition-colors font-semibold" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">SEARCH</a>
+      </div>
+    </div>
   </div>
 </header>
 
-{% stylesheet %}
-  header {
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  header a {
-    position: relative;
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
-  }
-  header svg {
-    width: 2rem;
-  }
-  header .header__menu,
-  header .header__icons {
-    display: flex;
-    gap: 1rem;
-  }
-{% endstylesheet %}
-
-{% schema %}
-{
-  "name": "t:general.header",
-  "settings": [
-    {
-      "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
-    }
-  ]
+<script>
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('hidden');
 }
-{% endschema %}
+
+function toggleSearch() {
+  window.location.href = '{{ routes.search_url }}';
+}
+</script>

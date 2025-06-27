@@ -1,0 +1,30 @@
+{
+  "name": "looksmax-theme",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\" style=\"position: relative;\">\r   <br>\r     <img src=\"./assets/shoppy-x-ray.svg\" alt=\"logo\" width=\"200\">\r   <br>\r   Shopify Skeleton Theme\r </h1>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:css": "tailwindcss -i src/styles/tailwind.css -o assets/theme.css --watch",
+    "build:css": "tailwindcss -i src/styles/tailwind.css -o assets/theme.css --minify"
+  
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shopify/skeleton-theme.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Shopify/skeleton-theme/issues"
+  },
+  "homepage": "https://github.com/Shopify/skeleton-theme#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11"
+  }
+}

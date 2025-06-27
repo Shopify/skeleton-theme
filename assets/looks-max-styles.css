@@ -1,0 +1,200 @@
+/* Looks Max Store - Complete CSS Styles */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&display=swap');
+
+/* Base Styles */
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2a 50%, #2a1540 100%);
+    min-height: 100vh;
+    color: white;
+}
+
+/* Typography */
+.heading-font {
+    font-family: 'Oswald', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.brutal-text {
+    text-shadow: 2px 2px 0px #000;
+}
+
+/* Background Gradients */
+.hero-gradient {
+    background: linear-gradient(135deg, #0f0f2a 0%, #1a1a3a 30%, #2d2d5a 60%, #1a0a3a 100%);
+}
+
+.section-dark {
+    background: linear-gradient(135deg, #0f0f2a 0%, #1a1a3a 100%);
+}
+
+.section-darker {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2a 100%);
+}
+
+.category-intro {
+    background: linear-gradient(135deg, #1a1a3a 0%, #0f0f2a 100%);
+    border-top: 3px solid #4a4a6a;
+    border-bottom: 3px solid #4a4a6a;
+}
+
+/* Product Cards */
+.product-card {
+    transition: all 0.3s ease;
+    border: 1px solid #4a4a6a;
+    background: linear-gradient(135deg, #1a1a3a 0%, #2a2a4a 100%);
+    border-radius: 12px;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(26, 10, 58, 0.6);
+    border-color: #6a6a8a;
+}
+
+/* Tier Badges */
+.tier-badge {
+    background: linear-gradient(45deg, #2a2a4a, #4a4a6a);
+    border: 1px solid #6a6a8a;
+    border-radius: 8px;
+}
+
+/* Accent Colors */
+.budget-accent { 
+    color: #22c55e; 
+    background: linear-gradient(135deg, #166534, #22c55e);
+    border-radius: 6px;
+}
+
+.mid-tier-accent { 
+    color: #f97316; 
+    background: linear-gradient(135deg, #c2410c, #f97316);
+    border-radius: 6px;
+}
+
+.premium-accent { 
+    color: #eab308; 
+    background: linear-gradient(135deg, #a16207, #eab308);
+    border-radius: 6px;
+}
+
+.retinol-accent {
+    color: #8b5cf6;
+    background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+    border-radius: 6px;
+}
+
+/* Price Styling */
+.price-highlight {
+    background: linear-gradient(45deg, #e0e0ff, #c0c0e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 900;
+    font-size: 2rem;
+}
+
+/* Glass Effect */
+.glass-card {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Logo Styling */
+.logo-gradient {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.logo-inner {
+    background: linear-gradient(135deg, #1a1a3a 0%, #2a2a4a 100%);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+/* Border Radius Classes */
+.rounded-btn {
+    border-radius: 8px;
+}
+
+.rounded-input {
+    border-radius: 6px;
+}
+
+/* Header Styles */
+header {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2a 100%);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid #7c3aed;
+}
+
+/* Navigation */
+nav a {
+    transition: color 0.3s ease;
+    font-weight: 600;
+}
+
+nav a:hover {
+    color: white;
+}
+
+/* Buttons */
+button {
+    transition: all 0.3s ease;
+    font-weight: 900;
+}
+
+.btn-primary {
+    background: white;
+    color: black;
+    padding: 1.25rem 2.5rem;
+    border-radius: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 1.125rem;
+}
+
+.btn-primary:hover {
+    background: #e5e5e5;
+}
+
+.btn-secondary {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid #a855f7;
+    color: white;
+    padding: 1.25rem 2.5rem;
+    border-radius: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 1.125rem;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Product Quantity Controls */
+.quantity-btn {
+    width: 3rem;
+    height: 3rem;
+    border: 2px solid #7c3aed;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: white;
+    font-weight: 900;
+    transition: background-color 0.3s ease;
+} 

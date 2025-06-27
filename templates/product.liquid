@@ -1,0 +1,306 @@
+<!-- Product Details Section -->
+<section class="py-20" style="background: linear-gradient(135deg, #0f0f2a 0%, #1a1a3a 100%);">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Breadcrumb -->
+    <div class="mb-8">
+      <nav class="text-sm font-semibold">
+        <a href="{{ routes.root_url }}" class="text-gray-400 hover:text-white transition-colors">HOME</a>
+        <span class="text-gray-500 mx-2">/</span>
+        {% if collection %}
+          <a href="{{ collection.url }}" class="text-gray-400 hover:text-white transition-colors">{{ collection.title | upcase }}</a>
+          <span class="text-gray-500 mx-2">/</span>
+        {% endif %}
+        <span class="text-white">{{ product.title | upcase }}</span>
+      </nav>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+      
+      <!-- Product Images -->
+      <div class="space-y-4">
+        <!-- Main Image -->
+        <div class="aspect-square rounded-xl overflow-hidden" style="background: linear-gradient(135deg, #2a2a4a 0%, #3a3a5a 100%);">
+          {% if product.featured_image %}
+            <img id="main-product-image" src="https://hatchcanvas.com/_/assets/ab_jSsrUAYC8lj-bzTZDqsvu/keys//{{ product.featured_image | img_url: '800x800' }}" alt="{{ product.title }}" class="w-full h-full object-contain">
+          {% else %}
+            <div class="w-full h-full flex items-center justify-center">
+              <svg class="w-32 h-32 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+          {% endif %}
+        </div>
+        
+        <!-- Thumbnail Images -->
+        {% if product.images.size > 1 %}
+          <div class="grid grid-cols-4 gap-4">
+            {% for image in product.images limit: 4 %}
+              <button onclick="changeMainImage('{{ image | img_url: '800x800' }}')" class="aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-purple-500 transition-colors" style="background: linear-gradient(135deg, #2a2a4a 0%, #3a3a5a 100%);">
+                <img src="https://hatchcanvas.com/_/assets/ab_jSsrUAYC8lj-bzTZDqsvu/keys//{{ image | img_url: '200x200' }}" alt="{{ product.title }}" class="w-full h-full object-contain">
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      
+      <!-- Product Information -->
+      <div class="space-y-8">
+        
+        <!-- Product Title and Price -->
+        <div>
+          <h1 class="text-4xl font-black text-white mb-4" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">
+            {{ product.title }}
+          </h1>
+          
+          <div class="flex items-center space-x-4 mb-6">
+            <span class="font-black" style="background: linear-gradient(45deg, #e0e0ff, #c0c0e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 900; font-size: 3rem;">
+              {{ product.selected_or_first_available_variant.price | money }}
+            </span>
+            {% if product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %}
+              <span class="text-2xl text-gray-400 line-through font-bold">
+                {{ product.selected_or_first_available_variant.compare_at_price | money }}
+              </span>
+              <span class="bg-green-500 text-white px-3 py-1 text-sm font-black rounded" style="font-family: 'Oswald', sans-serif;">
+                SAVE {{ product.selected_or_first_available_variant.compare_at_price | minus: product.selected_or_first_available_variant.price | money }}
+              </span>
+            {% endif %}
+          </div>
+        </div>
+        
+        <!-- Product Description -->
+        {% if product.description != blank %}
+          <div class="prose prose-invert max-w-none">
+            <p class="text-gray-300 text-lg leading-relaxed font-semibold">
+              {{ product.description }}
+            </p>
+          </div>
+        {% endif %}
+        
+        <!-- Variants (if applicable) -->
+        {% if product.variants.size > 1 %}
+          <div>
+            <label class="block text-white font-black mb-3" style="font-family: 'Oswald', sans-serif; text-transform: uppercase;">
+              {{ product.options.first }}:
+            </label>
+            <select id="product-variant-select" class="w-full bg-gray-700 text-white px-4 py-3 font-semibold" style="border-radius: 8px; font-family: 'Oswald', sans-serif;">
+              {% for variant in product.variants %}
+                <option value="{{ variant.id }}" {% if variant == product.selected_or_first_available_variant %}selected{% endif %} {% unless variant.available %}disabled{% endunless %}>
+                  {{ variant.title }} - {{ variant.price | money }}
+                  {% unless variant.available %} (Sold Out){% endunless %}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+        
+        <!-- Quantity and Add to Cart -->
+        <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" id="product-form">
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" id="variant-id">
+          
+          <!-- Quantity Controls -->
+          <div class="flex items-center space-x-6 mb-8">
+            <label class="text-white font-black" style="font-family: 'Oswald', sans-serif; text-transform: uppercase;">QUANTITY:</label>
+            <div class="flex items-center space-x-3">
+              <button type="button" class="w-12 h-12 border-2 border-purple-600 rounded-md flex items-center justify-center bg-transparent text-white font-black transition-colors hover:bg-purple-600" id="decrease-qty">
+                -
+              </button>
+              <input type="number" name="quantity" value="1" min="1" class="w-20 text-center bg-gray-700 text-white font-black py-3 rounded" style="border-radius: 6px;" id="quantity-input">
+              <button type="button" class="w-12 h-12 border-2 border-purple-600 rounded-md flex items-center justify-center bg-transparent text-white font-black transition-colors hover:bg-purple-600" id="increase-qty">
+                +
+              </button>
+            </div>
+          </div>
+          
+          <!-- Add to Cart Button -->
+          {% if product.available %}
+            <button type="submit" class="w-full bg-white text-black py-6 font-black text-xl transition-colors hover:bg-gray-200 mb-6" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 8px;" id="add-to-cart-btn">
+              ADD TO CART
+            </button>
+          {% else %}
+            <button type="button" disabled class="w-full bg-gray-600 text-white py-6 font-black text-xl cursor-not-allowed" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 8px;">
+              SOLD OUT
+            </button>
+          {% endif %}
+          
+          <!-- Buy Now Button -->
+          {% if product.available %}
+            <button type="button" class="w-full border-2 border-purple-500 text-white py-6 font-black text-xl transition-colors hover:bg-purple-500" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 8px; backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.1);" onclick="buyNow()">
+              BUY NOW
+            </button>
+          {% endif %}
+        </form>
+        
+        <!-- Product Features -->
+        <div class="grid grid-cols-2 gap-4 pt-8 border-t border-gray-600">
+          <div class="text-center">
+            <svg class="w-8 h-8 text-green-500 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-white font-bold text-sm" style="font-family: 'Oswald', sans-serif;">AUTHENTIC</p>
+          </div>
+          <div class="text-center">
+            <svg class="w-8 h-8 text-blue-500 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <p class="text-white font-bold text-sm" style="font-family: 'Oswald', sans-serif;">FAST SHIPPING</p>
+          </div>
+          <div class="text-center">
+            <svg class="w-8 h-8 text-purple-500 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 12l2 2 4-4m5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-white font-bold text-sm" style="font-family: 'Oswald', sans-serif;">GUARANTEE</p>
+          </div>
+          <div class="text-center">
+            <svg class="w-8 h-8 text-orange-500 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-white font-bold text-sm" style="font-family: 'Oswald', sans-serif;">SUPPORT</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Related Products -->
+{% if collection.products.size > 1 %}
+<section class="py-20" style="background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2a 100%);">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h3 class="text-4xl font-black text-white mb-6" style="font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.05em; text-shadow: 2px 2px 0px #000;">
+        YOU MIGHT ALSO LIKE
+      </h3>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {% assign related_products = collection.products | where: 'id', product.id | first: 3 %}
+      {% for related_product in related_products %}
+        {% unless related_product.id == product.id %}
+          {% render 'product-card', product: related_product %}
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const quantityInput = document.getElementById('quantity-input');
+  const decreaseBtn = document.getElementById('decrease-qty');
+  const increaseBtn = document.getElementById('increase-qty');
+  const variantSelect = document.getElementById('product-variant-select');
+  const variantIdInput = document.getElementById('variant-id');
+  const addToCartBtn = document.getElementById('add-to-cart-btn');
+  const form = document.getElementById('product-form');
+  
+  // Quantity controls
+  decreaseBtn?.addEventListener('click', function() {
+    let qty = parseInt(quantityInput.value);
+    if (qty > 1) {
+      quantityInput.value = qty - 1;
+    }
+  });
+  
+  increaseBtn?.addEventListener('click', function() {
+    let qty = parseInt(quantityInput.value);
+    quantityInput.value = qty + 1;
+  });
+  
+  // Variant selection
+  variantSelect?.addEventListener('change', function() {
+    variantIdInput.value = this.value;
+    
+    // Update price and availability based on selected variant
+    const selectedOption = this.options[this.selectedIndex];
+    const isAvailable = !selectedOption.disabled;
+    
+    if (addToCartBtn) {
+      addToCartBtn.disabled = !isAvailable;
+      addToCartBtn.textContent = isAvailable ? 'ADD TO CART' : 'SOLD OUT';
+      addToCartBtn.className = isAvailable ? 
+        'w-full bg-white text-black py-6 font-black text-xl transition-colors hover:bg-gray-200 mb-6' :
+        'w-full bg-gray-600 text-white py-6 font-black text-xl cursor-not-allowed';
+    }
+  });
+  
+  // Add to cart form submission
+  form?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const originalText = addToCartBtn.textContent;
+    
+    addToCartBtn.textContent = 'ADDING...';
+    addToCartBtn.disabled = true;
+    
+    fetch('/cart/add.js', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Update cart count
+      fetch('/cart.js')
+        .then(response => response.json())
+        .then(cart => {
+          const cartBadge = document.querySelector('header span');
+          if (cartBadge) {
+            cartBadge.textContent = cart.item_count;
+            cartBadge.style.transform = 'scale(1.3)';
+            cartBadge.style.background = '#22c55e';
+            setTimeout(() => {
+              cartBadge.style.transform = 'scale(1)';
+              cartBadge.style.background = 'white';
+            }, 300);
+          }
+        });
+      
+      addToCartBtn.textContent = 'ADDED!';
+      addToCartBtn.style.background = '#22c55e';
+      addToCartBtn.style.color = 'white';
+      
+      setTimeout(() => {
+        addToCartBtn.textContent = originalText;
+        addToCartBtn.style.background = 'white';
+        addToCartBtn.style.color = 'black';
+        addToCartBtn.disabled = false;
+      }, 2000);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      addToCartBtn.textContent = 'ERROR';
+      addToCartBtn.style.background = '#ef4444';
+      
+      setTimeout(() => {
+        addToCartBtn.textContent = originalText;
+        addToCartBtn.style.background = 'white';
+        addToCartBtn.style.color = 'black';
+        addToCartBtn.disabled = false;
+      }, 2000);
+    });
+  });
+});
+
+function changeMainImage(imageUrl) {
+  document.getElementById('main-product-image').src = imageUrl;
+}
+
+function buyNow() {
+  const form = document.getElementById('product-form');
+  const formData = new FormData(form);
+  
+  fetch('/cart/add.js', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    window.location.href = '/cart';
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+</script>
