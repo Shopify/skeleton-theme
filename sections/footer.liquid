@@ -1,40 +1,70 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
+<footer class="footer">
+  <section class="footer__content">
+    <div class="footer__copyright">
+      &copy; {{ 'now' | date: '%Y' }} {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
+      <span class="footer__designed-by">
+        Website designed by:
+        <a href="https://www.yourdesignagency.com" target="_blank" class="footer__agency-link">
+          <img src="{{ 'Scm Footer Logo.svg' | asset_url }}" alt="Your Design Agency Logo" class="footer__agency-logo" height="20" width="20">
+        </a>
+      </span>
+    </div>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
-
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
+    <div class="footer__links">
+      {% for link in section.settings.menu.links %}
+        {{ link.title | link_to: link.url }}
       {% endfor %}
-    {% endif %}
-  </div>
+    </div>
+
+    <div class="footer__payment">
+      {% if section.settings.show_payment_icons %}
+        {% for type in shop.enabled_payment_types %}
+          {{ type | payment_type_svg_tag }}
+        {% endfor %}
+      {% endif %}
+    </div>
+  </section>
 </footer>
 
 {% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-  }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  footer .footer__links,
-  footer .footer__payment {
-    display: flex;
-    gap: 1rem;
-  }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --green: #1c4219;
+  --grey: #d0ccd0;
+  --white: #fbfcff;
+  --blue: #1c6e8c;
+  --black: #000;
+  --heading-font: "Futura Book", sans-serif;
+  --body-font: "Elgian", serif;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+footer a {
+  text-decoration: none;
+  color: var(--blue);
+}
+footer .footer__links,
+footer .footer__payment {
+  display: flex;
+  gap: 1rem;
+}
+.footer__designed-by {
+  margin-left: 1rem;
+  display: inline-flex;
+  align-items: center;
+}
+.footer__agency-logo {
+  height: 20px;
+  margin-left: 0.5rem;
+}
 {% endstylesheet %}
 
 {% schema %}
