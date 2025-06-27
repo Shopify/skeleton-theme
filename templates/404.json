@@ -9,35 +9,12 @@
  */
 {
   "sections": {
-    "hero_cA9KDQ": {
-      "type": "hero",
-      "name": "Hero banner",
-      "settings": {
-        "title_left": "LOOKS",
-        "title_right": "MAX",
-        "subtitle": "PURIFY. BALANCE. GLOW.",
-        "description": "No bullshit skincare that actually works. From budget essentials to premium weapons. Build your arsenal.",
-        "hero_image": "shopify://shop_images/ChatGPT_Image_11_._2025_._08_36_56_eb1d81bb-aaa7-4a3a-b2aa-b52d55850d94.png"
-      }
-    },
-    "category_products_ecTGQj": {
-      "type": "category-products",
-      "name": "Category Products",
-      "settings": {
-        "heading": "SPF PROTECTION",
-        "description": "Slunce = vrásky. SPF je anti-aging zbraň č. 1, ať je léto nebo leden. Každý den, bro.",
-        "collection": "spf",
-        "limit": 3
-      }
-    },
     "main": {
       "type": "404",
       "settings": {}
     }
   },
   "order": [
-    "hero_cA9KDQ",
-    "category_products_ecTGQj",
     "main"
   ]
 }

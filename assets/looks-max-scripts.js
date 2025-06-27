@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize all functionality
     initAddToCart();
-    initQuantityControls();
     initSmoothScrolling();
     initMobileMenu();
     initSearchFunctionality();
@@ -59,40 +58,6 @@ function initAddToCart() {
                     this.className = originalClasses;
                     this.disabled = false;
                 }, 2000);
-            });
-        }
-    });
-}
-
-// Quantity Control Functionality
-function initQuantityControls() {
-    document.querySelectorAll('button').forEach(button => {
-        if (button.textContent === '+' || button.textContent === '-') {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const quantitySpan = button.textContent === '+' ? 
-                    button.previousElementSibling : 
-                    button.nextElementSibling;
-                
-                let quantity = parseInt(quantitySpan.textContent);
-                
-                if (button.textContent === '+') {
-                    quantity++;
-                    // Add animation
-                    quantitySpan.style.transform = 'scale(1.1)';
-                } else if (quantity > 1) {
-                    quantity--;
-                    // Add animation
-                    quantitySpan.style.transform = 'scale(0.9)';
-                }
-                
-                quantitySpan.textContent = quantity;
-                
-                // Reset animation
-                setTimeout(() => {
-                    quantitySpan.style.transform = 'scale(1)';
-                }, 150);
             });
         }
     });

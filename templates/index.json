@@ -1,0 +1,52 @@
+{
+  "sections": {
+    "hero_cA9KDQ": {
+      "type": "hero",
+      "name": "Hero banner",
+      "settings": {
+        "title_left": "LOOKS",
+        "title_right": "MAX",
+        "subtitle": "PURIFY. BALANCE. GLOW.",
+        "description": "No bullshit skincare that actually works. From budget essentials to premium weapons. Build your arsenal.",
+        "hero_image": "shopify://shop_images/ChatGPT_Image_11_._2025_._08_36_56_eb1d81bb-aaa7-4a3a-b2aa-b52d55850d94.png"
+      }
+    },
+    "category_products_3cKhnN": {
+      "type": "category-products",
+      "custom_css": [],
+      "name": "Category Products",
+      "settings": {
+        "heading": "{{ section.settings.collection.title }}",
+        "description": "Tvář není polštář. V noci se mastíš, takže ráno to chce smýt, jinak se leskneš jak fritovaný řízek.",
+        "collection": "cleansers",
+        "limit": 3
+      }
+    },
+    "category_products_ecTGQj": {
+      "type": "category-products",
+      "name": "Category Products",
+      "settings": {
+        "heading": "SPF PROTECTION",
+        "description": "Slunce = vrásky. SPF je anti-aging zbraň č. 1, ať je léto nebo leden. Každý den, bro.",
+        "collection": "spf",
+        "limit": 3
+      }
+    },
+    "category_products_twxE63": {
+      "type": "category-products",
+      "name": "Category Products",
+      "settings": {
+        "heading": "{{ section.settings.collection.title }}",
+        "description": "Slunce = vrásky. SPF je anti-aging zbraň č. 1, ať je léto nebo leden. Každý den, bro.",
+        "collection": "moisturizing-day-night",
+        "limit": 3
+      }
+    }
+  },
+  "order": [
+    "hero_cA9KDQ",
+    "category_products_3cKhnN",
+    "category_products_ecTGQj",
+    "category_products_twxE63"
+  ]
+}

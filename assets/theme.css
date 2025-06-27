@@ -27,6 +27,9 @@
 .top-full {
   top: 100%;
 }
+.z-2 {
+  z-index: 2;
+}
 .z-10 {
   z-index: 10;
 }
@@ -80,6 +83,9 @@
 }
 .max-w-none {
   max-width: none;
+}
+.flex-grow {
+  flex-grow: 1;
 }
 .-translate-y-1\/2 {
   --tw-translate-y: calc(calc(1/2 * 100%) * -1);

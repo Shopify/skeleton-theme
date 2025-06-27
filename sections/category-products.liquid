@@ -27,61 +27,6 @@
   </div>
 </section>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.product-card').forEach(function(card) {
-    const mainImgs = card.querySelectorAll('.product-main-img');
-    const thumbs = card.querySelectorAll('.product-thumb-img');
-    if (thumbs.length > 0) {
-      thumbs.forEach(function(thumb, idx) {
-        thumb.addEventListener('click', function() {
-          mainImgs.forEach((img, i) => {
-            img.style.opacity = (i === idx) ? '1' : '0';
-          });
-          thumbs.forEach((t, i) => {
-            t.classList.toggle('border-purple-500', i === idx);
-          });
-        });
-      });
-      // Set first thumb as active
-      thumbs[0].classList.add('border-purple-500');
-    }
-    // Quantity controls
-    const minus = card.querySelector('.qty-minus');
-    const plus = card.querySelector('.qty-plus');
-    const qtyInput = card.querySelector('[data-qty-input]');
-    const hiddenQtyInput = card.querySelector('.hidden-qty-input');
-    if (minus && plus && qtyInput && hiddenQtyInput) {
-      minus.addEventListener('click', function() {
-        let val = parseInt(qtyInput.value) || 1;
-        if (val > 1) val--;
-        qtyInput.value = val;
-        hiddenQtyInput.value = val;
-      });
-      plus.addEventListener('click', function() {
-        let val = parseInt(qtyInput.value) || 1;
-        val++;
-        qtyInput.value = val;
-        hiddenQtyInput.value = val;
-      });
-      qtyInput.addEventListener('input', function() {
-        let val = parseInt(qtyInput.value) || 1;
-        if (val < 1) val = 1;
-        qtyInput.value = val;
-        hiddenQtyInput.value = val;
-      });
-    }
-    // On form submit, ensure hidden input is up to date
-    const form = card.querySelector('.add-to-cart-form');
-    if (form && qtyInput && hiddenQtyInput) {
-      form.addEventListener('submit', function() {
-        hiddenQtyInput.value = qtyInput.value;
-      });
-    }
-  });
-});
-</script>
-
 <style>
 input[type="number"].qty-input::-webkit-inner-spin-button,
 input[type="number"].qty-input::-webkit-outer-spin-button {

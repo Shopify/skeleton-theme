@@ -1,4 +1,4 @@
-<div class="p-8 shadow-2xl flex flex-col items-center justify-between transition-all duration-300 hover:transform hover:-translate-y-2 product-card" style="border: 1px solid #4a4a6a; background: linear-gradient(135deg, #1a1a3a 0%, #2a2a4a 100%); border-radius: 12px; max-width: 320px; min-height: 650px; margin: 0 auto;" data-product-id="{{ product.id }}">
+<div class="p-8 shadow-2xl flex flex-col justify-between items-center transition-all duration-300 hover:transform hover:-translate-y-2 product-card h-full" style="border: 1px solid #4a4a6a; background: linear-gradient(135deg, #1a1a3a 0%, #2a2a4a 100%); border-radius: 12px; max-width: 320px; min-height: 650px; margin: 0 auto;" data-product-id="{{ product.id }}">
   {% assign tag = '' %}
   {% assign tag_style = '' %}
   {% for t in product.tags %}
@@ -42,29 +42,30 @@
       {% endif %}
     </div>
   </div>
-  <h5 class="font-black text-white mb-2 text-lg heading-font text-center leading-tight">
-    <a href="{{ product.url }}">{{ product.title }}</a>
-  </h5>
-  <p class="text-purple-300 mb-3 text-base font-semibold text-center leading-snug" style="min-height: 4.5em;">{{ product.description | strip_html }}</p>
-  <div class="flex flex-col items-center w-full mb-3">
+  <div class="flex-grow w-full flex flex-col items-center">
+    <h5 class="font-black text-white mb-2 text-lg heading-font text-center leading-tight">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h5>
+    <p class="text-purple-300 mb-3 text-base font-semibold text-center leading-snug" style="min-height: 4.5em;">{{ product.description | strip_html }}</p>
+  </div>
+  <div class="w-full flex flex-col items-center mt-auto">
     <span class="price-highlight font-black mb-2">{{ product.price | money }}</span>
-    <div class="flex items-center justify-center gap-2">
+    <div class="flex items-center justify-center gap-2 mb-3">
       <button class="quantity-btn qty-minus" type="button" data-action="minus">-</button>
       <input type="number" min="1" value="1" class="w-12 text-center font-black text-lg text-white bg-transparent border-none outline-none qty-input" name="quantity" style="appearance: textfield;" data-qty-input />
       <button class="quantity-btn qty-plus" type="button" data-action="plus">+</button>
     </div>
+    <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="w-full add-to-cart-form">
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      <input type="hidden" name="quantity" value="1" class="hidden-qty-input">
+      {% if product.available %}
+        <button type="submit" class="w-full bg-white text-black py-4 font-black text-lg hover:bg-gray-200 transition-colors mb-2 add-to-cart-btn rounded-btn heading-font" style="text-transform: uppercase; letter-spacing: 0.05em;">ADD TO CART</button>
+      {% else %}
+        <button type="button" disabled class="w-full bg-gray-600 text-white py-4 font-black text-lg cursor-not-allowed rounded-btn heading-font" style="text-transform: uppercase; letter-spacing: 0.05em;">SOLD OUT</button>
+      {% endif %}
+    </form>
+    <a href="{{ product.url }}" class="block text-center text-purple-300 hover:text-white transition-colors font-semibold heading-font mt-2" style="text-transform: uppercase; letter-spacing: 0.05em;">VIEW DETAILS</a>
   </div>
-  <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="w-full mt-auto add-to-cart-form">
-    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-    <input type="hidden" name="quantity" value="1" class="hidden-qty-input">
-    {% if product.available %}
-      <button type="submit" class="w-full bg-white text-black py-4 font-black text-lg hover:bg-gray-200 transition-colors mb-2 add-to-cart-btn rounded-btn heading-font" style="text-transform: uppercase; letter-spacing: 0.05em;">ADD TO CART</button>
-    {% else %}
-      <button type="button" disabled class="w-full bg-gray-600 text-white py-4 font-black text-lg cursor-not-allowed rounded-btn heading-font" style="text-transform: uppercase; letter-spacing: 0.05em;">SOLD OUT</button>
-    {% endif %}
-  </form>
-  <a href="{{ product.url }}" class="block text-center text-purple-300 hover:text-white transition-colors font-semibold heading-font" style="text-transform: uppercase; letter-spacing: 0.05em;">VIEW DETAILS</a>
-
   <style>
     input[type="number"].qty-input::-webkit-inner-spin-button,
     input[type="number"].qty-input::-webkit-outer-spin-button {
@@ -75,59 +76,4 @@
       -moz-appearance: textfield;
     }
   </style>
-
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.product-card').forEach(function(card) {
-      const mainImgs = card.querySelectorAll('.product-main-img');
-      const thumbs = card.querySelectorAll('.product-thumb-img');
-      if (thumbs.length > 0) {
-        thumbs.forEach(function(thumb, idx) {
-          thumb.addEventListener('click', function() {
-            mainImgs.forEach((img, i) => {
-              img.style.opacity = (i === idx) ? '1' : '0';
-            });
-            thumbs.forEach((t, i) => {
-              t.classList.toggle('border-purple-500', i === idx);
-            });
-          });
-        });
-        // Set first thumb as active
-        thumbs[0].classList.add('border-purple-500');
-      }
-      // Quantity controls
-      const minus = card.querySelector('.qty-minus');
-      const plus = card.querySelector('.qty-plus');
-      const qtyInput = card.querySelector('[data-qty-input]');
-      const hiddenQtyInput = card.querySelector('.hidden-qty-input');
-      if (minus && plus && qtyInput && hiddenQtyInput) {
-        minus.addEventListener('click', function() {
-          let val = parseInt(qtyInput.value) || 1;
-          if (val > 1) val--;
-          qtyInput.value = val;
-          hiddenQtyInput.value = val;
-        });
-        plus.addEventListener('click', function() {
-          let val = parseInt(qtyInput.value) || 1;
-          val++;
-          qtyInput.value = val;
-          hiddenQtyInput.value = val;
-        });
-        qtyInput.addEventListener('input', function() {
-          let val = parseInt(qtyInput.value) || 1;
-          if (val < 1) val = 1;
-          qtyInput.value = val;
-          hiddenQtyInput.value = val;
-        });
-      }
-      // On form submit, ensure hidden input is up to date
-      const form = card.querySelector('.add-to-cart-form');
-      if (form && qtyInput && hiddenQtyInput) {
-        form.addEventListener('submit', function() {
-          hiddenQtyInput.value = qtyInput.value;
-        });
-      }
-    });
-  });
-  </script>
 </div>
