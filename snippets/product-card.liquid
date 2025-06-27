@@ -22,11 +22,11 @@
     </div>
   {% endif %}
   <div class="relative w-full flex flex-col items-center">
-    <div class="main-image w-full h-56 flex items-center justify-center rounded-xl overflow-hidden mb-2 relative z-20" id="main-image-{{ product.id }}">
+    <div class="main-image w-full h-72 flex items-center justify-center rounded-xl overflow-hidden mb-2 relative z-20" style="height: 20rem;" id="main-image-{{ product.id }}">
       {% assign media = product.media | where: 'media_type', 'image' %}
       {% if media.size > 0 %}
         {% for image in media %}
-          <img src="{{ image | img_url: '400x400' }}" alt="{{ product.title }}" class="product-main-img object-contain w-full h-full absolute left-0 top-0 transition-opacity duration-300 {% if forloop.first %}opacity-100{% else %}opacity-0{% endif %}" data-img-index="{{ forloop.index0 }}" />
+          <img src="{{ image | img_url: '400x400' }}" alt="{{ product.title }}" class="product-main-img object-contain w-full h-full absolute left-0 top-0 transition-opacity duration-300 {% if forloop.first %}opacity-100{% else %}opacity-0{% endif %}" data-img-index="{{ forloop.index0 }}" style="mask-image: linear-gradient(to bottom, black 80%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);" />
         {% endfor %}
       {% else %}
         <span class="text-5xl font-black text-white">?</span>

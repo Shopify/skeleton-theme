@@ -13,13 +13,13 @@
 }
 {% endschema %}
 
-<section class="py-20">
+<section class="py-10">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">
       <h3 class="text-6xl font-black heading-font text-white mb-6 brutal-text">{{ section.settings.heading }}</h3>
       <p class="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-bold">{{ section.settings.description }}</p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       {% for product in collections[section.settings.collection].products limit: section.settings.limit %}
         {% render 'product-card', product: product %}
       {% endfor %}
