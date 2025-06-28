@@ -1,31 +1,11 @@
-<footer class="footer">
-  <section class="footer__content">
+<footer class="footer `full-width`" >
+  <section class="footer__content 'full-width'">
       <div class="FooterBody">
-        <img src="Assets\Wordmark\Light.svg" alt="" />
         <div class="FooterBio">
-          <h2>Alastair Smith Ceramics</h2>
+          <h2>Andra's Garden Heaven</h2>
           <p>
-            I produce handcrafted ceramics and pottery for functional and
-            everyday usage. My pieces are a celebration of natural and ancient
-            techniques and materials in conjunction with modern engineering
-            methods and design principles.
+            Based in Glasgow, Andra's Garden Heaven creates beautifully handmade rattan garden furniture designed for comfort, style and durability. Rooted in a passion for craftsmanship, our mission is simple: to make the joy of relaxing in a garden accessible to all. Whether it’s a quiet morning coffee or a summer gathering, our pieces bring warmth and ease to every outdoor space.
           </p>
-        </div>
-        <div class="Browse">
-          <h2>Browse</h2>
-          <div class="BrowseItems">
-            <ul class="BrowseList">
-              <li><a class="BrowseLink" href="Index.html">Home</a></li>
-
-              <li><a class="BrowseLink" href="About.html">About</a></li>
-              <li>
-                <a class="BrowseLink" href="Process.html">Creative Process</a>
-              </li>
-              <li><a class="BrowseLink" href="Gallery.html">Gallery</a></li>
-              <li><a class="BrowseLink" href="Contact.html">Contact</a></li>
-              <li><a class="BrowseLink" href="#shop">Shop</a></li>
-            </ul>
-          </div>
         </div>
 
         <div class="FooterContact">
@@ -37,24 +17,21 @@
                 class="ConIcon"
                 src="../Assets\Icons\R3\Footer\Footer\BodyContent\Mail\Mail.png"
                 alt=""
+                width="50"
+                height="50"
               />
-              <a class="ContactLinks" href="Alastair.smith83@gmail.com"
-                >Alastair.smith83@gmail.com</a
+              <a class="ContactLinks"  href="Alastair.smith83@gmail.com"> 
+                Alastair.smith83@gmail.com</a
               >
             </div>
-            <div class="InfoDiv">
-              <img
-                class="ConIcon"
-                src="\Assets\Icons\R3\Footer\Footer\BodyContent\Phone\Phone.png"
-                alt=""
-              />
-              <a class="ContactLinks" href="">+44 7575 206576</a>
-            </div>
+            
             <div class="InfoDiv">
               <img
                 class="ConIcon"
                 src="\Assets\Icons\R3\Footer\Footer\BodyContent\Instagram\Instagram.png"
                 alt=""
+                width="50"
+                height="50"
               />
               <a
                 class="ContactLinks"
@@ -62,39 +39,17 @@
                 >@ alastair_smith_ceramics</a
               >
             </div>
-            <div class="InfoDiv">
-              <img
-                class="ConIcon"
-                src="\Assets/Icons/R3/Footer/Footer/BodyContent/Location/Location.png"
-                alt=""
-              /><a
-                class="ContactLinks"
-                href="https://www.google.com/maps/place/Deemouth+Artist+Studios/@57.139,-2.090451,17z/data=!3m1!4b1!4m22!1m15!4m14!1m6!1m2!1s0x48840f2d18c308b1:0x4422c056284d5a79!2sDeemouth+Artist+Studios!2m2!1d-2.0878761!2d57.1389971!1m6!1m2!1s0x48840f2d18c308b1:0x4422c056284d5a79!2sDeemouth+Artist+Studios,+S+Esplanade+E,+Aberdeen+AB11+9PB!2m2!1d-2.0878761!2d57.1389971!3m5!1s0x48840f2d18c308b1:0x4422c056284d5a79!8m2!3d57.1389971!4d-2.0878761!16s%2Fg%2F11mvmhr3n5?entry=ttu&g_ep=EgoyMDI0MTAyOS4wIKXMDSoASAFQAw%3D%3D"
-                >Unit 2C, Deemouth Business Centre, S Esplanade E, Aberdeen AB11
-                9PB</a
-              >
-            </div>
+         
           </div>
         </div>
-      </div>
-      <div class="CreatedBy">
-        <p>Website Delivered by</p>
-        <img
-          src="Images\Scm Footer Logo.svg"
-          alt="Brand logo for the Scottish Design Studio, SCM Studio"
-        />
-      </div>
-      <div class="Copyright">
-        <p>Privacy Policy</p>
-        <p>&copy Alastair Smith Ceramics 2024</p>
       </div>
 
     <div class="footer__copyright">
       &copy; {{ 'now' | date: '%Y' }} {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
       <span class="footer__designed-by">
         Website designed by:
-        <a href="https://www.yourdesignagency.com" target="_blank" class="footer__agency-link">
-          <img src="{{ 'Scm Footer Logo.svg' | asset_url }}" alt="Your Design Agency Logo" class="footer__agency-logo" height="20" width="20">
+        <a href="https://scmdesign.studio" target="_blank" class="footer__agency-link">
+          <img src="{{ 'Scm Footer Logo.svg' | asset_url }}" alt="SCM Design Studio Logo" class="footer__agency-logo" height="50" width="50">
         </a>
       </span>
     </div>
@@ -131,29 +86,65 @@
   --body-font: "Elgian", serif;
 }
 
-footer {
+.footer {
+  background-color: var(--green900);
+  color: var(--white);
+  text-align: center;
+  border-top: var(--white);
+  border-width: 1rem;
+  border-style: solid none none none;
+}
+.footer__content {
+  min-width: 100vw;
+  min-height: 90vh;
+  margin: 0 auto;
   display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.FooterContact{
+  padding-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+
+}
+.ContactLinks{
+  text-decoration: none;
+  color: var(--white);
+}
+.InfoDiv{
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.ConIcon{
+  width: 50px;
+  height: 50px;
 }
 footer a {
   text-decoration: none;
-  color: var(--blue);
+  color: var(--grey);
 }
-footer .footer__links,
-footer .footer__payment {
+.footer__links{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.footer__payment{
   display: flex;
   gap: 1rem;
 }
 .footer__designed-by {
-  margin-left: 1rem;
   display: inline-flex;
   align-items: center;
 }
 .footer__agency-logo {
-  height: 20px;
-  margin-left: 0.5rem;
-}
+  height: 50px;
+  width: 50px;}
 {% endstylesheet %}
 
 {% schema %}

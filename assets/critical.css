@@ -70,7 +70,7 @@ p {
 }
 a {
   text-decoration: none;
-  color: var(--black);
+  color: var(--white);
 }
 
 a:hover {
@@ -104,8 +104,10 @@ p:empty {
 /** Theme styles below */
 body {
   font-family: var(--body-font);
-  background-color: var(--green);
-  color: var(--white);
+  background-color: var(--grey);
+  color: var(--green);
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /** Section layout utilities */
@@ -129,7 +131,6 @@ body {
   --content-margin: minmax(var(--page-margin), 1fr);
   --content-grid: var(--content-margin) var(--content-width)
     var(--content-margin);
-
   /* This is required to make <img> elements work as background images */
   position: relative;
   grid-template-columns: var(--content-grid);
@@ -151,4 +152,14 @@ body {
 
 .section-title {
   color: var(--grey);
+}
+
+/* Product Grid */
+
+.product-grid {
+  background-color: var(--grey);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
 }

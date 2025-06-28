@@ -21,7 +21,7 @@
   backdrop-filter: blur(10px);
   border: 2px solid var(--green);
   border-top: none;
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 1rem 1rem;
   margin: 0 20px;
 }
 
@@ -37,9 +37,9 @@
 .nav-text {
   color: var(--white);
   font-family: var(--heading-font);
-  font-size: 14px;
+  font-size: 1rem;
   font-weight: 500;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
 
 .search-icon {
@@ -103,7 +103,7 @@
   max-width: 90%;
   width: 350px;
   height: auto;
-  margin-bottom: 3rem;
+  margin-top: 5rem;
   filter: brightness(0) invert(1);
 }
 
