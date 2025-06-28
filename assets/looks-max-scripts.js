@@ -14,53 +14,111 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 
-// Add to Cart Functionality
+// Add to Cart Functionality with real Shopify integration
 function initAddToCart() {
+    console.log('Initializing add to cart functionality...');
     document.querySelectorAll('button').forEach(button => {
         if (button.textContent.includes('ADD TO CART')) {
+            console.log('Found ADD TO CART button:', button);
             button.addEventListener('click', function(e) {
                 e.preventDefault();
+                console.log('Add to cart button clicked');
                 
                 const originalText = this.textContent;
                 const originalClasses = this.className;
                 
                 // Change button state
-                this.textContent = 'ADDED!';
-                this.className = this.className.replace('bg-white text-black', 'bg-green-500 text-white');
+                this.textContent = 'ADDING...';
+                this.className = this.className.replace('bg-white text-black', 'bg-yellow-500 text-white');
                 this.disabled = true;
                 
-                // Add product to cart (you'll need to integrate with Shopify cart)
-                const productCard = this.closest('.product-card');
-                const productName = productCard.querySelector('h5').textContent;
-                const productPrice = productCard.querySelector('.price-highlight').textContent;
-                const quantity = parseInt(productCard.querySelector('.w-16').textContent);
+                // Get product data from the form
+                const form = this.closest('.add-to-cart-form');
+                const variantId = form.querySelector('input[name="id"]').value;
+                const quantityInput = form.closest('.product-card').querySelector('.qty-input');
+                const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
                 
-                // Log for debugging (replace with actual cart integration)
-                console.log('Added to cart:', {
-                    name: productName,
-                    price: productPrice,
-                    quantity: quantity
+                console.log('Adding to cart:', { variantId, quantity });
+                
+                // Add to Shopify cart via AJAX
+                fetch('/cart/add.js', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: variantId,
+                        quantity: quantity
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Cart response:', data);
+                    if (data.status) {
+                        // Error occurred
+                        console.error('Error adding to cart:', data.description);
+                        this.textContent = 'ERROR';
+                        this.className = this.className.replace('bg-yellow-500 text-white', 'bg-red-500 text-white');
+                    } else {
+                        // Success
+                        this.textContent = 'ADDED!';
+                        this.className = this.className.replace('bg-yellow-500 text-white', 'bg-green-500 text-white');
+                        
+                        // Update cart counter
+                        updateCartCounter();
+                        
+                        // Show success animation
+                        this.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1)';
+                        }, 150);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.textContent = 'ERROR';
+                    this.className = this.className.replace('bg-yellow-500 text-white', 'bg-red-500 text-white');
+                })
+                .finally(() => {
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                        this.className = originalClasses;
+                        this.disabled = false;
+                    }, 2000);
                 });
-                
-                // Update cart counter
-                updateCartCounter(quantity);
-                
-                // Show success animation
-                this.style.transform = 'scale(0.95)';
-                
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                }, 150);
-                
-                // Reset button after 2 seconds
-                setTimeout(() => {
-                    this.textContent = originalText;
-                    this.className = originalClasses;
-                    this.disabled = false;
-                }, 2000);
             });
         }
     });
+}
+
+// Update cart counter dynamically
+function updateCartCounter() {
+    console.log('Updating cart counter...');
+    fetch('/cart.js')
+        .then(response => response.json())
+        .then(cart => {
+            console.log('Cart data:', cart);
+            const cartCounter = document.querySelector('a[href*="/cart"] span');
+            if (cartCounter) {
+                console.log('Updating cart counter from', cartCounter.textContent, 'to', cart.item_count);
+                cartCounter.textContent = cart.item_count;
+                
+                // Add animation
+                cartCounter.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    cartCounter.style.transform = 'scale(1)';
+                }, 200);
+            } else {
+                console.log('Cart counter element not found');
+            }
+        })
+        .catch(error => console.error('Error updating cart counter:', error));
+}
+
+// Initialize cart counter on page load
+function initCartCounter() {
+    updateCartCounter();
 }
 
 // Smooth Scrolling for Navigation

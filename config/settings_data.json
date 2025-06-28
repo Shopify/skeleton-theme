@@ -19,13 +19,30 @@
           "menu": "main-menu",
           "show_search": false,
           "show_cart": true,
+          "show_language_selector": true,
           "background_color": "#0a0a1a",
           "text_color": "#ffffff"
         }
       },
       "footer": {
         "type": "footer",
-        "settings": {}
+        "settings": {
+          "logo": "shopify://shop_images/ChatGPT_Image_11_._2025_._08_36_56.png",
+          "brand_name": "LOOKS MAX",
+          "description": "Your ultimate destination for premium men's skincare in Czech Republic. Purify. Balance. Glow.",
+          "twitter_url": "",
+          "instagram_url": "https://www.instagram.com/looksmax_official?igsh=MWxvZHV5NzF6MTdkbA%3D%3D&utm_source=qr",
+          "pinterest_url": "",
+          "quick_links_heading": "QUICK LINKS",
+          "quick_links": "main-menu",
+          "customer_links_heading": "CUSTOMER SERVICE",
+          "customer_links": "main-menu",
+          "newsletter_heading": "STAY UPDATED",
+          "newsletter_text": "Get the latest skincare tips and exclusive offers delivered to your inbox.",
+          "newsletter_button_text": "SUBSCRIBE",
+          "copyright_text": "All rights reserved.",
+          "legal_links": "main-menu"
+        }
       }
     },
     "content_for_index": []

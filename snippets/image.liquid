@@ -37,15 +37,20 @@
   else
     assign wrapper = 'div'
   endif
+
+  assign img_class = class | default: ''
+  unless img_class contains 'object-cover'
+    assign img_class = img_class | append: ' object-contain w-full h-full'
+  endunless
 %}
 
 <{{ wrapper }}
-  class="image {{ class }}"
+  class="image"
   {% if url %}
     href="{{ url }}"
   {% endif %}
 >
-  {{ image | image_url: width: width, height: height, crop: crop | image_tag }}
+  {{ image | image_url: width: width, height: height, crop: crop | image_tag: class: img_class }}
 </{{ wrapper }}>
 
 {% stylesheet %}

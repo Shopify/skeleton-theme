@@ -1,7 +1,36 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero_cA9KDQ": {
       "type": "hero",
+      "blocks": {
+        "cta_LFCfyw": {
+          "type": "cta",
+          "settings": {
+            "label": "SHOP ALL PRODUCTS",
+            "link": "/"
+          }
+        },
+        "cta_CewT3R": {
+          "type": "cta",
+          "settings": {
+            "label": "FIND YOUR ROUTINE",
+            "link": "/"
+          }
+        }
+      },
+      "block_order": [
+        "cta_LFCfyw",
+        "cta_CewT3R"
+      ],
       "name": "Hero banner",
       "settings": {
         "title_left": "LOOKS",

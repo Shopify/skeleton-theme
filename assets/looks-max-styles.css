@@ -186,15 +186,46 @@ button {
 
 /* Product Quantity Controls */
 .quantity-btn {
-    width: 3rem;
-    height: 3rem;
-    border: 2px solid #7c3aed;
-    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #4a4a6a;
+    color: white;
+    width: 2rem;
+    height: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.quantity-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #6a6a8a;
+}
+
+.qty-input {
     background: transparent;
+    border: none;
     color: white;
     font-weight: 900;
-    transition: background-color 0.3s ease;
+    text-align: center;
+    width: 3rem;
+    outline: none;
+}
+
+.qty-input::-webkit-inner-spin-button,
+.qty-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.qty-input {
+    -moz-appearance: textfield;
+}
+
+/* Cart Counter Animation */
+a[href*="/cart"] span {
+    transition: transform 0.2s ease-in-out;
 } 

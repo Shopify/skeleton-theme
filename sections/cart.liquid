@@ -5,33 +5,290 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
 {% endcomment %}
 
-<h1>{{ 'cart.title' | t }}</h1>
+<section class="max-w-5xl mx-auto px-4 py-16">
+  <h1 class="text-4xl font-black heading-font text-white mb-10 brutal-text">Your Cart</h1>
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+  {% if cart.item_count == 0 %}
+    <div class="bg-gray-900 rounded-xl p-10 text-center text-gray-300 text-xl font-bold shadow-lg">
+      Your cart is empty.
+      <a href="/collections/all" class="ml-2 text-purple-400 underline hover:text-purple-200">Continue shopping</a>
+    </div>
+  {% else %}
+    <form action="{{ routes.cart_url }}" method="post" novalidate>
+      <div class="flex flex-col gap-8">
+        {% for item in cart.items %}
+          <div class="flex flex-col md:flex-row items-center bg-gray-900 rounded-2xl shadow-lg p-6 gap-6 relative" data-cart-item-key="{{ item.key }}">
+            <div class="flex-shrink-0 w-32 md:w-36 p-2 bg-gray-800 rounded-2xl shadow-lg">
+                <img
+                  src="{{ item.image | img_url: '300x' }}"
+                  alt="{{ item.title }}"
+                  class="w-full h-auto object-contain"
+                >
+              </div>
+            <div class="flex-1 flex flex-col justify-between min-w-0">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                <div>
+                  <a href="{{ item.url }}" class="text-xl font-black text-white hover:text-purple-400 heading-font">{{ item.product.title }}</a>
+                  {% if item.variant.title != 'Default Title' %}
+                    <div class="text-sm text-gray-400 font-semibold mt-1">{{ item.variant.title }}</div>
+                  {% endif %}
+                </div>
+                <div class="cart-line-price text-lg font-black text-purple-300 md:text-right">{{ item.final_line_price | money }}</div>
+              </div>
+              <div class="flex items-center gap-4 mt-4">
+                <button type="button" class="cart-remove-btn text-xs text-red-400 hover:text-red-200 font-bold px-3 py-2 rounded transition-colors bg-gray-800">Remove</button>
+                <div class="flex items-center gap-2">
+                  <button type="button" class="cart-qty-btn px-3 py-2 bg-gray-800 text-white rounded-l font-black text-lg">-</button>
+                  <input type="number" name="updates[{{ item.key }}]" value="{{ item.quantity }}" min="1" class="cart-qty w-16 text-center bg-gray-700 text-white font-black py-2 rounded outline-none" style="border-radius: 6px;" />
+                  <button type="button" class="cart-qty-btn px-3 py-2 bg-gray-800 text-white rounded-r font-black text-lg">+</button>
+                </div>
+                <span class="cart-line-each text-gray-400 text-sm ml-2">x {{ item.price | money }}</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="flex flex-col md:flex-row justify-between items-center mt-12 gap-6">
+        <div class="text-2xl font-black text-white heading-font">Subtotal: <span class="cart-subtotal text-purple-400">{{ cart.total_price | money }}</span></div>
+        <button type="submit" name="checkout" class="bg-purple-600 hover:bg-purple-500 text-white font-black text-xl px-10 py-5 rounded-btn heading-font transition-colors shadow-xl mt-4 md:mt-0">Checkout</button>
+      </div>
+    </form>
+  {% endif %}
+</section>
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Helper to format money (Shopify style)
+  function formatMoney(cents) {
+    return (cents / 100).toLocaleString('en-US', { style: 'currency', currency: '{{ cart.currency.iso_code | default: 'USD' }}' });
+  }
+
+  // Debug function to log current cart state
+  function logCartState() {
+    fetch('/cart.js')
+      .then(response => response.json())
+      .then(cart => {
+        console.log('Current cart state:', {
+          item_count: cart.item_count,
+          total_price: cart.total_price,
+          items: cart.items.map(item => ({
+            key: item.key,
+            title: item.title,
+            quantity: item.quantity
+          }))
+        });
+      })
+      .catch(error => console.error('Error getting cart state:', error));
+  }
+
+  // Update cart counter in header
+  function updateHeaderCartCounter() {
+    fetch('/cart.js')
+      .then(response => response.json())
+      .then(cart => {
+        const cartCounter = document.querySelector('a[href*="/cart"] span');
+        if (cartCounter) {
+          cartCounter.textContent = cart.item_count;
+          
+          // Add animation
+          cartCounter.style.transform = 'scale(1.2)';
+          setTimeout(() => {
+            cartCounter.style.transform = 'scale(1)';
+          }, 200);
+        }
+      })
+      .catch(error => console.error('Error updating cart counter:', error));
+  }
+
+  // Update cart UI with new data
+  function updateCartUI(cart) {
+    console.log('Updating cart UI with:', cart);
+    
+    // Update header cart counter
+    updateHeaderCartCounter();
+    
+    // If cart is empty, reload the page
+    if (cart.item_count === 0) {
+      window.location.reload();
+      return;
+    }
+    
+    // Get all current cart item rows
+    const currentRows = document.querySelectorAll('[data-cart-item-key]');
+    console.log('Current DOM rows:', currentRows.length);
+    
+    // Create a set of keys that should exist in the new cart
+    const newCartKeys = new Set(cart.items.map(item => item.key));
+    console.log('New cart keys:', Array.from(newCartKeys));
+    
+    // Check each current row
+    currentRows.forEach(function(row) {
+      const rowKey = row.getAttribute('data-cart-item-key');
+      console.log('Checking row with key:', rowKey);
+      
+      // If this row's key is not in the new cart, remove it
+      if (!newCartKeys.has(rowKey)) {
+        console.log('Removing row with key:', rowKey);
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(-100%)';
+        setTimeout(() => {
+          row.remove();
+          console.log('Row removed from DOM');
+          // If no items left, reload page
+          if (document.querySelectorAll('[data-cart-item-key]').length === 0) {
+            window.location.reload();
+          }
+        }, 300);
+      } else {
+        // Update the item's quantity and price
+        const item = cart.items.find(item => item.key === rowKey);
+        if (item) {
+          console.log('Updating row with key:', rowKey, 'quantity:', item.quantity);
+          row.querySelector('input[type="number"]').value = item.quantity;
+          row.querySelector('.cart-line-price').textContent = formatMoney(item.final_line_price);
+          row.querySelector('.cart-line-each').textContent = 'x ' + formatMoney(item.price);
+        }
+      }
+    });
+    
+    // Update subtotal
+    document.querySelector('.cart-subtotal').textContent = formatMoney(cart.total_price);
+  }
+
+  // Listen for quantity changes and remove
+  document.querySelectorAll('.cart-qty, .cart-qty-btn, .cart-remove-btn').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation(); // Prevent any parent event handlers
+      
+      console.log('Button clicked:', this.className, this.textContent);
+      
+      var row = this.closest('[data-cart-item-key]');
+      var key = row?.getAttribute('data-cart-item-key');
+      var input = row?.querySelector('input[type="number"]');
+      var originalText = this.textContent; // Declare here for scope
+      
+      console.log('Row found:', row);
+      console.log('Key found:', key);
+      console.log('Input found:', input);
+      
+      if (!key) {
+        console.error('No cart item key found');
+        return;
+      }
+      
+      var qty = parseInt(input?.value) || 1;
+      console.log('Initial quantity:', qty);
+      
+      // Handle different button types
+      if (this.classList.contains('cart-qty-btn')) {
+        if (this.textContent.trim() === '+') {
+          qty++;
+        } else if (qty > 1) {
+          qty--;
+        }
+        console.log('Quantity button - new qty:', qty);
+      } else if (this.classList.contains('cart-remove-btn')) {
+        qty = 0;
+        console.log('Remove button clicked - setting qty to 0 for key:', key);
+        
+        // Log cart state before removal
+        console.log('Cart state BEFORE removal:');
+        logCartState();
+        
+        // Add visual feedback
+        this.textContent = 'REMOVING...';
+        this.disabled = true;
+        this.style.opacity = '0.7';
+      }
+      
+      console.log('Sending cart update with qty:', qty, 'for key:', key);
+      
+      // Update cart via AJAX
+      fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ updates: { [key]: qty } })
+      })
+      .then(res => {
+        console.log('Response status:', res.status);
+        return res.json();
+      })
+      .then(data => {
+        console.log('Cart update response:', data);
+        console.log('Cart item count after update:', data.item_count);
+        
+        // Log cart state after removal
+        if (this.classList.contains('cart-remove-btn')) {
+          console.log('Cart state AFTER removal:');
+          logCartState();
+        }
+        
+        updateCartUI(data);
+        
+        // Reset button state if it was a remove button
+        if (this.classList.contains('cart-remove-btn')) {
+          this.textContent = originalText;
+          this.disabled = false;
+          this.style.opacity = '1';
+        }
+      })
+      .catch(error => {
+        console.error('Error updating cart:', error);
+        
+        // Reset button state on error
+        if (this.classList.contains('cart-remove-btn')) {
+          this.textContent = originalText;
+          this.disabled = false;
+          this.style.opacity = '1';
+        }
+      });
+    });
+  });
+  
+  // Listen for manual input change
+  document.querySelectorAll('.cart-qty').forEach(function(input) {
+    input.addEventListener('change', function(e) {
+      var key = this.closest('[data-cart-item-key]')?.getAttribute('data-cart-item-key');
+      var qty = parseInt(this.value);
+      if (!key || isNaN(qty) || qty < 1) return;
+      fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ updates: { [key]: qty } })
+      })
+      .then(res => res.json())
+      .then(data => updateCartUI(data));
+      e.preventDefault();
+    });
+  });
+});
+</script>
+
+<style>
+input[type="number"].cart-qty::-webkit-inner-spin-button,
+input[type="number"].cart-qty::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"].cart-qty {
+  -moz-appearance: textfield;
+}
+
+/* Cart item removal animation */
+[data-cart-item-key] {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Cart counter animation */
+a[href*="/cart"] span {
+  transition: transform 0.2s ease-in-out;
+}
+</style>
 
 {% schema %}
 {
-  "name": "t:general.cart",
+  "name": "Modern Cart",
   "settings": []
 }
 {% endschema %}

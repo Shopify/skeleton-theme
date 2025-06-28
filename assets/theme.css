@@ -78,6 +78,9 @@
 .aspect-square {
   aspect-ratio: 1 / 1;
 }
+.h-auto {
+  height: auto;
+}
 .h-full {
   height: 100%;
 }
@@ -89,6 +92,12 @@
 }
 .max-w-none {
   max-width: none;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-shrink-0 {
+  flex-shrink: 0;
 }
 .flex-grow {
   flex-grow: 1;
@@ -224,6 +233,9 @@
 .line-through {
   text-decoration-line: line-through;
 }
+.underline {
+  text-decoration-line: underline;
+}
 .opacity-0 {
   opacity: 0%;
 }
@@ -235,6 +247,10 @@
 }
 .opacity-100 {
   opacity: 100%;
+}
+.outline {
+  outline-style: var(--tw-outline-style);
+  outline-width: 1px;
 }
 .filter {
   filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
@@ -459,6 +475,11 @@ body {
   inherits: false;
   initial-value: 100%;
 }
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
 @property --tw-blur {
   syntax: "*";
   inherits: false;
@@ -573,6 +594,7 @@ body {
       --tw-gradient-from-position: 0%;
       --tw-gradient-via-position: 50%;
       --tw-gradient-to-position: 100%;
+      --tw-outline-style: solid;
       --tw-blur: initial;
       --tw-brightness: initial;
       --tw-contrast: initial;
