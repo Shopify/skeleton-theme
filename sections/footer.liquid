@@ -1,7 +1,7 @@
 <footer class="footer `full-width`" >
   <section class="footer__content 'full-width'">
       <div class="FooterBody">
-        <div class="FooterBio">
+<img class="FooterLogo" src="{{ 'AGH Logo GreenAsset 1@4x.png' | asset_url }}" alt="Andra's Garden Heaven Logo, designed by SCM Design Studio. 2025. Glasgow" width="500" height="500" style="border-radius: 50%;">        <div class="FooterBio">
           <h2>Andra's Garden Heaven</h2>
           <p>
             Based in Glasgow, Andra's Garden Heaven creates beautifully handmade rattan garden furniture designed for comfort, style and durability. Rooted in a passion for craftsmanship, our mission is simple: to make the joy of relaxing in a garden accessible to all. Whether it’s a quiet morning coffee or a summer gathering, our pieces bring warmth and ease to every outdoor space.
@@ -15,10 +15,10 @@
             <div class="InfoDiv">
               <img
                 class="ConIcon"
-                src="../Assets\Icons\R3\Footer\Footer\BodyContent\Mail\Mail.png"
+                src="{{'EmailIcon.svg' | asset_url }}"
                 alt=""
-                width="50"
-                height="50"
+                width="32"
+                height="32"
               />
               <a class="ContactLinks"  href="Alastair.smith83@gmail.com"> 
                 Alastair.smith83@gmail.com</a
@@ -28,10 +28,10 @@
             <div class="InfoDiv">
               <img
                 class="ConIcon"
-                src="\Assets\Icons\R3\Footer\Footer\BodyContent\Instagram\Instagram.png"
+                src="{{ 'IGicon.svg' | asset_url }}"
                 alt=""
-                width="50"
-                height="50"
+                width="32"
+                height="32"
               />
               <a
                 class="ContactLinks"
@@ -102,6 +102,23 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.FooterBody{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding-top: 3rem;
+}
+.FooterBio{
+  padding-top: 3rem;
+  display: flex;
+  max-width: 30rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
 }
 .FooterContact{
   padding-top: 3rem;
