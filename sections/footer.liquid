@@ -1,55 +1,70 @@
-<footer class="footer `full-width`" >
+<footer class="footer full-width">
   <section class="footer__content 'full-width'">
-      <div class="FooterBody">
-<img class="FooterLogo" src="{{ 'AGH Logo GreenAsset 1@4x.png' | asset_url }}" alt="Andra's Garden Heaven Logo, designed by SCM Design Studio. 2025. Glasgow" width="500" height="500" style="border-radius: 50%;">        <div class="FooterBio">
-          <h2>Andra's Garden Heaven</h2>
-          <p>
-            Based in Glasgow, Andra's Garden Heaven creates beautifully handmade rattan garden furniture designed for comfort, style and durability. Rooted in a passion for craftsmanship, our mission is simple: to make the joy of relaxing in a garden accessible to all. Whether it’s a quiet morning coffee or a summer gathering, our pieces bring warmth and ease to every outdoor space.
-          </p>
-        </div>
+    <div class="FooterBody">
+      <img
+        class="FooterLogo"
+        src="{{ 'AGH Logo GreenAsset 1@4x.png' | asset_url }}"
+        alt="Andra's Garden Heaven Logo, designed by SCM Design Studio. 2025. Glasgow"
+        width="500"
+        height="500"
+        style="border-radius: 50%;"
+      >
+      <div class="FooterBio">
+        <h2>Andra's Garden Heaven</h2>
+        <p>
+          Based in Glasgow, Andra's Garden Heaven creates beautifully handmade rattan garden furniture designed for
+          comfort, style and durability. Rooted in a passion for craftsmanship, our mission is simple: to make the joy
+          of relaxing in a garden accessible to all. Whether it’s a quiet morning coffee or a summer gathering, our
+          pieces bring warmth and ease to every outdoor space.
+        </p>
+      </div>
 
-        <div class="FooterContact">
-          <h2>Contact</h2>
+      <div class="FooterContact">
+        <h2>Contact</h2>
 
-          <div class="ContactInfo">
-            <div class="InfoDiv">
-              <img
-                class="ConIcon"
-                src="{{'EmailIcon.svg' | asset_url }}"
-                alt=""
-                width="32"
-                height="32"
-              />
-              <a class="ContactLinks"  href="Alastair.smith83@gmail.com"> 
-                Alastair.smith83@gmail.com</a
-              >
-            </div>
-            
-            <div class="InfoDiv">
-              <img
-                class="ConIcon"
-                src="{{ 'IGicon.svg' | asset_url }}"
-                alt=""
-                width="32"
-                height="32"
-              />
-              <a
-                class="ContactLinks"
-                href="https://www.instagram.com/alastair_smith_ceramics/"
-                >@ alastair_smith_ceramics</a
-              >
-            </div>
-         
+        <div class="ContactInfo">
+          <div class="InfoDiv">
+            <img
+              class="ConIcon"
+              src="{{'EmailIcon.svg' | asset_url }}"
+              alt=""
+              width="16"
+              height="16"
+            >
+            <a class="ContactLinks" href="Alastair.smith83@gmail.com"> Alastair.smith83@gmail.com</a>
+          </div>
+
+          <div class="InfoDiv">
+            <img
+              class="ConIcon"
+              src="{{ 'IGicon.svg' | asset_url }}"
+              alt=""
+              width="16"
+              height="16"
+            >
+            <a
+              class="ContactLinks"
+              href="https://www.instagram.com/alastair_smith_ceramics/"
+              >@ alastair_smith_ceramics</a
+            >
           </div>
         </div>
       </div>
+    </div>
 
     <div class="footer__copyright">
-      &copy; {{ 'now' | date: '%Y' }} {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
+      &copy; {{ 'now' | date: '%Y' }}
+      {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
       <span class="footer__designed-by">
         Website designed by:
         <a href="https://scmdesign.studio" target="_blank" class="footer__agency-link">
-          <img src="{{ 'Scm Footer Logo.svg' | asset_url }}" alt="SCM Design Studio Logo" class="footer__agency-logo" height="50" width="50">
+          <img
+            src="{{ 'Scm Footer Logo.svg' | asset_url }}"
+            alt="SCM Design Studio Logo"
+            class="footer__agency-logo"
+            height="100"
+            width="100"
+          >
         </a>
       </span>
     </div>
@@ -71,97 +86,103 @@
 </footer>
 
 {% stylesheet %}
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-:root {
-  --green: #1c4219;
-  --grey: #d0ccd0;
-  --white: #fbfcff;
-  --blue: #1c6e8c;
-  --black: #000;
-  --heading-font: "Futura Book", sans-serif;
-  --body-font: "Elgian", serif;
-}
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  :root {
+    --green: #1c4219;
+    --grey: #d0ccd0;
+    --white: #fbfcff;
+    --blue: #1c6e8c;
+    --black: #000;
+    --heading-font: 'Futura Book', sans-serif;
+    --body-font: 'Elgian', serif;
+  }
 
-.footer {
-  background-color: var(--green900);
-  color: var(--white);
-  text-align: center;
-  border-top: var(--white);
-  border-width: 1rem;
-  border-style: solid none none none;
-}
-.footer__content {
-  min-width: 100vw;
-  min-height: 90vh;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.FooterBody{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  padding-top: 3rem;
-}
-.FooterBio{
-  padding-top: 3rem;
-  display: flex;
-  max-width: 30rem;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-}
-.FooterContact{
-  padding-top: 3rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-
-}
-.ContactLinks{
-  text-decoration: none;
-  color: var(--white);
-}
-.InfoDiv{
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-.ConIcon{
-  width: 50px;
-  height: 50px;
-}
-footer a {
-  text-decoration: none;
-  color: var(--grey);
-}
-.footer__links{
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.footer__payment{
-  display: flex;
-  gap: 1rem;
-}
-.footer__designed-by {
-  display: inline-flex;
-  align-items: center;
-}
-.footer__agency-logo {
-  height: 50px;
-  width: 50px;}
+  .footer {
+    background-color: var(--green900);
+    color: var(--white);
+    text-align: center;
+    border-top: var(--white);
+    border-width: 1rem;
+    border-style: solid none none none;
+  }
+  .footer__content {
+    min-width: 100vw;
+    min-height: 90vh;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .FooterBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding-top: 3rem;
+  }
+  .FooterBio {
+    padding-top: 3rem;
+    display: flex;
+    max-width: 30rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  .FooterContact {
+    padding-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    font-family: var(--heading-font);
+  }
+  .ContactLinks {
+    text-decoration: none;
+    color: var(--white);
+    transition: 0.3s ease-in-out;
+  }
+  .ContactLinks:hover {
+    color: var(--blue);
+    scale: 1.1;
+  }
+  .InfoDiv {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .ConIcon {
+    width: 16px;
+    height: 16px;
+  }
+  footer a {
+    text-decoration: none;
+    color: var(--grey);
+  }
+  .footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .footer__payment {
+    display: flex;
+    gap: 1rem;
+  }
+  .footer__designed-by {
+    display: inline-flex;
+    align-items: center;
+  }
+  .footer__agency-logo {
+    height: 50px;
+    width: 50px;
+  }
 {% endstylesheet %}
 
 {% schema %}

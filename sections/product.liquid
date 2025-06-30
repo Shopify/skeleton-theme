@@ -1,50 +1,606 @@
 {% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
-
+  AGH Product Template - Enhanced with brand styling
+  This section renders product page with media, content, and add-to-cart form.
   https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+<style>
+  /* AGH Brand Colors */
+  :root {
+    --pakistan-green: #1c4219;
+    --french-grey: #d0ccd0;
+    --white: #fbfcff;
+    --cerulean: #1c6e8c;
+    --black: #000000;
+  }
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+  /* Typography - Fallbacks for web fonts */
+  .futura-text {
+    font-family: 'Futura', 'Futura-Book', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+  }
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+  .elgian-text {
+    font-family: 'Elgian', Georgia, serif;
+    font-weight: 400;
+  }
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
+  /* Product Page Container */
+  .agh-product-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    color: var(--black);
+    background: var(--white);
+  }
+
+  /* Product Hero Section */
+  .product-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 4rem;
+  }
+
+  /* Product Images */
+  .product-images-container {
+    position: relative;
+  }
+
+  .product-images {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(28, 66, 25, 0.1);
+  }
+
+  .product-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* Square aspect ratio */
+    display: none;
+  }
+
+  .product-image-wrapper:first-child {
+    display: block;
+  }
+
+  .product-image-wrapper.active {
+    display: block;
+  }
+
+  .product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .product-image:hover {
+    transform: scale(1.05);
+  }
+
+  /* Image Thumbnails */
+  .image-thumbnails {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .thumbnail-btn {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+
+  .thumbnail-btn:hover,
+  .thumbnail-btn.active {
+    border-color: var(--pakistan-green);
+  }
+
+  .thumbnail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Product Details */
+  .product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .product-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin: 0;
+    color: var(--pakistan-green);
+  }
+
+  .price-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+
+  .price-regular {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--pakistan-green);
+  }
+
+  .price-sale {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #e74c3c;
+  }
+
+  .price-compare {
+    font-size: 1.2rem;
+    color: var(--french-grey);
+    text-decoration: line-through;
+  }
+
+  .product-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--black);
+    margin: 1rem 0;
+  }
+
+  /* Product Form */
+  .product-form-container {
+    background: var(--white);
+    border: 1px solid var(--french-grey);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(28, 66, 25, 0.05);
+  }
+
+  .variant-selector,
+  .quantity-selector {
+    margin-bottom: 1.5rem;
+  }
+
+  .variant-selector label,
+  .quantity-selector label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--pakistan-green);
+  }
+
+  .variant-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--french-grey);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background: var(--white);
+    transition: border-color 0.2s ease;
+  }
+
+  .variant-select:focus {
+    outline: none;
+    border-color: var(--pakistan-green);
+  }
+
+  /* Quantity Controls */
+  .quantity-controls {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    border: 2px solid var(--french-grey);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .quantity-btn {
+    background: var(--french-grey);
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--pakistan-green);
+    transition: background-color 0.2s ease;
+  }
+
+  .quantity-btn:hover {
+    background: var(--pakistan-green);
+    color: var(--white);
+  }
+
+  .quantity-input {
+    border: none;
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    font-size: 1rem;
+    background: var(--white);
+  }
+
+  .quantity-input:focus {
+    outline: none;
+  }
+
+  /* Add to Cart Button */
+  .add-to-cart-section {
+    margin-top: 2rem;
+  }
+
+  .add-to-cart-btn {
+    width: 100%;
+    background: var(--pakistan-green);
+    position: relative;
+    overflow: hidden;
+    color: var(--white);
+  }
+
+  .add-to-cart-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, #1c4219 0%, #2d5a3d 20%, #1a7431 40%, #0f5132 60%, #2d5a3d 80%, #1c4219 100%);
+    -webkit-animation: gradientRotate 8s linear infinite;
+    -moz-animation: gradientRotate 8s linear infinite;
+    -ms-animation: gradientRotate 8s linear infinite;
+    -o-animation: gradientRotate 8s linear infinite;
+    animation: gradientRotate 8s linear infinite;
+    z-index: 1;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .add-to-cart-btn {
+    color: var(--white);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    position: relative;
+    z-index: 2;
+  }
+
+  .add-to-cart-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .add-to-cart-btn:disabled {
+    background: var(--french-grey);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .add-to-cart-btn:disabled::before {
+    display: none;
+  }
+
+  /* Cross-browser keyframes */
+  @-webkit-keyframes gradientRotate {
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+
+  @-moz-keyframes gradientRotate {
+    0% {
+      -moz-transform: rotate(0deg);
+    }
+    100% {
+      -moz-transform: rotate(360deg);
+    }
+  }
+
+  @-ms-keyframes gradientRotate {
+    0% {
+      -ms-transform: rotate(0deg);
+    }
+    100% {
+      -ms-transform: rotate(360deg);
+    }
+  }
+
+  @-o-keyframes gradientRotate {
+    0% {
+      -o-transform: rotate(0deg);
+    }
+    100% {
+      -o-transform: rotate(360deg);
+    }
+  }
+
+  @keyframes gradientRotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Product Features */
+  .product-features-section {
+    background: linear-gradient(135deg, var(--pakistan-green), #2d5a3d);
+    border-radius: 2rem;
+    padding: 3rem 2rem;
+    margin: 4rem 0;
+    color: var(--white);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .feature-item {
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .feature-item h3 {
+    margin: 0.5rem 0;
+    font-size: 1.3rem;
+  }
+
+  .feature-item p {
+    margin: 0;
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .product-hero {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .product-title {
+      font-size: 2rem;
+    }
+
+    .price-regular,
+    .price-sale {
+      font-size: 1.5rem;
+    }
+
+    .agh-product-page {
+      padding: 1rem;
+    }
+
+    .product-features-section {
+      padding: 2rem 1rem;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>
+
+<div class="agh-product-page">
+  <!-- Product Hero Section -->
+  <div class="product-hero">
+    <div class="product-images-container">
+      <div class="product-images">
+        {% for image in product.images %}
+          <div class="product-image-wrapper{% if forloop.first %} active{% endif %}" data-image="{{ forloop.index0 }}">
+            {% render 'image', class: 'product-image', image: image %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Image Navigation -->
+      {% if product.images.size > 1 %}
+        <div class="image-thumbnails">
+          {% for image in product.images %}
+            <button class="thumbnail-btn{% if forloop.first %} active{% endif %}" data-image="{{ forloop.index0 }}">
+              {% render 'image', class: 'thumbnail-image', image: image %}
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="product-details">
+      <div class="product-meta">
+        <h1 class="product-title futura-text">{{ product.title }}</h1>
+
+        <div class="price-container">
+          {% if product.compare_at_price > product.price %}
+            <span class="price-sale futura-text">{{ product.price | money }}</span>
+            <span class="price-compare">{{ product.compare_at_price | money }}</span>
+          {% else %}
+            <span class="price-regular futura-text">{{ product.price | money }}</span>
           {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+        </div>
 
-    <input type="text" name="quantity" min="1" value="1">
+        <div class="product-description elgian-text">
+          {{ product.description }}
+        </div>
+      </div>
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
+      <!-- Add to Cart Form -->
+      <div class="product-form-container">
+        {% form 'product', product %}
+          {% assign current_variant = product.selected_or_first_available_variant %}
+
+          <!-- Variant Selection -->
+          {% if product.variants.size > 1 %}
+            <div class="variant-selector">
+              <label for="variant-select" class="futura-text">Options</label>
+              <select name="id" id="variant-select" class="variant-select elgian-text">
+                {% for variant in product.variants %}
+                  <option
+                    value="{{ variant.id }}"
+                    {% if variant == current_variant %}
+                      selected="selected"
+                    {% endif %}
+                    {% unless variant.available %}
+                      disabled
+                    {% endunless %}
+                  >
+                    {{ variant.title }}
+                    {% if variant.available %}
+                      - {{ variant.price | money }}
+                    {% else %}
+                      - Sold Out
+                    {% endif %}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          {% else %}
+            <input type="hidden" name="id" value="{{ current_variant.id }}">
+          {% endif %}
+
+          <!-- Quantity Selector -->
+          <div class="quantity-selector">
+            <label for="quantity" class="futura-text">Quantity</label>
+            <div class="quantity-controls">
+              <button type="button" class="quantity-btn" data-action="decrease">−</button>
+              <input type="number" name="quantity" id="quantity" min="1" value="1" class="quantity-input">
+              <button type="button" class="quantity-btn" data-action="increase">+</button>
+            </div>
+          </div>
+
+          <!-- Add to Cart Button -->
+          <div class="add-to-cart-section">
+            <button
+              type="submit"
+              class="add-to-cart-btn futura-text"
+              {% unless current_variant.available %}
+                disabled
+              {% endunless %}
+            >
+              {% if current_variant.available %}
+                Add to Cart
+              {% else %}
+                Sold Out
+              {% endif %}
+            </button>
+
+            {{ form | payment_button }}
+          </div>
+        {% endform %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Features Section -->
+  <div class="product-features-section">
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🌿</div>
+        <h3 class="futura-text">Handcrafted</h3>
+        <p class="elgian-text">Each piece is meticulously handmade by skilled artisans using traditional techniques.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon">🎋</div>
+        <h3 class="futura-text">Natural Rattan</h3>
+        <p class="elgian-text">Sustainably sourced rattan that brings the beauty of nature into your home.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon">🏠</div>
+        <h3 class="futura-text">Garden Ready</h3>
+        <p class="elgian-text">Weather-resistant finish perfect for both indoor and outdoor use.</p>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+  // Image Gallery Functionality
+  document.addEventListener('DOMContentLoaded', function () {
+    const thumbnails = document.querySelectorAll('.thumbnail-btn');
+    const imageWrappers = document.querySelectorAll('.product-image-wrapper');
+
+    thumbnails.forEach((thumbnail) => {
+      thumbnail.addEventListener('click', function () {
+        const imageIndex = this.dataset.image;
+
+        // Remove active class from all
+        thumbnails.forEach((thumb) => thumb.classList.remove('active'));
+        imageWrappers.forEach((wrapper) => wrapper.classList.remove('active'));
+
+        // Add active to clicked
+        this.classList.add('active');
+        document.querySelector(`[data-image="${imageIndex}"].product-image-wrapper`).classList.add('active');
+      });
+    });
+
+    // Quantity Controls
+    const quantityBtns = document.querySelectorAll('.quantity-btn');
+    const quantityInput = document.getElementById('quantity');
+
+    quantityBtns.forEach((btn) => {
+      btn.addEventListener('click', function () {
+        const action = this.dataset.action;
+        let currentValue = parseInt(quantityInput.value);
+
+        if (action === 'increase') {
+          quantityInput.value = currentValue + 1;
+        } else if (action === 'decrease' && currentValue > 1) {
+          quantityInput.value = currentValue - 1;
+        }
+      });
+    });
+  });
+</script>
 
 {% schema %}
 {
-  "name": "t:general.product",
-  "settings": [],
+  "name": "AGH Product",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_features",
+      "label": "Show product features section",
+      "default": true
+    }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
   }

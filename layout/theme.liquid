@@ -10,25 +10,25 @@
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
     {{ content_for_header }}
-{% comment %}Root Styles  {% endcomment %}
+    {% comment %}Root Styles  {% endcomment %}
 
     {{ 'styles.css' | asset_url | append: '?v=' | append: 'now' | date: '%s' | stylesheet_tag }}
-
-
   </head>
 
   <body>
-
     {{ content_for_layout }}
-    {% section 'hero-banner'  %}
-    
+    {% section 'hero-banner' %}
+
+    {% section 'BelowFold' %}
+
     {% section 'featured-products' %}
 
-    {% section 'about-section'
-     %}
+    {% section 'trust' %}
 
-    {% section 'newsletter-signup' %}
+    {% section 'about' %}
 
-    {% section 'footer'  %}
+    {% section 'newsletter' %}
+
+    {% section 'footer' %}
   </body>
 </html>

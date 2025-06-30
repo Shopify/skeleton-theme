@@ -7,7 +7,17 @@
   padding: 0;
 }
 :root {
+  --green100: #e3f5d7;
+  --green200: #c4ecb1;
+  --green300: #8dc67c;
+  --green400: #558d4b;
+
   --green: #1c4219;
+  --green600: #123812;
+
+  --green700: #0c2f0f;
+  --green800: #07260d;
+
   --green900: #041f0b;
   --grey: #d0ccd0;
   --white: #fbfcff;
@@ -109,7 +119,62 @@ body {
   max-width: 100%;
   overflow-x: hidden;
 }
+/* Button Styles */
+.button {
+  font-family: var(--body-font);
+  background-color: var(--green);
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  border: none;
+  transition: all 0.3s ease-in-out;
+  text-decoration: none;
+}
+.shop-now {
+  background-color: var(--green900);
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--white);
+  transition: all 0.3s ease-in-out;
+}
+.shop-now:hover {
+  background-color: var(--green300);
+  scale: 1.1;
+  text-decoration: none;
 
+  transition: all 0.3s ease-in-out;
+}
+
+.learn-more {
+  background-color: var(--green700);
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+
+  text-decoration: none;
+  border: none;
+  transition: all 0.3s ease-in-out;
+}
+.learn-more:hover {
+  background-color: var(--green300);
+  scale: 1.1;
+  transition: all 0.3s ease-in-out;
+}
+
+.newsletter-button {
+  background-color: var(--blue);
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  border: none;
+  transition: all 0.3s ease-in-out;
+}
+.newsletter-button:hover {
+  background-color: var(--green300);
+  scale: 1.1;
+  transition: all 0.3s ease-in-out;
+}
 /** Section layout utilities */
 
 /**
@@ -162,4 +227,66 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
   padding: 2rem;
+}
+
+.BelowFoldImage:hover {
+  transform: scale(1.1) rotate(360deg);
+  transition: transform 4.5s ease-in-out;
+}
+
+/* Liquid Glass css */
+.glass {
+  position: relative;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(2px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),
+    inset 0 4px 20px rgba(255, 255, 255, 0.3);
+}
+
+.glass::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  backdrop-filter: blur(1px);
+  box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
+    inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
+  opacity: 0.6;
+  z-index: -1;
+  filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+}
+
+/* Glass Card css */
+.glass-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(2px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),
+    inset 0 4px 20px rgba(255, 255, 255, 0.3);
+}
+
+.glass-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  backdrop-filter: blur(1px);
+  box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
+    inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
+  opacity: 0.6;
+  z-index: -1;
+  filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 }
