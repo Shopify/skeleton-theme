@@ -510,7 +510,15 @@
               {% endunless %}
             >
               {% if current_variant.available %}
-                Add to Cart
+                <p
+                  {% comment %} This is Hacky but it works. Text has to be above psuedo element {% endcomment %}
+                  style="
+                    position: inherit;
+                    z-index: 10;
+                  "
+                >
+                  Add to Cart
+                </p>
               {% else %}
                 Sold Out
               {% endif %}
