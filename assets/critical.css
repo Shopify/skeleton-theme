@@ -175,6 +175,17 @@ body {
   scale: 1.1;
   transition: all 0.3s ease-in-out;
 }
+
+/* Reveals More Options for payments */
+.shopify-payment-button__more-options {
+  color: var(--green) !important;
+  text-decoration: none !important;
+}
+
+.shopify-payment-button__more-options:hover {
+  color: var(--green900) !important;
+  text-decoration: underline var(--blue) !important;
+}
 /** Section layout utilities */
 
 /**
