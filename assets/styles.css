@@ -40,14 +40,14 @@
   border: 2px solid var(--white);
   border-top: none;
   border-radius: 0 0 1rem 1rem;
-  margin: 0 20px;
+  margin: 0 1.25rem; /* Changed from fixed 20px to rem */
 }
 
 .nav-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
+  padding: 0.75rem 1.5rem; /* Changed from fixed pixels to rem */
   max-width: 100vw;
   margin: 0 auto;
 }
@@ -171,15 +171,15 @@
   }
 
   .hero-nav {
-    margin: 0 15px;
+    margin: 0 0.9375rem; /* Changed from fixed 15px to rem */
   }
 
   .nav-content {
-    padding: 10px 16px;
+    padding: 0.625rem 1rem; /* Changed from fixed pixels to rem */
   }
 
   .nav-text {
-    font-size: 12px;
+    font-size: 0.75rem; /* Changed from fixed 12px to rem */
   }
 
   .hero-description p {
@@ -198,7 +198,7 @@
 
 @media (max-width: 480px) {
   .hero-nav {
-    margin: 0 10px;
+    margin: 0 0.625rem; /* Changed from fixed 10px to rem */
   }
 
   .hero-text-content {
@@ -218,6 +218,26 @@
     background-size: 200px 200px;
   }
 }
+
+/* Additional mobile optimization for very small screens */
+@media (max-width: 320px) {
+  .hero-nav {
+    margin: 0 0.3125rem; /* 5px in rem */
+  }
+
+  .nav-content {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .wordmark {
+    width: 200px;
+  }
+
+  .hero-description p {
+    font-size: 0.875rem;
+  }
+}
+
 /* Below Fold Styles */
 /* Below Fold Styles - Cross-Browser Compatible */
 .BelowFoldSection {
@@ -415,7 +435,10 @@
 
 .trust-elements {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(240px, 1fr)
+  ); /* Reduced from 280px to 240px */
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
@@ -453,6 +476,38 @@
   font-size: 1rem;
   line-height: 1.6;
   opacity: 0.9;
+}
+
+/* Mobile optimization for trust section */
+@media (max-width: 480px) {
+  .trust-elements {
+    grid-template-columns: 1fr; /* Single column on very small screens */
+    gap: 1rem;
+  }
+
+  .trust-item {
+    padding: 1.5rem;
+    min-height: 200px;
+  }
+
+  .trust-item h3 {
+    font-size: 1.25rem;
+  }
+
+  .trust-item p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .trust-elements {
+    gap: 0.75rem;
+  }
+
+  .trust-item {
+    padding: 1rem;
+    min-height: 180px;
+  }
 }
 
 /* Optimized Leafy Textures */
@@ -568,7 +623,10 @@
 .trade-shows {
   padding: 4rem 2rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(250px, 1fr)
+  ); /* Reduced from 300px to 250px */
   gap: 2rem;
 }
 
@@ -650,8 +708,8 @@
 }
 
 .trade-show-image {
-  width: 80px;
-  height: 80px;
+  width: 60px; /* Reduced from 80px */
+  height: 60px; /* Reduced from 80px */
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   margin: 0 auto 1.5rem;
@@ -745,8 +803,8 @@
 .trade-show-image {
   border-radius: 20%;
   box-shadow: 0 5px 20px rgba(28, 66, 25, 0.05);
-  width: 200px;
-  height: 200px;
+  width: 150px; /* Reduced from 200px */
+  height: 150px; /* Reduced from 200px */
   background: #e5e7eb;
   margin: 0 auto;
   display: flex;
@@ -758,30 +816,72 @@
   box-shadow: 0 5px 20px rgba(28, 66, 25, 0.1);
 }
 
-/* Reviews Slider */
+/* Mobile optimization for trade shows */
+@media (max-width: 480px) {
+  .trade-shows {
+    grid-template-columns: 1fr; /* Single column on very small screens */
+    gap: 1rem;
+    padding: 2rem 1rem;
+  }
+
+  .trade-show-item {
+    padding: 1.5rem;
+  }
+
+  .trade-show-image {
+    width: 120px;
+    height: 120px;
+  }
+
+  .trade-show-item h3 {
+    font-size: 1.1rem;
+  }
+
+  .trade-show-item p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .trade-shows {
+    padding: 1.5rem 0.5rem;
+  }
+
+  .trade-show-item {
+    padding: 1rem;
+  }
+
+  .trade-show-image {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Reviews Slider - FIXED POSITIONING */
 
 /* Custom CSS for Google Reviews Look */
 
 .reviews-container {
   position: relative;
   width: 100%;
-  left: 25%;
-  max-width: 700px; /* Max width for the slider */
+  left: 0; /* FIXED: Removed the problematic left: 25% */
+  max-width: 700px;
+  margin: 0 auto; /* ADDED: Center the container properly */
   overflow: hidden;
   background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   padding: 30px;
   box-sizing: border-box;
 }
 
 .reviews-slider {
   display: flex;
-  transition: transform 0.5s ease-in-out; /* Smooth slide transition */
+  transition: transform 0.5s ease-in-out;
 }
 
 .review-slide {
-  flex: 0 0 100%; /* Each slide takes full width of the container */
+  flex: 0 0 100%;
   padding: 20px;
   box-sizing: border-box;
   text-align: center;
@@ -792,9 +892,9 @@
 }
 
 .star-rating {
-  color: #fbbc04; /* Google's star yellow */
+  color: #fbbc04;
   margin-bottom: 15px;
-  font-size: 1.5rem; /* Larger stars */
+  font-size: 1.5rem;
 }
 
 .star-rating .fa-star {
@@ -804,14 +904,14 @@
 .review-text {
   font-size: 1.1rem;
   line-height: 1.6;
-  color: #3c4043; /* Dark grey for text */
+  color: #3c4043;
   margin-bottom: 20px;
-  font-style: italic; /* Italicize review text */
+  font-style: italic;
 }
 
 .review-author {
   font-weight: 600;
-  color: #202124; /* Darker grey for author */
+  color: #202124;
   font-size: 1rem;
   margin-top: 10px;
 }
@@ -829,10 +929,10 @@
 }
 
 .nav-button {
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  border-radius: 50%; /* Circular buttons */
+  border-radius: 50%;
   width: 40px;
   height: 40px;
   display: flex;
@@ -848,10 +948,12 @@
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* Responsive adjustments */
+/* Enhanced mobile responsiveness for reviews */
 @media (max-width: 640px) {
   .reviews-container {
     padding: 20px;
+    max-width: 95%; /* ADDED: Better mobile width */
+    margin: 0 auto 2rem auto; /* ADDED: Better spacing */
   }
   .review-text {
     font-size: 1rem;
@@ -862,6 +964,47 @@
   .nav-button {
     width: 35px;
     height: 35px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviews-container {
+    padding: 15px;
+    max-width: 90%;
+  }
+
+  .review-slide {
+    padding: 15px;
+  }
+
+  .review-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .review-author {
+    font-size: 0.9rem;
+  }
+
+  .nav-button {
+    width: 30px;
+    height: 30px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .reviews-container {
+    padding: 10px;
+    max-width: 95%;
+  }
+
+  .review-text {
+    font-size: 0.9rem;
+  }
+
+  .star-rating {
     font-size: 1rem;
   }
 }
