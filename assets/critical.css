@@ -229,6 +229,13 @@ body {
 .section-title {
   color: var(--grey);
 }
+/* RESPONSIVE MQ 
+Aligns titles to center */
+@media screen and (max-width: 640px) {
+  .section-title {
+    text-align: center;
+  }
+}
 
 /* Product Grid */
 
