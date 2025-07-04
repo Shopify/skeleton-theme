@@ -1,7 +1,7 @@
 trust.liquid
 <!-- Trust Section -->
 <section class="trust full-width">
-  <div class="trust-container">
+  <div class="trust-container leafy-texture">
     <h2 class="trust-title">Your Peace of Mind, Our Priority</h2>
     <p class="trust-subtitle">
       At Andra's Garden Heaven, we are committed to building lasting relationships with our customers based on trust,
@@ -9,47 +9,78 @@ trust.liquid
     </p>
 
     <!-- Trade Show Images -->
-    <div class="trade-shows glass-card">
+    <div class="trade-shows ">
       <div class="trade-show-item ">
-        <img
-          src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-          alt="AGH at Ideal Home Show Scotland"
-          class="trade-show-image"
-        >
-        <p class="trade-show-caption">AGH at the Glasgow Home & Garden Show</p>
+        <a class="trade-show-link" href="https://www.idealhomeshowscotland.co.uk/exhibitors/andras-garden-heaven">
+          <img
+            src="{{ 'IHS-img1.jpg' | asset_url}} "
+            alt="AGH at Ideal Home Show Scotland, 2025"
+            class="trade-show-image"
+            width="200px"
+            height="200px"
+          >
+          <p class="trade-show-caption">AGH at the Ideal Home Show Scotland, 2025.</p>
+        </a>
       </div>
-      <div class="trade-show-item">
-        <img
-          src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-          alt="AGH at National Furniture Expo"
-          class="trade-show-image"
-        >
-        <p class="trade-show-caption">Showcasing AGH Craftsmanship at the National Furniture Expo</p>
+      <div class="trade-show-item ">
+        <a class="trade-show-link" href="https://www.idealhomeshowscotland.co.uk/exhibitors/andras-garden-heaven"
+          ><img
+            src="{{ 'IHS-img2.jpg' | asset_url}} "
+            alt="AGH at National Furniture Expo"
+            class="trade-show-image"
+            width="200px"
+            height="200px"
+          >
+          <p class="trade-show-caption">Showcasing AGH Craftsmanship at the National Furniture Expo</p>
+        </a>
       </div>
     </div>
 
     <!-- Customer Reviews Slider -->
-    <div class="reviews-slider">
-      <div class="review-slide active">
-        <p class="review-text">
-          "Absolutely love my new AGH lounge chair! The quality is incredible, and it transformed my patio into a true
-          oasis."
-        </p>
-        <span class="review-author">- Sarah P.</span>
+    <div class="reviews-container">
+      <!-- Customer Reviews Slider -->
+      <div class="reviews-slider" id="reviewsSlider">
+        <div class="review-slide">
+          <div class="star-rating">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i
+            ><i class="fas fa-star"></i>
+          </div>
+          <p class="review-text">
+            "Absolutely love my new AGH lounge chair! The quality is incredible, and it transformed my patio into a true
+            oasis."
+          </p>
+          <span class="review-author">- Sarah P.</span>
+        </div>
+        <div class="review-slide">
+          <div class="star-rating">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i
+            ><i class="fas fa-star-half-alt"></i>
+          </div>
+          <p class="review-text">
+            "Andra's Garden Heaven delivered exactly what I was looking for. Beautiful, sustainable, and their customer
+            service was outstanding."
+          </p>
+          <span class="review-author">- Mark T.</span>
+        </div>
+        <div class="review-slide">
+          <div class="star-rating">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i
+            ><i class="fas fa-star"></i>
+          </div>
+          <p class="review-text">
+            "Highly recommend AGH for anyone seeking unique and well-made rattan furniture. The 'Oasis' coffee table is
+            a showstopper!"
+          </p>
+          <span class="review-author">- Emily R.</span>
+        </div>
       </div>
-      <div class="review-slide">
-        <p class="review-text">
-          "Andra's Garden Heaven delivered exactly what I was looking for. Beautiful, sustainable, and their customer
-          service was outstanding."
-        </p>
-        <span class="review-author">- Mark T.</span>
-      </div>
-      <div class="review-slide">
-        <p class="review-text">
-          "Highly recommend AGH for anyone seeking unique and well-made rattan furniture. The 'Oasis' coffee table is a
-          showstopper!"
-        </p>
-        <span class="review-author">- Emily R.</span>
+
+      <!-- Slider Navigation -->
+      <div class="slider-nav">
+        <button class="nav-button" id="prevBtn">&#10094;</button>
+        <!-- Left arrow -->
+        <button class="nav-button" id="nextBtn">&#10095;</button>
+        <!-- Right arrow -->
       </div>
     </div>
 
@@ -90,3 +121,37 @@ trust.liquid
     </div>
   </div>
 </section>
+<script>
+  const slider = document.getElementById('reviewsSlider');
+  const slides = document.querySelectorAll('.review-slide');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let currentIndex = 0;
+
+  // Function to update the slider position
+  function updateSlider() {
+    const offset = -currentIndex * 100;
+    slider.style.transform = `translateX(${offset}%)`;
+  }
+
+  // Event listener for the next button
+  nextBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    updateSlider();
+  });
+
+  // Event listener for the previous button
+  prevBtn.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+    updateSlider();
+  });
+
+  // Optional: Auto-slide functionality
+  // setInterval(() => {
+  //     currentIndex = (currentIndex + 1) % slides.length;
+  //     updateSlider();
+  // }, 5000); // Change slide every 5 seconds
+
+  // Initialize slider position on load
+  updateSlider();
+</script>

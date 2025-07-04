@@ -396,72 +396,472 @@
   gap: 1rem;
 }
 
-/* Trust Section */
+/* Trust Section - Optimized */
 .trust {
-  color: var(--grey);
-  background-color: var(--green700);
+  background: linear-gradient(135deg, var(--green700) 0%, var(--green800) 100%);
+  color: var(--white);
 }
+
 .trust-container {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.trust-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  font-weight: 700;
+}
+
+.trust-elements {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.trust-item {
+  padding: 2rem;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+  min-height: 250px;
   display: flex;
   flex-direction: column;
-  text-align: center;
-  gap: 1rem;
-  padding: 2rem;
-}
-/* Trade Shows */
-.trade-shows {
-  display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 1rem;
-  padding: 2rem;
+  transition: var(--transition-normal);
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
-/* Add a leafy texture here for cards */
-.trade-show-item {
+.trust-item:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+}
+
+.trust-item h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.trust-item p {
+  font-size: 1rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+/* Optimized Leafy Textures */
+.trust-item.leafy-texture {
+  background: radial-gradient(
+      circle at 25% 25%,
+      rgba(26, 75, 15, 0.8) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 75% 75%,
+      rgba(45, 80, 22, 0.8) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      #1a4b0f 0%,
+      #2d5016 25%,
+      #4a7c59 50%,
+      #52b788 75%,
+      #74c69d 100%
+    );
+  color: var(--white);
+}
+
+.trust-item.leafy-texture::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(
+      from 0deg at 20% 20%,
+      transparent 0deg,
+      rgba(255, 255, 150, 0.1) 60deg,
+      transparent 120deg
+    ),
+    conic-gradient(
+      from 120deg at 80% 80%,
+      transparent 0deg,
+      rgba(255, 255, 150, 0.08) 60deg,
+      transparent 120deg
+    ),
+    conic-gradient(
+      from 240deg at 50% 50%,
+      transparent 0deg,
+      rgba(255, 255, 150, 0.12) 60deg,
+      transparent 120deg
+    );
+  background-size: 60px 60px, 45px 45px, 75px 75px;
+  opacity: 0.6;
+  z-index: 1;
+}
+
+.trust-item.leafy-texture::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+      45deg,
+      transparent 48%,
+      rgba(255, 255, 100, 0.3) 49%,
+      rgba(255, 255, 100, 0.4) 50%,
+      rgba(255, 255, 100, 0.3) 51%,
+      transparent 52%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 48%,
+      rgba(255, 255, 100, 0.2) 49%,
+      rgba(255, 255, 100, 0.3) 50%,
+      rgba(255, 255, 100, 0.2) 51%,
+      transparent 52%
+    );
+  background-size: 100px 100px, 80px 80px;
+  opacity: 0.4;
+  z-index: 2;
+}
+
+.trust-item.leafy-texture > * {
+  position: relative;
+  z-index: 10;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Simplified Alternative Textures */
+.trust-item.emerald-leaf {
+  background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #10b981 100%);
+  color: var(--white);
+}
+
+.trust-item.sage-leaf {
+  background: linear-gradient(135deg, #365314 0%, #4d7c0f 50%, #84cc16 100%);
+  color: var(--white);
+}
+
+.trust-item.forest-leaf {
+  background: linear-gradient(
+    135deg,
+    #1f2937 0%,
+    #374151 25%,
+    #059669 75%,
+    #34d399 100%
+  );
+  color: var(--white);
+}
+
+/* Trade Shows - Refined */
+.trade-shows {
+  padding: 4rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.trade-shows-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.trade-shows h2 {
+  font-size: 2.5rem;
+  color: var(--green700);
+  margin-bottom: 3rem;
+  font-weight: 700;
+}
+.trade-show-link {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+.trade-show-item {
+  background: var(--green400);
   padding: 2rem;
-  text-align: center;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 1rem;
+}
+
+.trade-show-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 4px 4px 8px var(--green200);
+}
+
+.trade-show-item.leafy-texture {
+  background: linear-gradient(
+    135deg,
+    #1a4b0f 0%,
+    #2d5016 25%,
+    #4a7c59 75%,
+    #52b788 100%
+  );
+  color: var(--white);
+}
+
+.trade-show-item.leafy-texture::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 150, 0.1) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 70% 70%,
+      rgba(255, 255, 150, 0.08) 0%,
+      transparent 40%
+    );
+  background-size: 80px 80px, 60px 60px;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+.trade-show-item.leafy-texture > * {
+  position: relative;
+  z-index: 10;
+}
+
+.trade-show-image {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: var(--transition-normal);
+  backdrop-filter: blur(10px);
+}
+
+.trade-show-item:not(.leafy-texture) .trade-show-image {
+  background: var(--green);
+  color: var(--white);
+}
+
+.trade-show-item:hover .trade-show-image {
+  transform: scale(1.1);
+}
+
+.trade-show-item h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.trade-show-item p {
+  font-size: 1rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.trade-show-item.leafy-texture::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+      45deg,
+      transparent 48%,
+      rgba(255, 255, 100, 0.4) 50%,
+      transparent 53%
+    ),
+    linear-gradient(
+      85deg,
+      transparent 48%,
+      rgba(255, 255, 100, 0.3) 49%,
+      rgba(255, 255, 100, 0.5) 50%,
+      rgba(255, 255, 100, 0.3) 51%,
+      transparent 52%
+    ),
+    linear-gradient(
+      -25deg,
+      transparent 48%,
+      rgba(255, 255, 100, 0.3) 49%,
+      rgba(255, 255, 100, 0.5) 50%,
+      rgba(255, 255, 100, 0.3) 51%,
+      transparent 52%
+    ),
+    /* Fine vein network */
+      linear-gradient(
+        55deg,
+        transparent 49%,
+        rgba(255, 255, 120, 0.2) 49.5%,
+        rgba(255, 255, 120, 0.3) 50%,
+        rgba(255, 255, 120, 0.2) 50.5%,
+        transparent 51%
+      ),
+    linear-gradient(
+      -35deg,
+      transparent 49%,
+      rgba(255, 255, 120, 0.2) 49.5%,
+      rgba(255, 255, 120, 0.3) 50%,
+      rgba(255, 255, 120, 0.2) 50.5%,
+      transparent 51%
+    );
+  background-size: 140px 90px, 150px 95px, 120px 80px, 130px 85px, 30px 30px,
+    32px 32px;
+  background-position: 0 0, 70px 45px, 35px 25px, 90px 15px, 0 0, 15px 15px;
+  z-index: 2;
+}
+
+.trade-show-item.leafy-texture * {
+  position: relative;
+  z-index: 10;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .trade-show-image {
   border-radius: 20%;
   box-shadow: 0 5px 20px rgba(28, 66, 25, 0.05);
+  width: 200px;
+  height: 200px;
+  background: #e5e7eb;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .trade-show-image:hover {
   transform: scale(1.05);
   box-shadow: 0 5px 20px rgba(28, 66, 25, 0.1);
 }
-.trust-elements {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: stretch;
-  min-height: auto;
-  inline-size: auto;
+
+/* Reviews Slider */
+
+/* Custom CSS for Google Reviews Look */
+
+.reviews-container {
+  position: relative;
+  width: 100%;
+  left: 25%;
+  max-width: 700px; /* Max width for the slider */
+  overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  padding: 30px;
+  box-sizing: border-box;
 }
 
-.trust-item {
-  font-family: var(--heading-font);
-  flex: 1 1 10%;
-  padding: 1.5rem;
+.reviews-slider {
+  display: flex;
+  transition: transform 0.5s ease-in-out; /* Smooth slide transition */
+}
+
+.review-slide {
+  flex: 0 0 100%; /* Each slide takes full width of the container */
+  padding: 20px;
+  box-sizing: border-box;
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 1rem;
-  border: var(--green600) 1px solid;
-  border-radius: 1rem;
-  box-shadow: 0 5px 20px rgba(28, 66, 25, 0.05);
-  transition: all 0.3s ease-in-out;
 }
 
-.trust-item:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 20px rgba(28, 66, 25, 0.1);
+.star-rating {
+  color: #fbbc04; /* Google's star yellow */
+  margin-bottom: 15px;
+  font-size: 1.5rem; /* Larger stars */
+}
+
+.star-rating .fa-star {
+  margin: 0 2px;
+}
+
+.review-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #3c4043; /* Dark grey for text */
+  margin-bottom: 20px;
+  font-style: italic; /* Italicize review text */
+}
+
+.review-author {
+  font-weight: 600;
+  color: #202124; /* Darker grey for author */
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+.slider-nav {
+  position: absolute;
+  top: 50%;
+  left: 1%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.nav-button {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  color: white;
+  border: none;
+  border-radius: 50%; /* Circular buttons */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .reviews-container {
+    padding: 20px;
+  }
+  .review-text {
+    font-size: 1rem;
+  }
+  .star-rating {
+    font-size: 1.2rem;
+  }
+  .nav-button {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
 }

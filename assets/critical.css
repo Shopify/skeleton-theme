@@ -121,7 +121,7 @@ body {
 }
 /* Button Styles */
 .button {
-  font-family: var(--body-font);
+  font-family: var(--heading-font);
   background-color: var(--green);
   color: var(--white);
   padding: 0.5rem 1rem;
