@@ -162,6 +162,7 @@
   .hero-text-section {
     min-height: 50vh;
     padding: 1rem;
+    background: var(--green900); /* Changed background to dark green */
   }
 
   .hero-text-content {
@@ -190,7 +191,8 @@
   }
 
   .pattern-background {
-    background-size: 250px 250px;
+    background-size: 100% 100%;
+    background-image: none var(--green800); /* Removed pattern background image */
   }
 }
 
@@ -241,7 +243,7 @@
 .BelowFoldSection {
   background: #1e3c27;
   color: var(--grey);
-  border-radius: 2rem;
+  border-radius: 0 0 2rem 2rem;
   position: relative;
   overflow: hidden;
   padding: 2rem; /* Added base padding */
@@ -429,7 +431,6 @@
 /* Tablet and large mobile screens */
 @media (max-width: 768px) {
   .BelowFoldSection {
-    margin: 0;
     padding: 1.5rem;
     border-radius: 0 0 1.5rem 1.5rem;
   }
@@ -480,7 +481,6 @@
     padding: 1rem;
     border-radius: 0 0 1rem 1rem;
     margin: 0;
-    width: 100%;
   }
 
   .BelowFoldLeft {
@@ -556,6 +556,11 @@
 /* .featured-products {
 } */
 
+/* CTAs */
+.Hero-ctas {
+  display: flex;
+  gap: 1rem;
+}
 /* About Styles */
 .about-content {
   display: flex;
