@@ -429,8 +429,9 @@
 /* Tablet and large mobile screens */
 @media (max-width: 768px) {
   .BelowFoldSection {
+    margin: 0;
     padding: 1.5rem;
-    border-radius: 1.5rem;
+    border-radius: 0 0 1.5rem 1.5rem;
   }
 
   .BelowFoldSectionWrapper {
@@ -477,8 +478,9 @@
 @media (max-width: 480px) {
   .BelowFoldSection {
     padding: 1rem;
-    border-radius: 1rem;
-    margin: 0 0.5rem; /* Add side margins */
+    border-radius: 0 0 1rem 1rem;
+    margin: 0;
+    width: 100%;
   }
 
   .BelowFoldLeft {
@@ -520,7 +522,7 @@
 @media (max-width: 320px) {
   .BelowFoldSection {
     padding: 0.75rem;
-    margin: 0 0.25rem;
+    margin: 0;
   }
 
   .BelowFoldLeft {
