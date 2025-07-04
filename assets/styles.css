@@ -24,7 +24,6 @@
   width: 100%;
   min-height: 100vh;
   overflow: hidden;
-  margin-bottom: 3rem;
   padding: 0;
 }
 
@@ -158,7 +157,6 @@
 
   .hero-image-section {
     height: 50vh;
-    min-height: 400px;
   }
 
   .hero-text-section {
@@ -238,7 +236,7 @@
   }
 }
 
-/* Below Fold Styles */
+/* Below Fold Styles - ENHANCED WITH MOBILE RESPONSIVENESS */
 /* Below Fold Styles - Cross-Browser Compatible */
 .BelowFoldSection {
   background: #1e3c27;
@@ -246,6 +244,7 @@
   border-radius: 2rem;
   position: relative;
   overflow: hidden;
+  padding: 2rem; /* Added base padding */
 }
 
 .BelowFoldSection::before {
@@ -284,6 +283,8 @@
   align-items: center;
   position: relative;
   z-index: 2;
+  max-width: 1200px; /* Added max-width for better control */
+  margin: 0 auto; /* Center the wrapper */
 }
 
 /* Cross-browser keyframes */
@@ -341,6 +342,7 @@
   justify-content: center;
   align-items: flex-start;
   gap: 1rem;
+  min-width: 300px; /* Added min-width for better control */
 }
 
 .BelowFoldRight {
@@ -350,18 +352,208 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-end;
+  min-width: 300px; /* Added min-width for better control */
+}
+
+/* BelowFold Image Styling */
+.BelowFoldImage {
+  max-width: 100%;
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* BelowFold Typography */
+.BelowFoldLeft h2 {
+  font-family: var(--heading-font);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.BelowFoldLeft .hero-description p {
+  font-family: var(--body-font);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--grey);
+  margin-bottom: 1.5rem;
+}
+
+/* CTAs Styling */
+.Hero-ctas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+.Hero-ctas .button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-family: var(--heading-font);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  min-width: 140px; /* Ensure minimum button width */
+  text-align: center;
+}
+
+.Hero-ctas .learn-more {
+  background: transparent;
+  color: var(--white);
+  border-color: var(--white);
+}
+
+.Hero-ctas .learn-more:hover {
+  background: var(--white);
+  color: var(--green);
+}
+
+.Hero-ctas .shop-now {
+  background: var(--blue);
+  color: var(--white);
+  border-color: var(--blue);
+}
+
+.Hero-ctas .shop-now:hover {
+  background: transparent;
+  color: var(--blue);
+  border-color: var(--blue);
+}
+
+/* MOBILE RESPONSIVENESS FOR BELOWFOLD SECTION */
+
+/* Tablet and large mobile screens */
+@media (max-width: 768px) {
+  .BelowFoldSection {
+    padding: 1.5rem;
+    border-radius: 1.5rem;
+  }
+
+  .BelowFoldSectionWrapper {
+    flex-direction: column; /* Stack vertically on mobile */
+    text-align: center; /* Center align content */
+  }
+
+  .BelowFoldLeft {
+    text-align: center; /* Center text on mobile */
+    align-items: center; /* Center align items */
+    padding: 1.5rem;
+    order: 1; /* Text comes first */
+  }
+
+  .BelowFoldRight {
+    align-items: center; /* Center align image */
+    padding: 1.5rem;
+    order: 2; /* Image comes second */
+  }
+
+  .BelowFoldLeft h2 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .BelowFoldLeft .hero-description p {
+    font-size: 1rem;
+    text-align: center;
+    max-width: 500px; /* Limit text width for readability */
+  }
+
+  .Hero-ctas {
+    justify-content: center; /* Center CTAs */
+    width: 100%;
+  }
+
+  .BelowFoldImage {
+    max-width: 300px; /* Reduce image size on mobile */
+    width: 100%;
+  }
+}
+
+/* Standard mobile phones */
+@media (max-width: 480px) {
+  .BelowFoldSection {
+    padding: 1rem;
+    border-radius: 1rem;
+    margin: 0 0.5rem; /* Add side margins */
+  }
+
+  .BelowFoldLeft {
+    padding: 1rem;
+  }
+
+  .BelowFoldRight {
+    padding: 1rem;
+  }
+
+  .BelowFoldLeft h2 {
+    font-size: 1.75rem;
+  }
+
+  .BelowFoldLeft .hero-description p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .Hero-ctas {
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .Hero-ctas .button {
+    width: 100%; /* Full width buttons on mobile */
+    max-width: 280px; /* But not too wide */
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .BelowFoldImage {
+    max-width: 250px;
+  }
+}
+
+/* Very small mobile screens */
+@media (max-width: 320px) {
+  .BelowFoldSection {
+    padding: 0.75rem;
+    margin: 0 0.25rem;
+  }
+
+  .BelowFoldLeft {
+    padding: 0.75rem;
+  }
+
+  .BelowFoldRight {
+    padding: 0.75rem;
+  }
+
+  .BelowFoldLeft h2 {
+    font-size: 1.5rem;
+  }
+
+  .BelowFoldLeft .hero-description p {
+    font-size: 0.9rem;
+  }
+
+  .Hero-ctas .button {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.9rem;
+    max-width: 240px;
+  }
+
+  .BelowFoldImage {
+    max-width: 200px;
+  }
 }
 
 /* Featured Products */
 /* .featured-products {
 } */
-shopify theme push
 
-/* CTAs */
-.Hero-ctas {
-  display: flex;
-  gap: 1rem;
-}
 /* About Styles */
 .about-content {
   display: flex;
