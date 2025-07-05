@@ -256,11 +256,14 @@ Aligns titles to center */
 .glass {
   position: relative;
   background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(2px) saturate(180%);
   backdrop-filter: blur(2px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 2rem;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),
     inset 0 4px 20px rgba(255, 255, 255, 0.3);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .glass::after {
@@ -273,23 +276,86 @@ Aligns titles to center */
   height: 100%;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 2rem;
+  -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
   box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
     inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
   opacity: 0.6;
   z-index: -1;
+  -webkit-filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
   filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 }
 
+/* ===== iOS SAFARI SPECIFIC FIXES FOR CRITICAL CSS ===== */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari viewport height fixes */
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* iOS Safari text rendering fixes */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* iOS Safari flexbox fixes */
+  .shopify-section {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+  }
+
+  /* iOS Safari transform fixes */
+  .glass,
+  .glass-card {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* iOS Safari backdrop-filter fixes */
+  .glass,
+  .glass-card {
+    -webkit-backdrop-filter: blur(2px) saturate(180%);
+    backdrop-filter: blur(2px) saturate(180%);
+  }
+
+  /* iOS Safari button fixes */
+  .button,
+  .shop-now,
+  .learn-more,
+  .newsletter-button {
+    -webkit-appearance: none;
+    -webkit-border-radius: 1rem;
+    border-radius: 1rem;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  /* iOS Safari input fixes */
+  input,
+  textarea,
+  select {
+    -webkit-appearance: none;
+    -webkit-border-radius: var(--style-border-radius-inputs);
+    border-radius: var(--style-border-radius-inputs);
+  }
+}
 /* Glass Card css */
 .glass-card {
   position: relative;
   background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(2px) saturate(180%);
   backdrop-filter: blur(2px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 2rem;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),
     inset 0 4px 20px rgba(255, 255, 255, 0.3);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .glass-card::after {
@@ -301,10 +367,12 @@ Aligns titles to center */
   height: 100%;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 2rem;
+  -webkit-backdrop-filter: blur(1px);
   backdrop-filter: blur(1px);
   box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
     inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
   opacity: 0.6;
   z-index: -1;
+  -webkit-filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
   filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 }

@@ -5,18 +5,18 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<section class="collection-hero" style="background: var(--green100); padding: 3rem 0 2rem 0;">
+<section class="collection-hero" style="background: var(--green900); padding: 3rem 0 2rem 0;">
   <div class="collection-hero__content page-width">
     <h1
       class="collection-title"
-      style="font-family: var(--heading-font); color: var(--green); font-size: 2.5rem; text-align: center; margin-bottom: 1rem;"
+      style="font-family: var(--heading-font); color: var(--grey); font-size: 2.5rem; text-align: center; margin-bottom: 1rem;"
     >
       {{ collection.title }}
     </h1>
     {% if collection.description %}
       <p
         class="collection-intro"
-        style="font-family: var(--body-font); color: var(--green700); font-size: 1.15rem; text-align: center; max-width: 700px; margin: 0 auto 2rem auto;"
+        style="font-family: var(--body-font); color: var(--grey); font-size: 1.15rem; text-align: center; max-width: 700px; margin: 0 auto 2rem auto;"
       >
         {{ collection.description }}
       </p>
@@ -89,7 +89,8 @@
   }
 
   .product-card {
-    background: var(--grey);
+    background: var(--green900);
+    color: var(--grey);
     border-radius: 1.25rem;
     box-shadow: 0 4px 24px rgba(28, 66, 25, 0.08);
     overflow: hidden;
@@ -99,6 +100,7 @@
   .product-card:hover {
     box-shadow: 0 8px 32px rgba(28, 66, 25, 0.16);
     transform: translateY(-4px) scale(1.02);
+    text-decoration: underline var(--blue);
   }
   .product-card__link {
     text-decoration: none;

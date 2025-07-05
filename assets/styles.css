@@ -14,9 +14,46 @@
   --black: #000;
   --heading-font: "Futura Book", sans-serif;
   --body-font: "Elgian", serif;
+
+  /* Missing variables that might be referenced */
+  --transition-normal: all 0.3s ease;
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --style-border-radius-inputs: 8px;
 }
 
 /* === hero-banner.css === */
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari viewport height fix */
+  .hero-banner {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  .hero-content {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+
+  /* iOS Safari flexbox fixes */
+  .hero-content {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+  }
+
+  /* iOS Safari transform fixes */
+  .hero-nav {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
 
 /* Reset any default margins/padding that might cause gaps */
 .hero-banner {
@@ -35,11 +72,14 @@
   right: 0;
   z-index: 10;
   background: rgba(0, 0, 0, 0.8);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 2px solid var(--white);
   border-top: none;
   border-radius: 0 0 1rem 1rem;
   margin: 0 1.25rem; /* Changed from fixed 20px to rem */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .nav-content {
@@ -71,12 +111,23 @@
 
 /* Main Hero Layout */
 .hero-content {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
   height: 100vh;
   width: 100%;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
 }
 
 .hero-image-section {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
   flex: 1;
   position: relative;
   overflow: hidden;
@@ -91,10 +142,22 @@
 }
 
 .hero-text-section {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
   flex: 1;
   position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
   align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
   justify-content: center;
   background: var(--green900); /* Changed background to dark green */
 }
@@ -115,6 +178,8 @@
   text-align: center;
   padding: 3rem;
   max-width: 500px;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .wordmark {
@@ -281,9 +346,20 @@
 }
 
 .BelowFoldSectionWrapper {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
   align-items: center;
   position: relative;
   z-index: 2;
@@ -338,23 +414,55 @@
 }
 
 .BelowFoldLeft {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
   flex: 1;
   padding: 2rem;
   text-align: left;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: start;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
   align-items: flex-start;
   gap: 1rem;
   min-width: 300px; /* Added min-width for better control */
 }
 
 .BelowFoldRight {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
   flex: 1;
   padding: 2rem;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: end;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: end;
   align-items: flex-end;
   min-width: 300px; /* Added min-width for better control */
 }
@@ -636,7 +744,9 @@
 }
 
 .trust-elements {
+  display: -ms-grid;
   display: grid;
+  -ms-grid-columns: (minmax(240px, 1fr)) [auto-fit];
   grid-template-columns: repeat(
     auto-fit,
     minmax(240px, 1fr)
@@ -652,15 +762,31 @@
   position: relative;
   overflow: hidden;
   min-height: 250px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
   align-items: center;
   gap: 1rem;
   transition: var(--transition-normal);
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .trust-item:hover {
@@ -830,7 +956,9 @@
 /* Trade Shows - Refined */
 .trade-shows {
   padding: 4rem 2rem;
+  display: -ms-grid;
   display: grid;
+  -ms-grid-columns: (minmax(250px, 1fr)) [auto-fit];
   grid-template-columns: repeat(
     auto-fit,
     minmax(250px, 1fr)
@@ -865,11 +993,26 @@
   transition: var(--transition-normal);
   position: relative;
   overflow: hidden;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
   justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
   align-items: center;
   gap: 1rem;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .trade-show-item:hover {
@@ -1214,5 +1357,134 @@
 
   .star-rating {
     font-size: 1rem;
+  }
+}
+
+/* ===== iOS SAFARI SPECIFIC FIXES ===== */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari viewport height fixes */
+  .hero-banner,
+  .hero-content {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* iOS Safari text rendering fixes */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* iOS Safari flexbox fixes */
+  .hero-content,
+  .BelowFoldSectionWrapper,
+  .trust-elements,
+  .trade-shows {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+  }
+
+  /* iOS Safari transform and animation fixes */
+  .hero-nav,
+  .trust-item,
+  .trade-show-item,
+  .hero-text-content {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* iOS Safari backdrop-filter fixes */
+  .glass,
+  .hero-nav,
+  .trust-item {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  /* iOS Safari gradient fixes */
+  .BelowFoldSection::before,
+  .trust-item.leafy-texture,
+  .trade-show-item.leafy-texture {
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+  }
+
+  /* iOS Safari image fixes */
+  .hero-image,
+  .BelowFoldImage,
+  .trade-show-image {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  /* iOS Safari button fixes */
+  .button,
+  .shop-now,
+  .learn-more,
+  .newsletter-button {
+    -webkit-appearance: none;
+    -webkit-border-radius: 1rem;
+    border-radius: 1rem;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+
+  /* iOS Safari input fixes */
+  input,
+  textarea,
+  select {
+    -webkit-appearance: none;
+    -webkit-border-radius: var(--style-border-radius-inputs);
+    border-radius: var(--style-border-radius-inputs);
+  }
+
+  /* iOS Safari scroll fixes */
+  .hero-banner,
+  .BelowFoldSection {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Additional iOS fixes for older versions */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .hero-banner {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  .hero-content {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+
+  /* Fix for iOS Safari flexbox gap issues */
+
+  .BelowFoldSectionWrapper,
+  .trust-elements,
+  .trade-shows {
+    gap: 1rem;
+  }
+
+  /* Fix for iOS Safari grid issues */
+  .trust-elements,
+  .trade-shows {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }
+
+  .trust-item,
+  .trade-show-item {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 240px;
+    -ms-flex: 1 1 240px;
+    flex: 1 1 240px;
   }
 }

@@ -5,17 +5,17 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<section class="collections-hero" style="background: var(--green100); padding: 3rem 0 2rem 0;">
+<section class="collections-hero" style="background: var(--green900); padding: 3rem 0 2rem 0;">
   <div class="collections-hero__content page-width">
     <h1
       class="collections-title"
-      style="font-family: var(--heading-font); color: var(--green); font-size: 2.5rem; text-align: center; margin-bottom: 1.5rem;"
+      style="font-family: var(--heading-font); color: var(--grey); font-size: 2.5rem; text-align: center; margin-bottom: 1.5rem;"
     >
       Discover Our Collections
     </h1>
     <p
       class="collections-intro"
-      style="font-family: var(--body-font); color: var(--green700); font-size: 1.15rem; text-align: center; max-width: 700px; margin: 0 auto 2rem auto;"
+      style="font-family: var(--body-font); color: var(--grey); font-size: 1.15rem; text-align: center; max-width: 700px; margin: 0 auto 2rem auto; letter-spacing: 0.05em;"
     >
       At Andra's Garden Heaven, we understand the desire for a home that reflects your unique style and provides a
       sanctuary from the everyday. Our handcrafted rattan furniture is more than just decor; it's an investment in
@@ -41,21 +41,21 @@
           {% else %}
             <div
               class="collection-card__placeholder"
-              style="background: var(--grey); width: 100%; height: 0; padding-bottom: 100%; border-radius: 1rem;"
+              style="background: var(--gree400); width: 100%; height: 0; padding-bottom: 100%; border-radius: 1rem;"
             ></div>
           {% endif %}
         </div>
         <div class="collection-card__content">
           <h2
             class="collection-card__title"
-            style="font-family: var(--heading-font); color: var(--green); font-size: 1.5rem; margin-bottom: 0.5rem;"
+            style="font-family: var(--heading-font); color: var(--grey); font-size: 1.5rem; margin-bottom: 0.5rem;"
           >
             {{ collection.title }}
           </h2>
           {% if collection.description %}
             <p
               class="collection-card__desc"
-              style="font-family: var(--body-font); color: var(--green700); font-size: 1rem; opacity: 0.85;"
+              style="font-family: var(--body-font); color: var(--grey); font-size: 1rem; opacity: 0.85;"
             >
               {{ collection.description | strip_html | truncatewords: 15 }}
             </p>
@@ -83,7 +83,7 @@
   .collection-card {
     display: flex;
     flex-direction: column;
-    background: var(--grey);
+    background: var(--green400);
     border-radius: 1.25rem;
     box-shadow: 0 4px 24px rgba(28, 66, 25, 0.08);
     overflow: hidden;
@@ -94,11 +94,12 @@
   .collection-card:hover {
     box-shadow: 0 8px 32px rgba(28, 66, 25, 0.16);
     transform: translateY(-4px) scale(1.02);
+    text-decoration: underline var(--blue);
   }
   .collection-card__image-wrapper {
     width: 100%;
     aspect-ratio: 1/1;
-    background: var(--white);
+    background: var(--green900);
     display: flex;
     align-items: center;
     justify-content: center;
