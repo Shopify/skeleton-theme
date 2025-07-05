@@ -1,0 +1,540 @@
+{% comment %}
+  Contact Us Page Template for Andra's Garden Heaven
+  Following brand guidelines: Pakistani Green (#1C4219), French Grey (#D0CCD0), White (#FBFCFF)
+  Typography: Futura Book for headings, Elgian for body text
+{% endcomment %}
+
+<div class="contact-us-page">
+  <!-- Hero Section -->
+  <div class="contact-hero">
+    <div class="page-width">
+      <div class="contact-hero__content">
+        <h1 class="contact-hero__title">Contact Us</h1>
+        <p class="contact-hero__subtitle">We'd Love to Hear from You</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Information Section -->
+  <div class="contact-info">
+    <div class="page-width">
+      <div class="contact-info__grid">
+        <div class="contact-info__card">
+          <div class="contact-info__icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <path d="M24 4C12.95 4 4 12.95 4 24C4 35.05 12.95 44 24 44C35.05 44 44 35.05 44 24C44 12.95 35.05 4 24 4ZM24 40C15.18 40 8 32.82 8 24C8 15.18 15.18 8 24 8C32.82 8 40 15.18 40 24C40 32.82 32.82 40 24 40Z" fill="#1C4219"/>
+              <path d="M24 12C17.37 12 12 17.37 12 24C12 30.63 17.37 36 24 36C30.63 36 36 30.63 36 24C36 17.37 30.63 12 24 12ZM24 32C19.59 32 16 28.41 16 24C16 19.59 19.59 16 24 16C28.41 16 32 19.59 32 24C32 28.41 28.41 32 24 32Z" fill="#1C4219"/>
+            </svg>
+          </div>
+          <h3 class="contact-info__title">Visit Our Showroom</h3>
+          <p class="contact-info__text">
+            123 Garden Street<br>
+            Glasgow, G1 1AA<br>
+            Scotland, UK
+          </p>
+        </div>
+
+        <div class="contact-info__card">
+          <div class="contact-info__icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <path d="M24 4L29.09 16.26L42 18L29.09 19.74L24 32L18.91 19.74L6 18L18.91 16.26L24 4Z" fill="#1C4219"/>
+            </svg>
+          </div>
+          <h3 class="contact-info__title">Call Us</h3>
+          <p class="contact-info__text">
+            +44 (0) 141 123 4567<br>
+            Monday - Friday: 9AM - 6PM<br>
+            Saturday: 10AM - 4PM
+          </p>
+        </div>
+
+        <div class="contact-info__card">
+          <div class="contact-info__icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <path d="M24 4L28 16H40L30 24L34 36L24 28L14 36L18 24L8 16H20L24 4Z" fill="#1C4219"/>
+            </svg>
+          </div>
+          <h3 class="contact-info__title">Email Us</h3>
+          <p class="contact-info__text">
+            hello@andrasgardenheaven.com<br>
+            orders@andrasgardenheaven.com<br>
+            support@andrasgardenheaven.com
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Form Section -->
+  <div class="contact-form-section">
+    <div class="page-width">
+      <div class="contact-form__grid">
+        <div class="contact-form__content">
+          <h2 class="contact-form__heading">Send Us a Message</h2>
+          <p class="contact-form__subtitle">
+            Have a question about our furniture or need assistance with your order? We're here to help!
+          </p>
+
+          {% form 'contact' %}
+            {% if form.posted_successfully? %}
+              <div class="form-success">
+                <h3>Thank You!</h3>
+                <p>Your message has been sent successfully. We'll get back to you within 24 hours.</p>
+              </div>
+            {% endif %}
+
+            {{ form.errors | default_errors }}
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="ContactFormName">Full Name *</label>
+                <input
+                  type="text"
+                  id="ContactFormName"
+                  name="contact[name]"
+                  value="{% if form.name %}{{ form.name }}{% endif %}"
+                  required
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="ContactFormEmail">Email Address *</label>
+                <input
+                  type="email"
+                  id="ContactFormEmail"
+                  name="contact[email]"
+                  value="{% if form.email %}{{ form.email }}{% endif %}"
+                  spellcheck="false"
+                  autocomplete="email"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="ContactFormPhone">Phone Number</label>
+                <input
+                  type="tel"
+                  id="ContactFormPhone"
+                  name="contact[phone]"
+                  value="{% if form.phone %}{{ form.phone }}{% endif %}"
+                >
+              </div>
+
+              <div class="form-field">
+                <label for="ContactFormSubject">Subject</label>
+                <select id="ContactFormSubject" name="contact[subject]">
+                  <option value="">Select a subject</option>
+                  <option value="General Inquiry">General Inquiry</option>
+                  <option value="Product Information">Product Information</option>
+                  <option value="Order Status">Order Status</option>
+                  <option value="Returns & Exchanges">Returns & Exchanges</option>
+                  <option value="Wholesale Inquiry">Wholesale Inquiry</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="ContactFormMessage">Message *</label>
+              <textarea
+                rows="6"
+                id="ContactFormMessage"
+                name="contact[body]"
+                placeholder="Tell us how we can help you..."
+                required
+              >{% if form.body %}{{ form.body }}{% endif %}</textarea>
+            </div>
+
+            <button type="submit" class="button button--primary">Send Message</button>
+          {% endform %}
+        </div>
+
+        <div class="contact-form__image">
+          <img
+            src="{{ 'IHS-img2.jpg' | asset_url }}"
+            alt="Andra's Garden Heaven Showroom"
+            width="600"
+            height="400"
+            loading="lazy"
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Section -->
+  <div class="contact-map">
+    <div class="page-width">
+      <h2 class="contact-map__heading">Find Us</h2>
+      <div class="contact-map__container">
+        <div class="contact-map__info">
+          <h3>Andra's Garden Heaven</h3>
+          <p>
+            <strong>Address:</strong><br>
+            123 Garden Street<br>
+            Glasgow, G1 1AA<br>
+            Scotland, UK
+          </p>
+
+          <p>
+            <strong>Opening Hours:</strong><br>
+            Monday - Friday: 9:00 AM - 6:00 PM<br>
+            Saturday: 10:00 AM - 4:00 PM<br>
+            Sunday: Closed
+          </p>
+
+          <p>
+            <strong>Parking:</strong><br>
+            Free parking available on-site
+          </p>
+        </div>
+        <div class="contact-map__placeholder">
+          <div class="map-placeholder">
+            <svg width="64" height="64" viewBox="0 0 48 48" fill="none">
+              <path d="M24 4C15.18 4 8 11.18 8 20C8 28.82 24 44 24 44C24 44 40 28.82 40 20C40 11.18 32.82 4 24 4ZM24 26C21.79 26 20 24.21 20 22C20 19.79 21.79 18 24 18C26.21 18 28 19.79 28 22C28 24.21 26.21 26 24 26Z" fill="#1C4219"/>
+            </svg>
+            <p>Interactive Map Coming Soon</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="contact-faq">
+    <div class="page-width">
+      <h2 class="contact-faq__heading">Frequently Asked Questions</h2>
+      <div class="contact-faq__grid">
+        <div class="faq-item">
+          <h3 class="faq-question">Do you offer delivery services?</h3>
+          <p class="faq-answer">
+            Yes, we offer delivery throughout Glasgow and the surrounding areas. Delivery fees vary based on location
+            and order size.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3 class="faq-question">What is your return policy?</h3>
+          <p class="faq-answer">
+            We offer a 30-day return policy for all unused items in their original packaging. Custom orders are
+            non-returnable.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3 class="faq-question">Do you offer custom furniture?</h3>
+          <p class="faq-answer">
+            Yes, we specialize in custom rattan furniture. Contact us to discuss your specific requirements and get a
+            quote.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h3 class="faq-question">How do I care for rattan furniture?</h3>
+          <p class="faq-answer">
+            Rattan furniture should be kept indoors or in covered outdoor areas. Clean with a soft cloth and mild soap,
+            avoid direct sunlight.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .contact-us-page {
+    font-family: 'Elgian', sans-serif;
+    color: #000000;
+  }
+
+  .contact-hero {
+    background: linear-gradient(135deg, #1c4219 0%, #1c6e8c 100%);
+    color: #fbfcff;
+    padding: 80px 0;
+    text-align: center;
+  }
+
+  .contact-hero__title {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+
+  .contact-hero__subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .contact-info {
+    padding: 80px 0;
+    background: #fbfcff;
+  }
+
+  .contact-info__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+  }
+
+  .contact-info__card {
+    text-align: center;
+    padding: 2rem;
+    background: #d0ccd0;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .contact-info__icon {
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-info__title {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 1.5rem;
+    color: #1c4219;
+    margin-bottom: 1rem;
+  }
+
+  .contact-info__text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #000000;
+  }
+
+  .contact-form-section {
+    padding: 80px 0;
+    background: #d0ccd0;
+  }
+
+  .contact-form__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .contact-form__heading {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 2.5rem;
+    color: #1c4219;
+    margin-bottom: 1rem;
+  }
+
+  .contact-form__subtitle {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: #000000;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .form-field {
+    margin-bottom: 20px;
+  }
+
+  .form-field label {
+    display: block;
+    font-family: 'Futura Book', sans-serif;
+    font-weight: 500;
+    color: #1c4219;
+    margin-bottom: 8px;
+  }
+
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #d0ccd0;
+    border-radius: 5px;
+    font-family: 'Elgian', sans-serif;
+    font-size: 1rem;
+    background: #fbfcff;
+    transition: border-color 0.3s ease;
+  }
+
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus {
+    outline: none;
+    border-color: #1c4219;
+  }
+
+  .form-field textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .button--primary {
+    background: #1c4219;
+    color: #fbfcff;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    font-family: 'Futura Book', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-decoration: none;
+  }
+
+  .button--primary:hover {
+    background: #1c6e8c;
+    transform: translateY(-2px);
+  }
+
+  .form-success {
+    background: #1c4219;
+    color: #fbfcff;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .form-success h3 {
+    font-family: 'Futura Book', sans-serif;
+    margin-bottom: 1rem;
+  }
+
+  .contact-form__image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(28, 66, 25, 0.1);
+  }
+
+  .contact-map {
+    padding: 80px 0;
+    background: #fbfcff;
+  }
+
+  .contact-map__heading {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 2.5rem;
+    color: #1c4219;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .contact-map__container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .contact-map__info h3 {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 1.5rem;
+    color: #1c4219;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-map__info p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: #000000;
+  }
+
+  .map-placeholder {
+    background: #d0ccd0;
+    height: 300px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #1c4219;
+  }
+
+  .map-placeholder p {
+    margin-top: 1rem;
+    font-family: 'Futura Book', sans-serif;
+    font-weight: 500;
+  }
+
+  .contact-faq {
+    padding: 80px 0;
+    background: #d0ccd0;
+  }
+
+  .contact-faq__heading {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 2.5rem;
+    color: #1c4219;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .contact-faq__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+  }
+
+  .faq-item {
+    background: #fbfcff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .faq-question {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 1.25rem;
+    color: #1c4219;
+    margin-bottom: 1rem;
+  }
+
+  .faq-answer {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #000000;
+  }
+
+  .page-width {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  @media (max-width: 768px) {
+    .contact-form__grid,
+    .contact-map__container {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-hero__title {
+      font-size: 2rem;
+    }
+
+    .contact-form__heading,
+    .contact-map__heading,
+    .contact-faq__heading {
+      font-size: 2rem;
+    }
+
+    .contact-faq__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

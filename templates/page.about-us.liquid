@@ -1,0 +1,356 @@
+{% comment %}
+  About Us Page Template for Andra's Garden Heaven
+  Following brand guidelines: Pakistani Green (#1C4219), French Grey (#D0CCD0), White (#FBFCFF)
+  Typography: Futura Book for headings, Elgian for body text
+{% endcomment %}
+
+<div class="about-us-page">
+  <!-- Hero Section -->
+  <div class="about-hero">
+    <div class="page-width">
+      <div class="about-hero__content">
+        <h1 class="about-hero__title">About Andra's Garden Heaven</h1>
+        <p class="about-hero__subtitle">Bringing Nature's Beauty to Your Home</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Our Story Section -->
+  <div class="about-story">
+    <div class="page-width">
+      <div class="about-story__grid">
+        <div class="about-story__content">
+          <h2 class="about-story__heading">Our Story</h2>
+          <div class="about-story__text">
+            <p>
+              Welcome to Andra's Garden Heaven, where we believe that every home deserves a touch of nature's elegance.
+              Based in the heart of Glasgow, we specialize in creating and curating beautiful handmade rattan furniture
+              that brings warmth, comfort, and natural beauty to your living spaces.
+            </p>
+
+            <p>
+              Our journey began with a simple passion for quality craftsmanship and a deep appreciation for the natural
+              materials that make our furniture unique. Each piece in our collection is carefully selected or
+              handcrafted to ensure it meets our high standards of quality, durability, and aesthetic appeal.
+            </p>
+
+            <p>
+              We understand that your home is your sanctuary, and that's why we're committed to providing furniture that
+              not only looks beautiful but also feels comfortable and lasts for years to come. Our rattan pieces are
+              designed to complement any interior style, from modern minimalism to classic elegance.
+            </p>
+          </div>
+        </div>
+        <div class="about-story__image">
+          <img
+            src="{{ 'hero_image.png' | asset_url }}"
+            alt="Andra's Garden Heaven Showroom"
+            width="600"
+            height="400"
+            loading="lazy"
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Our Values Section -->
+  <div class="about-values">
+    <div class="page-width">
+      <h2 class="about-values__heading">Our Values</h2>
+      <div class="about-values__grid">
+        <div class="about-value">
+          <div class="about-value__icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <path d="M24 4L29.09 16.26L42 18L29.09 19.74L24 32L18.91 19.74L6 18L18.91 16.26L24 4Z" fill="#1C4219"/>
+            </svg>
+          </div>
+          <h3 class="about-value__title">Quality Craftsmanship</h3>
+          <p class="about-value__text">
+            Every piece is carefully crafted with attention to detail, ensuring the highest quality standards.
+          </p>
+        </div>
+
+        <div class="about-value">
+          <div class="about-value__icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <path d="M24 4C12.95 4 4 12.95 4 24C4 35.05 12.95 44 24 44C35.05 44 44 35.05 44 24C44 12.95 35.05 4 24 4ZM24 40C15.18 40 8 32.82 8 24C8 15.18 15.18 8 24 8C32.82 8 40 15.18 40 24C40 32.82 32.82 40 24 40Z" fill="#1C4219"/>
+            </svg>
+          </div>
+          <h3 class="about-value__title">Natural Materials</h3>
+          <p class="about-value__text">
+            We use only the finest natural rattan and sustainable materials in our furniture.
+          </p>
+        </div>
+
+        <div class="about-value">
+          <div class="about-value__icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <path d="M24 4L28 16H40L30 24L34 36L24 28L14 36L18 24L8 16H20L24 4Z" fill="#1C4219"/>
+            </svg>
+          </div>
+          <h3 class="about-value__title">Affordable Luxury</h3>
+          <p class="about-value__text">
+            We believe that beautiful, quality furniture should be accessible to everyone.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Why Choose Us Section -->
+  <div class="about-why">
+    <div class="page-width">
+      <div class="about-why__grid">
+        <div class="about-why__image">
+          <img
+            src="{{ 'IHS-img1.jpg' | asset_url }}"
+            alt="Handmade Rattan Furniture"
+            width="600"
+            height="400"
+            loading="lazy"
+          >
+        </div>
+        <div class="about-why__content">
+          <h2 class="about-why__heading">Why Choose Andra's Garden Heaven?</h2>
+          <div class="about-why__text">
+            <p>
+              <strong>Handmade Excellence:</strong> Each piece is crafted by skilled artisans who take pride in their
+              work, ensuring every detail is perfect.
+            </p>
+
+            <p>
+              <strong>Natural Beauty:</strong> Our rattan furniture brings the warmth and texture of nature into your
+              home, creating a calming and inviting atmosphere.
+            </p>
+
+            <p>
+              <strong>Versatile Design:</strong> From garden furniture to indoor pieces, our collection seamlessly
+              blends with any decor style and space.
+            </p>
+
+            <p>
+              <strong>Local Service:</strong> As a Glasgow-based business, we provide personalized service and support
+              to our local community and beyond.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call to Action -->
+  <div class="about-cta">
+    <div class="page-width">
+      <div class="about-cta__content">
+        <h2 class="about-cta__heading">Ready to Transform Your Space?</h2>
+        <p class="about-cta__text">
+          Explore our collection of beautiful handmade rattan furniture and discover the perfect pieces for your home.
+        </p>
+        <a href="{{ routes.all_products_collection_url }}" class="button button--primary">Shop Our Collection</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .about-us-page {
+    font-family: 'Elgian', sans-serif;
+    color: #000000;
+  }
+
+  .about-hero {
+    background: linear-gradient(135deg, #1c4219 0%, #1c6e8c 100%);
+    color: #fbfcff;
+    padding: 80px 0;
+    text-align: center;
+  }
+
+  .about-hero__title {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    font-weight: 400;
+  }
+
+  .about-hero__subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  .about-story {
+    padding: 80px 0;
+    background: #fbfcff;
+  }
+
+  .about-story__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .about-story__heading {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 2.5rem;
+    color: #1c4219;
+    margin-bottom: 2rem;
+  }
+
+  .about-story__text p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    color: #000000;
+  }
+
+  .about-story__image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(28, 66, 25, 0.1);
+  }
+
+  .about-values {
+    padding: 80px 0;
+    background: #d0ccd0;
+  }
+
+  .about-values__heading {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 2.5rem;
+    color: #1c4219;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .about-values__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+  }
+
+  .about-value {
+    text-align: center;
+    padding: 2rem;
+    background: #fbfcff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .about-value__icon {
+    margin-bottom: 1.5rem;
+  }
+
+  .about-value__title {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 1.5rem;
+    color: #1c4219;
+    margin-bottom: 1rem;
+  }
+
+  .about-value__text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #000000;
+  }
+
+  .about-why {
+    padding: 80px 0;
+    background: #fbfcff;
+  }
+
+  .about-why__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .about-why__heading {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 2.5rem;
+    color: #1c4219;
+    margin-bottom: 2rem;
+  }
+
+  .about-why__text p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    color: #000000;
+  }
+
+  .about-why__image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(28, 66, 25, 0.1);
+  }
+
+  .about-cta {
+    padding: 80px 0;
+    background: #1c4219;
+    color: #fbfcff;
+    text-align: center;
+  }
+
+  .about-cta__heading {
+    font-family: 'Futura Book', sans-serif;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .about-cta__text {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+
+  .button--primary {
+    background: #fbfcff;
+    color: #1c4219;
+    padding: 15px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-family: 'Futura Book', sans-serif;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.3s ease;
+  }
+
+  .button--primary:hover {
+    background: #d0ccd0;
+    transform: translateY(-2px);
+  }
+
+  .page-width {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  @media (max-width: 768px) {
+    .about-story__grid,
+    .about-why__grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .about-hero__title {
+      font-size: 2rem;
+    }
+
+    .about-story__heading,
+    .about-values__heading,
+    .about-why__heading,
+    .about-cta__heading {
+      font-size: 2rem;
+    }
+
+    .about-values__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

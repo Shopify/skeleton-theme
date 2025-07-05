@@ -1,33 +1,8 @@
 <div class="about-us-section">
   <div class="page-width">
-    <h2>{{ section.settings.heading }}</h2>
+    <h2>Our Story</h2>
     <div class="rte">
-      {{ section.settings.text }}
+      <p>Share your company's journey, mission, and values here.</p>
     </div>
   </div>
 </div>
-
-{% schema %}
-{
-  "name": "About Us Content",
-  "settings": [
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": "Our Story"
-    },
-    {
-      "type": "richtext",
-      "id": "text",
-      "label": "Text",
-      "default": "<p>Share your company's journey, mission, and values here.</p>"
-    }
-  ],
-  "presets": [
-    {
-      "name": "About Us Content"
-    }
-  ]
-}
-{% endschema %}
