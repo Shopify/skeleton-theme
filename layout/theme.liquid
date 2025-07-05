@@ -95,5 +95,84 @@
     {% section 'newsletter' %}
 
     {% section 'footer' %}
+
+    {%- unless template contains 'cart' or template contains 'checkout' -%}
+      <button id="agh-scroll-top" aria-label="Scroll to top">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+      </button>
+      <style>
+        #agh-scroll-top {
+          position: fixed;
+          right: 1.25rem;
+          bottom: 1.5rem;
+          z-index: 9999;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: var(--green, #1c4219);
+          color: var(--white, #fff);
+          border: white 1px solid;
+          box-shadow: 0 2px 8px rgba(28, 66, 25, 0.15);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          transition: opacity 0.2s, transform 0.2s;
+          opacity: 0.85;
+          cursor: pointer;
+          padding: 0;
+        }
+        #agh-scroll-top svg {
+          display: block;
+          margin: auto;
+          color: var(--white, #fff);
+        }
+        #agh-scroll-top:active {
+          opacity: 1;
+          transform: scale(0.96);
+        }
+        @media (hover: hover) and (pointer: fine) {
+          #agh-scroll-top:hover {
+            opacity: 1;
+            background: var(--green700, #0c2f0f);
+          }
+        }
+        @media (max-width: 480px) {
+          #agh-scroll-top {
+            right: 0.75rem;
+            bottom: 1rem;
+            width: 38px;
+            height: 38px;
+          }
+        }
+      </style>
+      <script>
+        (function () {
+          var btn = document.getElementById('agh-scroll-top');
+          if (!btn) return;
+          var lastScroll = 0;
+          window.addEventListener('scroll', function () {
+            if (window.scrollY > 200) {
+              btn.style.display = 'flex';
+            } else {
+              btn.style.display = 'none';
+            }
+          });
+          btn.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        })();
+      </script>
+    {%- endunless -%}
   </body>
 </html>

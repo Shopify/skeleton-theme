@@ -7,11 +7,24 @@
 <style>
   /* AGH Brand Colors */
   :root {
-    --pakistan-green: #1c4219;
-    --french-grey: #d0ccd0;
+    --green100: #e3f5d7;
+    --green200: #c4ecb1;
+    --green300: #8dc67c;
+    --green400: #558d4b;
+
+    --green: #1c4219;
+    --green600: #123812;
+
+    --green700: #0c2f0f;
+    --green800: #07260d;
+
+    --green900: #041f0b;
+    --grey: #d0ccd0;
     --white: #fbfcff;
-    --cerulean: #1c6e8c;
-    --black: #000000;
+    --blue: #1c6e8c;
+    --black: #000;
+    --heading-font: 'Futura Book', sans-serif;
+    --body-font: 'Elgian', serif;
   }
 
   /* Typography - Fallbacks for web fonts */
@@ -27,16 +40,36 @@
 
   /* Product Page Container */
   .agh-product-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-    color: var(--black);
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 1rem 0;
+    color: var(--green900);
     background: var(--white);
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  .product-hero,
+  .product-images-container,
+  .product-details {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .product-images,
+  .product-image-wrapper,
+  .product-image {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   /* Product Hero Section */
   .product-hero {
+    display: -ms-grid;
     display: grid;
+    -ms-grid-columns: 1fr 1fr;
     grid-template-columns: 1fr 1fr;
     gap: 3rem;
     margin-bottom: 4rem;
@@ -117,7 +150,14 @@
 
   /* Product Details */
   .product-details {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
     flex-direction: column;
     gap: 2rem;
   }
@@ -126,11 +166,17 @@
     font-size: 2.5rem;
     line-height: 1.2;
     margin: 0;
-    color: var(--pakistan-green);
+    color: var(--green);
   }
 
   .price-container {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
     gap: 1rem;
     margin: 1rem 0;
@@ -150,15 +196,16 @@
 
   .price-compare {
     font-size: 1.2rem;
-    color: var(--french-grey);
+    color: var(--grey);
     text-decoration: line-through;
   }
 
   .product-description {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: var(--black);
-    margin: 1rem 0;
+    padding: 0 1rem;
+    margin: 0 auto;
+    word-break: break-word;
+    white-space: normal;
+    box-sizing: border-box;
   }
 
   /* Product Form */
@@ -200,8 +247,16 @@
 
   /* Quantity Controls */
   .quantity-controls {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
     width: fit-content;
     border: 2px solid var(--french-grey);
     border-radius: 0.5rem;
@@ -213,8 +268,17 @@
     border: none;
     width: 40px;
     height: 40px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
     align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
     justify-content: center;
     cursor: pointer;
     font-size: 1.2rem;
@@ -347,7 +411,7 @@
 
   /* Product Features */
   .product-features-section {
-    background: linear-gradient(135deg, var(--pakistan-green), #2d5a3d);
+    background: linear-gradient(135deg, var(--green900), #2d5a3d);
     border-radius: 2rem;
     padding: 3rem 2rem;
     margin: 4rem 0;
@@ -355,7 +419,9 @@
   }
 
   .features-grid {
+    display: -ms-grid;
     display: grid;
+    -ms-grid-columns: (minmax(250px, 1fr)) [auto-fit];
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
     max-width: 800px;
@@ -410,6 +476,22 @@
     .features-grid {
       grid-template-columns: 1fr;
       gap: 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .agh-product-page {
+      padding: 0.5rem 0;
+    }
+    .product-hero {
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .product-description {
+      padding: 0 0.75rem;
+    }
+    .product-features-section {
+      padding: 1rem 0.25rem;
     }
   }
 </style>

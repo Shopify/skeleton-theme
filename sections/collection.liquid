@@ -30,11 +30,12 @@
       {% for product in collection.products %}
         <div class="product-card">
           <a href="{{ product.url }}" class="product-card__link">
-            <div class="product-card__image-wrapper">
-              {% if product.featured_image %}
+            <div class="product-card__image-card">
+              {% assign main_image = product.featured_image | default: product.images.first %}
+              {% if main_image %}
                 {% render 'image',
                   class: 'product-card__image',
-                  image: product.featured_image,
+                  image: main_image,
                   url: product.url,
                   width: 400,
                   height: 400,
@@ -48,16 +49,10 @@
               {% endif %}
             </div>
             <div class="product-card__content">
-              <h2
-                class="product-card__title"
-                style="font-family: var(--heading-font); color: var(--green); font-size: 1.25rem; margin-bottom: 0.5rem;"
-              >
+              <h2 class="product-card__title">
                 {{ product.title | escape }}
               </h2>
-              <p
-                class="product-card__price"
-                style="font-family: var(--body-font); color: var(--green700); font-size: 1.1rem; font-weight: 600;"
-              >
+              <p class="product-card__price">
                 {{ product.price | money }}
               </p>
             </div>
@@ -95,7 +90,11 @@
     box-shadow: 0 4px 24px rgba(28, 66, 25, 0.08);
     overflow: hidden;
     transition: box-shadow 0.2s, transform 0.2s;
-    min-height: 380px;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
   }
   .product-card:hover {
     box-shadow: 0 8px 32px rgba(28, 66, 25, 0.16);
@@ -104,43 +103,64 @@
   }
   .product-card__link {
     text-decoration: none;
-    display: block;
+    display: flex;
+    flex-direction: column;
     height: 100%;
   }
-  .product-card__image-wrapper {
-    width: 100%;
-    aspect-ratio: 1/1;
+  .product-card__image-card {
     background: var(--white);
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 2px 12px rgba(28, 66, 25, 0.1);
+    padding: 1.25rem 1.25rem 0.5rem 1.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 220px;
+    max-height: 320px;
     overflow: hidden;
   }
   .product-card__image {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: cover;
-    border-radius: 1rem 1rem 0 0;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 6px rgba(28, 66, 25, 0.06);
+    background: var(--white);
   }
   .product-card__content {
-    padding: 1.5rem;
+    padding: 1.5rem 1.25rem 1.25rem 1.25rem;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    background: transparent;
   }
   .product-card__title {
+    font-family: var(--heading-font);
+    color: var(--grey);
+    font-size: 1.25rem;
     margin: 0 0 0.5rem 0;
+    font-weight: 600;
+    letter-spacing: 0.01em;
   }
   .product-card__price {
+    font-family: var(--body-font);
+    color: var(--grey);
+    font-size: 1.1rem;
+    font-weight: 600;
     margin: 0;
   }
-
+  .product-card__placeholder {
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    border-radius: 1rem;
+    background: var(--grey);
+  }
   .pagination-wrapper {
     grid-column: 1 / -1;
     text-align: center;
     margin-top: 3rem;
   }
-
   @media (max-width: 768px) {
     .collection-hero {
       padding: 2rem 0 1rem 0;
@@ -154,6 +174,9 @@
     .product-card__content {
       padding: 1.25rem 1rem;
     }
+    .product-card__image-card {
+      padding: 1rem 1rem 0.5rem 1rem;
+    }
   }
   @media (max-width: 480px) {
     .collection-title {
@@ -164,6 +187,12 @@
     }
     .collection-products-grid {
       grid-template-columns: 1fr;
+    }
+    .product-card__content {
+      padding: 1rem 0.75rem;
+    }
+    .product-card__image-card {
+      padding: 0.75rem 0.75rem 0.5rem 0.75rem;
     }
   }
 </style>

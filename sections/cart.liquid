@@ -97,7 +97,13 @@
           >
             <div class="item-image">
               {% if item.image %}
-                <img src="{{ item.image | img_url: '200x200' }}" alt="{{ item.product.title | escape }}" loading="lazy">
+                <img
+                  src="{{ item.image | image_url: '200x200' }}"
+                  alt="{{ item.product.title | escape }}"
+                  loading="lazy"
+                  width="200"
+                  height="200"
+                >
                 <div class="stock-badge">In Stock</div>
               {% else %}
                 <div class="no-image">
@@ -366,15 +372,42 @@
 {% stylesheet %}
   /* Enhanced Cart Styles - Integrated with AGH Theme */
 
-  /* Use existing theme color variables */
   .cart-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 1rem 0;
     font-family: 'Elgian', serif;
     background-color: var(--white, #fbfcff);
     color: var(--black, #000);
     min-height: 100vh;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  .cart-main,
+  .cart-items,
+  .cart-item,
+  .item-details {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .item-description {
+    padding: 0 1rem;
+    margin: 0 auto;
+    word-break: break-word;
+    white-space: normal;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 767px) {
+    .cart-container {
+      padding: 0.5rem 0;
+    }
+    .item-description {
+      padding: 0 0.75rem;
+    }
   }
 
   /* Cart Header */
@@ -580,12 +613,6 @@
     border-radius: 4px;
     font-size: 0.8rem;
     color: var(--green400, #558d4b);
-  }
-
-  .item-description {
-    color: var(--green400, #558d4b);
-    font-size: 0.9rem;
-    line-height: 1.5;
   }
 
   .item-features {

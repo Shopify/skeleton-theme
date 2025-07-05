@@ -333,6 +333,8 @@ Aligns titles to center */
     border-radius: 1rem;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   /* iOS Safari input fixes */
@@ -342,6 +344,256 @@ Aligns titles to center */
     -webkit-appearance: none;
     -webkit-border-radius: var(--style-border-radius-inputs);
     border-radius: var(--style-border-radius-inputs);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}
+/* ===== iOS SAFARI SPECIFIC FIXES FOR CRITICAL CSS ===== */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari viewport height fixes */
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* iOS Safari text rendering fixes */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* iOS Safari flexbox fixes */
+  .shopify-section {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+  }
+
+  /* iOS Safari transform fixes */
+  .glass,
+  .glass-card {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* iOS Safari backdrop-filter fixes */
+  .glass,
+  .glass-card {
+    -webkit-backdrop-filter: blur(2px) saturate(180%);
+    backdrop-filter: blur(2px) saturate(180%);
+  }
+
+  /* iOS Safari button fixes */
+  .button,
+  .shop-now,
+  .learn-more,
+  .newsletter-button {
+    -webkit-appearance: none;
+    -webkit-border-radius: 1rem;
+    border-radius: 1rem;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* iOS Safari input fixes */
+  input,
+  textarea,
+  select {
+    -webkit-appearance: none;
+    -webkit-border-radius: var(--style-border-radius-inputs);
+    border-radius: var(--style-border-radius-inputs);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}
+/* ===== iOS SAFARI SPECIFIC FIXES FOR CRITICAL CSS ===== */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari viewport height fixes */
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* iOS Safari text rendering fixes */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* iOS Safari flexbox fixes */
+  .shopify-section {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+  }
+
+  /* iOS Safari transform fixes */
+  .glass,
+  .glass-card {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* iOS Safari backdrop-filter fixes */
+  .glass,
+  .glass-card {
+    -webkit-backdrop-filter: blur(2px) saturate(180%);
+    backdrop-filter: blur(2px) saturate(180%);
+  }
+
+  /* iOS Safari button fixes */
+  .button,
+  .shop-now,
+  .learn-more,
+  .newsletter-button {
+    -webkit-appearance: none;
+    -webkit-border-radius: 1rem;
+    border-radius: 1rem;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* iOS Safari input fixes */
+  input,
+  textarea,
+  select {
+    -webkit-appearance: none;
+    -webkit-border-radius: var(--style-border-radius-inputs);
+    border-radius: var(--style-border-radius-inputs);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}
+/* ===== iOS SAFARI SPECIFIC FIXES FOR CRITICAL CSS ===== */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari viewport height fixes */
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* iOS Safari text rendering fixes */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* iOS Safari flexbox fixes */
+  .shopify-section {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+  }
+
+  /* iOS Safari transform fixes */
+  .glass,
+  .glass-card {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* iOS Safari backdrop-filter fixes */
+  .glass,
+  .glass-card {
+    -webkit-backdrop-filter: blur(2px) saturate(180%);
+    backdrop-filter: blur(2px) saturate(180%);
+  }
+
+  /* iOS Safari button fixes */
+  .button,
+  .shop-now,
+  .learn-more,
+  .newsletter-button {
+    -webkit-appearance: none;
+    -webkit-border-radius: 1rem;
+    border-radius: 1rem;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* iOS Safari input fixes */
+  input,
+  textarea,
+  select {
+    -webkit-appearance: none;
+    -webkit-border-radius: var(--style-border-radius-inputs);
+    border-radius: var(--style-border-radius-inputs);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+}
+/* ===== iOS SAFARI SPECIFIC FIXES FOR CRITICAL CSS ===== */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari viewport height fixes */
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* iOS Safari text rendering fixes */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* iOS Safari flexbox fixes */
+  .shopify-section {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+  }
+
+  /* iOS Safari transform fixes */
+  .glass,
+  .glass-card {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* iOS Safari backdrop-filter fixes */
+  .glass,
+  .glass-card {
+    -webkit-backdrop-filter: blur(2px) saturate(180%);
+    backdrop-filter: blur(2px) saturate(180%);
+  }
+
+  /* iOS Safari button fixes */
+  .button,
+  .shop-now,
+  .learn-more,
+  .newsletter-button {
+    -webkit-appearance: none;
+    -webkit-border-radius: 1rem;
+    border-radius: 1rem;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* iOS Safari input fixes */
+  input,
+  textarea,
+  select {
+    -webkit-appearance: none;
+    -webkit-border-radius: var(--style-border-radius-inputs);
+    border-radius: var(--style-border-radius-inputs);
+    -webkit-appearance: none;
+    appearance: none;
   }
 }
 /* Glass Card css */
