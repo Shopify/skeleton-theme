@@ -8,7 +8,7 @@
     </h2>
     <ul class="product-grid">
       {% for product in collections.frontpage.products %}
-        <li class="product-item">
+        <li class="product-item agh-featured-card">
           <a href="{{ product.url }}">
             {% assign main_image = product.featured_image | default: product.images.first %}
             {% if main_image %}
@@ -34,3 +34,56 @@
     </ul>
   </div>
 </section>
+
+<style>
+  .agh-featured-card {
+    border: 2px solid var(--green, #1c4219);
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 12px rgba(28, 66, 25, 0.08);
+    background: var(--white);
+    transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .agh-featured-card a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--green900, #041f0b);
+    padding: 1.25rem 1rem 1rem 1rem;
+    transition: color 0.2s;
+  }
+  .agh-featured-card .featured-product-image {
+    border-radius: 1rem;
+    box-shadow: 0 1px 6px rgba(28, 66, 25, 0.06);
+    background: var(--white);
+    transition: transform 0.3s;
+  }
+  .agh-featured-card h3 {
+    font-family: var(--heading-font);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem 0;
+    color: var(--green);
+    letter-spacing: 0.01em;
+    text-align: center;
+  }
+  .agh-featured-card p {
+    font-family: var(--body-font);
+    font-size: 1.05rem;
+    color: var(--green700);
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+  }
+  .agh-featured-card:hover,
+  .agh-featured-card:focus-within {
+    border-color: var(--green700, #0c2f0f);
+    box-shadow: 0 6px 24px rgba(28, 66, 25, 0.16);
+    transform: translateY(-4px) scale(1.025);
+  }
+  .agh-featured-card:hover .featured-product-image,
+  .agh-featured-card:focus-within .featured-product-image {
+    transform: scale(1.06);
+  }
+</style>
