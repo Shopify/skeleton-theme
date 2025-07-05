@@ -1,0 +1,34 @@
+{
+    "sections": {
+        "hero-banner": {
+            "type": "hero-banner"
+        },
+        "BelowFold": {
+            "type": "BelowFold"
+        },
+        "featured-products": {
+            "type": "featured-products"
+        },
+        "trust": {
+            "type": "trust"
+        },
+        "about": {
+            "type": "about"
+        },
+        "newsletter": {
+            "type": "newsletter"
+        },
+        "footer": {
+            "type": "footer"
+        }
+    },
+    "order": [
+        "hero-banner",
+        "BelowFold",
+        "featured-products",
+        "trust",
+        "about",
+        "newsletter",
+        "footer"
+    ]
+}

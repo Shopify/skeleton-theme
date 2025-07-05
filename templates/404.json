@@ -13,9 +13,13 @@
       "type": "404",
       "disabled": true,
       "settings": {}
+    },
+    "footer": {
+      "type": "footer"
     }
   },
   "order": [
-    "main"
+    "main",
+    "footer"
   ]
 }

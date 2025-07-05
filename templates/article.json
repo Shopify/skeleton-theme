@@ -12,9 +12,13 @@
     "main": {
       "type": "article",
       "settings": {}
+    },
+    "footer": {
+      "type": "footer"
     }
   },
   "order": [
-    "main"
+    "main",
+    "footer"
   ]
 }

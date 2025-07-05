@@ -2,32 +2,45 @@
   <div class="wrapper featured-products-wrapper">
     <h2
       class="section-title"
-      style="text-align: center; margin: 3rem 0; margintop: 3rem; color: var(--green); font-size: 2.5rem;"
+      style="text-align: center; margin: 3rem 0; margin-top: 3rem; color: var(--green); font-size: 2.5rem;"
     >
       Featured Rattan Pieces
     </h2>
     <ul class="product-grid">
       {% for product in collections.frontpage.products %}
         <li class="product-item agh-featured-card">
-          <a href="{{ product.url }}">
+          <a href="{{ product.url }}" class="product-link">
             {% assign main_image = product.featured_image | default: product.images.first %}
             {% if main_image %}
-              {% render 'image',
-                class: 'featured-product-image',
-                image: main_image,
-                url: product.url,
-                width: 600,
-                height: 600,
-                crop: 'center'
-              %}
+              <div class="product-image-container">
+                <img
+                  src="{{ main_image | image_url: width: 600, height: 600, crop: 'center' }}"
+                  alt="{{ product.title | escape }}"
+                  class="featured-product-image"
+                  width="600"
+                  height="600"
+                  loading="lazy"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                >
+                <div class="product-image-fallback" style="display: none;">
+                  <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" fill="currentColor"/>
+                  </svg>
+                  <span>Image not available</span>
+                </div>
+              </div>
             {% else %}
-              <div
-                class="product-card__placeholder"
-                style="background: var(--grey); width: 100%; height: 0; padding-bottom: 100%; border-radius: 1rem;"
-              ></div>
+              <div class="product-image-fallback">
+                <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" fill="currentColor"/>
+                </svg>
+                <span>Image not available</span>
+              </div>
             {% endif %}
-            <h3>{{ product.title }}</h3>
-            <p>{{ product.price | money }}</p>
+            <div class="product-info">
+              <h3 class="product-title">{{ product.title }}</h3>
+              <p class="product-price">{{ product.price | money }}</p>
+            </div>
           </a>
         </li>
       {% endfor %}
@@ -36,6 +49,32 @@
 </section>
 
 <style>
+  .featured-products {
+    padding: 2rem 0;
+    background: var(--white, #fbfcff);
+  }
+
+  .featured-products-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .section-title {
+    font-family: 'Futura', sans-serif;
+    font-weight: 600;
+    margin-bottom: 2rem;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
   .agh-featured-card {
     border: 2px solid var(--green, #1c4219);
     border-radius: 1.25rem;
@@ -43,47 +82,167 @@
     background: var(--white);
     transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
     overflow: hidden;
-    margin-bottom: 1.5rem;
+    height: 100%;
   }
-  .agh-featured-card a {
+
+  .product-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: var(--green900, #041f0b);
+    transition: color 0.2s;
+  }
+
+  .product-image-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    overflow: hidden;
+    background: var(--green100, #e3f5d7);
+  }
+
+  .featured-product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 1rem 1rem 0 0;
+    transition: transform 0.3s ease;
+  }
+
+  .product-image-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-decoration: none;
-    color: var(--green900, #041f0b);
+    justify-content: center;
+    background: var(--green100, #e3f5d7);
+    color: var(--green400, #558d4b);
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  .product-image-fallback svg {
+    margin-bottom: 0.5rem;
+    opacity: 0.6;
+  }
+
+  .product-image-fallback span {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .product-info {
     padding: 1.25rem 1rem 1rem 1rem;
-    transition: color 0.2s;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
-  .agh-featured-card .featured-product-image {
-    border-radius: 1rem;
-    box-shadow: 0 1px 6px rgba(28, 66, 25, 0.06);
-    background: var(--white);
-    transition: transform 0.3s;
-  }
-  .agh-featured-card h3 {
-    font-family: var(--heading-font);
+
+  .product-title {
+    font-family: 'Futura', sans-serif;
     font-size: 1.15rem;
     font-weight: 600;
-    margin: 1rem 0 0.5rem 0;
+    margin: 0 0 0.5rem 0;
     color: var(--green);
     letter-spacing: 0.01em;
     text-align: center;
+    line-height: 1.3;
   }
-  .agh-featured-card p {
-    font-family: var(--body-font);
+
+  .product-price {
+    font-family: 'Futura', sans-serif;
     font-size: 1.05rem;
     color: var(--green700);
-    margin: 0 0 0.5rem 0;
+    margin: 0;
     text-align: center;
+    font-weight: 600;
   }
+
   .agh-featured-card:hover,
   .agh-featured-card:focus-within {
     border-color: var(--green700, #0c2f0f);
     box-shadow: 0 6px 24px rgba(28, 66, 25, 0.16);
     transform: translateY(-4px) scale(1.025);
   }
+
   .agh-featured-card:hover .featured-product-image,
   .agh-featured-card:focus-within .featured-product-image {
     transform: scale(1.06);
+  }
+
+  /* Mobile Optimizations */
+  @media (max-width: 768px) {
+    .featured-products-wrapper {
+      padding: 0 0.75rem;
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin: 2rem 0 1.5rem 0;
+    }
+
+    .agh-featured-card {
+      border-width: 1px;
+      border-radius: 1rem;
+    }
+
+    .product-info {
+      padding: 1rem 0.75rem 0.75rem 0.75rem;
+    }
+
+    .product-title {
+      font-size: 1.1rem;
+    }
+
+    .product-price {
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .product-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.75rem;
+      margin: 1.5rem 0 1rem 0;
+    }
+
+    .featured-products-wrapper {
+      padding: 0 0.5rem;
+    }
+  }
+
+  /* Touch Device Optimizations */
+  @media (hover: none) and (pointer: coarse) {
+    .agh-featured-card:hover,
+    .agh-featured-card:focus-within {
+      transform: none;
+    }
+
+    .agh-featured-card:hover .featured-product-image,
+    .agh-featured-card:focus-within .featured-product-image {
+      transform: none;
+    }
+
+    .agh-featured-card:active {
+      transform: scale(0.98);
+    }
   }
 </style>
