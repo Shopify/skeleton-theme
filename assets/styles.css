@@ -96,7 +96,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--black);
+  background: var(--green900); /* Changed background to dark green */
 }
 
 /* Pattern Background */
@@ -191,7 +191,7 @@
   }
 
   .pattern-background {
-    background-size: 100% 100%;
+    opacity: 0;
     background-image: none var(--green800); /* Removed pattern background image */
   }
 }
@@ -200,7 +200,9 @@
   .hero-nav {
     margin: 0 0.625rem; /* Changed from fixed 10px to rem */
   }
-
+  .pattern-background {
+    opacity: 0;
+  }
   .hero-text-content {
     padding: 1.5rem 0.5rem;
   }
@@ -676,6 +678,12 @@
   font-size: 1rem;
   line-height: 1.6;
   opacity: 0.9;
+}
+.trust-video-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 3rem;
 }
 
 /* Mobile optimization for trust section */
