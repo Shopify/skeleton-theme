@@ -1,0 +1,57 @@
+
+<div class="contact-form-section">
+  <div class="page-width">
+    <h2>{{ section.settings.heading }}</h2>
+    {% form 'contact' %}
+
+      {% if form.posted_successfully? %}
+        <p class="form-success">Your message has been sent successfully!</p>
+      {% endif %}
+
+      {{ form.errors | default_errors }}
+
+      <div class="form-field">
+        <label for="ContactFormName">Name</label>
+        <input type="text" id="ContactFormName" name="contact[name]" value="{% if form.name %}{{ form.name }}{% endif %}">
+      </div>
+
+      <div class="form-field">
+        <label for="ContactFormEmail">Email</label>
+        <input type="email" id="ContactFormEmail" name="contact[email]" value="{% if form.email %}{{ form.email }}{% endif %}" spellcheck="false" autocomplete="email" aria-required="true">
+      </div>
+
+      <div class="form-field">
+        <label for="ContactFormPhone">Phone Number</label>
+        <input type="tel" id="ContactFormPhone" name="contact[phone]">
+      </div>
+
+      <div class="form-field">
+        <label for="ContactFormMessage">Message</label>
+        <textarea rows="10" id="ContactFormMessage" name="contact[body]">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+      </div>
+
+      <input type="submit" class="button" value="Send">
+
+    {% endform %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Contact Form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Contact Us"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Form"
+    }
+  ]
+}
+{% endschema %}
+

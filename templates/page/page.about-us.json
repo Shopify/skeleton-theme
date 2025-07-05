@@ -1,0 +1,19 @@
+{
+    "sections": {
+        "main": {
+            "type": "main-page",
+            "settings": {}
+        },
+        "about-us-content": {
+            "type": "about-us-content",
+            "settings": {
+                "heading": "Our Story",
+                "text": "Write your compelling story here."
+            }
+        }
+    },
+    "order": [
+        "main",
+        "about-us-content"
+    ]
+}

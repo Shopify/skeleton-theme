@@ -1,0 +1,32 @@
+<div class="about-us-section">
+  <div class="page-width">
+    <h2>{{ section.settings.heading }}</h2>
+    <div class="rte">
+      {{ section.settings.text }}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "About Us Content",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Story"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "About Us Content"
+    }
+  ]
+}
+{% endschema %}
