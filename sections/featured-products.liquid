@@ -1,12 +1,32 @@
 <section class="section featured-products">
   <div class="wrapper featured-products-wrapper">
-    <h2 class="section-title" style="text-align: center; margin: 3rem 0; margintop: 3rem; color: var(--green); font-size: 2.5rem;">
-        Featured Rattan Pieces</h2>
+    <h2
+      class="section-title"
+      style="text-align: center; margin: 3rem 0; margintop: 3rem; color: var(--green); font-size: 2.5rem;"
+    >
+      Featured Rattan Pieces
+    </h2>
     <ul class="product-grid">
       {% for product in collections.frontpage.products %}
         <li class="product-item">
           <a href="{{ product.url }}">
-<img src="{{ product.featured_image | image_url: '600x600' }}" alt="{{ product.title }}" width="600" height="600">            <h3>{{ product.title }}</h3>
+            {% assign main_image = product.featured_image | default: product.images.first %}
+            {% if main_image %}
+              {% render 'image',
+                class: 'featured-product-image',
+                image: main_image,
+                url: product.url,
+                width: 600,
+                height: 600,
+                crop: 'center'
+              %}
+            {% else %}
+              <div
+                class="product-card__placeholder"
+                style="background: var(--grey); width: 100%; height: 0; padding-bottom: 100%; border-radius: 1rem;"
+              ></div>
+            {% endif %}
+            <h3>{{ product.title }}</h3>
             <p>{{ product.price | money }}</p>
           </a>
         </li>
