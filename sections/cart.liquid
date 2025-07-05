@@ -211,122 +211,114 @@
 
       <!-- Order Summary Section -->
       <aside class="order-summary">
-        <div class="summary-card">
-          <h2 class="summary-title">Order Summary</h2>
-
-          <!-- Discount Code Section -->
-          <div class="discount-section">
-            <div class="discount-input-group">
-              <input type="text" class="discount-input" placeholder="Enter discount code">
-              <button class="apply-discount-btn">Apply</button>
+        <form action="{{ routes.cart_url }}" method="post">
+          <div class="summary-card">
+            <h2 class="summary-title">Order Summary</h2>
+            <!-- Discount Code Section -->
+            <div class="discount-section">
+              <div class="discount-input-group">
+                <input type="text" class="discount-input" placeholder="Enter discount code">
+                <button class="apply-discount-btn">Apply</button>
+              </div>
             </div>
+            <!-- Price Breakdown -->
+            <div class="price-breakdown">
+              <div class="price-row">
+                <span class="price-label"
+                  >Subtotal ({{ cart.item_count }} item{% if cart.item_count != 1 %}s{% endif %})</span
+                >
+                <span class="price-value">{{ cart.total_price | money }}</span>
+              </div>
+              {% if cart.total_discounts > 0 %}
+                <div class="price-row discount-row">
+                  <span class="price-label">Discount</span>
+                  <span class="price-value discount-amount">-{{ cart.total_discounts | money }}</span>
+                </div>
+              {% endif %}
+              <div class="price-row">
+                <span class="price-label">Delivery</span>
+                <span class="price-value free-delivery">FREE</span>
+              </div>
+              <div class="price-row">
+                <span class="price-label">VAT (20%)</span>
+                <span class="price-value">{{ cart.total_price | times: 0.2 | money }}</span>
+              </div>
+              <div class="price-row total-row">
+                <span class="price-label">Total</span>
+                <span class="price-value">{{ cart.total_price | times: 1.2 | money }}</span>
+              </div>
+            </div>
+            <!-- Trust Badges -->
+            <div class="trust-badges">
+              <div class="trust-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" fill="currentColor"/>
+                </svg>
+                <div>
+                  <strong>Secure Payment</strong>
+                  <p>Your payment information is encrypted and secure</p>
+                </div>
+              </div>
+              <div class="trust-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.5,8C9.85,8 7.45,9 5.6,10.6L2,7V16H11L7.4,12.4C8.8,11.3 10.4,10.5 12.5,10.5C16.04,10.5 18.5,12.96 18.5,16.5H21C21,11.58 17.42,8 12.5,8Z" fill="currentColor"/>
+                </svg>
+                <div>
+                  <strong>Easy Returns</strong>
+                  <p>30-day return policy for your peace of mind</p>
+                </div>
+              </div>
+              <div class="trust-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3,4A2,2 0 0,0 1,6V17H3A3,3 0 0,0 6,20A3,3 0 0,0 9,17H15A3,3 0 0,0 18,20A3,3 0 0,0 21,17H23V12L20,8H17V4M10,6L14,10L10,14V11H4V9H10M17,9.5H19.5L21.47,12H17M6,15.5A1.5,1.5 0 0,1 7.5,17A1.5,1.5 0 0,1 6,18.5A1.5,1.5 0 0,1 4.5,17A1.5,1.5 0 0,1 6,15.5M18,15.5A1.5,1.5 0 0,1 19.5,17A1.5,1.5 0 0,1 18,18.5A1.5,1.5 0 0,1 16.5,17A1.5,1.5 0 0,1 18,15.5Z" fill="currentColor"/>
+                </svg>
+                <div>
+                  <strong>Free Delivery</strong>
+                  <p>Complimentary delivery on all orders over £500</p>
+                </div>
+              </div>
+              <div class="trust-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12,2A3,3 0 0,1 15,5V7H20A1,1 0 0,1 21,8V19A1,1 0 0,1 20,20H4A1,1 0 0,1 3,19V8A1,1 0 0,1 4,7H9V5A3,3 0 0,1 12,2M12,4A1,1 0 0,0 11,5V7H13V5A1,1 0 0,0 12,4M6.5,10A0.5,0.5 0 0,0 6,10.5V12.5A0.5,0.5 0 0,0 6.5,13A0.5,0.5 0 0,0 7,12.5V10.5A0.5,0.5 0 0,0 6.5,10M9.5,10A0.5,0.5 0 0,0 9,10.5V12.5A0.5,0.5 0 0,0 9.5,13A0.5,0.5 0 0,0 10,12.5V10.5A0.5,0.5 0 0,0 9.5,10M12.5,10A0.5,0.5 0 0,0 12,10.5V12.5A0.5,0.5 0 0,0 12.5,13A0.5,0.5 0 0,0 13,12.5V10.5A0.5,0.5 0 0,0 12.5,10M15.5,10A0.5,0.5 0 0,0 15,10.5V12.5A0.5,0.5 0 0,0 15.5,13A0.5,0.5 0 0,0 16,12.5V10.5A0.5,0.5 0 0,0 15.5,10M17.5,10A0.5,0.5 0 0,0 17,10.5V12.5A0.5,0.5 0 0,0 17.5,13A0.5,0.5 0 0,0 18,12.5V10.5A0.5,0.5 0 0,0 17.5,10Z" fill="currentColor"/>
+                </svg>
+                <div>
+                  <strong>Customer Support</strong>
+                  <p>Expert help available 7 days a week</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="payment-methods">
+              <span class="payment-label">We accept:</span>
+              <div class="payment-icons">
+                <svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="32" height="20" rx="4" fill="#1A1F71"/>
+                  <path d="M13.8 6.4H18.2V13.6H13.8V6.4Z" fill="#FF5F00"/>
+                  <path d="M14.1 10C14.1 8.8 14.6 7.7 15.4 6.9C14.6 6.1 13.5 5.6 12.3 5.6C9.9 5.6 8 7.5 8 9.9C8 12.3 9.9 14.2 12.3 14.2C13.5 14.2 14.6 13.7 15.4 12.9C14.6 12.2 14.1 11.1 14.1 10Z" fill="#EB001B"/>
+                  <path d="M24 10C24 12.4 22.1 14.3 19.7 14.3C18.5 14.3 17.4 13.8 16.6 13C17.4 12.2 17.9 11.1 17.9 10C17.9 8.9 17.4 7.8 16.6 7C17.4 6.2 18.5 5.7 19.7 5.7C22.1 5.7 24 7.6 24 10Z" fill="#00A2E5"/>
+                </svg>
+                <svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="32" height="20" rx="4" fill="#0070BA"/>
+                  <path d="M12.3 7.2C12.3 6.8 12.6 6.5 13 6.5H14.5C15.3 6.5 16 7.2 16 8V12C16 12.8 15.3 13.5 14.5 13.5H13C12.6 13.5 12.3 13.2 12.3 12.8V7.2Z" fill="white"/>
+                  <path d="M16.5 7.2C16.5 6.8 16.8 6.5 17.2 6.5H18.7C19.5 6.5 20.2 7.2 20.2 8V12C20.2 12.8 19.5 13.5 18.7 13.5H17.2C16.8 13.5 16.5 13.2 16.5 12.8V7.2Z" fill="white"/>
+                </svg>
+                <svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="32" height="20" rx="4" fill="#000"/>
+                  <path d="M8 10L12 6V8H20V12H12V14L8 10Z" fill="white"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Checkout Button -->
+            <button type="submit" name="checkout" class="checkout-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z" fill="currentColor"/>
+              </svg>
+              Secure Checkout
+            </button>
           </div>
-
-          <!-- Price Breakdown -->
-          <div class="price-breakdown">
-            <div class="price-row">
-              <span class="price-label"
-                >Subtotal ({{ cart.item_count }} item{% if cart.item_count != 1 %}s{% endif %})</span
-              >
-              <span class="price-value">{{ cart.total_price | money }}</span>
-            </div>
-
-            {% if cart.total_discounts > 0 %}
-              <div class="price-row discount-row">
-                <span class="price-label">Discount</span>
-                <span class="price-value discount-amount">-{{ cart.total_discounts | money }}</span>
-              </div>
-            {% endif %}
-
-            <div class="price-row">
-              <span class="price-label">Delivery</span>
-              <span class="price-value free-delivery">FREE</span>
-            </div>
-
-            <div class="price-row">
-              <span class="price-label">VAT (20%)</span>
-              <span class="price-value">{{ cart.total_price | times: 0.2 | money }}</span>
-            </div>
-
-            <div class="price-row total-row">
-              <span class="price-label">Total</span>
-              <span class="price-value">{{ cart.total_price | times: 1.2 | money }}</span>
-            </div>
-          </div>
-
-          <!-- Trust Badges -->
-          <div class="trust-badges">
-            <div class="trust-badge">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z" fill="currentColor"/>
-              </svg>
-              <div>
-                <strong>Secure Payment</strong>
-                <p>Your payment information is encrypted and secure</p>
-              </div>
-            </div>
-
-            <div class="trust-badge">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12.5,8C9.85,8 7.45,9 5.6,10.6L2,7V16H11L7.4,12.4C8.8,11.3 10.4,10.5 12.5,10.5C16.04,10.5 18.5,12.96 18.5,16.5H21C21,11.58 17.42,8 12.5,8Z" fill="currentColor"/>
-              </svg>
-              <div>
-                <strong>Easy Returns</strong>
-                <p>30-day return policy for your peace of mind</p>
-              </div>
-            </div>
-
-            <div class="trust-badge">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3,4A2,2 0 0,0 1,6V17H3A3,3 0 0,0 6,20A3,3 0 0,0 9,17H15A3,3 0 0,0 18,20A3,3 0 0,0 21,17H23V12L20,8H17V4M10,6L14,10L10,14V11H4V9H10M17,9.5H19.5L21.47,12H17M6,15.5A1.5,1.5 0 0,1 7.5,17A1.5,1.5 0 0,1 6,18.5A1.5,1.5 0 0,1 4.5,17A1.5,1.5 0 0,1 6,15.5M18,15.5A1.5,1.5 0 0,1 19.5,17A1.5,1.5 0 0,1 18,18.5A1.5,1.5 0 0,1 16.5,17A1.5,1.5 0 0,1 18,15.5Z" fill="currentColor"/>
-              </svg>
-              <div>
-                <strong>Free Delivery</strong>
-                <p>Complimentary delivery on all orders over £500</p>
-              </div>
-            </div>
-
-            <div class="trust-badge">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12,2A3,3 0 0,1 15,5V7H20A1,1 0 0,1 21,8V19A1,1 0 0,1 20,20H4A1,1 0 0,1 3,19V8A1,1 0 0,1 4,7H9V5A3,3 0 0,1 12,2M12,4A1,1 0 0,0 11,5V7H13V5A1,1 0 0,0 12,4M6.5,10A0.5,0.5 0 0,0 6,10.5V12.5A0.5,0.5 0 0,0 6.5,13A0.5,0.5 0 0,0 7,12.5V10.5A0.5,0.5 0 0,0 6.5,10M9.5,10A0.5,0.5 0 0,0 9,10.5V12.5A0.5,0.5 0 0,0 9.5,13A0.5,0.5 0 0,0 10,12.5V10.5A0.5,0.5 0 0,0 9.5,10M12.5,10A0.5,0.5 0 0,0 12,10.5V12.5A0.5,0.5 0 0,0 12.5,13A0.5,0.5 0 0,0 13,12.5V10.5A0.5,0.5 0 0,0 12.5,10M15.5,10A0.5,0.5 0 0,0 15,10.5V12.5A0.5,0.5 0 0,0 15.5,13A0.5,0.5 0 0,0 16,12.5V10.5A0.5,0.5 0 0,0 15.5,10M17.5,10A0.5,0.5 0 0,0 17,10.5V12.5A0.5,0.5 0 0,0 17.5,13A0.5,0.5 0 0,0 18,12.5V10.5A0.5,0.5 0 0,0 17.5,10Z" fill="currentColor"/>
-              </svg>
-              <div>
-                <strong>Customer Support</strong>
-                <p>Expert help available 7 days a week</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Payment Methods -->
-          <div class="payment-methods">
-            <span class="payment-label">We accept:</span>
-            <div class="payment-icons">
-              <svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="20" rx="4" fill="#1A1F71"/>
-                <path d="M13.8 6.4H18.2V13.6H13.8V6.4Z" fill="#FF5F00"/>
-                <path d="M14.1 10C14.1 8.8 14.6 7.7 15.4 6.9C14.6 6.1 13.5 5.6 12.3 5.6C9.9 5.6 8 7.5 8 9.9C8 12.3 9.9 14.2 12.3 14.2C13.5 14.2 14.6 13.7 15.4 12.9C14.6 12.2 14.1 11.1 14.1 10Z" fill="#EB001B"/>
-                <path d="M24 10C24 12.4 22.1 14.3 19.7 14.3C18.5 14.3 17.4 13.8 16.6 13C17.4 12.2 17.9 11.1 17.9 10C17.9 8.9 17.4 7.8 16.6 7C17.4 6.2 18.5 5.7 19.7 5.7C22.1 5.7 24 7.6 24 10Z" fill="#00A2E5"/>
-              </svg>
-              <svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="20" rx="4" fill="#0070BA"/>
-                <path d="M12.3 7.2C12.3 6.8 12.6 6.5 13 6.5H14.5C15.3 6.5 16 7.2 16 8V12C16 12.8 15.3 13.5 14.5 13.5H13C12.6 13.5 12.3 13.2 12.3 12.8V7.2Z" fill="white"/>
-                <path d="M16.5 7.2C16.5 6.8 16.8 6.5 17.2 6.5H18.7C19.5 6.5 20.2 7.2 20.2 8V12C20.2 12.8 19.5 13.5 18.7 13.5H17.2C16.8 13.5 16.5 13.2 16.5 12.8V7.2Z" fill="white"/>
-              </svg>
-              <svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="20" rx="4" fill="#000"/>
-                <path d="M8 10L12 6V8H20V12H12V14L8 10Z" fill="white"/>
-              </svg>
-            </div>
-          </div>
-
-          <!-- Checkout Button -->
-          <a href="{{ routes.checkout_url }}" class="checkout-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z" fill="currentColor"/>
-            </svg>
-            Secure Checkout
-          </a>
-        </div>
+        </form>
       </aside>
     {% else %}
       <!-- Empty Cart State -->
