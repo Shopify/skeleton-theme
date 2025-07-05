@@ -102,7 +102,8 @@
   </div>
 </header>
 
-{% stylesheet %}
+<style>
+  /* Header Styles */
   .agh-header {
     position: sticky;
     top: 0;
@@ -384,8 +385,8 @@
     font-weight: 500;
   }
 
-  /* Responsive Design */
-  @media (max-width: 768px) {
+  /* Mobile Styles - iPhone and small screens */
+  @media screen and (max-width: 768px) {
     .desktop-nav {
       display: none !important;
     }
@@ -407,7 +408,7 @@
     }
   }
 
-  @media (max-width: 480px) {
+  @media screen and (max-width: 480px) {
     .header-container {
       height: 60px;
     }
@@ -424,9 +425,20 @@
       gap: 0.5rem;
     }
   }
-{% endstylesheet %}
 
-{% javascript %}
+  /* iOS Safari specific fixes */
+  @supports (-webkit-touch-callout: none) {
+    .mobile-menu-toggle {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-nav-overlay {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+</style>
+
+<script>
   // Mobile Menu Functionality
   document.addEventListener('DOMContentLoaded', function () {
     const mobileToggle = document.querySelector('.mobile-menu-toggle');
@@ -472,7 +484,7 @@
       });
     }
   });
-{% endjavascript %}
+</script>
 
 {% schema %}
 {
