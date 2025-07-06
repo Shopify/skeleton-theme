@@ -53,7 +53,7 @@
         {% endif %}
       </a>
 
-      <!-- Mobile Menu Toggle -->
+      <!-- Mobile Menu Toggle - SIMPLIFIED FOR TESTING -->
       <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -103,14 +103,14 @@
 </header>
 
 <style>
-  /* Header Styles */
+  /* MINIMAL CSS FOR TESTING */
   .agh-header {
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 9999;
     background: #fbfcff;
     border-bottom: 1px solid #e3f5d7;
-    box-shadow: 0 2px 8px rgba(28, 66, 25, 0.1);
+    width: 100%;
   }
 
   .header-container {
@@ -123,25 +123,17 @@
     height: 70px;
   }
 
-  /* Brand */
   .header-brand {
     flex-shrink: 0;
   }
 
-  .brand-link {
-    text-decoration: none;
-    color: #1c4219;
-  }
-
   .brand-title {
-    font-family: 'Futura', sans-serif;
     font-size: 1.5rem;
     font-weight: 600;
     margin: 0;
     color: #1c4219;
   }
 
-  /* Desktop Navigation */
   .desktop-nav {
     display: flex;
     gap: 2rem;
@@ -152,81 +144,21 @@
     text-decoration: none;
     color: #1c4219;
     font-weight: 500;
-    transition: color 0.2s ease;
-    position: relative;
   }
 
-  .nav-link:hover {
-    color: #558d4b;
-  }
-
-  .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: #1c4219;
-    transition: width 0.2s ease;
-  }
-
-  .nav-link:hover::after {
-    width: 100%;
-  }
-
-  /* Search */
   .header-search {
     flex: 1;
     max-width: 400px;
     margin: 0 1rem;
   }
 
-  .search-form {
-    width: 100%;
-  }
-
-  .search-input-group {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
   .search-input {
     width: 100%;
     padding: 0.75rem 1rem;
-    padding-right: 3rem;
     border: 1px solid #c4ecb1;
     border-radius: 8px;
-    font-size: 1rem;
-    background: #fbfcff;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .search-input:focus {
-    outline: none;
-    border-color: #1c4219;
-    box-shadow: 0 0 0 3px rgba(28, 66, 25, 0.1);
-  }
-
-  .search-btn {
-    position: absolute;
-    right: 0.5rem;
-    background: none;
-    border: none;
-    color: #558d4b;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 4px;
-    transition: color 0.2s ease, background-color 0.2s ease;
-  }
-
-  .search-btn:hover {
-    color: #1c4219;
-    background-color: #e3f5d7;
-  }
-
-  /* Header Icons */
   .header-icons {
     display: flex;
     align-items: center;
@@ -234,34 +166,11 @@
   }
 
   .icon-link {
-    position: relative;
     color: #1c4219;
     text-decoration: none;
-    padding: 0.5rem;
-    border-radius: 6px;
-    transition: color 0.2s ease, background-color 0.2s ease;
   }
 
-  .icon-link:hover {
-    color: #558d4b;
-    background-color: #e3f5d7;
-  }
-
-  .cart-count {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: #1c4219;
-    color: #fbfcff;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.125rem 0.375rem;
-    border-radius: 10px;
-    min-width: 18px;
-    text-align: center;
-  }
-
-  /* Mobile Menu Toggle */
+  /* HAMBURGER MENU - SIMPLIFIED */
   .mobile-menu-toggle {
     display: none;
     flex-direction: column;
@@ -270,7 +179,10 @@
     cursor: pointer;
     padding: 0.5rem;
     gap: 4px;
-    z-index: 1001;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
   }
 
   .hamburger-line {
@@ -292,7 +204,6 @@
     transform: rotate(-45deg) translate(6px, -6px);
   }
 
-  /* Mobile Navigation */
   .mobile-nav-overlay {
     position: fixed;
     top: 70px;
@@ -302,7 +213,7 @@
     background: #fbfcff;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
-    z-index: 999;
+    z-index: 9998;
     overflow-y: auto;
   }
 
@@ -315,38 +226,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-  }
-
-  .mobile-search {
-    margin-bottom: 2rem;
-  }
-
-  .mobile-search-form {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .mobile-search-input {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    border: 1px solid #c4ecb1;
-    border-radius: 8px;
-    font-size: 1rem;
-    background: #fbfcff;
-  }
-
-  .mobile-search-input:focus {
-    outline: none;
-    border-color: #1c4219;
-  }
-
-  .mobile-search-btn {
-    background: #1c4219;
-    color: #fbfcff;
-    border: none;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
   }
 
   .mobile-menu-links {
@@ -363,29 +242,9 @@
     font-weight: 500;
     padding: 1rem 0;
     border-bottom: 1px solid #e3f5d7;
-    transition: color 0.2s ease;
   }
 
-  .mobile-nav-link:hover {
-    color: #558d4b;
-  }
-
-  .mobile-menu-footer {
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 1px solid #e3f5d7;
-  }
-
-  .mobile-account-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    color: #1c4219;
-    font-weight: 500;
-  }
-
-  /* Mobile Styles - iPhone and small screens */
+  /* MOBILE STYLES - FORCE HAMBURGER TO SHOW */
   @media screen and (max-width: 768px) {
     .desktop-nav {
       display: none !important;
@@ -398,14 +257,6 @@
     .mobile-menu-toggle {
       display: flex !important;
     }
-
-    .header-container {
-      padding: 0 0.75rem;
-    }
-
-    .brand-title {
-      font-size: 1.25rem;
-    }
   }
 
   @media screen and (max-width: 480px) {
@@ -416,37 +267,28 @@
     .mobile-nav-overlay {
       top: 60px;
     }
-
-    .brand-title {
-      font-size: 1.1rem;
-    }
-
-    .header-icons {
-      gap: 0.5rem;
-    }
-  }
-
-  /* iOS Safari specific fixes */
-  @supports (-webkit-touch-callout: none) {
-    .mobile-menu-toggle {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .mobile-nav-overlay {
-      -webkit-overflow-scrolling: touch;
-    }
   }
 </style>
 
 <script>
-  // Mobile Menu Functionality
+  // SIMPLIFIED MOBILE MENU FUNCTIONALITY
   document.addEventListener('DOMContentLoaded', function () {
+    console.log('Header script loaded - TEST VERSION');
+
     const mobileToggle = document.querySelector('.mobile-menu-toggle');
     const mobileOverlay = document.querySelector('.mobile-nav-overlay');
     const body = document.body;
 
+    console.log('Mobile toggle element:', mobileToggle);
+    console.log('Mobile overlay element:', mobileOverlay);
+
     if (mobileToggle && mobileOverlay) {
-      mobileToggle.addEventListener('click', function () {
+      mobileToggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        console.log('Hamburger clicked - TEST VERSION');
+
         const isActive = mobileOverlay.classList.contains('active');
 
         if (isActive) {
@@ -482,6 +324,8 @@
           body.style.overflow = '';
         }
       });
+    } else {
+      console.error('Mobile menu elements not found - TEST VERSION');
     }
   });
 </script>

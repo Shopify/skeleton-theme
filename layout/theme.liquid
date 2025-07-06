@@ -81,6 +81,11 @@
   </head>
 
   <body>
+    {% # Include header on all pages except cart and checkout %}
+    {%- unless template contains 'cart' or template contains 'checkout' -%}
+      {% section 'header' %}
+    {%- endunless -%}
+
     {{ content_for_layout }}
 
     {%- unless template contains 'cart' or template contains 'checkout' -%}

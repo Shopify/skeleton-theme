@@ -9,16 +9,22 @@
  */
 {
   "sections": {
-    "main": {
+    "header": {
+      "type": "header",
+      "settings": {}
+    },
+    "page": {
       "type": "page",
       "settings": {}
     },
     "footer": {
-      "type": "footer"
+      "type": "footer",
+      "settings": {}
     }
   },
   "order": [
-    "main",
+    "header",
+    "page",
     "footer"
   ]
 }

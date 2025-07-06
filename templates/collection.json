@@ -9,16 +9,27 @@
  */
 {
   "sections": {
-    "main": {
+    "header": {
+      "type": "header",
+      "settings": {}
+    },
+    "collection-info": {
+      "type": "collection-info",
+      "settings": {}
+    },
+    "collection": {
       "type": "collection",
       "settings": {}
     },
     "footer": {
-      "type": "footer"
+      "type": "footer",
+      "settings": {}
     }
   },
   "order": [
-    "main",
+    "header",
+    "collection-info",
+    "collection",
     "footer"
   ]
 }
