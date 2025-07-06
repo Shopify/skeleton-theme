@@ -9,10 +9,6 @@
  */
 {
   "sections": {
-    "header": {
-      "type": "header",
-      "settings": {}
-    },
     "page": {
       "type": "page",
       "settings": {}
@@ -23,7 +19,6 @@
     }
   },
   "order": [
-    "header",
     "page",
     "footer"
   ]
