@@ -3,7 +3,13 @@
     <!-- Logo/Brand -->
     <div class="header-brand">
       <a href="{{ routes.root_url }}" class="brand-link">
-        <h1 class="brand-title">{{ shop.name }}</h1>
+        <img
+          src="{{ 'AGH Logo GreenAsset 1@4x.png' | asset_url }}"
+          alt="Andra's Garden Heaven Logo"
+          class="brand-logo"
+          width="120"
+          height="40"
+        >
       </a>
     </div>
 
@@ -103,15 +109,17 @@
 </header>
 
 <style>
-  /* HEADER STYLES - FIXED VERSION */
+  /* HEADER STYLES - ENHANCED VERSION */
   .agh-header {
     position: sticky;
     top: 0;
     z-index: 9999;
-    background: var(--green100);
+    background: rgba(227, 245, 215, 0.95);
+    backdrop-filter: blur(10px);
     border-bottom: 2px solid var(--green200);
     width: 100%;
-    box-shadow: 0 2px 8px rgba(28, 66, 25, 0.1);
+    box-shadow: 0 4px 20px rgba(28, 66, 25, 0.1);
+    transition: all 0.3s ease;
   }
 
   .header-container {
@@ -121,26 +129,32 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 70px;
+    height: 80px;
+    transition: height 0.3s ease;
   }
 
   .header-brand {
     flex-shrink: 0;
   }
 
-  .brand-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0;
-    color: var(--green);
-    font-family: var(--heading-font);
+  .brand-logo {
+    height: 40px;
+    width: auto;
+    transition: transform 0.3s ease;
+  }
+
+  .brand-logo:hover {
+    transform: scale(1.05);
   }
 
   /* DESKTOP NAVIGATION - VISIBLE ON LAPTOPS/DESKTOPS */
   .desktop-nav {
     display: flex;
-    gap: 2rem;
+    gap: 2.5rem;
     margin: 0 2rem;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s ease;
   }
 
   .nav-link {
@@ -148,11 +162,30 @@
     color: var(--green);
     font-weight: 500;
     font-family: var(--heading-font);
-    transition: color 0.3s ease;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 0.5rem 0;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--green);
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
   }
 
   .nav-link:hover {
     color: var(--green600);
+    transform: translateY(-2px);
   }
 
   /* DESKTOP SEARCH - VISIBLE ON LAPTOPS/DESKTOPS */
@@ -160,6 +193,9 @@
     flex: 1;
     max-width: 400px;
     margin: 0 1rem;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.3s ease;
   }
 
   .search-input-group {
@@ -172,15 +208,17 @@
     width: 100%;
     padding: 0.75rem 1rem;
     border: 2px solid var(--green200);
-    border-radius: 8px;
+    border-radius: 25px;
     background: var(--white);
     color: var(--green);
     font-family: var(--body-font);
+    transition: all 0.3s ease;
   }
 
   .search-input:focus {
     outline: none;
     border-color: var(--green400);
+    box-shadow: 0 0 0 3px rgba(28, 66, 25, 0.1);
   }
 
   .search-btn {
@@ -191,22 +229,32 @@
     color: var(--green);
     cursor: pointer;
     padding: 4px;
+    transition: transform 0.3s ease;
+  }
+
+  .search-btn:hover {
+    transform: scale(1.1);
   }
 
   .header-icons {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .icon-link {
     color: var(--green);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    position: relative;
+    padding: 0.5rem;
+    border-radius: 50%;
   }
 
   .icon-link:hover {
     color: var(--green600);
+    background: rgba(28, 66, 25, 0.1);
+    transform: translateY(-2px);
   }
 
   .cart-count {
@@ -218,6 +266,7 @@
     position: absolute;
     top: -8px;
     right: -8px;
+    font-weight: 600;
   }
 
   /* HAMBURGER MENU - HIDDEN BY DEFAULT */
@@ -233,12 +282,13 @@
     height: 44px;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    border-radius: 8px;
+    transition: all 0.3s ease;
   }
 
   .mobile-menu-toggle:hover {
-    background-color: var(--green200);
+    background-color: rgba(28, 66, 25, 0.1);
+    transform: scale(1.05);
   }
 
   .hamburger-line {
@@ -264,13 +314,14 @@
   /* MOBILE NAVIGATION OVERLAY */
   .mobile-nav-overlay {
     position: fixed;
-    top: 70px;
+    top: 80px;
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--green100);
+    background: rgba(227, 245, 215, 0.98);
+    backdrop-filter: blur(10px);
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 9998;
     overflow-y: auto;
   }
@@ -280,7 +331,7 @@
   }
 
   .mobile-nav {
-    padding: 1.5rem;
+    padding: 2rem;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -294,10 +345,17 @@
     width: 100%;
     padding: 1rem;
     border: 2px solid var(--green200);
-    border-radius: 8px;
+    border-radius: 25px;
     background: var(--white);
     color: var(--green);
     font-family: var(--body-font);
+    transition: all 0.3s ease;
+  }
+
+  .mobile-search-input:focus {
+    outline: none;
+    border-color: var(--green400);
+    box-shadow: 0 0 0 3px rgba(28, 66, 25, 0.1);
   }
 
   .mobile-menu-links {
@@ -310,16 +368,33 @@
   .mobile-nav-link {
     text-decoration: none;
     color: var(--green);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 500;
     font-family: var(--heading-font);
-    padding: 1rem 0;
+    padding: 1.25rem 0;
     border-bottom: 1px solid var(--green200);
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .mobile-nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--green);
+    transition: width 0.3s ease;
+  }
+
+  .mobile-nav-link:hover::after {
+    width: 100%;
   }
 
   .mobile-nav-link:hover {
     color: var(--green600);
+    padding-left: 1rem;
   }
 
   .mobile-menu-footer {
@@ -331,35 +406,53 @@
   .mobile-account-link {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     color: var(--green);
     text-decoration: none;
     font-family: var(--heading-font);
     font-weight: 500;
+    font-size: 1.1rem;
+    padding: 1rem 0;
+    transition: all 0.3s ease;
   }
 
-  /* RESPONSIVE BREAKPOINTS */
+  .mobile-account-link:hover {
+    color: var(--green600);
+    transform: translateX(0.5rem);
+  }
 
-  /* TABLETS AND MOBILE (max-width: 1024px) - SHOW HAMBURGER */
+  /* RESPONSIVE BREAKPOINTS - ENHANCED TRANSITIONS */
+
+  /* TABLETS (max-width: 1024px) - SHOW HAMBURGER */
   @media screen and (max-width: 1024px) {
     .desktop-nav {
-      display: none !important;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
     }
 
     .desktop-search {
-      display: none !important;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
     }
 
     .mobile-menu-toggle {
-      display: flex !important;
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .header-container {
-      height: 60px;
+      height: 70px;
     }
 
     .mobile-nav-overlay {
-      top: 60px;
+      top: 70px;
+    }
+
+    .brand-logo {
+      height: 35px;
     }
   }
 
@@ -367,6 +460,8 @@
   @media screen and (min-width: 1025px) {
     .mobile-menu-toggle {
       display: none !important;
+      opacity: 0;
+      transform: translateY(-10px);
     }
 
     .mobile-nav-overlay {
@@ -375,10 +470,16 @@
 
     .desktop-nav {
       display: flex !important;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .desktop-search {
       display: block !important;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
   }
 
@@ -389,12 +490,36 @@
       padding: 0 0.75rem;
     }
 
-    .brand-title {
-      font-size: 1.25rem;
+    .brand-logo {
+      height: 30px;
     }
 
     .mobile-nav-overlay {
       top: 60px;
+    }
+
+    .mobile-nav {
+      padding: 1.5rem;
+    }
+
+    .mobile-nav-link {
+      font-size: 1.1rem;
+      padding: 1rem 0;
+    }
+
+    .header-icons {
+      gap: 1rem;
+    }
+  }
+
+  /* EXTRA SMALL MOBILE (max-width: 360px) */
+  @media screen and (max-width: 360px) {
+    .header-container {
+      padding: 0 0.5rem;
+    }
+
+    .brand-logo {
+      height: 28px;
     }
 
     .mobile-nav {
@@ -404,13 +529,14 @@
 </style>
 
 <script>
-  // MOBILE MENU FUNCTIONALITY
+  // MOBILE MENU FUNCTIONALITY - ENHANCED
   document.addEventListener('DOMContentLoaded', function () {
-    console.log('Header script loaded - FIXED VERSION');
+    console.log('Header script loaded - ENHANCED VERSION');
 
     const mobileToggle = document.querySelector('.mobile-menu-toggle');
     const mobileOverlay = document.querySelector('.mobile-nav-overlay');
     const body = document.body;
+    const header = document.querySelector('.agh-header');
 
     console.log('Mobile toggle element:', mobileToggle);
     console.log('Mobile overlay element:', mobileOverlay);
@@ -420,7 +546,7 @@
         e.preventDefault();
         e.stopPropagation();
 
-        console.log('Hamburger clicked - FIXED VERSION');
+        console.log('Hamburger clicked - ENHANCED VERSION');
 
         const isActive = mobileOverlay.classList.contains('active');
 
@@ -429,11 +555,13 @@
           mobileToggle.classList.remove('active');
           mobileToggle.setAttribute('aria-expanded', 'false');
           body.style.overflow = '';
+          header.style.background = 'rgba(227, 245, 215, 0.95)';
         } else {
           mobileOverlay.classList.add('active');
           mobileToggle.classList.add('active');
           mobileToggle.setAttribute('aria-expanded', 'true');
           body.style.overflow = 'hidden';
+          header.style.background = 'rgba(227, 245, 215, 0.98)';
         }
       });
 
@@ -445,6 +573,7 @@
           mobileToggle.classList.remove('active');
           mobileToggle.setAttribute('aria-expanded', 'false');
           body.style.overflow = '';
+          header.style.background = 'rgba(227, 245, 215, 0.95)';
         });
       });
 
@@ -455,6 +584,7 @@
           mobileToggle.classList.remove('active');
           mobileToggle.setAttribute('aria-expanded', 'false');
           body.style.overflow = '';
+          header.style.background = 'rgba(227, 245, 215, 0.95)';
         }
       });
 
@@ -465,10 +595,22 @@
           mobileToggle.classList.remove('active');
           mobileToggle.setAttribute('aria-expanded', 'false');
           body.style.overflow = '';
+          header.style.background = 'rgba(227, 245, 215, 0.95)';
+        }
+      });
+
+      // Add scroll effect to header
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 50) {
+          header.style.background = 'rgba(227, 245, 215, 0.98)';
+          header.style.boxShadow = '0 4px 20px rgba(28, 66, 25, 0.15)';
+        } else {
+          header.style.background = 'rgba(227, 245, 215, 0.95)';
+          header.style.boxShadow = '0 4px 20px rgba(28, 66, 25, 0.1)';
         }
       });
     } else {
-      console.error('Mobile menu elements not found - FIXED VERSION');
+      console.error('Mobile menu elements not found - ENHANCED VERSION');
     }
   });
 </script>
