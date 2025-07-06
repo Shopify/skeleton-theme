@@ -16,7 +16,7 @@
     <!-- Desktop Navigation - HIDDEN ON MOBILE/TABLET -->
     <nav class="header-nav desktop-nav">
       {% for link in section.settings.menu.links %}
-        <a href="{{ link.url }}" class="nav-link">{{ link.title }}</a>
+        <a href="{{ link.url }}" class="nav-link{% if link.active %} active{% endif %}">{{ link.title }}</a>
       {% endfor %}
     </nav>
 
@@ -60,7 +60,7 @@
       </a>
 
       <!-- Mobile Menu Toggle - VISIBLE ONLY ON MOBILE/TABLET -->
-      <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <button class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false" tabindex="0">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -68,9 +68,12 @@
     </div>
   </div>
 
+  <!-- Mobile Navigation Backdrop -->
+  <div class="mobile-nav-backdrop"></div>
   <!-- Mobile Navigation Overlay -->
-  <div class="mobile-nav-overlay">
+  <div class="mobile-nav-overlay" tabindex="-1" aria-modal="true" role="dialog">
     <nav class="mobile-nav">
+      <button class="mobile-menu-close" aria-label="Close menu" tabindex="0">&times;</button>
       <div class="mobile-search">
         <form action="{{ routes.search_url }}" method="get" class="mobile-search-form">
           <input
@@ -87,16 +90,22 @@
           </button>
         </form>
       </div>
-
       <div class="mobile-menu-links">
-        {% for link in section.settings.menu.links %}
-          <a href="{{ link.url }}" class="mobile-nav-link">{{ link.title }}</a>
-        {% endfor %}
+        {% if section.settings.menu.links.size > 0 %}
+          {% for link in section.settings.menu.links %}
+            <a href="{{ link.url }}" class="mobile-nav-link{% if link.active %} active{% endif %}" tabindex="0">
+              {{- link.title -}}
+            </a>
+          {% endfor %}
+        {% else %}
+          <div class="mobile-nav-link" style="opacity:0.7;">
+            No menu links found. Please add links in the theme editor.
+          </div>
+        {% endif %}
       </div>
-
       <div class="mobile-menu-footer">
         {% if shop.customer_accounts_enabled %}
-          <a href="{{ routes.account_url }}" class="mobile-account-link">
+          <a href="{{ routes.account_url }}" class="mobile-account-link" tabindex="0">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" fill="currentColor"/>
             </svg>
@@ -526,91 +535,133 @@
       padding: 1rem;
     }
   }
+
+  .mobile-nav-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 9997;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .mobile-nav-overlay {
+    right: 0;
+    left: auto;
+    width: 85vw;
+    max-width: 400px;
+    border-radius: 1rem 0 0 1rem;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+    transform: translateX(100%);
+    outline: none;
+  }
+  .mobile-nav-overlay.active {
+    transform: translateX(0);
+  }
+  .mobile-nav-backdrop.active {
+    display: block;
+    opacity: 1;
+  }
+  .mobile-menu-close {
+    background: none;
+    border: none;
+    color: var(--green);
+    font-size: 2.5rem;
+    font-weight: 700;
+    position: absolute;
+    top: 1.2rem;
+    right: 1.5rem;
+    cursor: pointer;
+    z-index: 10001;
+    padding: 0.5rem 1rem;
+    border-radius: 50%;
+    transition: background 0.2s;
+    line-height: 1;
+  }
+  .mobile-menu-close:hover {
+    background: var(--green100);
+  }
+  .mobile-nav-link,
+  .mobile-account-link {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    font-size: 1.15rem;
+    padding-left: 0.5rem;
+  }
+  .mobile-nav-link.active,
+  .mobile-nav-link:focus,
+  .mobile-nav-link:hover {
+    background: var(--green100);
+    color: var(--green600);
+    border-radius: 0.5rem;
+    padding-left: 1.5rem;
+    outline: none;
+  }
 </style>
 
 <script>
-  // MOBILE MENU FUNCTIONALITY - ENHANCED
+  // ENHANCED MOBILE MENU FUNCTIONALITY
   document.addEventListener('DOMContentLoaded', function () {
-    console.log('Header script loaded - ENHANCED VERSION');
-
     const mobileToggle = document.querySelector('.mobile-menu-toggle');
     const mobileOverlay = document.querySelector('.mobile-nav-overlay');
-    const body = document.body;
-    const header = document.querySelector('.agh-header');
+    const mobileBackdrop = document.querySelector('.mobile-nav-backdrop');
+    const closeBtn = document.querySelector('.mobile-menu-close');
+    const focusableSelectors = 'a, button, input, [tabindex]:not([tabindex="-1"])';
+    let lastFocusedElement = null;
 
-    console.log('Mobile toggle element:', mobileToggle);
-    console.log('Mobile overlay element:', mobileOverlay);
-
-    if (mobileToggle && mobileOverlay) {
-      mobileToggle.addEventListener('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        console.log('Hamburger clicked - ENHANCED VERSION');
-
-        const isActive = mobileOverlay.classList.contains('active');
-
-        if (isActive) {
-          mobileOverlay.classList.remove('active');
-          mobileToggle.classList.remove('active');
-          mobileToggle.setAttribute('aria-expanded', 'false');
-          body.style.overflow = '';
-          header.style.background = 'rgba(227, 245, 215, 0.95)';
-        } else {
-          mobileOverlay.classList.add('active');
-          mobileToggle.classList.add('active');
-          mobileToggle.setAttribute('aria-expanded', 'true');
-          body.style.overflow = 'hidden';
-          header.style.background = 'rgba(227, 245, 215, 0.98)';
+    function openMenu() {
+      mobileOverlay.classList.add('active');
+      mobileBackdrop.classList.add('active');
+      mobileOverlay.setAttribute('aria-hidden', 'false');
+      lastFocusedElement = document.activeElement;
+      // Focus first link
+      setTimeout(() => {
+        const firstLink = mobileOverlay.querySelector(focusableSelectors);
+        if (firstLink) firstLink.focus();
+      }, 100);
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+      mobileOverlay.classList.remove('active');
+      mobileBackdrop.classList.remove('active');
+      mobileOverlay.setAttribute('aria-hidden', 'true');
+      if (lastFocusedElement) lastFocusedElement.focus();
+      document.body.style.overflow = '';
+    }
+    if (mobileToggle && mobileOverlay && mobileBackdrop && closeBtn) {
+      mobileToggle.addEventListener('click', openMenu);
+      closeBtn.addEventListener('click', closeMenu);
+      mobileBackdrop.addEventListener('click', closeMenu);
+      // Close on Escape
+      document.addEventListener('keydown', function (e) {
+        if (mobileOverlay.classList.contains('active')) {
+          if (e.key === 'Escape') closeMenu();
+          // Focus trap
+          if (e.key === 'Tab') {
+            const focusableEls = Array.from(mobileOverlay.querySelectorAll(focusableSelectors)).filter(
+              (el) => !el.disabled && el.offsetParent !== null
+            );
+            if (focusableEls.length === 0) return;
+            const firstEl = focusableEls[0];
+            const lastEl = focusableEls[focusableEls.length - 1];
+            if (e.shiftKey && document.activeElement === firstEl) {
+              e.preventDefault();
+              lastEl.focus();
+            } else if (!e.shiftKey && document.activeElement === lastEl) {
+              e.preventDefault();
+              firstEl.focus();
+            }
+          }
         }
       });
-
-      // Close mobile menu when clicking on a link
-      const mobileLinks = mobileOverlay.querySelectorAll('a');
-      mobileLinks.forEach((link) => {
-        link.addEventListener('click', function () {
-          mobileOverlay.classList.remove('active');
-          mobileToggle.classList.remove('active');
-          mobileToggle.setAttribute('aria-expanded', 'false');
-          body.style.overflow = '';
-          header.style.background = 'rgba(227, 245, 215, 0.95)';
-        });
+      // Close on link click
+      mobileOverlay.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', closeMenu);
       });
-
-      // Close mobile menu when clicking outside
-      mobileOverlay.addEventListener('click', function (e) {
-        if (e.target === mobileOverlay) {
-          mobileOverlay.classList.remove('active');
-          mobileToggle.classList.remove('active');
-          mobileToggle.setAttribute('aria-expanded', 'false');
-          body.style.overflow = '';
-          header.style.background = 'rgba(227, 245, 215, 0.95)';
-        }
-      });
-
-      // Close mobile menu on window resize if switching to desktop
-      window.addEventListener('resize', function () {
-        if (window.innerWidth >= 1025) {
-          mobileOverlay.classList.remove('active');
-          mobileToggle.classList.remove('active');
-          mobileToggle.setAttribute('aria-expanded', 'false');
-          body.style.overflow = '';
-          header.style.background = 'rgba(227, 245, 215, 0.95)';
-        }
-      });
-
-      // Add scroll effect to header
-      window.addEventListener('scroll', function () {
-        if (window.scrollY > 50) {
-          header.style.background = 'rgba(227, 245, 215, 0.98)';
-          header.style.boxShadow = '0 4px 20px rgba(28, 66, 25, 0.15)';
-        } else {
-          header.style.background = 'rgba(227, 245, 215, 0.95)';
-          header.style.boxShadow = '0 4px 20px rgba(28, 66, 25, 0.1)';
-        }
-      });
-    } else {
-      console.error('Mobile menu elements not found - ENHANCED VERSION');
     }
   });
 </script>
