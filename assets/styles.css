@@ -64,50 +64,7 @@
   padding: 0;
 }
 
-/* Navigation Bar */
-.hero-nav {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.8);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border: 2px solid var(--white);
-  border-top: none;
-  border-radius: 0 0 1rem 1rem;
-  margin: 0 1.25rem; /* Changed from fixed 20px to rem */
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-}
-
-.nav-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1.5rem; /* Changed from fixed pixels to rem */
-  max-width: 100vw;
-  margin: 0 auto;
-}
-
-.nav-text {
-  color: var(--white);
-  font-family: var(--heading-font);
-  font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: 1px;
-}
-
-.search-icon {
-  color: var(--blue);
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.search-icon:hover {
-  transform: scale(1.1);
-}
+/* Hero Banner - Clean Version (Navigation removed) */
 
 /* Main Hero Layout */
 .hero-content {
@@ -234,18 +191,6 @@
     padding: 2rem 1rem;
   }
 
-  .hero-nav {
-    margin: 0 0.9375rem; /* Changed from fixed 15px to rem */
-  }
-
-  .nav-content {
-    padding: 0.625rem 1rem; /* Changed from fixed pixels to rem */
-  }
-
-  .nav-text {
-    font-size: 0.75rem; /* Changed from fixed 12px to rem */
-  }
-
   .hero-description p {
     font-size: 1rem;
   }
@@ -262,9 +207,6 @@
 }
 
 @media (max-width: 480px) {
-  .hero-nav {
-    margin: 0 0.625rem; /* Changed from fixed 10px to rem */
-  }
   .pattern-background {
     opacity: 0;
   }
@@ -288,14 +230,6 @@
 
 /* Additional mobile optimization for very small screens */
 @media (max-width: 320px) {
-  .hero-nav {
-    margin: 0 0.3125rem; /* 5px in rem */
-  }
-
-  .nav-content {
-    padding: 0.5rem 0.75rem;
-  }
-
   .wordmark {
     width: 200px;
   }
@@ -1208,155 +1142,286 @@
   }
 }
 
-/* Reviews Slider - FIXED POSITIONING */
-
-/* Custom CSS for Google Reviews Look */
+/* Reviews Slider - ENHANCED REALISTIC DESIGN */
 
 .reviews-container {
   position: relative;
   width: 100%;
-  left: 0; /* FIXED: Removed the problematic left: 25% */
-  max-width: 700px;
-  margin: 0 auto; /* ADDED: Center the container properly */
+  max-width: 800px;
+  margin: 0 auto 3rem auto;
   overflow: hidden;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 30px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 0;
   box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .reviews-slider {
   display: flex;
-  transition: transform 0.5s ease-in-out;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .review-slide {
   flex: 0 0 100%;
-  padding: 20px;
+  padding: 2.5rem;
   box-sizing: border-box;
-  text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 1.5rem;
+}
+
+/* Review Header with Avatar and Info */
+.review-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.reviewer-info {
+  display: flex;
   align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.reviewer-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green400) 0%, var(--green600) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: var(--heading-font);
+  box-shadow: 0 2px 8px rgba(28, 66, 25, 0.2);
+}
+
+.reviewer-details {
+  flex: 1;
+}
+
+.reviewer-name {
+  font-family: var(--heading-font);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--green);
+  margin: 0 0 0.25rem 0;
+}
+
+.review-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .star-rating {
-  color: #fbbc04;
-  margin-bottom: 15px;
-  font-size: 1.5rem;
+  color: #ffc107;
+  font-size: 1rem;
+  display: flex;
+  gap: 2px;
 }
 
 .star-rating .fa-star {
-  margin: 0 2px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
+.review-date {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-family: var(--body-font);
+}
+
+/* Review Content */
 .review-text {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #3c4043;
-  margin-bottom: 20px;
-  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #2c3e50;
+  margin: 0;
+  font-family: var(--body-font);
+  text-align: left;
+  position: relative;
+  padding-left: 1rem;
 }
 
-.review-author {
-  font-weight: 600;
-  color: #202124;
-  font-size: 1rem;
-  margin-top: 10px;
+.review-text::before {
+  content: '"';
+  position: absolute;
+  left: -0.5rem;
+  top: -0.5rem;
+  font-size: 3rem;
+  color: var(--green200);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+/* Product Tag */
+.review-product {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.product-tag {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--green100) 0%, var(--green200) 100%);
+  color: var(--green);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--heading-font);
+  border: 1px solid var(--green200);
 }
 
 .slider-nav {
   position: absolute;
   top: 50%;
-  left: 1%;
+  left: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;
   transform: translateY(-50%);
-  padding: 0 15px;
+  padding: 0 1rem;
   box-sizing: border-box;
+  pointer-events: none;
 }
 
 .nav-button {
-  background-color: rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, var(--green) 0%, var(--green600) 100%);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 1.2rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(28, 66, 25, 0.3);
+  pointer-events: auto;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .nav-button:hover {
-  background-color: rgba(0, 0, 0, 0.7);
+  background: linear-gradient(135deg, var(--green600) 0%, var(--green700) 100%);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(28, 66, 25, 0.4);
 }
 
 /* Enhanced mobile responsiveness for reviews */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .reviews-container {
-    padding: 20px;
-    max-width: 95%; /* ADDED: Better mobile width */
-    margin: 0 auto 2rem auto; /* ADDED: Better spacing */
+    max-width: 95%;
+    margin: 0 auto 2rem auto;
+    border-radius: 12px;
   }
-  .review-text {
+
+  .review-slide {
+    padding: 2rem;
+  }
+
+  .reviewer-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .reviewer-name {
     font-size: 1rem;
   }
-  .star-rating {
-    font-size: 1.2rem;
+
+  .review-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
   }
+
   .nav-button {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
   .reviews-container {
-    padding: 15px;
-    max-width: 90%;
+    max-width: 98%;
+    border-radius: 8px;
   }
 
   .review-slide {
-    padding: 15px;
+    padding: 1.5rem;
+  }
+
+  .review-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .reviewer-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .reviewer-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+  }
+
+  .reviewer-name {
+    font-size: 0.95rem;
   }
 
   .review-text {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     line-height: 1.5;
+    padding-left: 0.75rem;
   }
 
-  .review-author {
-    font-size: 0.9rem;
+  .review-text::before {
+    left: -0.25rem;
+    top: -0.25rem;
+    font-size: 2rem;
+  }
+
+  .product-tag {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
   }
 
   .nav-button {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     font-size: 0.9rem;
   }
 }
 
-@media (max-width: 320px) {
-  .reviews-container {
-    padding: 10px;
-    max-width: 95%;
+@media (max-width: 360px) {
+  .review-slide {
+    padding: 1rem;
   }
 
   .review-text {
+    font-size: 0.85rem;
+  }
+
+  .reviewer-name {
     font-size: 0.9rem;
   }
 
-  .star-rating {
-    font-size: 1rem;
+  .product-tag {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
   }
 }
 

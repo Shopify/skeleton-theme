@@ -9,16 +9,19 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "collection",
-      "settings": {}
+    "collection-info": {
+      "type": "collection-info"
+    },
+    "collection": {
+      "type": "collection"
     },
     "footer": {
       "type": "footer"
     }
   },
   "order": [
-    "main",
+    "collection-info",
+    "collection",
     "footer"
   ]
 }

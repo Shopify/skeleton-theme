@@ -9,7 +9,7 @@
  */
 {
   "sections": {
-    "main": {
+    "page": {
       "type": "page",
       "settings": {}
     },
@@ -18,7 +18,7 @@
     }
   },
   "order": [
-    "main",
+    "page",
     "footer"
   ]
 }

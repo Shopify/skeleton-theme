@@ -47,49 +47,123 @@
 
     <!-- Customer Reviews Slider -->
     <div class="reviews-container">
-      <!-- Customer Reviews Slider -->
       <div class="reviews-slider" id="reviewsSlider">
         <div class="review-slide">
-          <div class="star-rating">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i
-            ><i class="fas fa-star"></i>
+          <div class="review-header">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar">
+                <span>SM</span>
+              </div>
+              <div class="reviewer-details">
+                <h4 class="reviewer-name">Sarah Mitchell</h4>
+                <div class="review-meta">
+                  <div class="star-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                  </div>
+                  <span class="review-date">Verified Purchase • 2 weeks ago</span>
+                </div>
+              </div>
+            </div>
           </div>
           <p class="review-text">
-            "Absolutely love my new AGH lounge chair! The quality is incredible, and it transformed my patio into a true
-            oasis."
+            "Absolutely chuffed with my new AGH lounge chair! The craftsmanship is top-notch and it's made my patio feel
+            so much more inviting. Delivery was prompt and the team were ever so helpful. Wouldn't hesitate to
+            recommend!"
           </p>
-          <span class="review-author">- Sarah P.</span>
+          <div class="review-product">
+            <span class="product-tag">Purchased: Oasis Lounge Chair</span>
+          </div>
         </div>
+
         <div class="review-slide">
-          <div class="star-rating">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i
-            ><i class="fas fa-star-half-alt"></i>
+          <div class="review-header">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar">
+                <span>MT</span>
+              </div>
+              <div class="reviewer-details">
+                <h4 class="reviewer-name">Mark Thompson</h4>
+                <div class="review-meta">
+                  <div class="star-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <span class="review-date">Verified Purchase • 1 month ago</span>
+                </div>
+              </div>
+            </div>
           </div>
           <p class="review-text">
-            "Andra's Garden Heaven delivered exactly what I was looking for. Beautiful, sustainable, and their customer
-            service was outstanding."
+            "Andra's Garden Heaven were brilliant from start to finish. The furniture is beautiful and feels really
+            sturdy. Customer service was spot on – they helped me pick out just what I needed for my garden. The coffee
+            table's a real talking point!"
           </p>
-          <span class="review-author">- Mark T.</span>
+          <div class="review-product">
+            <span class="product-tag">Purchased: Garden Coffee Table Set</span>
+          </div>
         </div>
+
         <div class="review-slide">
-          <div class="star-rating">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i
-            ><i class="fas fa-star"></i>
+          <div class="review-header">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar">
+                <span>ER</span>
+              </div>
+              <div class="reviewer-details">
+                <h4 class="reviewer-name">Emily Roberts</h4>
+                <div class="review-meta">
+                  <div class="star-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                  </div>
+                  <span class="review-date">Verified Purchase • 3 weeks ago</span>
+                </div>
+              </div>
+            </div>
           </div>
           <p class="review-text">
-            "Highly recommend AGH for anyone seeking unique and well-made rattan furniture. The 'Oasis' coffee table is
-            a showstopper!"
+            "I'd highly recommend AGH to anyone after something a bit special for their home or garden. The 'Oasis'
+            coffee table is gorgeous and has stood up brilliantly to the Scottish weather. Great value and you can
+            really see the care that's gone into it."
           </p>
-          <span class="review-author">- Emily R.</span>
+          <div class="review-product">
+            <span class="product-tag">Purchased: Oasis Coffee Table</span>
+          </div>
+        </div>
+
+        <div class="review-slide">
+          <div class="review-header">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar">
+                <span>JD</span>
+              </div>
+              <div class="reviewer-details">
+                <h4 class="reviewer-name">James Davidson</h4>
+                <div class="review-meta">
+                  <div class="star-rating">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i
+                    ><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                  </div>
+                  <span class="review-date">Verified Purchase • 2 months ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="review-text">
+            "Bought the dining set for our conservatory and it's absolutely perfect. The chairs are comfy, the table's
+            just the right size, and everything arrived in great nick. Will definitely be back for more!"
+          </p>
+          <div class="review-product">
+            <span class="product-tag">Purchased: Conservatory Dining Set</span>
+          </div>
         </div>
       </div>
 
       <!-- Slider Navigation -->
       <div class="slider-nav">
         <button class="nav-button" id="prevBtn">&#10094;</button>
-        <!-- Left arrow -->
         <button class="nav-button" id="nextBtn">&#10095;</button>
-        <!-- Right arrow -->
       </div>
     </div>
 
@@ -130,6 +204,7 @@
     </div>
   </div>
 </section>
+
 <script>
   const slider = document.getElementById('reviewsSlider');
   const slides = document.querySelectorAll('.review-slide');
@@ -155,11 +230,11 @@
     updateSlider();
   });
 
-  // Optional: Auto-slide functionality
-  // setInterval(() => {
-  //     currentIndex = (currentIndex + 1) % slides.length;
-  //     updateSlider();
-  // }, 5000); // Change slide every 5 seconds
+  // Auto-slide functionality
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    updateSlider();
+  }, 6000); // Change slide every 6 seconds
 
   // Initialize slider position on load
   updateSlider();
