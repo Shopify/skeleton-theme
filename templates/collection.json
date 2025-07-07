@@ -10,19 +10,12 @@
 {
   "sections": {
     "collection-info": {
-<<<<<<< HEAD
-      "type": "collection-info"
-    },
-    "collection": {
-      "type": "collection"
-=======
       "type": "collection-info",
       "settings": {}
     },
     "collection": {
       "type": "collection",
       "settings": {}
->>>>>>> 56b17667e22f2dc2552ff0ffd1fb991ae1cf0902
     },
     "footer": {
       "type": "footer",
