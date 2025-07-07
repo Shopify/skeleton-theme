@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-:root {
+HEAD :root {
   --green100: #e3f5d7;
   --green200: #c4ecb1;
   --green300: #8dc67c;
@@ -1491,7 +1490,7 @@
   .shop-now,
   .learn-more,
   .newsletter-button {
-    -webkit-appearance: none;
+    appearance: none;
     -webkit-border-radius: 1rem;
     border-radius: 1rem;
     -webkit-transform: translateZ(0);
@@ -1502,6 +1501,7 @@
   input,
   textarea,
   select {
+    appearance: none;
     -webkit-appearance: none;
     -webkit-border-radius: var(--style-border-radius-inputs);
     border-radius: var(--style-border-radius-inputs);
@@ -1553,32 +1553,6 @@
     -ms-flex: 1 1 240px;
     flex: 1 1 240px;
   }
-}
-=======
-:root {
-  --green100: #e3f5d7;
-  --green200: #c4ecb1;
-  --green300: #8dc67c;
-  --green400: #558d4b;
-  --green: #1c4219;
-  --green600: #123812;
-  --green700: #0c2f0f;
-  --green800: #07260d;
-  --green900: #041f0b;
-  --grey: #d0ccd0;
-  --white: #fbfcff;
-  --blue: #1c6e8c;
-  --black: #000;
-  --heading-font: "Futura Book", sans-serif;
-  --body-font: "Elgian", serif;
-
-  /* Missing variables that might be referenced */
-  --transition-normal: all 0.3s ease;
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --style-border-radius-inputs: 8px;
 }
 
 /* === hero-banner.css === */
@@ -3047,6 +3021,7 @@
   .shop-now,
   .learn-more,
   .newsletter-button {
+    appearance: none;
     -webkit-appearance: none;
     -webkit-border-radius: 1rem;
     border-radius: 1rem;
@@ -3058,6 +3033,7 @@
   input,
   textarea,
   select {
+    appearance: none;
     -webkit-appearance: none;
     -webkit-border-radius: var(--style-border-radius-inputs);
     border-radius: var(--style-border-radius-inputs);
@@ -3110,4 +3086,3 @@
     flex: 1 1 240px;
   }
 }
->>>>>>> 56b17667e22f2dc2552ff0ffd1fb991ae1cf0902
