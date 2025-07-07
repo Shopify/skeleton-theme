@@ -1,34 +1,50 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
-    "sections": {
-        "hero-banner": {
-            "type": "hero-banner"
-        },
-        "BelowFold": {
-            "type": "BelowFold"
-        },
-        "featured-products": {
-            "type": "featured-products"
-        },
-        "trust": {
-            "type": "trust"
-        },
-        "about": {
-            "type": "about"
-        },
-        "newsletter": {
-            "type": "newsletter"
-        },
-        "footer": {
-            "type": "footer"
-        }
+  "sections": {
+    "hero-banner": {
+      "type": "hero-banner",
+      "settings": {}
     },
-    "order": [
-        "hero-banner",
-        "BelowFold",
-        "featured-products",
-        "trust",
-        "about",
-        "newsletter",
-        "footer"
-    ]
+    "BelowFold": {
+      "type": "BelowFold",
+      "settings": {}
+    },
+    "featured-products": {
+      "type": "featured-products",
+      "settings": {}
+    },
+    "trust": {
+      "type": "trust",
+      "settings": {}
+    },
+    "about": {
+      "type": "about",
+      "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {}
+    },
+    "footer": {
+      "type": "footer",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero-banner",
+    "BelowFold",
+    "featured-products",
+    "trust",
+    "about",
+    "newsletter",
+    "footer"
+  ]
 }

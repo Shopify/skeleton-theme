@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
@@ -168,3 +169,175 @@
     {%- endunless -%}
   </body>
 </html>
+=======
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    {% # iOS-specific meta tags %}
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    >
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    {% # Inlined CSS Variables %}
+    {% render 'css-variables' %}
+
+    {% # Load and preload the critical CSS %}
+    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {% # Social, title, etc. %}
+    {% render 'meta-tags' %}
+    {{ content_for_header }}
+
+    {% # Load main styles without cache busting for iOS compatibility %}
+    {{ 'styles.css' | asset_url | stylesheet_tag }}
+
+    {% # iOS-specific CSS fixes %}
+    <style>
+      /* iOS Safari specific fixes */
+      @supports (-webkit-touch-callout: none) {
+        /* iOS Safari specific styles */
+        body {
+          -webkit-text-size-adjust: 100%;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Fix for iOS Safari flexbox issues */
+        .hero-content,
+        .BelowFoldSectionWrapper,
+        .trust-elements,
+        .trade-shows {
+          -webkit-box-orient: vertical;
+          -webkit-box-direction: normal;
+        }
+
+        /* Fix for iOS Safari transform issues */
+        .hero-nav,
+        .trust-item,
+        .trade-show-item {
+          -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+        }
+
+        /* Fix for iOS Safari backdrop-filter */
+        .glass {
+          -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+        }
+
+        /* Fix for iOS Safari gradient issues */
+        .BelowFoldSection::before,
+        .trust-item.leafy-texture,
+        .trade-show-item.leafy-texture {
+          -webkit-background-clip: border-box;
+          background-clip: border-box;
+        }
+      }
+
+      /* Additional iOS fixes for older versions */
+      @media screen and (-webkit-min-device-pixel-ratio: 0) {
+        .hero-banner {
+          min-height: 100vh;
+          min-height: -webkit-fill-available;
+        }
+
+        .hero-content {
+          height: 100vh;
+          height: -webkit-fill-available;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    {% # Include header on all pages except cart and checkout %}
+    {%- unless template contains 'cart' or template contains 'checkout' -%}
+      {% section 'header' %}
+    {%- endunless -%}
+
+    {{ content_for_layout }}
+
+    {%- unless template contains 'cart' or template contains 'checkout' -%}
+      <button id="agh-scroll-top" aria-label="Scroll to top">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+      </button>
+      <style>
+        #agh-scroll-top {
+          position: fixed;
+          right: 1.25rem;
+          bottom: 1.5rem;
+          z-index: 9999;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: var(--green, #1c4219);
+          color: var(--white, #fff);
+          border: white 1px solid;
+          box-shadow: 0 2px 8px rgba(28, 66, 25, 0.15);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          transition: opacity 0.2s, transform 0.2s;
+          opacity: 0.85;
+          cursor: pointer;
+          padding: 0;
+        }
+        #agh-scroll-top svg {
+          display: block;
+          margin: auto;
+          color: var(--white, #fff);
+        }
+        #agh-scroll-top:active {
+          opacity: 1;
+          transform: scale(0.96);
+        }
+        @media (hover: hover) and (pointer: fine) {
+          #agh-scroll-top:hover {
+            opacity: 1;
+            background: var(--green700, #0c2f0f);
+          }
+        }
+        @media (max-width: 480px) {
+          #agh-scroll-top {
+            right: 0.75rem;
+            bottom: 1rem;
+            width: 38px;
+            height: 38px;
+          }
+        }
+      </style>
+      <script>
+        (function () {
+          var btn = document.getElementById('agh-scroll-top');
+          if (!btn) return;
+          var lastScroll = 0;
+          window.addEventListener('scroll', function () {
+            if (window.scrollY > 200) {
+              btn.style.display = 'flex';
+            } else {
+              btn.style.display = 'none';
+            }
+          });
+          btn.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        })();
+      </script>
+    {%- endunless -%}
+  </body>
+</html>
+>>>>>>> 56b17667e22f2dc2552ff0ffd1fb991ae1cf0902
