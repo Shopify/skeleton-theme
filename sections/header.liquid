@@ -103,7 +103,7 @@
           <a href="{{ routes.all_products_collection_url }}" class="mobile-nav-link">Products</a>
         {% endif %}
       </div>
-      
+
       <div class="mobile-menu-footer">
         {% if shop.customer_accounts_enabled %}
           <a href="{{ routes.account_url }}" class="mobile-account-link" tabindex="0">
@@ -618,6 +618,7 @@
       mobileOverlay.classList.add('active');
       mobileBackdrop.classList.add('active');
       mobileOverlay.setAttribute('aria-hidden', 'false');
+      if (mobileToggle) mobileToggle.classList.add('active');
       lastFocusedElement = document.activeElement;
       // Focus first link
       setTimeout(() => {
@@ -630,6 +631,7 @@
       mobileOverlay.classList.remove('active');
       mobileBackdrop.classList.remove('active');
       mobileOverlay.setAttribute('aria-hidden', 'true');
+      if (mobileToggle) mobileToggle.classList.remove('active');
       if (lastFocusedElement) lastFocusedElement.focus();
       document.body.style.overflow = '';
     }
