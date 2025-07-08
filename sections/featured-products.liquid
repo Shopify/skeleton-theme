@@ -79,6 +79,7 @@
     border: 2px solid var(--green, #1c4219);
     border-radius: 1.25rem;
     box-shadow: 0 2px 12px rgba(28, 66, 25, 0.08);
+    color: var(--green, #1c4219);
     background: var(--white);
     transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
     overflow: hidden;
@@ -93,6 +94,7 @@
     color: var(--green900, #041f0b);
     transition: color 0.2s;
   }
+  .product-info,
   .product-link,
   .product-price,
   .product-title:hover {
@@ -152,6 +154,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    color: var(--green900, #041f0b);
   }
 
   .product-title {
@@ -159,16 +162,15 @@
     font-size: 1.15rem;
     font-weight: 600;
     margin: 0 0 0.5rem 0;
-    color: var(--green);
     letter-spacing: 0.01em;
     text-align: center;
     line-height: 1.3;
+    color: var(--green900, #041f0b);
   }
 
   .product-price {
     font-family: 'Futura', sans-serif;
     font-size: 1.05rem;
-    color: var(--green700);
     margin: 0;
     text-align: center;
     font-weight: 600;
@@ -181,6 +183,7 @@
     transform: translateY(-4px) scale(1.025);
     color: var(--grey);
     background: var(--green400, #558d4b);
+    text-decoration: none;
   }
 
   .agh-featured-card:hover .featured-product-image,
@@ -255,3 +258,10 @@
     }
   }
 </style>
+
+{% schema %}
+{
+  "name": "Featured Products",
+  "settings": []
+}
+{% endschema %}
