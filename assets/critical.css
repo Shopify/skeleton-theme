@@ -54,7 +54,13 @@ input,
 textarea,
 select {
   font: inherit;
-  border-radius: var(--style-border-radius-inputs);
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--green200);
+  border-radius: 25px;
+  background: var(--white);
+  color: var(--green);
+  font-family: var(--body-font);
 }
 
 select {

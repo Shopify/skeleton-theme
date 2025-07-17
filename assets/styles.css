@@ -546,6 +546,8 @@
 
   .Hero-ctas {
     flex-direction: column; /* Stack buttons vertically */
+    justify-content: center;
+    align-items: center;
     gap: 0.75rem;
     width: 100%;
   }

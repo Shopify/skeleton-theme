@@ -154,203 +154,207 @@
 </div>
 
 <style>
-  .about-us-page {
-    font-family: 'Elgian', sans-serif;
-    color: #000000;
+  :root {
+    --green: #1c4219;
+    --grey: #d0ccd0;
+    --white: #fbfcff;
+    --blue: #1c6e8c;
+    --black: #000;
+    --heading-font: 'Futura Book', sans-serif;
+    --body-font: 'Elgian', serif;
+    --border-radius: 1rem;
   }
-
+  .about-us-page {
+    font-family: var(--body-font);
+    color: var(--black);
+    background: var(--white);
+  }
   .about-hero {
-    background: linear-gradient(135deg, #1c4219 0%, #1c6e8c 100%);
-    color: #fbfcff;
+    background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%);
+    color: var(--white);
     padding: 80px 0;
     text-align: center;
   }
-
   .about-hero__title {
-    font-family: 'Futura Book', sans-serif;
+    font-family: var(--heading-font);
     font-size: 3rem;
     margin-bottom: 1rem;
     font-weight: 400;
   }
-
   .about-hero__subtitle {
     font-size: 1.25rem;
     opacity: 0.9;
     margin: 0;
   }
-
   .about-story {
     padding: 80px 0;
-    background: #fbfcff;
+    background: var(--white);
   }
-
   .about-story__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 60px;
     align-items: center;
   }
-
   .about-story__heading {
-    font-family: 'Futura Book', sans-serif;
+    font-family: var(--heading-font);
     font-size: 2.5rem;
-    color: #1c4219;
+    color: var(--green);
     margin-bottom: 2rem;
   }
-
   .about-story__text p {
     font-size: 1.1rem;
     line-height: 1.7;
     margin-bottom: 1.5rem;
-    color: #000000;
+    color: var(--black);
+    font-family: var(--body-font);
   }
-
   .about-story__image img {
     width: 100%;
     height: auto;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     box-shadow: 0 10px 30px rgba(28, 66, 25, 0.1);
   }
-
   .about-values {
     padding: 80px 0;
-    background: #d0ccd0;
+    background: var(--grey);
   }
-
   .about-values__heading {
-    font-family: 'Futura Book', sans-serif;
+    font-family: var(--heading-font);
     font-size: 2.5rem;
-    color: #1c4219;
+    color: var(--green);
     text-align: center;
     margin-bottom: 3rem;
   }
-
   .about-values__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    justify-items: center;
   }
-
   .about-value {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(28, 66, 25, 0.06);
+    padding: 2rem 1.5rem;
     text-align: center;
-    padding: 2rem;
-    background: #fbfcff;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
-
-  .about-value__icon {
-    margin-bottom: 1.5rem;
+  .about-value__icon svg {
+    display: block;
   }
-
   .about-value__title {
-    font-family: 'Futura Book', sans-serif;
-    font-size: 1.5rem;
-    color: #1c4219;
-    margin-bottom: 1rem;
+    font-family: var(--heading-font);
+    color: var(--green);
+    font-size: 1.25rem;
+    margin: 0.5rem 0 0.5rem 0;
+    font-weight: 600;
   }
-
   .about-value__text {
+    font-family: var(--body-font);
+    color: var(--black);
     font-size: 1rem;
-    line-height: 1.6;
-    color: #000000;
+    margin: 0;
   }
-
   .about-why {
     padding: 80px 0;
-    background: #fbfcff;
+    background: var(--white);
   }
-
   .about-why__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 60px;
     align-items: center;
   }
-
   .about-why__heading {
-    font-family: 'Futura Book', sans-serif;
+    font-family: var(--heading-font);
     font-size: 2.5rem;
-    color: #1c4219;
+    color: var(--green);
     margin-bottom: 2rem;
   }
-
   .about-why__text p {
     font-size: 1.1rem;
     line-height: 1.7;
     margin-bottom: 1.5rem;
-    color: #000000;
+    color: var(--black);
+    font-family: var(--body-font);
   }
-
   .about-why__image img {
     width: 100%;
     height: auto;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     box-shadow: 0 10px 30px rgba(28, 66, 25, 0.1);
   }
-
   .about-cta {
-    padding: 80px 0;
-    background: #1c4219;
-    color: #fbfcff;
+    background: var(--green100);
+    padding: 60px 0;
     text-align: center;
   }
-
   .about-cta__heading {
-    font-family: 'Futura Book', sans-serif;
-    font-size: 2.5rem;
+    font-family: var(--heading-font);
+    font-size: 2rem;
+    color: var(--green);
     margin-bottom: 1rem;
   }
-
   .about-cta__text {
-    font-size: 1.25rem;
+    font-family: var(--body-font);
+    color: var(--green);
+    font-size: 1.1rem;
     margin-bottom: 2rem;
-    opacity: 0.9;
   }
-
+  .button,
   .button--primary {
-    background: #fbfcff;
-    color: #1c4219;
-    padding: 15px 30px;
-    border-radius: 5px;
+    font-family: var(--heading-font);
+    background-color: var(--green);
+    color: var(--white);
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--border-radius);
+    border: none;
+    transition: all 0.3s ease-in-out;
     text-decoration: none;
-    font-family: 'Futura Book', sans-serif;
-    font-weight: 500;
+    font-size: 1.1rem;
+    font-weight: 600;
     display: inline-block;
-    transition: all 0.3s ease;
+    margin-top: 1rem;
   }
-
   .button--primary:hover {
-    background: #d0ccd0;
-    transform: translateY(-2px);
+    background-color: var(--blue);
+    color: var(--white);
+    text-decoration: none;
+    scale: 1.05;
   }
-
-  .page-width {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
     .about-story__grid,
     .about-why__grid {
       grid-template-columns: 1fr;
-      gap: 40px;
+      gap: 2rem;
     }
-
+    .about-values__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 600px) {
+    .about-hero {
+      padding: 40px 0;
+    }
+    .about-story,
+    .about-values,
+    .about-why {
+      padding: 40px 0;
+    }
+    .about-cta {
+      padding: 30px 0;
+    }
     .about-hero__title {
       font-size: 2rem;
     }
-
     .about-story__heading,
-    .about-values__heading,
     .about-why__heading,
-    .about-cta__heading {
-      font-size: 2rem;
-    }
-
-    .about-values__grid {
-      grid-template-columns: 1fr;
+    .about-values__heading {
+      font-size: 1.5rem;
     }
   }
 </style>
