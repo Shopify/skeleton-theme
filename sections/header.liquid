@@ -217,9 +217,10 @@
 
   /* DESKTOP SEARCH - VISIBLE ON LAPTOPS/DESKTOPS */
   .desktop-search {
-    flex: 0 1 400px;
-    max-width: 400px;
-    min-width: 200px;
+    flex: 1;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
     margin: 0;
     align-items: center;
     display: flex;
@@ -228,21 +229,39 @@
     transition: all 0.3s ease;
   }
 
+  .desktop-search-form {
+    width: 100%;
+    max-width: none;
+    background: var(--white);
+    border-radius: 2rem;
+    box-shadow: 0 2px 8px rgba(28, 66, 25, 0.06);
+    padding: 0.2rem 0.5rem;
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    z-index: auto;
+    transition: none;
+    display: block;
+  }
   .search-input-group {
     position: relative;
     display: flex;
     align-items: center;
-  }
-
-  .search-input {
     width: 100%;
-    padding: 0.75rem 1rem;
+    flex: 1;
+  }
+  .desktop-search-input {
+    width: 100%;
+    padding: 1rem 4.5rem 1rem 1.2rem;
     border: 2px solid var(--green200);
-    border-radius: 25px;
+    border-radius: 2rem;
     background: var(--white);
     color: var(--green);
     font-family: var(--body-font);
+    font-size: 1.1rem;
     transition: all 0.3s ease;
+    box-sizing: border-box;
   }
 
   .search-input:focus {
@@ -399,11 +418,11 @@
     position: relative;
     display: flex;
     align-items: center;
-    width: 80%;
+    width: 100%;
+    flex: 1;
   }
   .mobile-search-input {
     width: 100%;
-
     padding: 0.9rem 2.5rem 0.9rem 1.2rem;
     border: 2px solid var(--green200);
     border-radius: 2rem;
@@ -516,6 +535,7 @@
   /* TABLETS (max-width: 1024px) - SHOW HAMBURGER */
   @media screen and (max-width: 1024px) {
     .desktop-nav {
+      display: none;
       opacity: 0;
       transform: translateY(-10px);
       pointer-events: none;
