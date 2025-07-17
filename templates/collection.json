@@ -9,10 +9,6 @@
  */
 {
   "sections": {
-    "collection-info": {
-      "type": "collection-info",
-      "settings": {}
-    },
     "collection": {
       "type": "collection",
       "settings": {}
@@ -23,7 +19,6 @@
     }
   },
   "order": [
-    "collection-info",
     "collection",
     "footer"
   ]

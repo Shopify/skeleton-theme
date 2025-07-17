@@ -5,22 +5,24 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<section class="collection-hero" style="background: var(--green900); padding: 3rem 0 2rem 0;">
+<section class="collection-hero full-width" style="background: var(--green900); padding: 3rem 0 2rem 0;">
   <div class="collection-hero__content page-width">
     <h1
       class="collection-title"
       style="font-family: var(--heading-font); color: var(--grey); font-size: 2.5rem; text-align: center; margin-bottom: 1rem;"
     >
-      {{ collection.title }}
+      Welcome to Your Peaceful Garden
     </h1>
-    {% if collection.description %}
-      <p
-        class="collection-intro"
-        style="font-family: var(--body-font); color: var(--grey); font-size: 1.15rem; text-align: center; max-width: 700px; margin: 0 auto 2rem auto;"
-      >
-        {{ collection.description }}
-      </p>
-    {% endif %}
+    <p
+      class="collection-intro"
+      style="font-family: var(--body-font); color: var(--grey); font-size: 1.15rem; text-align: center; max-width: 700px; margin: 0 auto 2rem auto;"
+    >
+      At Andra's Garden Heaven, we believe your garden should be a sanctuary—a place to unwind, connect, and find peace
+      in everyday moments. Our handcrafted furniture is made with care and passion, designed to bring comfort, beauty,
+      and a sense of calm to your outdoor space. Whether you're sharing laughter with friends or enjoying a quiet cup of
+      tea, our pieces are here to help you create memories and embrace the joy of simple living. Welcome home to peace,
+      comfort, and community.
+    </p>
   </div>
 </section>
 
@@ -70,23 +72,54 @@
 </section>
 
 <style>
+  :root {
+    --green: #1c4219;
+    --grey: #d0ccd0;
+    --white: #fbfcff;
+    --blue: #1c6e8c;
+    --black: #000;
+    --heading-font: 'Futura Book', sans-serif;
+    --body-font: 'Elgian', serif;
+    --border-radius: 1rem;
+  }
   .page-width {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
   }
-
+  .collection-hero {
+    background: var(--green900, var(--green));
+    padding: 3rem 0 2rem 0;
+  }
+  .collection-title {
+    font-family: var(--heading-font);
+    color: var(--grey);
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .collection-intro {
+    font-family: var(--body-font);
+    color: var(--grey);
+    font-size: 1.15rem;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 2rem auto;
+  }
+  .collection-products-section {
+    background: var(--white);
+    padding-bottom: 4rem;
+  }
   .collection-products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
   }
-
   .product-card {
-    background: var(--green900);
+    background: var(--green900, var(--green));
     color: var(--grey);
-    border-radius: 1.25rem;
+    border-radius: var(--border-radius);
     box-shadow: 0 4px 24px rgba(28, 66, 25, 0.08);
     overflow: hidden;
     transition: box-shadow 0.2s, transform 0.2s;
@@ -109,7 +142,7 @@
   }
   .product-card__image-card {
     background: var(--white);
-    border-radius: 1rem 1rem 0 0;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
     box-shadow: 0 2px 12px rgba(28, 66, 25, 0.1);
     padding: 1.25rem 1.25rem 0.5rem 1.25rem;
     display: flex;
@@ -153,7 +186,7 @@
     width: 100%;
     height: 0;
     padding-bottom: 100%;
-    border-radius: 1rem;
+    border-radius: var(--border-radius);
     background: var(--grey);
   }
   .pagination-wrapper {

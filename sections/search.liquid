@@ -5,50 +5,262 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/search
 {% endcomment %}
 
-<h1>{{ 'search.title' | t }}</h1>
+<header class="agh-header search-header">
+  <div class="header-container">
+    <a href="{{ routes.root_url }}" class="brand-link">
+      <img
+        src="{{ 'AGH Logo GreenAsset 1@4x.png' | asset_url }}"
+        alt="Andra's Garden Heaven Logo"
+        class="brand-logo"
+        width="120"
+        height="40"
+      >
+    </a>
+    <h1 class="search-title">{{ 'search.title' | t }}</h1>
+  </div>
+</header>
 
-<form action="{{ routes.search_url }}" method="get" role="search">
-  <input
-    type="search"
-    size="50"
-    name="q"
-    value="{{ search.terms | escape }}"
-    placeholder="{{ 'search.placeholder' | t }}"
-  >
-  <button type="submit">{{ 'search.submit' | t }}</button>
-</form>
-
-{% if search.performed %}
-  {% if search.results_count == 0 %}
-    <p>{{ 'search.no_results_html' | t: terms: search.terms }}</p>
-  {% else %}
-    <p>{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
-
-    <div class="search-results">
-      {% paginate search.results by 20 %}
-        {% # Search result items may be an article, a page, or a product. %}
-        {% for result in search.results %}
-          <div class="search-result">
-            {% assign featured_image = result.featured_image | default: result.image %}
-            {% if featured_image %}
-              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
-            {% endif %}
-            <div class="search-result__content">
-              <p>
-                {{ result.title | link_to: result.url }}
-                {% if result.price %}
-                  {{ result.price | money_with_currency }}
-                {% endif %}
-              </p>
-            </div>
-          </div>
-        {% endfor %}
-
-        {{ paginate | default_pagination }}
-      {% endpaginate %}
+<div class="search-page-container">
+  <form action="{{ routes.search_url }}" method="get" role="search" class="search-form search-form-main">
+    <div class="search-input-group">
+      <input
+        type="search"
+        size="50"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ 'search.placeholder' | t }}"
+        class="search-input search-input-main"
+      >
+      <button
+        type="button"
+        class="search-close-btn"
+        aria-label="Clear search"
+        onclick="this.previousElementSibling.value='';this.previousElementSibling.focus();"
+      >
+        &times;
+      </button>
+      <button type="submit" class="search-btn search-btn-main" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
+  </form>
+
+  {% if search.performed %}
+    {% if search.results_count == 0 %}
+      <p class="search-no-results">{{ 'search.no_results_html' | t: terms: search.terms }}</p>
+    {% else %}
+      <p class="search-results-count">
+        {{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}
+      </p>
+      <div class="search-results">
+        {% paginate search.results by 20 %}
+          {% for result in search.results %}
+            <div class="search-result-card">
+              {% assign featured_image = result.featured_image | default: result.image %}
+              {% if featured_image %}
+                {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
+              {% endif %}
+              <div class="search-result__content">
+                <p class="search-result-title">
+                  {{ result.title | link_to: result.url }}
+                  {% if result.price %}
+                    <span class="search-result-price">{{ result.price | money_with_currency }}</span>
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+          {{ paginate | default_pagination }}
+        {% endpaginate %}
+      </div>
+    {% endif %}
   {% endif %}
-{% endif %}
+</div>
+
+<style>
+  :root {
+    --green100: #e3f5d7;
+    --green200: #c4ecb1;
+    --green300: #8dc67c;
+    --green400: #558d4b;
+    --green: #1c4219;
+    --green600: #123812;
+    --white: #fff;
+    --heading-font: 'Inter', sans-serif;
+    --body-font: 'Inter', sans-serif;
+  }
+  .search-header {
+    background: rgba(227, 245, 215, 0.95);
+    border-bottom: 2px solid var(--green200);
+    box-shadow: 0 4px 20px rgba(28, 66, 25, 0.07);
+    padding: 0;
+  }
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .brand-logo {
+    height: 40px;
+    width: auto;
+  }
+  .search-title {
+    font-family: var(--heading-font);
+    color: var(--green);
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  .search-page-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem 1rem;
+    background: var(--white);
+    border-radius: 1.5rem;
+    box-shadow: 0 2px 16px rgba(28, 66, 25, 0.06);
+  }
+  .search-form-main {
+    max-width: 420px;
+    margin: 0 auto 2rem auto;
+    width: 100%;
+  }
+  .search-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .search-input-main {
+    width: 100%;
+    padding: 1rem 4.5rem 1rem 1.2rem;
+    border: 2px solid var(--green200);
+    border-radius: 2rem;
+    background: var(--white);
+    color: var(--green);
+    font-family: var(--body-font);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+  }
+  .search-input-main:focus {
+    outline: none;
+    border-color: var(--green400);
+    box-shadow: 0 0 0 3px rgba(28, 66, 25, 0.08);
+  }
+  .search-btn-main {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--green400);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+  }
+  .search-btn-main:hover svg {
+    color: var(--green600);
+    transform: scale(1.1);
+  }
+  .search-close-btn {
+    position: absolute;
+    right: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--green600);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    z-index: 2;
+  }
+  .search-no-results {
+    color: var(--green600);
+    font-size: 1.1rem;
+    margin: 2rem 0;
+    text-align: center;
+  }
+  .search-results-count {
+    color: var(--green);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+  .search-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 2rem;
+  }
+  .search-result-card {
+    background: var(--green100);
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(28, 66, 25, 0.04);
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: box-shadow 0.2s;
+  }
+  .search-result-card:hover {
+    box-shadow: 0 4px 16px rgba(28, 66, 25, 0.1);
+  }
+  .search-result__image {
+    border-radius: 0.75rem;
+    width: 100%;
+    max-width: 320px;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+  }
+  .search-result-title {
+    font-family: var(--heading-font);
+    color: var(--green600);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0 0 0.2rem 0;
+  }
+  .search-result-title a {
+    color: var(--green);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .search-result-title a:hover {
+    color: var(--green400);
+  }
+  .search-result-price {
+    color: var(--green400);
+    font-size: 1rem;
+    margin-left: 0.5rem;
+  }
+  @media (max-width: 600px) {
+    .search-header .header-container {
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0.5rem 0.5rem;
+    }
+    .search-title {
+      font-size: 1.3rem;
+    }
+    .search-page-container {
+      padding: 1rem 0.2rem;
+    }
+    .search-results {
+      gap: 1rem;
+    }
+    .search-result-card {
+      padding: 0.7rem;
+    }
+  }
+</style>
 
 {% stylesheet %}
   .search-results {

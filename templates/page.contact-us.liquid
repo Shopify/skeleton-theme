@@ -244,297 +244,233 @@
 </div>
 
 <style>
-  .contact-us-page {
-    font-family: 'Elgian', sans-serif;
-    color: #000000;
+  :root {
+    --green: #1c4219;
+    --grey: #d0ccd0;
+    --white: #fbfcff;
+    --blue: #1c6e8c;
+    --black: #000;
+    --heading-font: 'Futura Book', sans-serif;
+    --body-font: 'Elgian', serif;
+    --border-radius: 1rem;
   }
-
+  .contact-us-page {
+    font-family: var(--body-font);
+    color: var(--black);
+    background: var(--white);
+  }
   .contact-hero {
-    background: linear-gradient(135deg, #1c4219 0%, #1c6e8c 100%);
-    color: #fbfcff;
+    background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%);
+    color: var(--white);
     padding: 80px 0;
     text-align: center;
   }
-
   .contact-hero__title {
-    font-family: 'Futura Book', sans-serif;
+    font-family: var(--heading-font);
     font-size: 3rem;
     margin-bottom: 1rem;
     font-weight: 400;
   }
-
   .contact-hero__subtitle {
     font-size: 1.25rem;
     opacity: 0.9;
     margin: 0;
   }
-
   .contact-info {
     padding: 80px 0;
-    background: #fbfcff;
+    background: var(--white);
   }
-
   .contact-info__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    justify-items: center;
   }
-
   .contact-info__card {
+    background: var(--grey);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(28, 66, 25, 0.06);
+    padding: 2rem 1.5rem;
     text-align: center;
-    padding: 2rem;
-    background: #d0ccd0;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
-
-  .contact-info__icon {
-    margin-bottom: 1.5rem;
+  .contact-info__icon svg {
+    display: block;
   }
-
   .contact-info__title {
-    font-family: 'Futura Book', sans-serif;
-    font-size: 1.5rem;
-    color: #1c4219;
-    margin-bottom: 1rem;
+    font-family: var(--heading-font);
+    color: var(--green);
+    font-size: 1.25rem;
+    margin: 0.5rem 0 0.5rem 0;
+    font-weight: 600;
   }
-
   .contact-info__text {
+    font-family: var(--body-font);
+    color: var(--black);
     font-size: 1rem;
-    line-height: 1.6;
-    color: #000000;
+    margin: 0;
   }
-
   .contact-form-section {
     padding: 80px 0;
-    background: #d0ccd0;
+    background: var(--grey);
   }
-
   .contact-form__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 60px;
     align-items: start;
   }
-
   .contact-form__heading {
-    font-family: 'Futura Book', sans-serif;
+    font-family: var(--heading-font);
     font-size: 2.5rem;
-    color: #1c4219;
+    color: var(--green);
     margin-bottom: 1rem;
   }
-
   .contact-form__subtitle {
     font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 2rem;
-    color: #000000;
+    color: var(--black);
   }
-
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-bottom: 20px;
   }
-
   .form-field {
     margin-bottom: 20px;
   }
-
   .form-field label {
     display: block;
-    font-family: 'Futura Book', sans-serif;
+    font-family: var(--heading-font);
     font-weight: 500;
-    color: #1c4219;
+    color: var(--green);
     margin-bottom: 8px;
   }
-
   .form-field input,
   .form-field select,
   .form-field textarea {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid #d0ccd0;
-    border-radius: 5px;
-    font-family: 'Elgian', sans-serif;
+    border: 2px solid var(--grey);
+    border-radius: var(--border-radius);
+    font-family: var(--body-font);
     font-size: 1rem;
-    background: #fbfcff;
+    background: var(--white);
     transition: border-color 0.3s ease;
   }
-
   .form-field input:focus,
   .form-field select:focus,
   .form-field textarea:focus {
     outline: none;
-    border-color: #1c4219;
+    border-color: var(--green);
   }
-
   .form-field textarea {
     resize: vertical;
     min-height: 120px;
   }
-
+  .button,
   .button--primary {
-    background: #1c4219;
-    color: #fbfcff;
-    padding: 15px 30px;
+    font-family: var(--heading-font);
+    background-color: var(--green);
+    color: var(--white);
+    padding: 0.5rem 1.5rem;
+    border-radius: var(--border-radius);
     border: none;
-    border-radius: 5px;
-    font-family: 'Futura Book', sans-serif;
-    font-weight: 500;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-block;
+    transition: all 0.3s ease-in-out;
     text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 1rem;
   }
-
   .button--primary:hover {
-    background: #1c6e8c;
-    transform: translateY(-2px);
+    background-color: var(--blue);
+    color: var(--white);
+    text-decoration: none;
+    scale: 1.05;
   }
-
-  .form-success {
-    background: #1c4219;
-    color: #fbfcff;
-    padding: 2rem;
-    border-radius: 8px;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  .form-success h3 {
-    font-family: 'Futura Book', sans-serif;
-    margin-bottom: 1rem;
-  }
-
   .contact-form__image img {
     width: 100%;
     height: auto;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     box-shadow: 0 10px 30px rgba(28, 66, 25, 0.1);
   }
-
   .contact-map {
     padding: 80px 0;
-    background: #fbfcff;
+    background: var(--white);
   }
-
   .contact-map__heading {
-    font-family: 'Futura Book', sans-serif;
-    font-size: 2.5rem;
-    color: #1c4219;
+    font-family: var(--heading-font);
+    font-size: 2rem;
+    color: var(--green);
+    margin-bottom: 2rem;
     text-align: center;
-    margin-bottom: 3rem;
   }
-
   .contact-map__container {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 40px;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
     align-items: start;
   }
-
   .contact-map__info h3 {
-    font-family: 'Futura Book', sans-serif;
-    font-size: 1.5rem;
-    color: #1c4219;
-    margin-bottom: 1.5rem;
+    font-family: var(--heading-font);
+    color: var(--green);
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
   }
-
   .contact-map__info p {
+    font-family: var(--body-font);
+    color: var(--black);
     font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    color: #000000;
+    margin-bottom: 1rem;
   }
-
-  .map-placeholder {
-    background: #d0ccd0;
-    height: 300px;
-    border-radius: 8px;
+  .contact-map__placeholder {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #1c4219;
-  }
-
-  .map-placeholder p {
-    margin-top: 1rem;
-    font-family: 'Futura Book', sans-serif;
-    font-weight: 500;
-  }
-
-  .contact-faq {
-    padding: 80px 0;
-    background: #d0ccd0;
-  }
-
-  .contact-faq__heading {
-    font-family: 'Futura Book', sans-serif;
-    font-size: 2.5rem;
-    color: #1c4219;
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-
-  .contact-faq__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 30px;
-  }
-
-  .faq-item {
-    background: #fbfcff;
+    background: var(--grey);
+    border-radius: var(--border-radius);
     padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    min-height: 300px;
   }
-
-  .faq-question {
-    font-family: 'Futura Book', sans-serif;
-    font-size: 1.25rem;
-    color: #1c4219;
+  .map-placeholder svg {
     margin-bottom: 1rem;
   }
-
-  .faq-answer {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #000000;
+  .map-placeholder p {
+    font-family: var(--body-font);
+    color: var(--green);
+    font-size: 1.1rem;
+    margin: 0;
   }
-
-  .page-width {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
+    .contact-info__grid,
     .contact-form__grid,
     .contact-map__container {
       grid-template-columns: 1fr;
-      gap: 40px;
+      gap: 2rem;
     }
-
-    .form-row {
-      grid-template-columns: 1fr;
+  }
+  @media (max-width: 600px) {
+    .contact-hero {
+      padding: 40px 0;
     }
-
+    .contact-info,
+    .contact-form-section,
+    .contact-map {
+      padding: 40px 0;
+    }
     .contact-hero__title {
       font-size: 2rem;
     }
-
     .contact-form__heading,
-    .contact-map__heading,
-    .contact-faq__heading {
-      font-size: 2rem;
-    }
-
-    .contact-faq__grid {
-      grid-template-columns: 1fr;
+    .contact-map__heading {
+      font-size: 1.5rem;
     }
   }
 </style>
