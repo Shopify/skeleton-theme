@@ -95,9 +95,12 @@
       <div class="mobile-menu-links">
         <a href="/pages/about-us" class="mobile-nav-link">About</a>
         <a href="/pages/contact-us" class="mobile-nav-link">Contact</a>
-        <a href="/collections/all" class="mobile-nav-link">Products</a>
+        <a
+          href="{{ routes.all_products_collection_url | json }}"
+          class="mobile-nav-link"
+          >Products</a
+        >
       </div>
-
       <div class="mobile-menu-footer">
         {% if shop.customer_accounts_enabled %}
           <a href="{{ routes.account_url }}" class="mobile-account-link" tabindex="0">
