@@ -7,6 +7,9 @@
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
 
+    {% # Load and preload the style CSS %}
+    {{ 'style.css' | asset_url | stylesheet_tag: preload: true }}
+
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
