@@ -1,17 +1,17 @@
-<footer>
+<footer class="flex justify-between mt-8">
   <div class="footer__copyright">
     &copy;
     {{ 'now' | date: '%Y' }}
     {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
   </div>
 
-  <div class="footer__links">
+  <div class="footer__links flex gap-4">
     {% for link in section.settings.menu.links %}
       {{ link.title | link_to: link.url }}
     {% endfor %}
   </div>
 
-  <div class="footer__payment">
+  <div class="footer__payment flex gap-4">
     {% if section.settings.show_payment_icons %}
       {% for type in shop.enabled_payment_types %}
         {{ type | payment_type_svg_tag }}
@@ -19,23 +19,6 @@
     {% endif %}
   </div>
 </footer>
-
-{% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-  }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  footer .footer__links,
-  footer .footer__payment {
-    display: flex;
-    gap: 1rem;
-  }
-{% endstylesheet %}
 
 {% schema %}
 {
