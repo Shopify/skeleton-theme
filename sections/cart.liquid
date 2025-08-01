@@ -5,28 +5,30 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
 {% endcomment %}
 
-<h1>{{ 'cart.title' | t }}</h1>
+<h1 class="text-3xl font-bold mb-6">{{ 'cart.title' | t }}</h1>
 
 <form action="{{ routes.cart_url }}" method="post">
-  <table>
+  <div class="space-y-6">
     {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
+      <div class="flex flex-col md:flex-row items-center gap-6 p-4 border-b border-gray-200">
+        <div class="w-24 h-24 flex-shrink-0">
+          {% render 'image', image: item.image, url: item.url, class: 'w-full h-full object-cover' %}
+        </div>
+        <div class="flex-grow text-center md:text-left">
+          <p class="font-medium">{{ item.product.title }}</p>
+          {{ 'cart.remove' | t | link_to: item.url_to_remove, class: 'text-red-600 hover:text-red-800 text-sm' }}
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" class="w-16 p-2 border border-gray-300 rounded-md">
+          <input type="submit" value="{{ 'cart.update' | t }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 cursor-pointer">
+        </div>
+      </div>
     {% endfor %}
-  </table>
+  </div>
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
+  <div class="mt-8">
+    <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer">
+  </div>
 </form>
 
 {% schema %}

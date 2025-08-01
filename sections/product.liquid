@@ -5,39 +5,51 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <div class="product-images">
+    {% for image in product.images %}
+      {% render 'image', class: 'product-image', image: image %}
+    {% endfor %}
+  </div>
+
+  <div class="product-info">
+    <h1 class="text-3xl font-bold mb-4">{{ product.title }}</h1>
+    <p class="text-xl text-gray-700 mb-4">{{ product.price | money }}</p>
+    <div class="prose max-w-none mb-6">
+      {{ product.description }}
+    </div>
+  </div>
 </div>
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
-
-<div class="product-form">
+<div class="mt-8">
   {% form 'product', product %}
     {% assign current_variant = product.selected_or_first_available_variant %}
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+    <div class="mb-4">
+      <label for="variant" class="block text-sm font-medium text-gray-700 mb-2">Variant</label>
+      <select name="id" id="variant" class="w-full p-2 border border-gray-300 rounded-md">
+        {% for variant in product.variants %}
+          <option
+            value="{{ variant.id }}"
+            {% if variant == current_variant %}
+              selected="selected"
+            {% endif %}
+          >
+            {{ variant.title }} - {{ variant.price | money }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
 
-    <input type="text" name="quantity" min="1" value="1">
+    <div class="mb-4">
+      <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+      <input type="number" name="quantity" id="quantity" min="1" value="1" class="w-full p-2 border border-gray-300 rounded-md">
+    </div>
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
+    <div class="flex flex-wrap gap-4">
+      <input type="submit" value="Add to cart" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer">
+      {{ form | payment_button }}
+    </div>
   {% endform %}
 </div>
 

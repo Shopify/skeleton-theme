@@ -12,37 +12,14 @@
 {% enddoc %}
 
 <div
-  class="group {{ block.settings.layout_direction }}"
-  style="
-    --padding: {{ block.settings.padding }}px;
-    --alignment: {{ block.settings.alignment }};
-  "
+  class="{% if block.settings.layout_direction == 'group--horizontal' %}flex flex-row justify-between items-center{% else %}flex flex-col{% endif %} {% if block.settings.layout_direction == 'group--vertical' %}items-{{ block.settings.alignment }}{% endif %} w-full overflow-hidden"
+  style="padding: {% if block.settings.layout_direction == 'group--horizontal' %}0 {{ block.settings.padding }}px{% else %}{{ block.settings.padding }}px 0{% endif %};"
   {{ block.shopify_attributes }}
 >
   {% content_for 'blocks' %}
 </div>
 
-{% stylesheet %}
-  .group {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow: hidden;
-    width: 100%;
-  }
-
-  .group--horizontal {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 var(--padding);
-  }
-
-  .group--vertical {
-    flex-direction: column;
-    align-items: var(--alignment);
-    padding: var(--padding) 0;
-  }
-{% endstylesheet %}
+{% comment %} Replaced inline CSS with Tailwind classes {% endcomment %}
 
 {% schema %}
 {

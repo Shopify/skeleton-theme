@@ -5,12 +5,12 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<h1>{{ collection.title }}</h1>
+<h1 class="text-3xl font-bold mb-6">{{ collection.title }}</h1>
 
-<div class="collection-products">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
   {% paginate collection.products by 20 %}
     {% for product in collection.products %}
-      <div class="collection-product">
+      <div class="collection-product border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
         {% if product.featured_image %}
           {% render 'image',
             class: 'collection-product__image',
@@ -21,9 +21,9 @@
             crop: 'center'
           %}
         {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
+        <div class="collection-product__content p-4">
+          <p class="font-medium mb-2">{{ product.title | escape | link_to: product.url }}</p>
+          <p class="text-gray-700">{{ product.price | money }}</p>
         </div>
       </div>
     {% endfor %}
@@ -32,12 +32,7 @@
   {% endpaginate %}
 </div>
 
-{% stylesheet %}
-  .collection-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-  }
-{% endstylesheet %}
+{% comment %} Replaced inline CSS with Tailwind classes {% endcomment %}
 
 {% schema %}
 {

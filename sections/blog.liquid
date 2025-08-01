@@ -5,27 +5,33 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/blog
 {% endcomment %}
 
-<h1>{{ blog.title }}</h1>
+<h1 class="text-3xl font-bold mb-6">{{ blog.title }}</h1>
 
-{% paginate blog.articles by 5 %}
-  {% for article in blog.articles %}
-    <div>
-      {% if article.image %}
-        {{ article.image | image_url: width: 1000 | image_tag }}
-      {% endif %}
-      <h2>
-        {{ article.title | link_to: article.url }}
-      </h2>
-      {% assign date = article.published_at | time_tag: format: 'date' %}
-      <p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
-      <p>{{ article.excerpt }}</p>
-    </div>
-  {% endfor %}
+<div class="space-y-12">
+  {% paginate blog.articles by 5 %}
+    {% for article in blog.articles %}
+      <div class="border-b border-gray-200 pb-12">
+        {% if article.image %}
+          <div class="mb-6">
+            {{ article.image | image_url: width: 1000 | image_tag: class: 'w-full h-auto rounded-lg' }}
+          </div>
+        {% endif %}
+        <h2 class="text-2xl font-bold mb-2">
+          {{ article.title | link_to: article.url, class: 'hover:text-blue-600' }}
+        </h2>
+        {% assign date = article.published_at | time_tag: format: 'date' %}
+        <p class="text-gray-600 mb-4">{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
+        <p class="text-gray-700">{{ article.excerpt }}</p>
+      </div>
+    {% endfor %}
 
-  {%- if paginate.pages > 1 -%}
-    {{- paginate | default_pagination -}}
-  {%- endif -%}
-{% endpaginate %}
+    {%- if paginate.pages > 1 -%}
+      <div class="mt-8">
+        {{- paginate | default_pagination -}}
+      </div>
+    {%- endif -%}
+  {% endpaginate %}
+</div>
 
 {% schema %}
 {

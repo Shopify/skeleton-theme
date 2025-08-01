@@ -6,25 +6,17 @@
 {% enddoc %}
 
 <div
-  class="text {{ block.settings.text_style }}"
-  style="--text-align: {{ block.settings.alignment }}"
+  class="{% case block.settings.text_style %}
+    {% when 'text--title' %}text-3xl font-bold
+    {% when 'text--subtitle' %}text-2xl
+    {% else %}text-base
+  {% endcase %} text-{{ block.settings.alignment }}"
   {{ block.shopify_attributes }}
 >
   {{ block.settings.text }}
 </div>
 
-{% stylesheet %}
-  .text {
-    text-align: var(--text-align);
-  }
-  .text--title {
-    font-size: 2rem;
-    font-weight: 700;
-  }
-  .text--subtitle {
-    font-size: 1.5rem;
-  }
-{% endstylesheet %}
+{% comment %} Replaced inline CSS with Tailwind classes {% endcomment %}
 
 {% schema %}
 {

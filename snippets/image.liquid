@@ -40,25 +40,12 @@
 %}
 
 <{{ wrapper }}
-  class="image {{ class }}"
+  class="block relative overflow-hidden w-full {{ class }}"
   {% if url %}
     href="{{ url }}"
   {% endif %}
 >
-  {{ image | image_url: width: width, height: height, crop: crop | image_tag }}
+  {{ image | image_url: width: width, height: height, crop: crop | image_tag: class: 'w-full h-auto' }}
 </{{ wrapper }}>
 
-{% stylesheet %}
-  .image {
-    display: block;
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    height: auto;
-  }
-
-  .image > img {
-    width: 100%;
-    height: auto;
-  }
-{% endstylesheet %}
+{% comment %} Removed inline CSS styles in favor of Tailwind classes {% endcomment %}

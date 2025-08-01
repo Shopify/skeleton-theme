@@ -5,14 +5,13 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<h1>{{ 'collections.title' | t }}</h1>
+<h1 class="text-3xl font-bold mb-6">{{ 'collections.title' | t }}</h1>
 
 <div
-  class="collections {{ section.settings.grid_item_width }}"
-  style="--grid-gap: {{ section.settings.grid_gap }}px"
+  class="grid gap-{{ section.settings.grid_gap }} {% if section.settings.grid_item_width == 'collections--compact' %}grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5{% else %}grid-cols-1 sm:grid-cols-2 lg:grid-cols-3{% endif %}"
 >
   {% for collection in collections %}
-    <a class="collection-card" href="{{ collection.url }}">
+    <a href="{{ collection.url }}" class="flex flex-col">
       {% if collection.featured_image %}
         {% render 'image',
           class: 'collection-card__image',
@@ -23,35 +22,18 @@
         %}
       {% endif %}
 
-      <div class="collection-card__content">
-        <p>{{ collection.title }}</p>
+      <div class="collection-card__content p-4 text-center">
+        <p class="font-medium">{{ collection.title }}</p>
 
         {% if collection.description %}
-          <p>{{ collection.description | strip_html | truncatewords: 15 }}</p>
+          <p class="text-gray-600 text-sm mt-2">{{ collection.description | strip_html | truncatewords: 15 }}</p>
         {% endif %}
       </div>
     </a>
   {% endfor %}
 </div>
 
-{% stylesheet %}
-  .collections {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(var(--collection-card-size), 100%), 1fr));
-    gap: var(--grid-gap);
-  }
-  .collections--compact {
-    --collection-card-size: 160px;
-  }
-  .collections--full {
-    --collection-card-size: 280px;
-  }
-  .collection-card {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-{% endstylesheet %}
+{% comment %} Replaced inline CSS with Tailwind classes {% endcomment %}
 
 {% schema %}
 {
