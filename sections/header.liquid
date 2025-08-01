@@ -1,4 +1,4 @@
-<header class="h-12.5 flex items-center justify-between">
+<header class="h-12.5 grid grid-cols-[auto_1fr_auto]">
   <h2 class="header__title text-4xl font-bold">
     {{ shop.name | link_to: routes.root_url }}
   </h2>
@@ -9,18 +9,15 @@
     {% endfor %}
   </div>
 
-  <div class="header__icons flex gap-4">
+  <div class="header__icons flex gap-4 items-center">
     {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
+      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url, class: 'w-8 block' }}
     {% endif %}
 
-    <a href="{{ routes.cart_url }}" class="relative">
-      {% if cart.item_count > 0 %}
-        <sup class="absolute left-full overflow-hidden max-w-[var(--page-margin)]">{{ cart.item_count }}</sup>
-      {% endif %}
-
-      {{ 'icon-cart.svg' | inline_asset_content }}
+    <a href="{{ routes.cart_url }}" class="w-8 flex leading-[32px]">
+      <span class="w-8 leading-[32px]">{{ 'icon-cart.svg' | inline_asset_content }}</span>
     </a>
+    {% # TODO get art item count working again %}
   </div>
 </header>
 

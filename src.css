@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+@theme {
+  --text-2xs: 0.5rem;
+}
