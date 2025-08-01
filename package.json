@@ -4,7 +4,9 @@
   "description": "<h1 align=\"center\" style=\"position: relative;\">\r   <br>\r     <img src=\"./assets/shoppy-x-ray.svg\" alt=\"logo\" width=\"200\">\r   <br>\r   Shopify Skeleton Theme\r </h1>",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tailwind": "npx @tailwindcss/cli -i ./src.css -o ./assets/style.css --minify",
+    "tailwind:watch": "npx @tailwindcss/cli -i ./src.css -o ./assets/style.css --watch"
   },
   "repository": {
     "type": "git",
