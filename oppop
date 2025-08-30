@@ -1,0 +1,54 @@
+ # Select a client library to see examples of
+# parsing and retrieving event details.
+  # Select a client library to see examples of
+# parsing and retrieving event details.
+client = Stripe::StripeClient.new("{{YOUR_API_KEY}}")
+
+endpoint_secret = 'whsec_...'
+signature_header = request.env['HTTP_STRIPE_SIGNATURE']
+
+thin_event = client.parse_thin_event(
+  payload,
+  signature_header,
+  endpoint_secret
+)
+
+event = client.v2.core.events.retrieve(thin_event.id)
+client = StripeClient("{{YOUR_API_KEY}}")
+
+endpoint_secret = 'whsec_...'
+signature_header = ''
+
+thin_event = client.parse_thin_event(
+  payload,
+  signature_header,
+  endpoint_secret
+)
+
+event = client.v2.core.events.retrieve(thin_event.id)
+$stripe = new StripeStripeClient('{{YOUR_API_KEY}}');
+
+$endpoint_secret = 'whsec_...';
+$signature_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+
+$thin_event = $client->parseThinEvent(
+  $payload,
+  $signature_header,
+  $endpoint_secret
+);
+
+$event = $client->v2->core->events->retrieve($thin_event->id);
+StripeClient client = new StripeClient("{{YOUR_API_KEY}}");
+
+String signatureHeader = request.headers("Stripe-Signature");
+String endpointSecret = "whsec_...";
+
+com.stripe.model.ThinEvent thinEvent = client.parseThinEvent(
+  payload,
+  signatureHeader,
+  endpointSecret
+);
+
+com.stripe.model.v2.Event event = client.v2().core().events().retrieve(
+  thinEvent.getId()
+);
