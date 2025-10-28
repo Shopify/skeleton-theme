@@ -11,3 +11,21 @@
 #
 # Ignore templates and sections with a regular expression:
 #   /(templates|sections)/.*\.json/
+
+# Source files (not needed in production)
+src/
+
+# Build configuration
+vite.config.ts
+tailwind.config.ts
+postcss.config.cjs
+tsconfig.json
+
+# Node.js
+node_modules/
+package.json
+package-lock.json
+
+# Development files
+.vite/
+dist/

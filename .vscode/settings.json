@@ -1,0 +1,35 @@
+{
+  "files.associations": {
+    "*.liquid": "liquid"
+  },
+  "emmet.includeLanguages": {
+    "liquid": "html"
+  },
+  "liquid.format.enable": true,
+  "editor.formatOnSave": true,
+  "[liquid]": {
+    "editor.defaultFormatter": "Shopify.theme-check-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["class:\\s*['\"`]([^'\"`]*)['\"`]", "['\"`]([^'\"`]*)['\"`]"]
+  ],
+  "tailwindCSS.includeLanguages": {
+    "liquid": "html"
+  },
+  "css.validate": false,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/.shopify": true
+  }
+}

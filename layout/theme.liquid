@@ -4,8 +4,8 @@
     {% # Inlined CSS Variables %}
     {% render 'css-variables' %}
 
-    {% # Load and preload the critical CSS %}
-    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+    {% # Load Vite assets (includes TailwindCSS) %}
+    {% render 'vite' %}
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}

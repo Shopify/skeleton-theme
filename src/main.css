@@ -1,0 +1,120 @@
+/**
+ * Main CSS entry point for Vite + TailwindCSS v4
+ * This file is processed by Vite and outputs to assets/main.min.css
+ */
+
+@import "tailwindcss";
+
+/**
+ * Custom CSS layers
+ * Use @layer to organize your custom styles
+ */
+
+@layer base {
+  /* Base styles - similar to critical.css */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    min-height: 100svh;
+    font-family: var(--font-primary--family);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
+    overflow: hidden;
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  input,
+  textarea,
+  select {
+    font: inherit;
+    border-radius: var(--style-border-radius-inputs);
+  }
+
+  select {
+    background-color: var(--color-background);
+    color: currentcolor;
+  }
+
+  dialog {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+
+  p:empty {
+    display: none;
+  }
+
+  :is(p, h1, h2, h3, h4, h5, h6):first-child,
+  :empty:first-child + :where(p, h1, h2, h3, h4, h5, h6) {
+    margin-block-start: 0;
+  }
+
+  :is(p, h1, h2, h3, h4, h5, h6):last-child,
+  :where(p, h1, h2, h3, h4, h5, h6) + :has(+ :empty:last-child) {
+    margin-block-end: 0;
+  }
+}
+
+@layer components {
+  /* Component-level styles */
+
+  /* Shopify section layout utilities */
+  .shopify-section {
+    --content-width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    --content-margin: minmax(var(--page-margin), 1fr);
+    --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
+
+    position: relative;
+    grid-template-columns: var(--content-grid);
+    display: grid;
+    width: 100%;
+  }
+
+  .shopify-section > * {
+    grid-column: 2;
+  }
+
+  .shopify-section > .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+@layer utilities {
+  /* Custom utility classes */
+  /* You can add your own utilities here or use Tailwind's @apply */
+}

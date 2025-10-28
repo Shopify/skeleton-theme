@@ -1,0 +1,30 @@
+{
+  "name": "skeleton-theme",
+  "version": "0.1.0",
+  "description": "A minimal, carefully structured Shopify theme with Vite and TailwindCSS v4",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run vite:dev\" \"npm run shopify:dev\" --names \"VITE,SHOPIFY\" --prefix-colors \"blue,magenta\"",
+    "vite:dev": "vite",
+    "shopify:dev": "shopify theme dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "shopify:push": "shopify theme push",
+    "shopify:pull": "shopify theme pull"
+  },
+  "devDependencies": {
+    "@shopify/vite-plugin-shopify": "^1.0.2",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/node": "^22.10.2",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.2",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
