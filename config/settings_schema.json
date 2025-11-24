@@ -17,7 +17,7 @@
       {
         "type": "font_picker",
         "id": "type_primary_font",
-        "default": "work_sans_n4",
+        "default": "sans_serif_n4",
         "label": "t:general.primary"
       }
     ]
