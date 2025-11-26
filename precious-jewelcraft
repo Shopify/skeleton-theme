@@ -1,0 +1,6 @@
+shopify theme init — create a new theme from Skeleton.
+shopify theme dev --store precious-jewelcraft.myshopify.com — start dev server + preview.
+shopify theme check — run Theme Check linting.
+shopify theme push --unpublished — upload unpublished theme.
+shopify theme push — push updates the theme.
+shopify theme pull --store precious-jewelcraft.myshopify.com
