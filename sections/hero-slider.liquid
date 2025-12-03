@@ -1,0 +1,340 @@
+<div class="hero-slider">
+  <div class="hero-slider__wrapper">
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when 'slide' %}
+          <div class="hero-slide {% if forloop.first %}hero-slide--active{% endif %}" data-slide-index="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            <div class="hero-slide__image">
+              {% if block.settings.image != blank %}
+                {{ block.settings.image | image_url: width: 1920 | image_tag: loading: 'lazy', alt: block.settings.heading }}
+              {% else %}
+                <div class="hero-slide__placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+              {% endif %}
+            </div>
+            <div class="hero-slide__content">
+              <div class="hero-slide__container">
+                {% if block.settings.subheading != blank %}
+                  <p class="hero-slide__subheading">{{ block.settings.subheading }}</p>
+                {% endif %}
+                {% if block.settings.heading != blank %}
+                  <h2 class="hero-slide__heading">{{ block.settings.heading }}</h2>
+                {% endif %}
+                {% if block.settings.button_label != blank %}
+                  <a href="{{ block.settings.button_link | default: '#' }}" class="hero-slide__button">
+                    {{ block.settings.button_label }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+      {% endcase %}
+    {% endfor %}
+  </div>
+
+  {% if section.blocks.size > 1 %}
+    <div class="hero-slider__controls">
+      <button class="hero-slider__arrow hero-slider__arrow--prev" aria-label="Previous slide">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M15 18l-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="hero-slider__arrow hero-slider__arrow--next" aria-label="Next slide">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M9 18l6-6-6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="hero-slider__dots">
+      {% for block in section.blocks %}
+        <button class="hero-slider__dot {% if forloop.first %}hero-slider__dot--active{% endif %}"
+                data-slide="{{ forloop.index0 }}"
+                aria-label="Go to slide {{ forloop.index }}"></button>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .hero-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+  .hero-slider__wrapper {
+    position: relative;
+    width: 100%;
+    height: 500px;
+  }
+  .hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    pointer-events: none;
+  }
+  .hero-slide--active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .hero-slide__image {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .hero-slide__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero-slide__placeholder {
+    width: 100%;
+    height: 100%;
+  }
+  .hero-slide__content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--page-margin, 20px);
+  }
+  .hero-slide__container {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+    width: 100%;
+  }
+  .hero-slide__subheading {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 1rem;
+    color: #333;
+    font-weight: 500;
+  }
+  .hero-slide__heading {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 0 0 2rem;
+    color: #000;
+    max-width: 600px;
+    line-height: 1.2;
+  }
+  .hero-slide__button {
+    display: inline-block;
+    padding: 0.8rem 2.5rem;
+    background: transparent;
+    border: 2px solid #000;
+    color: #000;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s;
+  }
+  .hero-slide__button:hover {
+    background: #000;
+    color: #fff;
+  }
+  .hero-slider__controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 var(--page-margin, 20px);
+    pointer-events: none;
+    z-index: 10;
+  }
+  .hero-slider__arrow {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    pointer-events: auto;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .hero-slider__arrow:hover {
+    background: #fff;
+    transform: scale(1.1);
+  }
+  .hero-slider__arrow svg {
+    color: #333;
+  }
+  .hero-slider__dots {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
+  .hero-slider__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 0;
+  }
+  .hero-slider__dot--active,
+  .hero-slider__dot:hover {
+    background: #fff;
+    transform: scale(1.2);
+  }
+
+  @media (max-width: 768px) {
+    .hero-slider__wrapper {
+      height: 400px;
+    }
+    .hero-slide__heading {
+      font-size: 2rem;
+    }
+    .hero-slider__arrow {
+      width: 40px;
+      height: 40px;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class HeroSlider {
+    constructor(element) {
+      this.element = element;
+      this.slides = this.element.querySelectorAll('.hero-slide');
+      this.dots = this.element.querySelectorAll('.hero-slider__dot');
+      this.prevBtn = this.element.querySelector('.hero-slider__arrow--prev');
+      this.nextBtn = this.element.querySelector('.hero-slider__arrow--next');
+      this.currentSlide = 0;
+      this.autoplayDelay = 5000;
+      this.autoplayTimer = null;
+
+      this.init();
+    }
+
+    init() {
+      if (this.slides.length <= 1) return;
+
+      this.prevBtn?.addEventListener('click', () => this.prevSlide());
+      this.nextBtn?.addEventListener('click', () => this.nextSlide());
+
+      this.dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => this.goToSlide(index));
+      });
+
+      this.startAutoplay();
+
+      this.element.addEventListener('mouseenter', () => this.stopAutoplay());
+      this.element.addEventListener('mouseleave', () => this.startAutoplay());
+    }
+
+    goToSlide(index) {
+      this.slides[this.currentSlide].classList.remove('hero-slide--active');
+      this.dots[this.currentSlide]?.classList.remove('hero-slider__dot--active');
+
+      this.currentSlide = index;
+
+      this.slides[this.currentSlide].classList.add('hero-slide--active');
+      this.dots[this.currentSlide]?.classList.add('hero-slider__dot--active');
+    }
+
+    nextSlide() {
+      const next = (this.currentSlide + 1) % this.slides.length;
+      this.goToSlide(next);
+    }
+
+    prevSlide() {
+      const prev = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+      this.goToSlide(prev);
+    }
+
+    startAutoplay() {
+      this.stopAutoplay();
+      this.autoplayTimer = setInterval(() => this.nextSlide(), this.autoplayDelay);
+    }
+
+    stopAutoplay() {
+      if (this.autoplayTimer) {
+        clearInterval(this.autoplayTimer);
+        this.autoplayTimer = null;
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const sliders = document.querySelectorAll('.hero-slider');
+    sliders.forEach(slider => new HeroSlider(slider));
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Hero Slider",
+  "tag": "section",
+  "class": "hero-slider-section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Slide image"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "THE NEW FRAGRANCE FOR MEN"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "BOSS HUGO BOSS BOTTLED"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "SHOP NOW"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Slider",
+      "blocks": [
+        {
+          "type": "slide"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

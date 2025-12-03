@@ -1,0 +1,294 @@
+<div class="brand-carousel">
+  <div class="brand-carousel__container">
+    <div class="brand-carousel__track">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'brand' %}
+            <div class="brand-carousel__item" {{ block.shopify_attributes }}>
+              {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}" class="brand-carousel__link">
+              {% endif %}
+              {% if block.settings.image != blank %}
+                {{ block.settings.image | image_url: width: 200 | image_tag: alt: block.settings.brand_name, loading: 'lazy', class: 'brand-carousel__logo' }}
+              {% else %}
+                <span class="brand-carousel__text">{{ block.settings.brand_name }}</span>
+              {% endif %}
+              {% if block.settings.link != blank %}
+                </a>
+              {% endif %}
+            </div>
+        {% endcase %}
+      {% endfor %}
+
+      {%comment%} Duplicate items for seamless loop {%endcomment%}
+      {% for block in section.blocks limit: 5 %}
+        {% case block.type %}
+          {% when 'brand' %}
+            <div class="brand-carousel__item brand-carousel__item--duplicate">
+              {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}" class="brand-carousel__link">
+              {% endif %}
+              {% if block.settings.image != blank %}
+                {{ block.settings.image | image_url: width: 200 | image_tag: alt: block.settings.brand_name, loading: 'lazy', class: 'brand-carousel__logo' }}
+              {% else %}
+                <span class="brand-carousel__text">{{ block.settings.brand_name }}</span>
+              {% endif %}
+              {% if block.settings.link != blank %}
+                </a>
+              {% endif %}
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_navigation %}
+      <button class="brand-carousel__nav brand-carousel__nav--prev" aria-label="Previous brands">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+          <path d="M12 4l-6 6 6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="brand-carousel__nav brand-carousel__nav--next" aria-label="Next brands">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+          <path d="M8 4l6 6-6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .brand-carousel {
+    background: #fff;
+    padding: 2rem 0;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    overflow: hidden;
+  }
+  .brand-carousel__container {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+    position: relative;
+  }
+  .brand-carousel__track {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 1rem 0;
+  }
+  .brand-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+  .brand-carousel__item {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+  }
+  .brand-carousel__item:hover {
+    opacity: 1;
+  }
+  .brand-carousel__link {
+    display: block;
+    text-decoration: none;
+  }
+  .brand-carousel__logo {
+    max-width: 150px;
+    max-height: 60px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: grayscale(100%);
+    transition: filter 0.3s;
+  }
+  .brand-carousel__item:hover .brand-carousel__logo {
+    filter: grayscale(0%);
+  }
+  .brand-carousel__text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .brand-carousel__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  .brand-carousel__nav:hover {
+    background: #f5f5f5;
+    border-color: #999;
+  }
+  .brand-carousel__nav--prev {
+    left: 0;
+  }
+  .brand-carousel__nav--next {
+    right: 0;
+  }
+  .brand-carousel__nav svg {
+    color: #333;
+  }
+
+  @media (max-width: 768px) {
+    .brand-carousel__track {
+      gap: 2rem;
+    }
+    .brand-carousel__item {
+      min-width: 100px;
+    }
+    .brand-carousel__logo {
+      max-width: 100px;
+      max-height: 50px;
+    }
+    .brand-carousel__nav {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class BrandCarousel {
+    constructor(element) {
+      this.carousel = element;
+      this.track = this.carousel.querySelector('.brand-carousel__track');
+      this.prevBtn = this.carousel.querySelector('.brand-carousel__nav--prev');
+      this.nextBtn = this.carousel.querySelector('.brand-carousel__nav--next');
+
+      this.init();
+    }
+
+    init() {
+      if (!this.track) return;
+
+      this.prevBtn?.addEventListener('click', () => this.scroll(-300));
+      this.nextBtn?.addEventListener('click', () => this.scroll(300));
+    }
+
+    scroll(distance) {
+      this.track.scrollBy({
+        left: distance,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const carousels = document.querySelectorAll('.brand-carousel');
+    carousels.forEach(carousel => new BrandCarousel(carousel));
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Brand Carousel",
+  "tag": "section",
+  "class": "brand-carousel-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation arrows",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Brand logo"
+        },
+        {
+          "type": "text",
+          "id": "brand_name",
+          "label": "Brand name",
+          "default": "Brand Name"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Brand link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand Carousel",
+      "blocks": [
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "CREED"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "BURBERRY"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "CHANEL"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "CALVIN KLEIN"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "Christian Dior"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "GIORGIO ARMANI"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "TOM FORD"
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "brand_name": "VERSACE"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

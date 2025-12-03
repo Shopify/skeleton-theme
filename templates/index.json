@@ -9,12 +9,144 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
+    "hero-slider": {
+      "type": "hero-slider",
+      "blocks": {
+        "slide-1": {
+          "type": "slide",
+          "settings": {
+            "subheading": "THE NEW FRAGRANCE FOR MEN",
+            "heading": "BOSS HUGO BOSS BOTTLED",
+            "button_label": "SHOP NOW",
+            "button_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "slide-1"
+      ],
+      "settings": {}
+    },
+    "brand-carousel": {
+      "type": "brand-carousel",
+      "blocks": {
+        "brand-1": {
+          "type": "brand",
+          "settings": {
+            "brand_name": "CREED"
+          }
+        },
+        "brand-2": {
+          "type": "brand",
+          "settings": {
+            "brand_name": "BURBERRY"
+          }
+        },
+        "brand-3": {
+          "type": "brand",
+          "settings": {
+            "brand_name": "CHANEL"
+          }
+        },
+        "brand-4": {
+          "type": "brand",
+          "settings": {
+            "brand_name": "CALVIN KLEIN"
+          }
+        },
+        "brand-5": {
+          "type": "brand",
+          "settings": {
+            "brand_name": "Christian Dior"
+          }
+        },
+        "brand-6": {
+          "type": "brand",
+          "settings": {
+            "brand_name": "GIORGIO ARMANI"
+          }
+        },
+        "brand-7": {
+          "type": "brand",
+          "settings": {
+            "brand_name": "TOM FORD"
+          }
+        },
+        "brand-8": {
+          "type": "brand",
+          "settings": {
+            "brand_name": "VERSACE"
+          }
+        },
+        "brand-9": {
+          "type": "brand",
+          "settings": {
+            "brand_name": "Yves Saint Laurent"
+          }
+        }
+      },
+      "block_order": [
+        "brand-1",
+        "brand-2",
+        "brand-3",
+        "brand-4",
+        "brand-5",
+        "brand-6",
+        "brand-7",
+        "brand-8",
+        "brand-9"
+      ],
+      "settings": {
+        "show_navigation": true
+      }
+    },
+    "featured-products": {
+      "type": "featured-products",
+      "settings": {
+        "heading": "THE MOST POPULAR",
+        "subheading": "Moisturising beautifully glowing and clean skin all year round",
+        "products_limit": 8,
+        "show_filters": true,
+        "show_view_all": true
+      }
+    },
+    "promo-banners": {
+      "type": "promo-banners",
+      "blocks": {
+        "banner-1": {
+          "type": "banner",
+          "settings": {
+            "subheading": "unique niche perfumes collection",
+            "heading": "SAP PERFUMES"
+          }
+        },
+        "banner-2": {
+          "type": "banner",
+          "settings": {
+            "subheading": "Scent of the Season",
+            "heading": "LEGENDS IN LUXURY"
+          }
+        },
+        "banner-3": {
+          "type": "banner",
+          "settings": {
+            "subheading": "New Fragrance",
+            "heading": "MISS DIOR"
+          }
+        }
+      },
+      "block_order": [
+        "banner-1",
+        "banner-2",
+        "banner-3"
+      ],
       "settings": {}
     }
   },
   "order": [
-    "main"
+    "hero-slider",
+    "brand-carousel",
+    "featured-products",
+    "promo-banners"
   ]
 }

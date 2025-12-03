@@ -1,39 +1,367 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
+<footer class="site-footer">
+  <div class="footer__top">
+    <div class="footer__container">
+      <div class="footer__grid">
+        <div class="footer__column footer__column--about">
+          <h3 class="footer__heading">About Us</h3>
+          <p class="footer__text">
+            {{ section.settings.about_text | default: "Best of Fragrances is has been America's #1 global trusted retail online shop for perfumes and colognes since 2011. We stock more than 11,000 women's and men's fragrances…" }}
+          </p>
+        </div>
+
+        <div class="footer__column">
+          <h3 class="footer__heading">{{ section.settings.column_1_heading | default: "bestoffragrances.com" }}</h3>
+          <ul class="footer__links">
+            {% if section.settings.menu_1 != blank %}
+              {% for link in section.settings.menu_1.links %}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {% endfor %}
+            {% else %}
+              <li><a href="#">Privacy and Terms</a></li>
+              <li><a href="#">Return & Refund Policy</a></li>
+              <li><a href="#">Bulk Order</a></li>
+              <li><a href="#">Sell with us</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <div class="footer__column">
+          <h3 class="footer__heading">Customer Service</h3>
+          <ul class="footer__links">
+            {% if section.settings.menu_2 != blank %}
+              {% for link in section.settings.menu_2.links %}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {% endfor %}
+            {% else %}
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">FAQ & Testamonial</a></li>
+              <li><a href="#">Privacy Details</a></li>
+              <li><a href="#">Discount Coupons</a></li>
+              <li><a href="#">Portfolio Coupons</a></li>
+              <li><a href="#">Add Query</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <div class="footer__column">
+          <h3 class="footer__heading">In the spotlight</h3>
+          <ul class="footer__links">
+            {% if section.settings.menu_3 != blank %}
+              {% for link in section.settings.menu_3.links %}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {% endfor %}
+            {% else %}
+              <li><a href="#">Pure Perfume</a></li>
+              <li><a href="#">Body Wash</a></li>
+              <li><a href="#">Skin Care</a></li>
+              <li><a href="#">Gift Set</a></li>
+              <li><a href="#">All Brands</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <div class="footer__column">
+          <h3 class="footer__heading">Contact Us</h3>
+          <div class="footer__contact">
+            {% if section.settings.address != blank %}
+              <p>
+                <strong>{{ section.settings.address }}</strong>
+              </p>
+            {% endif %}
+            {% if section.settings.email != blank %}
+              <p>Email: <a href="mailto:{{ section.settings.email }}">{{ section.settings.email }}</a></p>
+            {% endif %}
+            {% if section.settings.phone != blank %}
+              <p>Phone: <a href="tel:{{ section.settings.phone }}">{{ section.settings.phone }}</a></p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
+  <div class="footer__middle">
+    <div class="footer__container">
+      <div class="footer__features">
+        <div class="footer__feature">
+          <div class="footer__feature-icon">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
+              <path d="M15 20l5 5 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="footer__feature-text">
+            <strong>900+ BRANDS</strong>
+            <p>All types of Products</p>
+          </div>
+        </div>
+
+        <div class="footer__feature">
+          <div class="footer__feature-icon">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <path d="M5 20h30M20 5v30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="20" cy="20" r="15" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="footer__feature-text">
+            <strong>USA & CANADA SHIPPING</strong>
+            <p>Next Day & Priority plus Fast Shipping</p>
+          </div>
+        </div>
+
+        <div class="footer__feature">
+          <div class="footer__feature-icon">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
+              <path d="M20 10v10l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="footer__feature-text">
+            <strong>CUSTOMER SERVICE</strong>
+            <p>Call , Text, Toll Free & Help Center</p>
+          </div>
+        </div>
+
+        <div class="footer__feature">
+          <div class="footer__feature-icon">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <rect x="5" y="10" width="30" height="20" rx="2" stroke="currentColor" stroke-width="2"/>
+              <path d="M5 15h30" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="footer__feature-text">
+            <strong>100% SECURED PAYMENT</strong>
+            <p>We never use your card details</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
-      {% endfor %}
-    {% endif %}
+  <div class="footer__bottom">
+    <div class="footer__container">
+      <div class="footer__bottom-content">
+        <div class="footer__copyright">
+          &copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright_text | default: "Best of Fragrances for the World" }} {{ shop.name }}
+        </div>
+
+        <div class="footer__payment">
+          {% if section.settings.show_payment_icons %}
+            {% for type in shop.enabled_payment_types %}
+              {{ type | payment_type_svg_tag: class: 'footer__payment-icon' }}
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
   </div>
+
+  {% if section.settings.show_newsletter %}
+    <div class="footer__newsletter">
+      <div class="footer__container">
+        <h3 class="footer__newsletter-heading">{{ section.settings.newsletter_heading | default: "Be the first to save!" }}</h3>
+        <p class="footer__newsletter-text">{{ section.settings.newsletter_text | default: "Enter your email below to get attractive offers." }}</p>
+        <form action="{{ routes.root_url }}contact" method="post" class="footer__newsletter-form">
+          <input type="email" name="contact[email]" placeholder="EMAIL ADDRESS" required aria-label="Email address">
+          <button type="submit">SUBSCRIBE</button>
+        </form>
+      </div>
+    </div>
+  {% endif %}
 </footer>
 
 {% stylesheet %}
-  footer {
+  .site-footer {
+    background: #2c1a29;
+    color: #fff;
+    margin-top: 4rem;
+  }
+  .footer__container {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+  }
+  .footer__top {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+  .footer__column--about {
+    max-width: 400px;
+  }
+  .footer__heading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+    color: #fff;
+  }
+  .footer__text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+  .footer__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .footer__links li {
+    margin-bottom: 0.5rem;
+  }
+  .footer__links a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+  }
+  .footer__links a:hover {
+    color: #fff;
+  }
+  .footer__contact p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 0.5rem;
+  }
+  .footer__contact a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer__contact a:hover {
+    color: #fff;
+  }
+  .footer__middle {
+    padding: 2rem 0;
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .footer__features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+  .footer__feature {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .footer__feature-icon {
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .footer__feature-text {
+    font-size: 0.85rem;
+  }
+  .footer__feature-text strong {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+  }
+  .footer__feature-text p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .footer__bottom {
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .footer__bottom-content {
     display: flex;
     justify-content: space-between;
-    margin-top: 2rem;
-  }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  footer .footer__links,
-  footer .footer__payment {
-    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 1rem;
+  }
+  .footer__copyright {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .footer__payment {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .footer__payment-icon {
+    height: 30px;
+    width: auto;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+  }
+  .footer__payment-icon:hover {
+    opacity: 1;
+  }
+  .footer__newsletter {
+    background: #4a1c40;
+    padding: 2rem 0;
+    text-align: center;
+  }
+  .footer__newsletter-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+  }
+  .footer__newsletter-text {
+    font-size: 0.95rem;
+    margin: 0 0 1.5rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .footer__newsletter-form {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+    gap: 0.5rem;
+  }
+  .footer__newsletter-form input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 0.9rem;
+    outline: none;
+  }
+  .footer__newsletter-form input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .footer__newsletter-form button {
+    padding: 0.8rem 2rem;
+    background: #fff;
+    color: #4a1c40;
+    border: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .footer__newsletter-form button:hover {
+    background: #f0f0f0;
+  }
+
+  @media (max-width: 1024px) {
+    .footer__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer__grid {
+      grid-template-columns: 1fr;
+    }
+    .footer__features {
+      grid-template-columns: 1fr;
+    }
+    .footer__bottom-content {
+      flex-direction: column;
+      text-align: center;
+    }
+    .footer__newsletter-form {
+      flex-direction: column;
+    }
   }
 {% endstylesheet %}
 
@@ -42,15 +370,79 @@
   "name": "t:general.footer",
   "settings": [
     {
+      "type": "richtext",
+      "id": "about_text",
+      "label": "About text",
+      "default": "<p>Best of Fragrances is has been America's #1 global trusted retail online shop for perfumes and colognes since 2011.</p>"
+    },
+    {
+      "type": "text",
+      "id": "column_1_heading",
+      "label": "Column 1 heading",
+      "default": "bestoffragrances.com"
+    },
+    {
       "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
+      "id": "menu_1",
+      "label": "Column 1 menu"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_2",
+      "label": "Customer Service menu"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_3",
+      "label": "Spotlight menu"
+    },
+    {
+      "type": "text",
+      "id": "address",
+      "label": "Store address",
+      "default": "Best of fragrances for the World. We are in NYC Metro LLC, 6 KANES CT, MAPLEWOOD, NJ 07040, United States"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email",
+      "default": "contact@example.com"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone",
+      "default": "(888) 647-1234"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright text",
+      "default": "Best of Fragrances for the World"
     },
     {
       "type": "checkbox",
       "id": "show_payment_icons",
       "label": "t:labels.show_payment_icons",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show newsletter signup",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Newsletter heading",
+      "default": "Be the first to save!"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Newsletter text",
+      "default": "Enter your email below to get attractive offers."
     }
   ]
 }

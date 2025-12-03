@@ -1,0 +1,207 @@
+<div class="promo-banners">
+  <div class="promo-banners__container">
+    <div class="promo-banners__grid">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'banner' %}
+            <div class="promo-banner" {{ block.shopify_attributes }}>
+              {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}" class="promo-banner__link">
+              {% endif %}
+              <div class="promo-banner__image">
+                {% if block.settings.image != blank %}
+                  {{ block.settings.image | image_url: width: 800 | image_tag: alt: block.settings.heading, loading: 'lazy' }}
+                {% else %}
+                  <div class="promo-banner__placeholder"></div>
+                {% endif %}
+              </div>
+              {% if block.settings.heading != blank or block.settings.subheading != blank %}
+                <div class="promo-banner__overlay">
+                  <div class="promo-banner__content">
+                    {% if block.settings.subheading != blank %}
+                      <p class="promo-banner__subheading">{{ block.settings.subheading }}</p>
+                    {% endif %}
+                    {% if block.settings.heading != blank %}
+                      <h3 class="promo-banner__heading">{{ block.settings.heading }}</h3>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+              {% if block.settings.link != blank %}
+                </a>
+              {% endif %}
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .promo-banners {
+    padding: 3rem 0;
+    background: #fff;
+  }
+  .promo-banners__container {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+  }
+  .promo-banners__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+  .promo-banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    min-height: 300px;
+    transition: all 0.3s;
+  }
+  .promo-banner:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+  .promo-banner__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+  .promo-banner__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .promo-banner__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+  }
+  .promo-banner:hover .promo-banner__image img {
+    transform: scale(1.05);
+  }
+  .promo-banner__placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  .promo-banner__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    transition: background 0.3s;
+  }
+  .promo-banner:hover .promo-banner__overlay {
+    background: rgba(0, 0, 0, 0.4);
+  }
+  .promo-banner__content {
+    text-align: center;
+    color: #fff;
+  }
+  .promo-banner__subheading {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 0.5rem;
+    font-weight: 500;
+  }
+  .promo-banner__heading {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+
+  @media (max-width: 768px) {
+    .promo-banners__grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .promo-banner {
+      min-height: 250px;
+    }
+    .promo-banner__heading {
+      font-size: 1.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Promo Banners",
+  "tag": "section",
+  "class": "promo-banners-section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Banner image"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "unique niche perfumes collection"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "SAP PERFUMES"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Banner link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Promo Banners",
+      "blocks": [
+        {
+          "type": "banner",
+          "settings": {
+            "subheading": "unique niche perfumes collection",
+            "heading": "SAP PERFUMES"
+          }
+        },
+        {
+          "type": "banner",
+          "settings": {
+            "subheading": "Scent of the Season",
+            "heading": "LEGENDS IN LUXURY"
+          }
+        },
+        {
+          "type": "banner",
+          "settings": {
+            "subheading": "New Fragrance",
+            "heading": "MISS DIOR"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

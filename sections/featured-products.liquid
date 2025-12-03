@@ -1,0 +1,427 @@
+<div class="featured-products">
+  <div class="featured-products__container">
+    {% if section.settings.heading != blank %}
+      <h2 class="featured-products__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+    {% if section.settings.subheading != blank %}
+      <p class="featured-products__subheading">{{ section.settings.subheading }}</p>
+    {% endif %}
+
+    {% if section.settings.show_filters %}
+      <div class="featured-products__filters">
+        <button class="filter-btn filter-btn--active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="fragrance">Fragrance</button>
+        <button class="filter-btn" data-filter="body-care">Body Care</button>
+        <button class="filter-btn" data-filter="skin-care">Skin Care</button>
+      </div>
+    {% endif %}
+
+    <div class="featured-products__grid">
+      {% assign collection = collections[section.settings.collection] %}
+      {% if collection != blank %}
+        {% for product in collection.products limit: section.settings.products_limit %}
+          <div class="product-card" data-category="{{ product.tags | first | handleize }}">
+            <div class="product-card__image">
+              <a href="{{ product.url }}">
+                {% if product.featured_image %}
+                  {{ product.featured_image | image_url: width: 400 | image_tag: alt: product.title, loading: 'lazy' }}
+                {% else %}
+                  <div class="product-card__placeholder"></div>
+                {% endif %}
+              </a>
+              {% if product.compare_at_price > product.price %}
+                <span class="product-card__badge product-card__badge--sale">Sale</span>
+              {% endif %}
+            </div>
+            <div class="product-card__content">
+              <p class="product-card__vendor">{{ product.vendor }}</p>
+              <h3 class="product-card__title">
+                <a href="{{ product.url }}">{{ product.title }}</a>
+              </h3>
+              <div class="product-card__price">
+                {% if product.compare_at_price > product.price %}
+                  <span class="product-card__price--compare">{{ product.compare_at_price | money }}</span>
+                {% endif %}
+                <span class="product-card__price--current">{{ product.price | money }}</span>
+              </div>
+              <button class="product-card__button" data-product-id="{{ product.id }}">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                  <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 5m12-5l2 5m-12 0h12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                ADD TO CART
+              </button>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        {%comment%} Show placeholder products if no collection is selected {%endcomment%}
+        {% for i in (1..8) %}
+          <div class="product-card">
+            <div class="product-card__image">
+              <div class="product-card__placeholder"></div>
+            </div>
+            <div class="product-card__content">
+              <p class="product-card__vendor">Brand Name</p>
+              <h3 class="product-card__title">
+                <a href="#">Product Title</a>
+              </h3>
+              <div class="product-card__price">
+                <span class="product-card__price--current">$0.00</span>
+              </div>
+              <button class="product-card__button">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                  <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 5m12-5l2 5m-12 0h12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                ADD TO CART
+              </button>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_view_all %}
+      <div class="featured-products__footer">
+        <button class="featured-products__load-more">
+          <span>load more</span>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .featured-products {
+    padding: 4rem 0;
+    background: #fff;
+  }
+  .featured-products__container {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+  }
+  .featured-products__heading {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0 0 0.5rem;
+    color: #000;
+  }
+  .featured-products__subheading {
+    text-align: center;
+    font-size: 1rem;
+    color: #666;
+    margin: 0 0 2rem;
+  }
+  .featured-products__filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 0.6rem 1.5rem;
+    background: #fff;
+    border: 1px solid #4a1c40;
+    color: #4a1c40;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 4px;
+  }
+  .filter-btn:hover,
+  .filter-btn--active {
+    background: #4a1c40;
+    color: #fff;
+  }
+  .featured-products__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  .product-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s;
+  }
+  .product-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+  }
+  .product-card__image {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+  .product-card__image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  .product-card:hover .product-card__image img {
+    transform: scale(1.05);
+  }
+  .product-card__placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+  }
+  .product-card__badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0.3rem 0.8rem;
+    background: #ff0000;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 3px;
+    z-index: 5;
+  }
+  .product-card__content {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .product-card__vendor {
+    font-size: 0.85rem;
+    color: #999;
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+  }
+  .product-card__title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin: 0 0 0.8rem;
+    flex: 1;
+  }
+  .product-card__title a {
+    text-decoration: none;
+    color: #333;
+    transition: color 0.3s;
+  }
+  .product-card__title a:hover {
+    color: #4a1c40;
+  }
+  .product-card__price {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 0 0 1rem;
+  }
+  .product-card__price--compare {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 0.9rem;
+  }
+  .product-card__price--current {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000;
+  }
+  .product-card__button {
+    width: 100%;
+    padding: 0.8rem;
+    background: #4a1c40;
+    color: #fff;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+  }
+  .product-card__button:hover {
+    background: #3a1530;
+  }
+  .featured-products__footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+  }
+  .featured-products__load-more {
+    padding: 0.8rem 2rem;
+    background: transparent;
+    border: 2px solid #4a1c40;
+    color: #4a1c40;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: lowercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 50px;
+    min-width: 150px;
+  }
+  .featured-products__load-more:hover {
+    background: #4a1c40;
+    color: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .featured-products__grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class FeaturedProducts {
+    constructor(element) {
+      this.element = element;
+      this.filterBtns = this.element.querySelectorAll('.filter-btn');
+      this.products = this.element.querySelectorAll('.product-card');
+      this.addToCartBtns = this.element.querySelectorAll('.product-card__button');
+
+      this.init();
+    }
+
+    init() {
+      this.filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => this.filter(btn));
+      });
+
+      this.addToCartBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => this.addToCart(e));
+      });
+    }
+
+    filter(btn) {
+      const filter = btn.dataset.filter;
+
+      this.filterBtns.forEach(b => b.classList.remove('filter-btn--active'));
+      btn.classList.add('filter-btn--active');
+
+      this.products.forEach(product => {
+        const category = product.dataset.category;
+        if (filter === 'all' || category === filter) {
+          product.style.display = 'flex';
+        } else {
+          product.style.display = 'none';
+        }
+      });
+    }
+
+    async addToCart(e) {
+      const btn = e.currentTarget;
+      const productId = btn.dataset.productId;
+
+      if (!productId) return;
+
+      btn.disabled = true;
+      btn.innerHTML = 'Adding...';
+
+      try {
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: productId,
+            quantity: 1
+          })
+        });
+
+        if (response.ok) {
+          btn.innerHTML = 'Added!';
+          setTimeout(() => {
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 5m12-5l2 5m-12 0h12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>ADD TO CART';
+            btn.disabled = false;
+          }, 2000);
+
+          // Update cart count
+          document.dispatchEvent(new CustomEvent('cart:updated'));
+        }
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        btn.innerHTML = 'Error';
+        setTimeout(() => {
+          btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 5m12-5l2 5m-12 0h12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>ADD TO CART';
+          btn.disabled = false;
+        }, 2000);
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const sections = document.querySelectorAll('.featured-products');
+    sections.forEach(section => new FeaturedProducts(section));
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Featured Products",
+  "tag": "section",
+  "class": "featured-products-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "THE MOST POPULAR"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Moisturising beautifully glowing and clean skin all year round"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "min": 4,
+      "max": 24,
+      "step": 4,
+      "label": "Number of products to show",
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show category filters",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show load more button",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Products"
+    }
+  ]
+}
+{% endschema %}

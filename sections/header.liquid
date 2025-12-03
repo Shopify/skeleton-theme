@@ -1,54 +1,276 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+<header class="site-header">
+  <div class="header__container">
+    <div class="header__top">
+      <div class="header__contact">
+        {% if section.settings.show_contact_info %}
+          <span class="header__email">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+            {{ section.settings.email | default: 'contact@theperfumes.com' }}
+          </span>
+          <span class="header__phone">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+            </svg>
+            {{ section.settings.phone | default: '(888) 647-1234' }}
+          </span>
+        {% endif %}
+      </div>
+      <div class="header__icons">
+        <a href="{{ routes.search_url }}" class="header__icon" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+            <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14z" stroke-width="2"/>
+            <path d="M13 13l6 6" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </a>
+        {% if shop.customer_accounts_enabled %}
+          <a href="{{ routes.account_url }}" class="header__icon" aria-label="Account">
+            {{ 'icon-account.svg' | inline_asset_content }}
+          </a>
+        {% endif %}
+        <a href="#" class="header__icon" aria-label="Wishlist">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+            <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" stroke-width="2"/>
+          </svg>
+        </a>
+        <a href="{{ routes.cart_url }}" class="header__icon header__cart" aria-label="Cart">
+          {% if cart.item_count > 0 %}
+            <span class="cart__count">{{ cart.item_count }}</span>
+          {% endif %}
+          {{ 'icon-cart.svg' | inline_asset_content }}
+        </a>
+      </div>
+    </div>
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+    <div class="header__main">
+      <div class="header__logo">
+        {% if section.settings.logo != blank %}
+          {{ section.settings.logo | image_url: width: 200 | image_tag: alt: shop.name, loading: 'eager' }}
+        {% else %}
+          <h1 class="logo__text">
+            <a href="{{ routes.root_url }}">
+              <span class="logo__primary">BEST OF</span>
+              <span class="logo__secondary">FRAGRANCES</span>
+            </a>
+          </h1>
+        {% endif %}
+      </div>
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
-    {% endif %}
+      <nav class="header__nav" role="navigation">
+        {% for link in section.settings.menu.links %}
+          <a href="{{ link.url }}" class="nav__link {% if link.active %}nav__link--active{% endif %}">
+            {{ link.title }}
+            {% if link.links.size > 0 %}
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor">
+                <path d="M1 1l4 4 4-4"/>
+              </svg>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </nav>
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
-      {% endif %}
-
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+      <div class="header__search">
+        <form action="{{ routes.search_url }}" method="get" role="search">
+          <input type="search" name="q" placeholder="Search entire store here..." aria-label="Search">
+          <button type="submit" aria-label="Search">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+              <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14z" stroke-width="2"/>
+              <path d="M13 13l6 6" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 </header>
 
 {% stylesheet %}
-  header {
-    height: 5rem;
+  .site-header {
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  .header__container {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+  }
+  .header__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    background: #4a1c40;
+    color: #fff;
+    font-size: 0.85rem;
+  }
+  .header__contact {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  .header__email,
+  .header__phone {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .header__icons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .header__icon {
+    position: relative;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .header__icon:hover {
+    color: #999;
+  }
+  .header__icon svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+  .header__cart {
+    position: relative;
+  }
+  .cart__count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff0000;
+    color: #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+  }
+  .header__main {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 1rem 0;
+    gap: 2rem;
   }
-  header a {
-    position: relative;
+  .header__logo {
+    flex-shrink: 0;
+  }
+  .header__logo img {
+    max-height: 60px;
+    width: auto;
+  }
+  .logo__text a {
     text-decoration: none;
     color: var(--color-foreground);
-  }
-  header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
-  }
-  header svg {
-    width: 2rem;
-  }
-  header .header__menu,
-  header .header__icons {
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .logo__primary {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4a1c40;
+  }
+  .logo__secondary {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #666;
+    letter-spacing: 0.1em;
+  }
+  .header__nav {
+    display: flex;
+    gap: 2rem;
+    flex: 1;
+    justify-content: center;
+  }
+  .nav__link {
+    text-decoration: none;
+    color: var(--color-foreground);
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.2s;
+    white-space: nowrap;
+  }
+  .nav__link:hover,
+  .nav__link--active {
+    color: #4a1c40;
+  }
+  .header__search {
+    flex-shrink: 0;
+    width: 250px;
+  }
+  .header__search form {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .header__search input {
+    flex: 1;
+    border: none;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    outline: none;
+  }
+  .header__search button {
+    background: #4a1c40;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    cursor: pointer;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .header__search button:hover {
+    background: #3a1530;
+  }
+
+  @media (max-width: 1024px) {
+    .header__nav {
+      gap: 1rem;
+    }
+    .nav__link {
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header__top {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+    .header__main {
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header__nav {
+      order: 3;
+      width: 100%;
+      overflow-x: auto;
+      justify-content: flex-start;
+      padding-bottom: 0.5rem;
+    }
+    .header__search {
+      order: 2;
+      width: 100%;
+    }
   }
 {% endstylesheet %}
 
@@ -57,9 +279,33 @@
   "name": "t:general.header",
   "settings": [
     {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "t:labels.menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_contact_info",
+      "label": "Show contact information",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email address",
+      "default": "contact@theperfumes.com"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone number",
+      "default": "(888) 647-1234"
     }
   ]
 }
