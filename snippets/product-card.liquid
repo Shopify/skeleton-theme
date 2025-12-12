@@ -1,0 +1,192 @@
+{%- comment -%}
+  Product Card Snippet
+  Usage: {% render 'product-card', product: product, show_vendor: false, show_quick_add: true %}
+{%- endcomment -%}
+
+{%- liquid
+  assign show_vendor = show_vendor | default: settings.show_vendor
+  assign show_quick_add = show_quick_add | default: settings.show_quick_add
+  assign show_swatches = show_swatches | default: settings.show_color_swatches
+  assign image_ratio = image_ratio | default: settings.product_image_ratio | default: 'square'
+  assign card_style = card_style | default: settings.product_card_style | default: 'standard'
+  assign alignment = alignment | default: settings.product_card_alignment | default: 'center'
+
+  assign on_sale = false
+  if product.compare_at_price > product.price
+    assign on_sale = true
+  endif
+
+  assign sold_out = false
+  unless product.available
+    assign sold_out = true
+  endunless
+
+  assign second_image = product.images[1]
+-%}
+
+<div class="product-card card {% if card_style == 'bordered' %}card-bordered{% endif %}" data-product-id="{{ product.id }}">
+  <a href="{{ product.url }}" class="card-link" aria-label="{{ product.title }}">
+    <div class="card-image product-card-image {% if image_ratio == 'square' %}aspect-square{% elsif image_ratio == 'portrait' %}aspect-portrait{% elsif image_ratio == 'landscape' %}aspect-landscape{% endif %}">
+      {%- if product.featured_image != blank -%}
+        <img
+          src="{{ product.featured_image | image_url: width: 600 }}"
+          srcset="
+            {{ product.featured_image | image_url: width: 300 }} 300w,
+            {{ product.featured_image | image_url: width: 450 }} 450w,
+            {{ product.featured_image | image_url: width: 600 }} 600w,
+            {{ product.featured_image | image_url: width: 800 }} 800w
+          "
+          sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+          alt="{{ product.featured_image.alt | default: product.title | escape }}"
+          loading="lazy"
+          width="{{ product.featured_image.width }}"
+          height="{{ product.featured_image.height }}"
+          class="product-card-image-primary"
+        >
+        {%- if second_image != blank and settings.product_image_hover -%}
+          <img
+            src="{{ second_image | image_url: width: 600 }}"
+            srcset="
+              {{ second_image | image_url: width: 300 }} 300w,
+              {{ second_image | image_url: width: 450 }} 450w,
+              {{ second_image | image_url: width: 600 }} 600w
+            "
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+            alt="{{ second_image.alt | default: product.title | escape }}"
+            loading="lazy"
+            width="{{ second_image.width }}"
+            height="{{ second_image.height }}"
+            class="product-card-image-secondary"
+          >
+        {%- endif -%}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+
+      {%- comment -%} Badges {%- endcomment -%}
+      <div class="product-card-badges">
+        {%- if sold_out -%}
+          <span class="product-badge product-badge-soldout">{{ 'products.product.sold_out' | t | default: 'Sold Out' }}</span>
+        {%- elsif on_sale -%}
+          {%- assign savings = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round -%}
+          <span class="product-badge product-badge-sale">-{{ savings }}%</span>
+        {%- endif -%}
+        {%- if product.tags contains 'new' -%}
+          <span class="product-badge product-badge-new">{{ 'products.product.new' | t | default: 'New' }}</span>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Quick Actions {%- endcomment -%}
+      {%- if settings.show_wishlist -%}
+        <div class="product-card-actions">
+          <button type="button" class="product-card-action" aria-label="Add to wishlist">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Quick Add {%- endcomment -%}
+      {%- if show_quick_add and product.available -%}
+        <div class="product-card-quick-add">
+          {%- if product.variants.size == 1 -%}
+            <form action="/cart/add" method="post" class="quick-add-form">
+              <input type="hidden" name="id" value="{{ product.first_available_variant.id }}">
+              <input type="hidden" name="quantity" value="1">
+              <button type="submit" class="btn btn-primary btn-full btn-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                {{ 'products.product.add_to_cart' | t | default: 'Add to Cart' }}
+              </button>
+            </form>
+          {%- else -%}
+            <a href="{{ product.url }}" class="btn btn-primary btn-full btn-sm">
+              {{ 'products.product.choose_options' | t | default: 'Choose Options' }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </a>
+
+  <div class="product-card-info {% if alignment == 'left' %}text-left{% else %}text-center{% endif %}">
+    {%- if show_vendor and product.vendor != blank -%}
+      <p class="product-card-vendor">{{ product.vendor }}</p>
+    {%- endif -%}
+
+    <h3 class="product-card-title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    <div class="product-card-price">
+      {%- if on_sale -%}
+        <span class="product-card-price-compare">{{ product.compare_at_price | money }}</span>
+        <span class="product-card-price-sale">{{ product.price | money }}</span>
+      {%- else -%}
+        <span>{{ product.price | money }}</span>
+      {%- endif -%}
+      {%- if product.price_varies -%}
+        <span class="text-sm text-muted">{{ 'products.product.from' | t | default: 'from' }}</span>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Color Swatches {%- endcomment -%}
+    {%- if show_swatches -%}
+      {%- assign color_option = product.options_by_name['Color'] | default: product.options_by_name['Colour'] -%}
+      {%- if color_option -%}
+        <div class="product-card-swatches">
+          {%- for value in color_option.values limit: 5 -%}
+            {%- assign color_handle = value | handleize -%}
+            <button
+              type="button"
+              class="product-swatch"
+              style="background-color: {{ color_handle }};"
+              aria-label="{{ value }}"
+              title="{{ value }}"
+            ></button>
+          {%- endfor -%}
+          {%- if color_option.values.size > 5 -%}
+            <span class="text-xs text-muted">+{{ color_option.values.size | minus: 5 }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .product-card-image {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-subtle);
+  }
+
+  .aspect-square { aspect-ratio: 1 / 1; }
+  .aspect-portrait { aspect-ratio: 3 / 4; }
+  .aspect-landscape { aspect-ratio: 4 / 3; }
+
+  .product-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-card-image-secondary {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+  }
+
+  .product-card:hover .product-card-image-secondary {
+    opacity: 1;
+  }
+
+  .card-bordered {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+</style>

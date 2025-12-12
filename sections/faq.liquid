@@ -1,0 +1,210 @@
+{%- liquid
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign description = section.settings.description
+-%}
+
+<div class="section-faq py-section" data-section-id="{{ section.id }}">
+  <div class="container">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="section-header" data-animate>
+        {%- if subheading != blank -%}
+          <p class="section-subtitle">{{ subheading }}</p>
+        {%- endif -%}
+
+        {%- if heading != blank -%}
+          <h2 class="section-title">{{ heading }}</h2>
+        {%- endif -%}
+
+        {%- if description != blank -%}
+          <div class="section-description">{{ description }}</div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="faq-list" data-accordion data-animate>
+      {%- for block in section.blocks -%}
+        <div class="faq-item {% if forloop.first and section.settings.first_open %}is-open{% endif %}" {{ block.shopify_attributes }}>
+          <button
+            type="button"
+            class="faq-question"
+            aria-expanded="{% if forloop.first and section.settings.first_open %}true{% else %}false{% endif %}"
+            aria-controls="faq-answer-{{ block.id }}"
+          >
+            <span>{{ block.settings.question }}</span>
+            <svg class="faq-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+          <div
+            id="faq-answer-{{ block.id }}"
+            class="faq-answer"
+            aria-hidden="{% if forloop.first and section.settings.first_open %}false{% else %}true{% endif %}"
+          >
+            {{ block.settings.answer }}
+          </div>
+        </div>
+      {%- else -%}
+        {%- for i in (1..4) -%}
+          <div class="faq-item {% if forloop.first %}is-open{% endif %}">
+            <button type="button" class="faq-question">
+              <span>Example question {{ i }}?</span>
+              <svg class="faq-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+            <div class="faq-answer">
+              <p>This is the answer to example question {{ i }}. Add your FAQ blocks in the theme editor.</p>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.show_contact -%}
+      <div class="faq-contact text-center" data-animate>
+        <p class="faq-contact-text">{{ section.settings.contact_text | default: "Still have questions?" }}</p>
+        <a href="{{ section.settings.contact_link | default: '/pages/contact' }}" class="btn btn-outline">
+          {{ section.settings.contact_button | default: 'Contact Us' }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .faq-contact {
+    margin-top: var(--space-12);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .faq-contact-text {
+    margin-bottom: var(--space-4);
+    color: var(--color-muted);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "tag": "section",
+  "class": "section-faq-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "FAQ"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Frequently Asked Questions"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "first_open",
+      "label": "First item open by default",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Contact CTA"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_contact",
+      "label": "Show contact section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "contact_text",
+      "label": "Contact text",
+      "default": "Still have questions?"
+    },
+    {
+      "type": "text",
+      "id": "contact_button",
+      "label": "Button label",
+      "default": "Contact Us"
+    },
+    {
+      "type": "url",
+      "id": "contact_link",
+      "label": "Button link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What is your return policy?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>We offer a 30-day return policy on all items. If you're not completely satisfied with your purchase, you can return it for a full refund or exchange.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "settings": {
+        "heading": "Frequently Asked Questions",
+        "subheading": "FAQ"
+      },
+      "blocks": [
+        {
+          "type": "question",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We offer a 30-day return policy on all items. If you're not completely satisfied with your purchase, you can return it for a full refund or exchange.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Standard shipping typically takes 5-7 business days. Express shipping is available for 2-3 day delivery. Free shipping on orders over $50.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "Do you ship internationally?",
+            "answer": "<p>Yes, we ship to over 50 countries worldwide. International shipping rates and delivery times vary by location.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "How can I track my order?",
+            "answer": "<p>Once your order ships, you'll receive an email with a tracking number and link to track your package.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

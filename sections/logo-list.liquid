@@ -1,0 +1,198 @@
+{%- liquid
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign enable_scroll = section.settings.enable_scroll
+-%}
+
+<div
+  class="section-logo-list py-section"
+  style="{% if section.settings.background_color != blank %}background-color: {{ section.settings.background_color }};{% endif %}"
+  data-section-id="{{ section.id }}"
+>
+  <div class="container">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="section-header" data-animate>
+        {%- if subheading != blank -%}
+          <p class="section-subtitle">{{ subheading }}</p>
+        {%- endif -%}
+
+        {%- if heading != blank -%}
+          <h2 class="section-title">{{ heading }}</h2>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="{% if enable_scroll %}logo-list-scroll{% endif %}" data-animate>
+      <div class="logo-list">
+        {%- for block in section.blocks -%}
+          <div class="logo-list-item" {{ block.shopify_attributes }}>
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" {% if block.settings.new_tab %}target="_blank" rel="noopener"{% endif %}>
+            {%- endif -%}
+
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 240 }}"
+                srcset="
+                  {{ block.settings.image | image_url: width: 120 }} 120w,
+                  {{ block.settings.image | image_url: width: 180 }} 180w,
+                  {{ block.settings.image | image_url: width: 240 }} 240w
+                "
+                sizes="120px"
+                alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                loading="lazy"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+                style="max-height: {{ section.settings.logo_height }}px;"
+              >
+            {%- elsif block.settings.svg != blank -%}
+              {{ block.settings.svg }}
+            {%- else -%}
+              <span class="logo-placeholder">{{ block.settings.title | default: 'Brand' }}</span>
+            {%- endif -%}
+
+            {%- if block.settings.link != blank -%}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- else -%}
+          {%- for i in (1..6) -%}
+            <div class="logo-list-item">
+              <span class="logo-placeholder">Brand {{ i }}</span>
+            </div>
+          {%- endfor -%}
+        {%- endfor -%}
+
+        {%- if enable_scroll and section.blocks.size > 0 -%}
+          {%- for block in section.blocks -%}
+            <div class="logo-list-item" aria-hidden="true">
+              {%- if block.settings.image != blank -%}
+                <img
+                  src="{{ block.settings.image | image_url: width: 240 }}"
+                  alt=""
+                  loading="lazy"
+                  style="max-height: {{ section.settings.logo_height }}px;"
+                >
+              {%- elsif block.settings.svg != blank -%}
+                {{ block.settings.svg }}
+              {%- else -%}
+                <span class="logo-placeholder">{{ block.settings.title | default: 'Brand' }}</span>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .logo-placeholder {
+    display: inline-block;
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-muted);
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Logo list",
+  "tag": "section",
+  "class": "section-logo-list-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Trusted By"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured In"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Logo height",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_scroll",
+      "label": "Enable auto-scroll animation",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Logo image"
+        },
+        {
+          "type": "html",
+          "id": "svg",
+          "label": "Logo SVG",
+          "info": "Alternative to image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Brand name",
+          "info": "Used as fallback and alt text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "new_tab",
+          "label": "Open in new tab",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Logo list",
+      "settings": {
+        "heading": "Featured In",
+        "subheading": "As Seen On"
+      },
+      "blocks": [
+        { "type": "logo", "settings": { "title": "Forbes" } },
+        { "type": "logo", "settings": { "title": "TechCrunch" } },
+        { "type": "logo", "settings": { "title": "Wired" } },
+        { "type": "logo", "settings": { "title": "Fast Company" } },
+        { "type": "logo", "settings": { "title": "The Verge" } },
+        { "type": "logo", "settings": { "title": "Mashable" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

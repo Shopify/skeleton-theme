@@ -1,0 +1,206 @@
+{%- comment -%}
+  Cart Drawer Snippet
+  AJAX cart drawer with animations
+{%- endcomment -%}
+
+<div class="cart-drawer-backdrop"></div>
+
+<div class="cart-drawer" aria-hidden="true" role="dialog" aria-label="Shopping cart">
+  <div class="cart-drawer-header">
+    <h2 class="cart-drawer-title">
+      {{ 'cart.title' | t | default: 'Your Cart' }}
+      <span data-cart-count>({{ cart.item_count }})</span>
+    </h2>
+    <button type="button" class="cart-drawer-close" aria-label="Close cart">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  {%- if settings.cart_free_shipping_enabled -%}
+    {%- assign free_shipping_threshold = settings.cart_free_shipping_threshold | default: '50' | times: 100 -%}
+    {%- assign cart_total = cart.total_price -%}
+    {%- assign remaining = free_shipping_threshold | minus: cart_total -%}
+    {%- assign progress = cart_total | times: 100 | divided_by: free_shipping_threshold -%}
+    {%- if progress > 100 -%}
+      {%- assign progress = 100 -%}
+    {%- endif -%}
+
+    <div class="cart-shipping-bar">
+      {%- if remaining > 0 -%}
+        <p class="cart-shipping-text">
+          {{ 'cart.free_shipping_remaining' | t: amount: remaining | money | default: 'Add' | append: ' ' | append: remaining | money | append: ' more for free shipping' }}
+        </p>
+      {%- else -%}
+        <p class="cart-shipping-text cart-shipping-success">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {{ 'cart.free_shipping_eligible' | t | default: "You've unlocked free shipping!" }}
+        </p>
+      {%- endif -%}
+      <div class="cart-shipping-progress">
+        <div class="cart-shipping-progress-bar" style="width: {{ progress }}%;"></div>
+      </div>
+    </div>
+  {%- endif -%}
+
+  <div class="cart-drawer-body">
+    {%- if cart.item_count > 0 -%}
+      {%- for item in cart.items -%}
+        <div class="cart-item" data-key="{{ item.key }}">
+          <a href="{{ item.url }}" class="cart-item-image">
+            {%- if item.image -%}
+              <img
+                src="{{ item.image | image_url: width: 160 }}"
+                alt="{{ item.title | escape }}"
+                loading="lazy"
+                width="80"
+                height="80"
+              >
+            {%- endif -%}
+          </a>
+          <div class="cart-item-details">
+            <h4 class="cart-item-title">
+              <a href="{{ item.url }}">{{ item.product.title }}</a>
+            </h4>
+            {%- if item.variant.title != 'Default Title' -%}
+              <p class="cart-item-variant">{{ item.variant.title }}</p>
+            {%- endif -%}
+            <p class="cart-item-price">
+              {%- if item.original_line_price != item.final_line_price -%}
+                <span class="cart-item-price-compare">{{ item.original_line_price | money }}</span>
+              {%- endif -%}
+              <span>{{ item.final_line_price | money }}</span>
+            </p>
+            <div class="cart-item-quantity" data-quantity-selector>
+              <button type="button" class="quantity-btn" data-quantity-minus data-key="{{ item.key }}" aria-label="Decrease quantity">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              <input
+                type="number"
+                class="quantity-input"
+                value="{{ item.quantity }}"
+                min="0"
+                data-key="{{ item.key }}"
+                aria-label="Quantity"
+              >
+              <button type="button" class="quantity-btn" data-quantity-plus data-key="{{ item.key }}" aria-label="Increase quantity">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
+            <button type="button" class="cart-item-remove" data-remove-item data-key="{{ item.key }}">
+              {{ 'cart.remove' | t | default: 'Remove' }}
+            </button>
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      <div class="cart-empty">
+        <div class="cart-empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+        </div>
+        <p class="cart-empty-text">{{ 'cart.empty' | t | default: 'Your cart is empty' }}</p>
+        <a href="/collections/all" class="btn btn-primary">
+          {{ 'cart.continue_shopping' | t | default: 'Continue Shopping' }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if cart.item_count > 0 -%}
+    <div class="cart-drawer-footer">
+      {%- if settings.cart_notes_enabled -%}
+        <div class="cart-notes" style="margin-bottom: var(--space-4);">
+          <label for="cart-note" class="form-label text-sm">
+            {{ 'cart.note' | t | default: 'Add a note to your order' }}
+          </label>
+          <textarea
+            id="cart-note"
+            name="note"
+            class="form-textarea"
+            placeholder="{{ 'cart.note_placeholder' | t | default: 'Special instructions...' }}"
+            style="min-height: 60px;"
+          >{{ cart.note }}</textarea>
+        </div>
+      {%- endif -%}
+
+      <div class="cart-subtotal">
+        <span>{{ 'cart.subtotal' | t | default: 'Subtotal' }}</span>
+        <span data-cart-total>{{ cart.total_price | money }}</span>
+      </div>
+
+      <p class="text-sm text-muted text-center" style="margin-bottom: var(--space-4);">
+        {{ 'cart.taxes_shipping_checkout' | t | default: 'Taxes and shipping calculated at checkout' }}
+      </p>
+
+      <a href="{{ routes.cart_url }}" class="btn btn-outline btn-full" style="margin-bottom: var(--space-2);">
+        {{ 'cart.view_cart' | t | default: 'View Cart' }}
+      </a>
+
+      <form action="{{ routes.cart_url }}" method="post">
+        <button type="submit" name="checkout" class="btn btn-primary btn-full btn-lg">
+          {{ 'cart.checkout' | t | default: 'Checkout' }}
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </form>
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  .cart-shipping-bar {
+    padding: var(--space-4) var(--space-6);
+    background-color: var(--color-subtle);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .cart-shipping-text {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-2);
+    text-align: center;
+  }
+
+  .cart-shipping-success {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    color: var(--color-success);
+  }
+
+  .cart-shipping-progress {
+    height: 4px;
+    background-color: var(--color-border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+
+  .cart-shipping-progress-bar {
+    height: 100%;
+    background-color: var(--color-success);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-base);
+  }
+
+  .cart-item-price-compare {
+    color: var(--color-muted);
+    text-decoration: line-through;
+    font-weight: 400;
+    margin-right: var(--space-2);
+  }
+</style>

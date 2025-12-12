@@ -1,20 +1,189 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "hero": {
+      "type": "hero-banner",
+      "settings": {
+        "subheading": "New Season",
+        "heading": "Discover Your Style",
+        "text": "<p>Explore our curated collection of premium products designed for the modern lifestyle. Quality craftsmanship meets contemporary design.</p>",
+        "button_label": "Shop Now",
+        "button_link": "shopify://collections/all",
+        "button_style": "primary",
+        "secondary_button_label": "Learn More",
+        "secondary_button_link": "shopify://pages/about",
+        "height": "medium",
+        "content_position": "center",
+        "text_color": "light",
+        "overlay_opacity": 40,
+        "autoplay_speed": 5
+      }
+    },
+    "logo-list": {
+      "type": "logo-list",
+      "settings": {
+        "subheading": "Trusted By",
+        "heading": "Featured In",
+        "logo_height": 40,
+        "enable_scroll": false
+      },
+      "blocks": {
+        "logo-1": { "type": "logo", "settings": { "title": "Forbes" } },
+        "logo-2": { "type": "logo", "settings": { "title": "TechCrunch" } },
+        "logo-3": { "type": "logo", "settings": { "title": "Wired" } },
+        "logo-4": { "type": "logo", "settings": { "title": "Fast Company" } },
+        "logo-5": { "type": "logo", "settings": { "title": "The Verge" } }
+      },
+      "block_order": ["logo-1", "logo-2", "logo-3", "logo-4", "logo-5"]
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "settings": {
+        "subheading": "Shop Our",
+        "heading": "Best Sellers",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "columns_mobile": 2,
+        "show_view_all": true,
+        "view_all_style": "inline"
+      }
+    },
+    "image-with-text": {
+      "type": "image-with-text",
+      "settings": {
+        "subheading": "About Us",
+        "heading": "Crafted with Care",
+        "text": "<p>We believe in quality over quantity. Every product in our collection is carefully curated and crafted to meet the highest standards of excellence.</p><p>From sourcing the finest materials to partnering with skilled artisans, we ensure that every piece tells a story of dedication and passion.</p>",
+        "button_label": "Our Story",
+        "button_link": "shopify://pages/about",
+        "button_style": "primary",
+        "image_position": "left",
+        "content_alignment": "left",
+        "image_ratio": "natural"
+      },
+      "blocks": {
+        "feature-1": {
+          "type": "feature",
+          "settings": {
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 6 9 17 4 12\"></polyline></svg>",
+            "title": "Premium Quality",
+            "text": "Crafted with the finest materials"
+          }
+        },
+        "feature-2": {
+          "type": "feature",
+          "settings": {
+            "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"></path></svg>",
+            "title": "Sustainable",
+            "text": "Eco-friendly practices throughout"
+          }
+        }
+      },
+      "block_order": ["feature-1", "feature-2"]
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {
+        "subheading": "Testimonials",
+        "heading": "What Our Customers Say",
+        "columns": 3,
+        "background_color": "#f8fafc"
+      },
+      "blocks": {
+        "testimonial-1": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "Absolutely love this product! The quality is outstanding and it arrived quickly. Will definitely be ordering again.",
+            "author": "Sarah Johnson",
+            "title": "Verified Buyer"
+          }
+        },
+        "testimonial-2": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "Exceeded my expectations in every way. The attention to detail is remarkable and customer service was fantastic.",
+            "author": "Michael Chen",
+            "title": "Repeat Customer"
+          }
+        },
+        "testimonial-3": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "Best purchase I've made this year. The product is exactly as described and the packaging was beautiful.",
+            "author": "Emily Davis",
+            "title": "First-time Buyer"
+          }
+        }
+      },
+      "block_order": ["testimonial-1", "testimonial-2", "testimonial-3"]
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Join Our Community",
+        "description": "<p>Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>",
+        "button_label": "Subscribe",
+        "button_style": "primary",
+        "show_disclaimer": true,
+        "disclaimer_text": "By subscribing, you agree to our Privacy Policy and consent to receive updates.",
+        "layout": "center",
+        "background_style": "color",
+        "background_color": "#1a1a1a",
+        "text_color": "#ffffff"
+      }
+    },
+    "faq": {
+      "type": "faq",
+      "settings": {
+        "subheading": "FAQ",
+        "heading": "Frequently Asked Questions",
+        "first_open": true,
+        "show_contact": true,
+        "contact_text": "Still have questions?",
+        "contact_button": "Contact Us"
+      },
+      "blocks": {
+        "faq-1": {
+          "type": "question",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We offer a 30-day return policy on all items. If you're not completely satisfied with your purchase, you can return it for a full refund or exchange.</p>"
+          }
+        },
+        "faq-2": {
+          "type": "question",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Standard shipping typically takes 5-7 business days. Express shipping is available for 2-3 day delivery. Free shipping on orders over $50.</p>"
+          }
+        },
+        "faq-3": {
+          "type": "question",
+          "settings": {
+            "question": "Do you ship internationally?",
+            "answer": "<p>Yes, we ship to over 50 countries worldwide. International shipping rates and delivery times vary by location.</p>"
+          }
+        },
+        "faq-4": {
+          "type": "question",
+          "settings": {
+            "question": "How can I track my order?",
+            "answer": "<p>Once your order ships, you'll receive an email with a tracking number and link to track your package.</p>"
+          }
+        }
+      },
+      "block_order": ["faq-1", "faq-2", "faq-3", "faq-4"]
     }
   },
   "order": [
-    "main"
+    "hero",
+    "logo-list",
+    "featured-collection",
+    "image-with-text",
+    "testimonials",
+    "newsletter",
+    "faq"
   ]
 }

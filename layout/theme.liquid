@@ -1,36 +1,70 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}">
+<html lang="{{ request.locale.iso_code }}" class="no-js">
   <head>
-    {% # Inlined CSS Variables %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="{{ settings.primary_color | default: '#2563eb' }}">
+
+    {%- comment -%} Inlined CSS Variables {%- endcomment -%}
     {% render 'css-variables' %}
 
-    {% comment %}
+    {%- comment -%}
       Font preloading:
       1. Preconnect to font CDN for faster connection
       2. Preload only the critical font variant (base weight)
       3. Additional variants load on-demand via @font-face
-    {% endcomment %}
-    {% unless settings.type_primary_font.system? %}
+    {%- endcomment -%}
+    {%- unless settings.type_primary_font.system? -%}
       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
-
-      {% comment %} Preload the base font variant for initial page render {% endcomment %}
       {{ settings.type_primary_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
-    {% endunless %}
+    {%- endunless -%}
 
-    {% # Load and preload the critical CSS %}
+    {%- if settings.type_heading_font and settings.type_heading_font != settings.type_primary_font -%}
+      {{ settings.type_heading_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {%- endif -%}
+
+    {%- comment -%} Load and preload the critical CSS {%- endcomment -%}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
 
-    {% # Social, title, etc. %}
+    {%- comment -%} Social, title, etc. {%- endcomment -%}
     {% render 'meta-tags' %}
+
+    {%- comment -%} JS feature detection {%- endcomment -%}
+    <script>
+      document.documentElement.classList.remove('no-js');
+      document.documentElement.classList.add('js');
+    </script>
+
+    {%- comment -%} Theme settings for JS {%- endcomment -%}
+    <script>
+      window.theme = window.theme || {};
+      window.theme.moneyFormat = {{ shop.money_format | json }};
+      window.theme.cartType = {{ settings.cart_type | default: 'drawer' | json }};
+      window.theme.routes = {
+        cart_url: '{{ routes.cart_url }}',
+        cart_add_url: '{{ routes.cart_add_url }}',
+        cart_change_url: '{{ routes.cart_change_url }}',
+        cart_update_url: '{{ routes.cart_update_url }}',
+        search_url: '{{ routes.search_url }}'
+      };
+    </script>
 
     {{ content_for_header }}
   </head>
 
-  <body>
+  <body class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}">
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="main-content" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
+
+    {%- comment -%} Theme JavaScript {%- endcomment -%}
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
   </body>
 </html>

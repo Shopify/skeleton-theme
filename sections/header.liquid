@@ -1,56 +1,192 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+{%- liquid
+  assign logo = settings.logo
+  assign logo_width = settings.logo_width | default: 120
+  assign menu = section.settings.menu
+  assign enable_sticky = settings.header_sticky
+  assign show_announcement = settings.announcement_bar_enabled
+-%}
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
+{%- if show_announcement and settings.announcement_text != blank -%}
+  <div class="announcement-bar" style="background-color: {{ settings.announcement_bg }}; color: {{ settings.announcement_text_color }};">
+    {%- if settings.announcement_link != blank -%}
+      <a href="{{ settings.announcement_link }}">{{ settings.announcement_text }}</a>
+    {%- else -%}
+      <p>{{ settings.announcement_text }}</p>
+    {%- endif -%}
   </div>
+{%- endif -%}
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
-    {% endif %}
+<header
+  class="header {% if enable_sticky %}header-sticky{% endif %}"
+  data-section-id="{{ section.id }}"
+  style="background-color: {{ settings.header_bg }}; color: {{ settings.header_text }};"
+>
+  <div class="header-inner">
+    {%- comment -%} Mobile Menu Toggle {%- endcomment -%}
+    <button type="button" class="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
-      {% endif %}
+    {%- comment -%} Logo {%- endcomment -%}
+    <div class="header-logo">
+      <a href="{{ routes.root_url }}" class="header-logo-link">
+        {%- if logo != blank -%}
+          <img
+            src="{{ logo | image_url: width: logo_width | times: 2 }}"
+            alt="{{ shop.name | escape }}"
+            width="{{ logo_width }}"
+            height="{{ logo_width | divided_by: logo.aspect_ratio }}"
+            loading="eager"
+          >
+        {%- else -%}
+          <span class="header-logo-text">{{ shop.name }}</span>
+        {%- endif -%}
+      </a>
+    </div>
 
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+    {%- comment -%} Main Navigation {%- endcomment -%}
+    <nav class="header-nav" aria-label="Main navigation">
+      {%- for link in menu.links -%}
+        <div class="nav-item">
+          <a href="{{ link.url }}" class="nav-link {% if link.active %}active{% endif %}">
+            {{ link.title }}
+            {%- if link.links.size > 0 -%}
+              <svg class="nav-link-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            {%- endif -%}
+          </a>
+
+          {%- if link.links.size > 0 -%}
+            <div class="mega-menu">
+              <div class="mega-menu-grid">
+                {%- for childlink in link.links -%}
+                  <div class="mega-menu-column">
+                    <h3 class="mega-menu-column-title">{{ childlink.title }}</h3>
+                    {%- if childlink.links.size > 0 -%}
+                      <ul class="mega-menu-list">
+                        {%- for grandchildlink in childlink.links -%}
+                          <li>
+                            <a href="{{ grandchildlink.url }}" class="mega-menu-link">
+                              {{ grandchildlink.title }}
+                            </a>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- else -%}
+                      <a href="{{ childlink.url }}" class="mega-menu-link">
+                        {{ 'general.view_all' | t | default: 'View All' }}
+                      </a>
+                    {%- endif -%}
+                  </div>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </nav>
+
+    {%- comment -%} Header Actions {%- endcomment -%}
+    <div class="header-actions">
+      {%- comment -%} Search {%- endcomment -%}
+      <a href="{{ routes.search_url }}" class="header-action" aria-label="Search" data-search-toggle>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </a>
+
+      {%- comment -%} Account {%- endcomment -%}
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{{ routes.account_url }}" class="header-action" aria-label="Account">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
+      {%- endif -%}
+
+      {%- comment -%} Cart {%- endcomment -%}
+      <a href="{{ routes.cart_url }}" class="header-action" aria-label="Cart ({{ cart.item_count }} items)" data-cart-toggle>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+        <span class="header-action-badge" data-cart-count {% if cart.item_count == 0 %}style="display: none;"{% endif %}>
+          {{ cart.item_count }}
+        </span>
+      </a>
+    </div>
   </div>
 </header>
 
-{% stylesheet %}
-  header {
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+{%- comment -%} Mobile Menu {%- endcomment -%}
+<div class="mobile-menu" aria-hidden="true">
+  <div class="mobile-menu-header">
+    <div class="header-logo">
+      <a href="{{ routes.root_url }}">
+        {%- if logo != blank -%}
+          <img src="{{ logo | image_url: width: 200 }}" alt="{{ shop.name | escape }}" width="100" loading="lazy">
+        {%- else -%}
+          <span class="header-logo-text">{{ shop.name }}</span>
+        {%- endif -%}
+      </a>
+    </div>
+    <button type="button" class="mobile-menu-close" aria-label="Close menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="mobile-menu-nav" aria-label="Mobile navigation">
+    {%- for link in menu.links -%}
+      <div class="mobile-nav-item">
+        <a href="{{ link.url }}" class="mobile-nav-link">
+          {{ link.title }}
+          {%- if link.links.size > 0 -%}
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          {%- endif -%}
+        </a>
+      </div>
+    {%- endfor -%}
+  </nav>
+
+  <div class="mobile-menu-footer" style="padding: var(--space-6) var(--page-margin); border-top: 1px solid var(--color-border);">
+    {%- if shop.customer_accounts_enabled -%}
+      <a href="{{ routes.account_url }}" class="btn btn-outline btn-full" style="margin-bottom: var(--space-3);">
+        {{ 'customer.account.title' | t | default: 'My Account' }}
+      </a>
+    {%- endif -%}
+    <a href="{{ routes.search_url }}" class="btn btn-ghost btn-full">
+      {{ 'general.search.title' | t | default: 'Search' }}
+    </a>
+  </div>
+</div>
+
+{%- comment -%} Cart Drawer {%- endcomment -%}
+{% render 'cart-drawer' %}
+
+<style>
+  .header-sticky {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
   }
-  header a {
-    position: relative;
-    text-decoration: none;
-    color: var(--color-foreground);
+
+  .header .nav-link.active {
+    color: var(--color-primary);
   }
-  header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
-  }
-  header svg {
-    width: 2rem;
-  }
-  header .header__menu,
-  header .header__icons {
-    display: flex;
-    gap: 1rem;
-  }
-{% endstylesheet %}
+</style>
 
 {% schema %}
 {
@@ -59,7 +195,8 @@
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "t:labels.menu",
+      "default": "main-menu"
     }
   ]
 }

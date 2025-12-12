@@ -1,0 +1,529 @@
+{%- liquid
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign text = section.settings.text
+  assign button_label = section.settings.button_label
+  assign button_link = section.settings.button_link
+  assign button_style = section.settings.button_style
+  assign secondary_button_label = section.settings.secondary_button_label
+  assign secondary_button_link = section.settings.secondary_button_link
+  assign image = section.settings.image
+  assign video = section.settings.video
+  assign overlay_opacity = section.settings.overlay_opacity
+  assign content_position = section.settings.content_position
+  assign text_color = section.settings.text_color
+  assign height = section.settings.height
+  assign enable_parallax = section.settings.enable_parallax
+-%}
+
+<div
+  class="hero hero-{{ height }} {% if text_color == 'light' %}hero-light{% endif %}"
+  data-section-id="{{ section.id }}"
+  {% if section.blocks.size > 1 %}
+    data-slideshow
+    data-autoplay="{{ section.settings.autoplay_speed | times: 1000 }}"
+  {% endif %}
+>
+  {%- if section.blocks.size > 1 -%}
+    <div class="slideshow-slides">
+      {%- for block in section.blocks -%}
+        <div class="slideshow-slide hero" {{ block.shopify_attributes }}>
+          <div class="hero-bg {% if enable_parallax %}hero-parallax{% endif %}">
+            {%- if block.settings.video != blank -%}
+              <video
+                autoplay
+                muted
+                loop
+                playsinline
+                poster="{{ block.settings.image | image_url: width: 1920 }}"
+              >
+                <source src="{{ block.settings.video }}" type="video/mp4">
+              </video>
+            {%- elsif block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 1920 }}"
+                srcset="
+                  {{ block.settings.image | image_url: width: 750 }} 750w,
+                  {{ block.settings.image | image_url: width: 1100 }} 1100w,
+                  {{ block.settings.image | image_url: width: 1500 }} 1500w,
+                  {{ block.settings.image | image_url: width: 1920 }} 1920w
+                "
+                sizes="100vw"
+                alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+              >
+            {%- else -%}
+              {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            {%- endif -%}
+            {%- if block.settings.overlay_opacity > 0 -%}
+              <div class="hero-overlay" style="opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+            {%- endif -%}
+          </div>
+
+          <div class="hero-content hero-content-{{ block.settings.content_position | default: 'center' }}">
+            {%- if block.settings.subheading != blank -%}
+              <p class="hero-subtitle" data-animate data-animate-child>{{ block.settings.subheading }}</p>
+            {%- endif -%}
+
+            {%- if block.settings.heading != blank -%}
+              <h2 class="hero-title" data-animate data-animate-child>{{ block.settings.heading }}</h2>
+            {%- endif -%}
+
+            {%- if block.settings.text != blank -%}
+              <div class="hero-description" data-animate data-animate-child>{{ block.settings.text }}</div>
+            {%- endif -%}
+
+            {%- if block.settings.button_label != blank or block.settings.secondary_button_label != blank -%}
+              <div class="hero-actions" data-animate data-animate-child>
+                {%- if block.settings.button_label != blank -%}
+                  <a
+                    href="{{ block.settings.button_link | default: '#' }}"
+                    class="btn btn-{{ block.settings.button_style | default: 'primary' }} btn-lg"
+                  >
+                    {{ block.settings.button_label }}
+                  </a>
+                {%- endif -%}
+
+                {%- if block.settings.secondary_button_label != blank -%}
+                  <a
+                    href="{{ block.settings.secondary_button_link | default: '#' }}"
+                    class="btn btn-outline btn-lg"
+                  >
+                    {{ block.settings.secondary_button_label }}
+                  </a>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.blocks.size > 1 -%}
+      <div class="slideshow-nav">
+        {%- for block in section.blocks -%}
+          <button
+            type="button"
+            class="slideshow-dot {% if forloop.first %}active{% endif %}"
+            aria-label="Go to slide {{ forloop.index }}"
+          ></button>
+        {%- endfor -%}
+      </div>
+
+      <div class="slideshow-arrows">
+        <button type="button" class="slideshow-arrow slideshow-prev" aria-label="Previous slide">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button type="button" class="slideshow-arrow slideshow-next" aria-label="Next slide">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    {%- endif -%}
+
+  {%- else -%}
+    <div class="hero-bg {% if enable_parallax %}hero-parallax{% endif %}">
+      {%- if video != blank -%}
+        <video
+          autoplay
+          muted
+          loop
+          playsinline
+          poster="{{ image | image_url: width: 1920 }}"
+        >
+          <source src="{{ video }}" type="video/mp4">
+        </video>
+      {%- elsif image != blank -%}
+        <img
+          src="{{ image | image_url: width: 1920 }}"
+          srcset="
+            {{ image | image_url: width: 750 }} 750w,
+            {{ image | image_url: width: 1100 }} 1100w,
+            {{ image | image_url: width: 1500 }} 1500w,
+            {{ image | image_url: width: 1920 }} 1920w
+          "
+          sizes="100vw"
+          alt="{{ image.alt | default: heading | escape }}"
+          loading="eager"
+          width="{{ image.width }}"
+          height="{{ image.height }}"
+        >
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+      {%- if overlay_opacity > 0 -%}
+        <div class="hero-overlay" style="opacity: {{ overlay_opacity | divided_by: 100.0 }};"></div>
+      {%- endif -%}
+    </div>
+
+    <div class="hero-content hero-content-{{ content_position }}">
+      {%- if subheading != blank -%}
+        <p class="hero-subtitle" data-animate data-animate-child>{{ subheading }}</p>
+      {%- endif -%}
+
+      {%- if heading != blank -%}
+        <h1 class="hero-title" data-animate data-animate-child>{{ heading }}</h1>
+      {%- endif -%}
+
+      {%- if text != blank -%}
+        <div class="hero-description" data-animate data-animate-child>{{ text }}</div>
+      {%- endif -%}
+
+      {%- if button_label != blank or secondary_button_label != blank -%}
+        <div class="hero-actions" data-animate data-animate-child>
+          {%- if button_label != blank -%}
+            <a
+              href="{{ button_link | default: '#' }}"
+              class="btn btn-{{ button_style }} btn-lg"
+            >
+              {{ button_label }}
+            </a>
+          {%- endif -%}
+
+          {%- if secondary_button_label != blank -%}
+            <a
+              href="{{ secondary_button_link | default: '#' }}"
+              class="btn btn-outline btn-lg"
+            >
+              {{ secondary_button_label }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Hero banner",
+  "tag": "section",
+  "class": "section-hero",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "url",
+      "id": "video",
+      "label": "Background video URL",
+      "info": "Use MP4 format for best compatibility"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay opacity",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable parallax effect",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "New Collection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Discover Our Latest Arrivals"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Explore our curated collection of premium products designed for the modern lifestyle.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Primary button label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Primary button style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_label",
+      "label": "Secondary button label",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Section height",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "full",
+          "label": "Full screen"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "text_color",
+      "label": "Text color",
+      "options": [
+        {
+          "value": "dark",
+          "label": "Dark"
+        },
+        {
+          "value": "light",
+          "label": "Light"
+        }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "header",
+      "content": "Slideshow"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Autoplay speed",
+      "info": "Set to 0 to disable autoplay",
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Background image"
+        },
+        {
+          "type": "url",
+          "id": "video",
+          "label": "Background video URL"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "label": "Overlay opacity",
+          "default": 40
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "New Collection"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Discover Our Latest Arrivals"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Description"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Primary button label",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Primary button link"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Primary button style",
+          "options": [
+            {
+              "value": "primary",
+              "label": "Primary"
+            },
+            {
+              "value": "secondary",
+              "label": "Secondary"
+            },
+            {
+              "value": "accent",
+              "label": "Accent"
+            }
+          ],
+          "default": "primary"
+        },
+        {
+          "type": "text",
+          "id": "secondary_button_label",
+          "label": "Secondary button label"
+        },
+        {
+          "type": "url",
+          "id": "secondary_button_link",
+          "label": "Secondary button link"
+        },
+        {
+          "type": "select",
+          "id": "content_position",
+          "label": "Content position",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "center"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero banner",
+      "settings": {
+        "heading": "Welcome to Our Store",
+        "subheading": "New Season",
+        "text": "<p>Discover amazing products at unbeatable prices. Shop our latest collection today.</p>",
+        "button_label": "Shop Now",
+        "secondary_button_label": "Learn More"
+      }
+    },
+    {
+      "name": "Hero slideshow",
+      "settings": {
+        "autoplay_speed": 5
+      },
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "Summer Collection",
+            "subheading": "New Arrivals",
+            "button_label": "Shop Summer"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "heading": "Best Sellers",
+            "subheading": "Top Rated",
+            "button_label": "View Best Sellers"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

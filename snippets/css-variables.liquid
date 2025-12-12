@@ -1,18 +1,128 @@
 {% style %}
-  {% # Loads all font variantions with display: swap %}
+  {% # Loads all font variations with display: swap %}
   {{ settings.type_primary_font | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
 
+  {% if settings.type_heading_font %}
+    {{ settings.type_heading_font | font_face: font_display: 'swap' }}
+    {{ settings.type_heading_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+  {% endif %}
+
   :root {
+    /* Typography */
     --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
     --font-primary--style: {{ settings.type_primary_font.style }};
     --font-primary--weight: {{ settings.type_primary_font.weight }};
+    --font-heading--family: {% if settings.type_heading_font %}{{ settings.type_heading_font.family }}, {{ settings.type_heading_font.fallback_families }}{% else %}var(--font-primary--family){% endif %};
+
+    /* Font sizes - fluid typography */
+    --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+    --font-size-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+    --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+    --font-size-lg: clamp(1.125rem, 1rem + 0.6vw, 1.25rem);
+    --font-size-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+    --font-size-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+    --font-size-3xl: clamp(1.875rem, 1.5rem + 1.875vw, 2.5rem);
+    --font-size-4xl: clamp(2.25rem, 1.75rem + 2.5vw, 3.5rem);
+    --font-size-5xl: clamp(3rem, 2rem + 5vw, 5rem);
+
+    /* Layout */
     --page-width: {{ settings.max_page_width }};
     --page-margin: {{ settings.min_page_margin }}px;
+    --section-spacing: clamp(3rem, 5vw, 6rem);
+    --section-spacing-sm: clamp(2rem, 3vw, 4rem);
+
+    /* Colors - Primary */
     --color-background: {{ settings.background_color }};
     --color-foreground: {{ settings.foreground_color }};
+    --color-primary: {{ settings.primary_color | default: '#2563eb' }};
+    --color-primary-rgb: {{ settings.primary_color | default: '#2563eb' | color_to_rgb | remove: 'rgb(' | remove: ')' }};
+    --color-primary-hover: {{ settings.primary_color | default: '#2563eb' | color_darken: 10 }};
+    --color-primary-light: {{ settings.primary_color | default: '#2563eb' | color_lighten: 40 }};
+
+    /* Colors - Secondary */
+    --color-secondary: {{ settings.secondary_color | default: '#64748b' }};
+    --color-secondary-hover: {{ settings.secondary_color | default: '#64748b' | color_darken: 10 }};
+
+    /* Colors - Accent */
+    --color-accent: {{ settings.accent_color | default: '#f59e0b' }};
+    --color-accent-hover: {{ settings.accent_color | default: '#f59e0b' | color_darken: 10 }};
+
+    /* Colors - Status */
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+    --color-info: #3b82f6;
+
+    /* Colors - Neutral */
+    --color-border: {{ settings.foreground_color | color_mix: settings.background_color, 15 }};
+    --color-border-dark: {{ settings.foreground_color | color_mix: settings.background_color, 30 }};
+    --color-muted: {{ settings.foreground_color | color_mix: settings.background_color, 50 }};
+    --color-subtle: {{ settings.foreground_color | color_mix: settings.background_color, 10 }};
+    --color-overlay: rgba(0, 0, 0, 0.5);
+
+    /* Spacing scale */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+    --space-20: 5rem;
+    --space-24: 6rem;
+
+    /* Border radius */
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    --radius-full: 9999px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+    --transition-slow: 350ms ease;
+    --transition-slower: 500ms ease;
+
+    /* Z-index scale */
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-fixed: 300;
+    --z-modal-backdrop: 400;
+    --z-modal: 500;
+    --z-popover: 600;
+    --z-tooltip: 700;
+
+    /* Header */
+    --header-height: 80px;
+    --header-height-mobile: 64px;
+    --announcement-height: 40px;
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    :root.auto-color-scheme {
+      --color-background: {{ settings.background_color_dark | default: '#0f172a' }};
+      --color-foreground: {{ settings.foreground_color_dark | default: '#f8fafc' }};
+      --color-border: {{ settings.foreground_color_dark | default: '#f8fafc' | color_mix: settings.background_color_dark | default: '#0f172a', 15 }};
+      --color-border-dark: {{ settings.foreground_color_dark | default: '#f8fafc' | color_mix: settings.background_color_dark | default: '#0f172a', 30 }};
+      --color-muted: {{ settings.foreground_color_dark | default: '#f8fafc' | color_mix: settings.background_color_dark | default: '#0f172a', 50 }};
+      --color-subtle: {{ settings.foreground_color_dark | default: '#f8fafc' | color_mix: settings.background_color_dark | default: '#0f172a', 10 }};
+    }
   }
 {% endstyle %}

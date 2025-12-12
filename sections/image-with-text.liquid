@@ -1,0 +1,350 @@
+{%- liquid
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign text = section.settings.text
+  assign button_label = section.settings.button_label
+  assign button_link = section.settings.button_link
+  assign image = section.settings.image
+  assign video = section.settings.video
+  assign image_position = section.settings.image_position
+  assign content_alignment = section.settings.content_alignment
+  assign image_ratio = section.settings.image_ratio
+-%}
+
+<div
+  class="section-image-with-text py-section"
+  data-section-id="{{ section.id }}"
+>
+  <div class="container">
+    <div class="image-with-text {% if image_position == 'right' %}image-with-text-reverse{% endif %}" data-animate>
+      <div class="image-with-text-media">
+        {%- if video != blank -%}
+          <video
+            autoplay
+            muted
+            loop
+            playsinline
+            poster="{{ image | image_url: width: 1200 }}"
+            class="{% if image_ratio == 'square' %}aspect-square{% elsif image_ratio == 'portrait' %}aspect-portrait{% elsif image_ratio == 'landscape' %}aspect-landscape{% endif %}"
+          >
+            <source src="{{ video }}" type="video/mp4">
+          </video>
+        {%- elsif image != blank -%}
+          <img
+            src="{{ image | image_url: width: 1200 }}"
+            srcset="
+              {{ image | image_url: width: 400 }} 400w,
+              {{ image | image_url: width: 600 }} 600w,
+              {{ image | image_url: width: 800 }} 800w,
+              {{ image | image_url: width: 1200 }} 1200w
+            "
+            sizes="(min-width: 768px) 50vw, 100vw"
+            alt="{{ image.alt | escape }}"
+            loading="lazy"
+            width="{{ image.width }}"
+            height="{{ image.height }}"
+            class="{% if image_ratio == 'square' %}aspect-square{% elsif image_ratio == 'portrait' %}aspect-portrait{% elsif image_ratio == 'landscape' %}aspect-landscape{% endif %}"
+          >
+        {%- else -%}
+          <div class="{% if image_ratio == 'square' %}aspect-square{% elsif image_ratio == 'portrait' %}aspect-portrait{% elsif image_ratio == 'landscape' %}aspect-landscape{% endif %}" style="background-color: var(--color-subtle);">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="image-with-text-content text-{{ content_alignment }}">
+        {%- if subheading != blank -%}
+          <p class="section-subtitle">{{ subheading }}</p>
+        {%- endif -%}
+
+        {%- if heading != blank -%}
+          <h2 class="section-title">{{ heading }}</h2>
+        {%- endif -%}
+
+        {%- if text != blank -%}
+          <div class="image-with-text-description">{{ text }}</div>
+        {%- endif -%}
+
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'feature' -%}
+              <div class="image-with-text-feature" {{ block.shopify_attributes }}>
+                {%- if block.settings.icon != blank -%}
+                  <div class="feature-icon">
+                    {{ block.settings.icon }}
+                  </div>
+                {%- endif -%}
+                <div class="feature-content">
+                  {%- if block.settings.title != blank -%}
+                    <h4 class="feature-title">{{ block.settings.title }}</h4>
+                  {%- endif -%}
+                  {%- if block.settings.text != blank -%}
+                    <p class="feature-text">{{ block.settings.text }}</p>
+                  {%- endif -%}
+                </div>
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+
+        {%- if button_label != blank -%}
+          <div class="image-with-text-actions">
+            <a href="{{ button_link | default: '#' }}" class="btn btn-{{ section.settings.button_style }}">
+              {{ button_label }}
+            </a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .image-with-text-media img,
+  .image-with-text-media video {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+
+  .image-with-text-media .aspect-square { aspect-ratio: 1 / 1; object-fit: cover; }
+  .image-with-text-media .aspect-portrait { aspect-ratio: 3 / 4; object-fit: cover; }
+  .image-with-text-media .aspect-landscape { aspect-ratio: 4 / 3; object-fit: cover; }
+
+  .image-with-text-description {
+    margin-bottom: var(--space-6);
+    color: var(--color-muted);
+    line-height: 1.7;
+  }
+
+  .image-with-text-feature {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .feature-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+    border-radius: var(--radius-lg);
+  }
+
+  .feature-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .feature-title {
+    margin-bottom: var(--space-1);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+  }
+
+  .feature-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  .image-with-text-actions {
+    margin-top: var(--space-8);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Image with text",
+  "tag": "section",
+  "class": "section-image-with-text-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "url",
+      "id": "video",
+      "label": "Video URL",
+      "info": "Overrides image if provided"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "natural",
+          "label": "Natural"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape"
+        }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "About Us"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Story"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Share your brand story with customers. Describe a product, announce promotions, or welcome visitors to your store.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "html",
+          "id": "icon",
+          "label": "Icon (SVG)",
+          "default": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 6 9 17 4 12\"></polyline></svg>"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Feature title"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Brief description of the feature"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with text",
+      "settings": {
+        "heading": "Our Story",
+        "subheading": "About Us",
+        "text": "<p>Share your brand story with customers. Describe a product, announce promotions, or welcome visitors to your store.</p>",
+        "button_label": "Learn More"
+      },
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "title": "Premium Quality",
+            "text": "Only the finest materials"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "title": "Fast Shipping",
+            "text": "Free delivery on orders over $50"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

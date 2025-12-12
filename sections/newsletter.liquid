@@ -1,0 +1,341 @@
+{%- liquid
+  assign heading = section.settings.heading
+  assign description = section.settings.description
+  assign button_label = section.settings.button_label
+  assign bg_style = section.settings.background_style
+  assign image = section.settings.background_image
+  assign layout = section.settings.layout
+-%}
+
+<div
+  class="section-newsletter newsletter-{{ layout }} {% if bg_style == 'image' and image != blank %}newsletter-with-image{% endif %}"
+  data-section-id="{{ section.id }}"
+  {% if bg_style == 'color' %}
+    style="background-color: {{ section.settings.background_color }}; color: {{ section.settings.text_color }};"
+  {% endif %}
+>
+  {%- if bg_style == 'image' and image != blank -%}
+    <div class="newsletter-bg">
+      <img
+        src="{{ image | image_url: width: 1920 }}"
+        srcset="
+          {{ image | image_url: width: 750 }} 750w,
+          {{ image | image_url: width: 1100 }} 1100w,
+          {{ image | image_url: width: 1500 }} 1500w,
+          {{ image | image_url: width: 1920 }} 1920w
+        "
+        sizes="100vw"
+        alt="{{ image.alt | escape }}"
+        loading="lazy"
+        width="{{ image.width }}"
+        height="{{ image.height }}"
+      >
+      <div class="newsletter-overlay" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+    </div>
+  {%- endif -%}
+
+  <div class="newsletter-inner container">
+    <div class="newsletter-content" data-animate>
+      {%- if heading != blank -%}
+        <h2 class="newsletter-title">{{ heading }}</h2>
+      {%- endif -%}
+
+      {%- if description != blank -%}
+        <div class="newsletter-description">{{ description }}</div>
+      {%- endif -%}
+
+      {%- form 'customer', class: 'newsletter-form' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+
+        {%- if form.errors -%}
+          <div class="form-message form-error" role="alert">
+            {{ form.errors | default_errors }}
+          </div>
+        {%- endif -%}
+
+        {%- if form.posted_successfully? -%}
+          <div class="form-message form-success" role="status">
+            {{ 'newsletter.success' | t | default: 'Thanks for subscribing!' }}
+          </div>
+        {%- else -%}
+          <div class="newsletter-form-inner">
+            <div class="form-group newsletter-input-wrapper">
+              <label for="newsletter-email-{{ section.id }}" class="sr-only">
+                {{ 'newsletter.email_placeholder' | t | default: 'Email address' }}
+              </label>
+              <input
+                type="email"
+                name="contact[email]"
+                id="newsletter-email-{{ section.id }}"
+                class="form-input newsletter-input"
+                placeholder="{{ 'newsletter.email_placeholder' | t | default: 'Enter your email' }}"
+                autocomplete="email"
+                required
+              >
+            </div>
+            <button type="submit" class="btn btn-{{ section.settings.button_style }} newsletter-btn">
+              {{ button_label | default: 'Subscribe' }}
+            </button>
+          </div>
+          {%- if section.settings.show_disclaimer -%}
+            <p class="newsletter-disclaimer text-sm text-muted">
+              {{ section.settings.disclaimer_text | default: 'By subscribing, you agree to our Privacy Policy and consent to receive updates.' }}
+            </p>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  .section-newsletter {
+    position: relative;
+    padding: var(--section-spacing) 0;
+  }
+
+  .newsletter-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .newsletter-center .newsletter-content {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .newsletter-left .newsletter-content {
+    max-width: 500px;
+  }
+
+  .newsletter-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .newsletter-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .newsletter-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .newsletter-with-image {
+    color: white;
+  }
+
+  .newsletter-with-image .newsletter-title,
+  .newsletter-with-image .newsletter-description {
+    color: white;
+  }
+
+  .newsletter-title {
+    margin-bottom: var(--space-4);
+    font-size: var(--font-size-2xl);
+  }
+
+  .newsletter-description {
+    margin-bottom: var(--space-6);
+    opacity: 0.9;
+  }
+
+  .newsletter-form-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 640px) {
+    .newsletter-form-inner {
+      flex-direction: row;
+    }
+
+    .newsletter-input-wrapper {
+      flex: 1;
+      margin-bottom: 0;
+    }
+  }
+
+  .newsletter-input {
+    height: 52px;
+  }
+
+  .newsletter-btn {
+    height: 52px;
+    white-space: nowrap;
+  }
+
+  .newsletter-disclaimer {
+    margin-top: var(--space-4);
+  }
+
+  .form-message {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-4);
+  }
+
+  .form-success {
+    background-color: var(--color-success);
+    color: white;
+  }
+
+  .form-error {
+    background-color: var(--color-error);
+    color: white;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "tag": "section",
+  "class": "section-newsletter-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Subscribe to Our Newsletter"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Get the latest updates on new products and upcoming sales.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Subscribe"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "header",
+      "content": "Disclaimer"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_disclaimer",
+      "label": "Show disclaimer",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "disclaimer_text",
+      "label": "Disclaimer text",
+      "default": "By subscribing, you agree to our Privacy Policy and consent to receive updates."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background style",
+      "options": [
+        {
+          "value": "color",
+          "label": "Color"
+        },
+        {
+          "value": "image",
+          "label": "Image"
+        }
+      ],
+      "default": "color"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay opacity",
+      "default": 50
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter",
+      "settings": {
+        "heading": "Subscribe to Our Newsletter",
+        "description": "<p>Get the latest updates on new products and upcoming sales.</p>"
+      }
+    }
+  ]
+}
+{% endschema %}

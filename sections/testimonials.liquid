@@ -1,0 +1,264 @@
+{%- liquid
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign description = section.settings.description
+  assign columns = section.settings.columns
+  assign bg_color = section.settings.background_color
+-%}
+
+<div
+  class="section-testimonials py-section"
+  style="{% if bg_color != 'transparent' %}background-color: {{ bg_color }};{% endif %}"
+  data-section-id="{{ section.id }}"
+>
+  <div class="container">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="section-header" data-animate>
+        {%- if subheading != blank -%}
+          <p class="section-subtitle">{{ subheading }}</p>
+        {%- endif -%}
+
+        {%- if heading != blank -%}
+          <h2 class="section-title">{{ heading }}</h2>
+        {%- endif -%}
+
+        {%- if description != blank -%}
+          <div class="section-description">{{ description }}</div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="testimonials-grid stagger-children" style="--columns: {{ columns }};" data-animate>
+      {%- for block in section.blocks -%}
+        <div class="testimonial-card" {{ block.shopify_attributes }} data-animate-child>
+          {%- if block.settings.rating > 0 -%}
+            <div class="testimonial-rating" aria-label="{{ block.settings.rating }} out of 5 stars">
+              {%- for i in (1..5) -%}
+                <svg
+                  class="testimonial-star"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="{% if i <= block.settings.rating %}currentColor{% else %}none{% endif %}"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          {%- if block.settings.quote != blank -%}
+            <blockquote class="testimonial-quote">
+              "{{ block.settings.quote }}"
+            </blockquote>
+          {%- endif -%}
+
+          <div class="testimonial-author">
+            {%- if block.settings.avatar != blank -%}
+              <img
+                src="{{ block.settings.avatar | image_url: width: 96 }}"
+                alt="{{ block.settings.author | escape }}"
+                class="testimonial-avatar"
+                width="48"
+                height="48"
+                loading="lazy"
+              >
+            {%- else -%}
+              <div class="testimonial-avatar testimonial-avatar-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+            {%- endif -%}
+
+            <div>
+              {%- if block.settings.author != blank -%}
+                <div class="testimonial-name">{{ block.settings.author }}</div>
+              {%- endif -%}
+
+              {%- if block.settings.title != blank -%}
+                <div class="testimonial-title">{{ block.settings.title }}</div>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- else -%}
+        {%- for i in (1..3) -%}
+          <div class="testimonial-card">
+            <div class="testimonial-rating">
+              {%- for j in (1..5) -%}
+                <svg class="testimonial-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              {%- endfor -%}
+            </div>
+            <blockquote class="testimonial-quote">
+              "This is an amazing product! I can't believe how much it has improved my daily routine. Highly recommended!"
+            </blockquote>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar testimonial-avatar-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div>
+                <div class="testimonial-name">Customer Name</div>
+                <div class="testimonial-title">Verified Buyer</div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  .section-testimonials .testimonials-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .section-testimonials .testimonials-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-testimonials .testimonials-grid {
+      grid-template-columns: repeat(var(--columns, 3), 1fr);
+    }
+  }
+
+  .testimonial-avatar-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-border);
+    color: var(--color-muted);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "tag": "section",
+  "class": "section-testimonials-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Testimonials"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Our Customers Say"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Columns on desktop",
+      "default": 3
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "transparent"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "label": "Rating",
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "This is an amazing product! I can't believe how much it has improved my daily routine. Highly recommended!"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Author avatar"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author name",
+          "default": "Sarah Johnson"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Author title",
+          "default": "Verified Buyer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Absolutely love this product! The quality is outstanding and it arrived quickly. Will definitely be ordering again.",
+            "author": "Sarah Johnson",
+            "title": "Verified Buyer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Exceeded my expectations in every way. The attention to detail is remarkable and customer service was fantastic.",
+            "author": "Michael Chen",
+            "title": "Repeat Customer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Best purchase I've made this year. The product is exactly as described and the packaging was beautiful.",
+            "author": "Emily Davis",
+            "title": "First-time Buyer",
+            "rating": 5
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

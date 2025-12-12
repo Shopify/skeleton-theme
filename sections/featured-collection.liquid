@@ -1,0 +1,212 @@
+{%- liquid
+  assign collection = section.settings.collection
+  assign products_to_show = section.settings.products_to_show
+  assign columns_desktop = section.settings.columns_desktop
+  assign columns_mobile = section.settings.columns_mobile
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign description = section.settings.description
+  assign show_view_all = section.settings.show_view_all
+  assign view_all_style = section.settings.view_all_style
+-%}
+
+<div class="section-featured-collection py-section" data-section-id="{{ section.id }}">
+  <div class="container">
+    {%- if heading != blank or subheading != blank or description != blank -%}
+      <div class="section-header {% if show_view_all and view_all_style == 'inline' %}section-header-split{% endif %}" data-animate>
+        <div>
+          {%- if subheading != blank -%}
+            <p class="section-subtitle">{{ subheading }}</p>
+          {%- endif -%}
+
+          {%- if heading != blank -%}
+            <h2 class="section-title">{{ heading }}</h2>
+          {%- endif -%}
+
+          {%- if description != blank -%}
+            <div class="section-description">{{ description }}</div>
+          {%- endif -%}
+        </div>
+
+        {%- if show_view_all and view_all_style == 'inline' and collection != blank -%}
+          <a href="{{ collection.url }}" class="btn btn-outline">
+            {{ 'sections.featured_collection.view_all' | t | default: 'View All' }}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div
+      class="product-grid stagger-children"
+      style="--columns-desktop: {{ columns_desktop }}; --columns-mobile: {{ columns_mobile }};"
+      data-animate
+    >
+      {%- if collection != blank -%}
+        {%- for product in collection.products limit: products_to_show -%}
+          <div data-animate-child>
+            {% render 'product-card', product: product %}
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..products_to_show) -%}
+          <div class="product-card card" data-animate-child>
+            <div class="card-image aspect-square">
+              {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            <div class="product-card-info text-center">
+              <h3 class="product-card-title">
+                <a href="#">Example Product {{ i }}</a>
+              </h3>
+              <div class="product-card-price">
+                <span>$99.00</span>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- if show_view_all and view_all_style == 'button' and collection != blank -%}
+      <div class="text-center mt-8" data-animate>
+        <a href="{{ collection.url }}" class="btn btn-primary btn-lg">
+          {{ 'sections.featured_collection.view_all' | t | default: 'View All Products' }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .section-featured-collection .product-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-mobile, 2), 1fr);
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .section-featured-collection .product-grid {
+      grid-template-columns: repeat(calc(var(--columns-desktop, 4) - 1), 1fr);
+      gap: var(--space-6);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-featured-collection .product-grid {
+      grid-template-columns: repeat(var(--columns-desktop, 4), 1fr);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Featured collection",
+  "tag": "section",
+  "class": "section-featured-collection-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": "Products to show",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Featured"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": "Columns on desktop",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Columns on mobile",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "View all button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show view all button",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "view_all_style",
+      "label": "View all style",
+      "options": [
+        {
+          "value": "inline",
+          "label": "Inline with header"
+        },
+        {
+          "value": "button",
+          "label": "Button below products"
+        }
+      ],
+      "default": "inline"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collection",
+      "settings": {
+        "heading": "Best Sellers",
+        "subheading": "Shop Our",
+        "products_to_show": 8
+      }
+    }
+  ]
+}
+{% endschema %}
