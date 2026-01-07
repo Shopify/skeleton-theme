@@ -1,0 +1,41 @@
+{% comment %}
+  Custom Liquid Section - Influence Theme (REQUIRED FOR THEME STORE)
+  Allows merchants to add custom Liquid code to any page
+{% endcomment %}
+
+<section class="custom-liquid section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  {%- if section.settings.custom_liquid != blank -%}
+    {{ section.settings.custom_liquid }}
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.custom_liquid.name",
+  "class": "section-custom-liquid",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "t:sections.custom_liquid.settings.liquid.label",
+      "info": "Add app snippets or other Liquid code to create advanced customizations."
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.custom_liquid.name"
+    }
+  ]
+}
+{% endschema %}

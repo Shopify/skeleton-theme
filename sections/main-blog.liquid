@@ -1,0 +1,204 @@
+{% comment %}
+  Main Blog Section - Influence Theme
+  Displays blog articles with filtering and pagination
+{% endcomment %}
+
+{%- liquid
+  assign articles_per_page = section.settings.articles_per_page
+  assign columns_desktop = section.settings.columns_desktop
+  assign columns_mobile = section.settings.columns_mobile
+  assign show_date = section.settings.show_date
+  assign show_author = section.settings.show_author
+  assign show_tags = section.settings.show_tags
+  assign show_excerpt = section.settings.show_excerpt
+  assign image_ratio = section.settings.image_ratio
+-%}
+
+<section class="main-blog section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container">
+    {%- comment -%} Blog Header {%- endcomment -%}
+    <header class="blog-header">
+      <h1 class="blog-header__title h2">{{ blog.title }}</h1>
+
+      {%- if section.settings.show_tag_filter and blog.all_tags.size > 0 -%}
+        <nav class="blog-header__tags" aria-label="{{ 'blog.tags_label' | t }}">
+          <a
+            href="{{ blog.url }}"
+            class="blog-header__tag{% unless current_tags %} is-active{% endunless %}"
+          >
+            {{ 'blog.all' | t }}
+          </a>
+          {%- for tag in blog.all_tags -%}
+            <a
+              href="{{ blog.url }}/tagged/{{ tag | handle }}"
+              class="blog-header__tag{% if current_tags contains tag %} is-active{% endif %}"
+            >
+              {{ tag }}
+            </a>
+          {%- endfor -%}
+        </nav>
+      {%- endif -%}
+    </header>
+
+    {%- paginate blog.articles by articles_per_page -%}
+      {%- if blog.articles.size > 0 -%}
+        <div
+          class="blog-grid grid"
+          style="--grid-columns-desktop: {{ columns_desktop }}; --grid-columns-mobile: {{ columns_mobile }};"
+        >
+          {%- for article in blog.articles -%}
+            <article class="blog-grid__item">
+              {% render 'article-card',
+                article: article,
+                show_date: show_date,
+                show_author: show_author,
+                show_tags: show_tags,
+                show_excerpt: show_excerpt,
+                image_ratio: image_ratio
+              %}
+            </article>
+          {%- endfor -%}
+        </div>
+
+        {%- comment -%} Pagination {%- endcomment -%}
+        {%- if paginate.pages > 1 -%}
+          <nav class="pagination" aria-label="{{ 'accessibility.pagination' | t }}">
+            <ul class="pagination__list">
+              {%- if paginate.previous -%}
+                <li class="pagination__item">
+                  <a href="{{ paginate.previous.url }}" class="pagination__link pagination__link--prev" aria-label="{{ 'accessibility.previous_page' | t }}">
+                    {% render 'icon', icon: 'chevron-left', size: 'sm' %}
+                    <span class="hide-mobile">{{ 'pagination.previous' | t }}</span>
+                  </a>
+                </li>
+              {%- endif -%}
+
+              {%- for part in paginate.parts -%}
+                <li class="pagination__item">
+                  {%- if part.is_link -%}
+                    <a href="{{ part.url }}" class="pagination__link">
+                      {{ part.title }}
+                    </a>
+                  {%- else -%}
+                    {%- if part.title == paginate.current_page -%}
+                      <span class="pagination__link pagination__link--current" aria-current="page">
+                        {{ part.title }}
+                      </span>
+                    {%- else -%}
+                      <span class="pagination__link pagination__link--ellipsis">{{ part.title }}</span>
+                    {%- endif -%}
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+
+              {%- if paginate.next -%}
+                <li class="pagination__item">
+                  <a href="{{ paginate.next.url }}" class="pagination__link pagination__link--next" aria-label="{{ 'accessibility.next_page' | t }}">
+                    <span class="hide-mobile">{{ 'pagination.next' | t }}</span>
+                    {% render 'icon', icon: 'chevron-right', size: 'sm' %}
+                  </a>
+                </li>
+              {%- endif -%}
+            </ul>
+          </nav>
+        {%- endif -%}
+      {%- else -%}
+        <div class="blog-empty">
+          <p>{{ 'blog.empty' | t }}</p>
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.main_blog.name",
+  "tag": "section",
+  "class": "section-main-blog",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_tag_filter",
+      "label": "t:sections.main_blog.settings.show_tag_filter.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "articles_per_page",
+      "label": "t:sections.main_blog.settings.articles_per_page.label",
+      "min": 3,
+      "max": 24,
+      "step": 3,
+      "default": 9
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "t:labels.columns_mobile",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "t:labels.image_ratio",
+      "options": [
+        { "value": "landscape", "label": "t:options.image_ratio.landscape" },
+        { "value": "portrait", "label": "t:options.image_ratio.portrait" },
+        { "value": "square", "label": "t:options.image_ratio.square" }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.main_blog.settings.header_article_card.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "t:sections.main_blog.settings.show_date.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "t:sections.main_blog.settings.show_author.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "t:sections.main_blog.settings.show_tags.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "t:sections.main_blog.settings.show_excerpt.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

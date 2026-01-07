@@ -1,0 +1,63 @@
+{% comment %}
+  Collection Card Snippet - Influence Theme
+  Renders a collection card with image and optional product count
+
+  Usage:
+  {% render 'collection-card', collection: collection %}
+  {% render 'collection-card', collection: collection, show_count: true, image_ratio: 'portrait' %}
+{% endcomment %}
+
+{%- liquid
+  assign show_count = show_count | default: settings.show_collection_count
+  assign image_ratio = image_ratio | default: 'landscape'
+
+  case image_ratio
+    when 'landscape'
+      assign aspect_ratio = '3-2'
+    when 'portrait'
+      assign aspect_ratio = '2-3'
+    when 'square'
+      assign aspect_ratio = '1-1'
+  endcase
+-%}
+
+<div class="collection-card{% if settings.enable_image_zoom %} hover-zoom{% endif %}">
+  <a href="{{ collection.url }}" class="collection-card__link">
+    <div class="collection-card__media media aspect-{{ aspect_ratio }}">
+      {%- if collection.image -%}
+        {{
+          collection.image
+          | image_url: width: 800
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 1200px) 33vw, (min-width: 750px) 50vw, 100vw',
+            widths: '165, 360, 535, 750, 1000',
+            class: 'collection-card__image'
+        }}
+      {%- elsif collection.products.first.featured_media -%}
+        {{
+          collection.products.first.featured_media
+          | image_url: width: 800
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 1200px) 33vw, (min-width: 750px) 50vw, 100vw',
+            widths: '165, 360, 535, 750, 1000',
+            class: 'collection-card__image'
+        }}
+      {%- else -%}
+        {{ 'collection-1' | placeholder_svg_tag: 'collection-card__placeholder' }}
+      {%- endif -%}
+
+      <div class="collection-card__overlay"></div>
+    </div>
+
+    <div class="collection-card__content">
+      <h3 class="collection-card__title h4">{{ collection.title }}</h3>
+      {%- if show_count -%}
+        <p class="collection-card__count">
+          {{ 'collection.products_count' | t: count: collection.products_count }}
+        </p>
+      {%- endif -%}
+    </div>
+  </a>
+</div>

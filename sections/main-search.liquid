@@ -1,0 +1,521 @@
+{% comment %}
+  Main Search Section - Influence Theme
+  Search results with filtering and predictive search (REQUIRED FOR THEME STORE)
+{% endcomment %}
+
+{%- liquid
+  assign products_per_page = section.settings.products_per_page
+  assign columns_desktop = section.settings.columns_desktop
+  assign columns_mobile = section.settings.columns_mobile
+  assign show_filters = section.settings.show_filters
+  assign show_sorting = section.settings.show_sorting
+-%}
+
+<section class="main-search section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container">
+    {%- comment -%} Search Header {%- endcomment -%}
+    <header class="search-header">
+      <h1 class="search-header__title h2">{{ 'search.title' | t }}</h1>
+
+      {%- comment -%} Search Form with Predictive Search {%- endcomment -%}
+      <div class="search-header__form">
+        <predictive-search data-loading-text="{{ 'search.loading' | t }}">
+          <form action="{{ routes.search_url }}" method="get" role="search" class="search-form search-form--large">
+            <label for="Search-{{ section.id }}" class="visually-hidden">{{ 'search.placeholder' | t }}</label>
+            <input
+              type="search"
+              id="Search-{{ section.id }}"
+              name="q"
+              value="{{ search.terms | escape }}"
+              class="search-form__input form-input"
+              placeholder="{{ 'search.placeholder' | t }}"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              data-predictive-search-input
+            >
+            <input type="hidden" name="type" value="product,article,page">
+            <button type="submit" class="search-form__submit btn btn--primary">
+              {% render 'icon', icon: 'search' %}
+              <span class="visually-hidden">{{ 'search.search' | t }}</span>
+            </button>
+
+            {%- comment -%} Predictive Search Results Container {%- endcomment -%}
+            <div class="predictive-search" data-predictive-search-results hidden>
+              <div class="predictive-search__loading" data-predictive-search-loading>
+                <span class="spinner"></span>
+              </div>
+              <div class="predictive-search__results" data-predictive-search-results-container></div>
+            </div>
+          </form>
+        </predictive-search>
+      </div>
+
+      {%- if search.performed -%}
+        <p class="search-header__results-count">
+          {%- if search.results_count == 0 -%}
+            {{ 'search.no_results' | t: terms: search.terms }}
+          {%- else -%}
+            {{ 'search.results_count' | t: count: search.results_count, terms: search.terms }}
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+    </header>
+
+    {%- if search.performed -%}
+      {%- if search.results_count > 0 -%}
+        {%- comment -%} Search Toolbar {%- endcomment -%}
+        <div class="search-toolbar">
+          {%- comment -%} Type Filter Tabs {%- endcomment -%}
+          <div class="search-toolbar__tabs">
+            <a
+              href="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type=product,article,page"
+              class="search-toolbar__tab{% unless search.types %} is-active{% endunless %}"
+            >
+              {{ 'search.all' | t }}
+            </a>
+            <a
+              href="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type=product"
+              class="search-toolbar__tab{% if search.types contains 'product' and search.types.size == 1 %} is-active{% endif %}"
+            >
+              {{ 'search.products' | t }}
+            </a>
+            <a
+              href="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type=article"
+              class="search-toolbar__tab{% if search.types contains 'article' and search.types.size == 1 %} is-active{% endif %}"
+            >
+              {{ 'search.articles' | t }}
+            </a>
+            <a
+              href="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type=page"
+              class="search-toolbar__tab{% if search.types contains 'page' and search.types.size == 1 %} is-active{% endif %}"
+            >
+              {{ 'search.pages' | t }}
+            </a>
+          </div>
+
+          {%- comment -%} Sort {%- endcomment -%}
+          {%- if show_sorting -%}
+            <div class="search-toolbar__sort">
+              <label for="SearchSortBy" class="visually-hidden">{{ 'collection.sorting.label' | t }}</label>
+              <select id="SearchSortBy" class="form-select" data-search-sort>
+                <option value="relevance" {% if search.sort_by == 'relevance' %}selected{% endif %}>
+                  {{ 'search.sort.relevance' | t }}
+                </option>
+                <option value="price-ascending" {% if search.sort_by == 'price-ascending' %}selected{% endif %}>
+                  {{ 'search.sort.price_asc' | t }}
+                </option>
+                <option value="price-descending" {% if search.sort_by == 'price-descending' %}selected{% endif %}>
+                  {{ 'search.sort.price_desc' | t }}
+                </option>
+              </select>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Faceted Filters (for products) {%- endcomment -%}
+        {%- if show_filters and search.filters.size > 0 -%}
+          <div class="search-filters-container">
+            <aside class="search-filters" data-search-filters>
+              <form id="SearchFiltersForm" data-search-filters-form>
+                {%- for filter in search.filters -%}
+                  <details
+                    class="search-filter"
+                    {% if filter.active_values.size > 0 or forloop.index <= 3 %}open{% endif %}
+                  >
+                    <summary class="search-filter__heading">
+                      <span>{{ filter.label }}</span>
+                      {% render 'icon', icon: 'chevron-down', size: 'sm' %}
+                    </summary>
+
+                    <div class="search-filter__content">
+                      {%- case filter.type -%}
+                        {%- when 'list' -%}
+                          <ul class="search-filter__list" role="list">
+                            {%- for value in filter.values -%}
+                              <li>
+                                <label class="search-filter__label">
+                                  <input
+                                    type="checkbox"
+                                    name="{{ value.param_name }}"
+                                    value="{{ value.value }}"
+                                    {% if value.active %}checked{% endif %}
+                                    class="search-filter__checkbox"
+                                    data-filter-input
+                                  >
+                                  <span class="search-filter__checkbox-visual"></span>
+                                  <span class="search-filter__text">{{ value.label }}</span>
+                                  <span class="search-filter__count">({{ value.count }})</span>
+                                </label>
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+
+                        {%- when 'price_range' -%}
+                          <div class="search-filter__price-range">
+                            <div class="search-filter__price-inputs">
+                              <div class="search-filter__price-field">
+                                <label for="Filter-{{ filter.param_name }}-GTE">{{ 'collection.filters.from' | t }}</label>
+                                <input
+                                  type="number"
+                                  id="Filter-{{ filter.param_name }}-GTE"
+                                  name="{{ filter.min_value.param_name }}"
+                                  class="form-input"
+                                  min="0"
+                                  {% if filter.min_value.value %}value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"{% endif %}
+                                  placeholder="0"
+                                  data-filter-input
+                                >
+                              </div>
+                              <span>—</span>
+                              <div class="search-filter__price-field">
+                                <label for="Filter-{{ filter.param_name }}-LTE">{{ 'collection.filters.to' | t }}</label>
+                                <input
+                                  type="number"
+                                  id="Filter-{{ filter.param_name }}-LTE"
+                                  name="{{ filter.max_value.param_name }}"
+                                  class="form-input"
+                                  min="0"
+                                  {% if filter.max_value.value %}value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"{% endif %}
+                                  data-filter-input
+                                >
+                              </div>
+                            </div>
+                          </div>
+                      {%- endcase -%}
+                    </div>
+                  </details>
+                {%- endfor -%}
+
+                <noscript>
+                  <button type="submit" class="btn btn--primary">{{ 'collection.filters.apply' | t }}</button>
+                </noscript>
+              </form>
+            </aside>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Search Results {%- endcomment -%}
+        {%- paginate search.results by products_per_page -%}
+          <div
+            class="search-results__grid grid"
+            style="--grid-columns-desktop: {{ columns_desktop }}; --grid-columns-mobile: {{ columns_mobile }};"
+          >
+            {%- for item in search.results -%}
+              <div class="search-results__item">
+                {%- case item.object_type -%}
+                  {%- when 'product' -%}
+                    {% render 'product-card', product: item %}
+
+                  {%- when 'article' -%}
+                    {% render 'article-card', article: item %}
+
+                  {%- when 'page' -%}
+                    <div class="page-card">
+                      <h3 class="page-card__title h4">
+                        <a href="{{ item.url }}">{{ item.title }}</a>
+                      </h3>
+                      {%- if item.content != blank -%}
+                        <p class="page-card__excerpt">
+                          {{ item.content | strip_html | truncate: 150 }}
+                        </p>
+                      {%- endif -%}
+                    </div>
+                {%- endcase -%}
+              </div>
+            {%- endfor -%}
+          </div>
+
+          {%- comment -%} Pagination {%- endcomment -%}
+          {%- if paginate.pages > 1 -%}
+            <nav class="pagination" aria-label="{{ 'accessibility.pagination' | t }}">
+              <ul class="pagination__list">
+                {%- if paginate.previous -%}
+                  <li class="pagination__item">
+                    <a href="{{ paginate.previous.url }}" class="pagination__link pagination__link--prev">
+                      {% render 'icon', icon: 'chevron-left', size: 'sm' %}
+                      {{ 'pagination.previous' | t }}
+                    </a>
+                  </li>
+                {%- endif -%}
+
+                {%- for part in paginate.parts -%}
+                  <li class="pagination__item">
+                    {%- if part.is_link -%}
+                      <a href="{{ part.url }}" class="pagination__link">{{ part.title }}</a>
+                    {%- else -%}
+                      {%- if part.title == paginate.current_page -%}
+                        <span class="pagination__link pagination__link--current" aria-current="page">{{ part.title }}</span>
+                      {%- else -%}
+                        <span class="pagination__link pagination__link--ellipsis">{{ part.title }}</span>
+                      {%- endif -%}
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+
+                {%- if paginate.next -%}
+                  <li class="pagination__item">
+                    <a href="{{ paginate.next.url }}" class="pagination__link pagination__link--next">
+                      {{ 'pagination.next' | t }}
+                      {% render 'icon', icon: 'chevron-right', size: 'sm' %}
+                    </a>
+                  </li>
+                {%- endif -%}
+              </ul>
+            </nav>
+          {%- endif -%}
+        {%- endpaginate -%}
+      {%- else -%}
+        {%- comment -%} No Results {%- endcomment -%}
+        <div class="search-empty">
+          <p>{{ 'search.no_results_html' | t: terms: search.terms }}</p>
+          <h2 class="h4">{{ 'search.suggestions' | t }}</h2>
+          <ul>
+            <li>{{ 'search.suggestion_1' | t }}</li>
+            <li>{{ 'search.suggestion_2' | t }}</li>
+            <li>{{ 'search.suggestion_3' | t }}</li>
+          </ul>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+// Predictive Search Component
+class PredictiveSearch extends HTMLElement {
+  constructor() {
+    super();
+    this.input = this.querySelector('[data-predictive-search-input]');
+    this.results = this.querySelector('[data-predictive-search-results]');
+    this.resultsContainer = this.querySelector('[data-predictive-search-results-container]');
+    this.loading = this.querySelector('[data-predictive-search-loading]');
+
+    this.cachedResults = {};
+    this.debounceTimer = null;
+
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    this.input.addEventListener('input', this.onInput.bind(this));
+    this.input.addEventListener('focus', this.onFocus.bind(this));
+    document.addEventListener('click', this.onClickOutside.bind(this));
+  }
+
+  onInput() {
+    clearTimeout(this.debounceTimer);
+    const searchTerm = this.input.value.trim();
+
+    if (searchTerm.length < 2) {
+      this.close();
+      return;
+    }
+
+    this.debounceTimer = setTimeout(() => {
+      this.getResults(searchTerm);
+    }, 300);
+  }
+
+  onFocus() {
+    if (this.input.value.trim().length >= 2) {
+      this.open();
+    }
+  }
+
+  onClickOutside(event) {
+    if (!this.contains(event.target)) {
+      this.close();
+    }
+  }
+
+  async getResults(searchTerm) {
+    if (this.cachedResults[searchTerm]) {
+      this.renderResults(this.cachedResults[searchTerm]);
+      return;
+    }
+
+    this.loading.hidden = false;
+    this.open();
+
+    try {
+      const response = await fetch(
+        `${window.Shopify.routes.root}search/suggest.json?q=${encodeURIComponent(searchTerm)}&resources[type]=product,article,page&resources[limit]=10`
+      );
+      const data = await response.json();
+
+      this.cachedResults[searchTerm] = data;
+      this.renderResults(data);
+    } catch (error) {
+      console.error('Predictive search error:', error);
+      this.close();
+    } finally {
+      this.loading.hidden = true;
+    }
+  }
+
+  renderResults(data) {
+    const resources = data.resources.results;
+    let html = '';
+
+    // Products
+    if (resources.products && resources.products.length > 0) {
+      html += `<div class="predictive-search__section">
+        <h3 class="predictive-search__section-title">{{ 'search.products' | t }}</h3>
+        <ul class="predictive-search__list">`;
+
+      resources.products.forEach(product => {
+        const image = product.image ? `<img src="${product.image}" alt="${product.title}" width="50" height="50" loading="lazy">` : '';
+        html += `<li class="predictive-search__item">
+          <a href="${product.url}" class="predictive-search__link">
+            <span class="predictive-search__image">${image}</span>
+            <span class="predictive-search__info">
+              <span class="predictive-search__title">${product.title}</span>
+              <span class="predictive-search__price">${product.price}</span>
+            </span>
+          </a>
+        </li>`;
+      });
+
+      html += '</ul></div>';
+    }
+
+    // Articles
+    if (resources.articles && resources.articles.length > 0) {
+      html += `<div class="predictive-search__section">
+        <h3 class="predictive-search__section-title">{{ 'search.articles' | t }}</h3>
+        <ul class="predictive-search__list">`;
+
+      resources.articles.forEach(article => {
+        html += `<li class="predictive-search__item">
+          <a href="${article.url}" class="predictive-search__link">
+            <span class="predictive-search__title">${article.title}</span>
+          </a>
+        </li>`;
+      });
+
+      html += '</ul></div>';
+    }
+
+    // Pages
+    if (resources.pages && resources.pages.length > 0) {
+      html += `<div class="predictive-search__section">
+        <h3 class="predictive-search__section-title">{{ 'search.pages' | t }}</h3>
+        <ul class="predictive-search__list">`;
+
+      resources.pages.forEach(page => {
+        html += `<li class="predictive-search__item">
+          <a href="${page.url}" class="predictive-search__link">
+            <span class="predictive-search__title">${page.title}</span>
+          </a>
+        </li>`;
+      });
+
+      html += '</ul></div>';
+    }
+
+    if (html === '') {
+      html = `<p class="predictive-search__empty">{{ 'search.no_results' | t: terms: '' }}</p>`;
+    }
+
+    // View all results link
+    html += `<a href="${window.Shopify.routes.root}search?q=${encodeURIComponent(this.input.value)}" class="predictive-search__view-all">
+      {{ 'search.view_all' | t }}
+    </a>`;
+
+    this.resultsContainer.innerHTML = html;
+    this.open();
+  }
+
+  open() {
+    this.results.hidden = false;
+  }
+
+  close() {
+    this.results.hidden = true;
+  }
+}
+
+customElements.define('predictive-search', PredictiveSearch);
+
+// Sort change handler
+document.addEventListener('DOMContentLoaded', () => {
+  const sortSelect = document.querySelector('[data-search-sort]');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      const url = new URL(window.location.href);
+      url.searchParams.set('sort_by', sortSelect.value);
+      window.location.href = url.toString();
+    });
+  }
+
+  // Filter change handlers
+  const filterInputs = document.querySelectorAll('[data-filter-input]');
+  filterInputs.forEach(input => {
+    input.addEventListener('change', () => {
+      document.getElementById('SearchFiltersForm').submit();
+    });
+  });
+});
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main_search.name",
+  "tag": "section",
+  "class": "section-main-search",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "t:sections.main_search.settings.show_filters.label",
+      "info": "t:sections.main_search.settings.show_filters.info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sorting",
+      "label": "t:sections.main_search.settings.show_sorting.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:sections.main_search.settings.products_per_page.label",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "t:labels.columns_mobile",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

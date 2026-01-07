@@ -1,0 +1,300 @@
+{% comment %}
+  Main Addresses Section - Influence Theme
+  Customer addresses management
+{% endcomment %}
+
+<section class="main-addresses section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container">
+    <header class="addresses-header">
+      <a href="{{ routes.account_url }}" class="addresses-header__back link-with-arrow link-with-arrow--reverse">
+        {% render 'icon', icon: 'arrow-left', size: 'sm' %}
+        {{ 'customer.account.return' | t }}
+      </a>
+      <h1 class="addresses-header__title h2">{{ 'customer.addresses.title' | t }}</h1>
+    </header>
+
+    <div class="addresses-content">
+      {%- comment -%} Add New Address Button {%- endcomment -%}
+      <button type="button" class="btn btn--outline addresses-add-btn" data-address-toggle-new>
+        {{ 'customer.addresses.add_new' | t }}
+      </button>
+
+      {%- comment -%} New Address Form {%- endcomment -%}
+      <div class="address-form-wrapper" id="AddressNewForm" hidden>
+        <h2 class="address-form__heading h4">{{ 'customer.addresses.add_new' | t }}</h2>
+
+        {%- form 'customer_address', customer.new_address, class: 'address-form' -%}
+          <div class="form-row">
+            <div class="form-group">
+              <label for="AddressFirstNameNew" class="form-label">{{ 'customer.addresses.first_name' | t }}</label>
+              <input type="text" id="AddressFirstNameNew" name="address[first_name]" class="form-input" autocomplete="given-name">
+            </div>
+            <div class="form-group">
+              <label for="AddressLastNameNew" class="form-label">{{ 'customer.addresses.last_name' | t }}</label>
+              <input type="text" id="AddressLastNameNew" name="address[last_name]" class="form-input" autocomplete="family-name">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="AddressCompanyNew" class="form-label">{{ 'customer.addresses.company' | t }}</label>
+            <input type="text" id="AddressCompanyNew" name="address[company]" class="form-input" autocomplete="organization">
+          </div>
+
+          <div class="form-group">
+            <label for="AddressAddress1New" class="form-label">{{ 'customer.addresses.address1' | t }}</label>
+            <input type="text" id="AddressAddress1New" name="address[address1]" class="form-input" autocomplete="address-line1">
+          </div>
+
+          <div class="form-group">
+            <label for="AddressAddress2New" class="form-label">{{ 'customer.addresses.address2' | t }}</label>
+            <input type="text" id="AddressAddress2New" name="address[address2]" class="form-input" autocomplete="address-line2">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="AddressCityNew" class="form-label">{{ 'customer.addresses.city' | t }}</label>
+              <input type="text" id="AddressCityNew" name="address[city]" class="form-input" autocomplete="address-level2">
+            </div>
+            <div class="form-group">
+              <label for="AddressCountryNew" class="form-label">{{ 'customer.addresses.country' | t }}</label>
+              <select id="AddressCountryNew" name="address[country]" class="form-select" data-address-country-select data-form-id="new">
+                {{ all_country_option_tags }}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="AddressProvinceNew" class="form-label">{{ 'customer.addresses.province' | t }}</label>
+              <select id="AddressProvinceNew" name="address[province]" class="form-select" data-address-province-select>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="AddressZipNew" class="form-label">{{ 'customer.addresses.zip' | t }}</label>
+              <input type="text" id="AddressZipNew" name="address[zip]" class="form-input" autocomplete="postal-code">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="AddressPhoneNew" class="form-label">{{ 'customer.addresses.phone' | t }}</label>
+            <input type="tel" id="AddressPhoneNew" name="address[phone]" class="form-input" autocomplete="tel">
+          </div>
+
+          <div class="form-group form-group--checkbox">
+            <input type="checkbox" id="AddressDefaultNew" name="address[default]" value="1" class="form-checkbox">
+            <label for="AddressDefaultNew" class="form-label">{{ 'customer.addresses.set_default' | t }}</label>
+          </div>
+
+          <div class="address-form__actions">
+            <button type="submit" class="btn btn--primary">{{ 'customer.addresses.add' | t }}</button>
+            <button type="button" class="btn btn--outline" data-address-toggle-new>{{ 'customer.addresses.cancel' | t }}</button>
+          </div>
+        {%- endform -%}
+      </div>
+
+      {%- comment -%} Existing Addresses {%- endcomment -%}
+      {%- if customer.addresses.size > 0 -%}
+        <div class="addresses-list">
+          {%- for address in customer.addresses -%}
+            <div class="address-card">
+              {%- if address == customer.default_address -%}
+                <span class="address-card__badge">{{ 'customer.addresses.default' | t }}</span>
+              {%- endif -%}
+
+              <address class="address-card__address">
+                {{ address | format_address }}
+              </address>
+
+              <div class="address-card__actions">
+                <button type="button" class="link" data-address-toggle-edit="{{ address.id }}">
+                  {{ 'customer.addresses.edit' | t }}
+                </button>
+                <button type="button" class="link" data-address-delete="{{ address.id }}" data-confirm="{{ 'customer.addresses.delete_confirm' | t }}">
+                  {{ 'customer.addresses.delete' | t }}
+                </button>
+              </div>
+
+              {%- comment -%} Edit Form {%- endcomment -%}
+              <div class="address-form-wrapper" id="AddressEditForm-{{ address.id }}" hidden>
+                <h3 class="address-form__heading h5">{{ 'customer.addresses.edit_address' | t }}</h3>
+
+                {%- form 'customer_address', address, class: 'address-form' -%}
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="AddressFirstName{{ address.id }}" class="form-label">{{ 'customer.addresses.first_name' | t }}</label>
+                      <input type="text" id="AddressFirstName{{ address.id }}" name="address[first_name]" class="form-input" value="{{ address.first_name }}">
+                    </div>
+                    <div class="form-group">
+                      <label for="AddressLastName{{ address.id }}" class="form-label">{{ 'customer.addresses.last_name' | t }}</label>
+                      <input type="text" id="AddressLastName{{ address.id }}" name="address[last_name]" class="form-input" value="{{ address.last_name }}">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="AddressCompany{{ address.id }}" class="form-label">{{ 'customer.addresses.company' | t }}</label>
+                    <input type="text" id="AddressCompany{{ address.id }}" name="address[company]" class="form-input" value="{{ address.company }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="AddressAddress1{{ address.id }}" class="form-label">{{ 'customer.addresses.address1' | t }}</label>
+                    <input type="text" id="AddressAddress1{{ address.id }}" name="address[address1]" class="form-input" value="{{ address.address1 }}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="AddressAddress2{{ address.id }}" class="form-label">{{ 'customer.addresses.address2' | t }}</label>
+                    <input type="text" id="AddressAddress2{{ address.id }}" name="address[address2]" class="form-input" value="{{ address.address2 }}">
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="AddressCity{{ address.id }}" class="form-label">{{ 'customer.addresses.city' | t }}</label>
+                      <input type="text" id="AddressCity{{ address.id }}" name="address[city]" class="form-input" value="{{ address.city }}">
+                    </div>
+                    <div class="form-group">
+                      <label for="AddressCountry{{ address.id }}" class="form-label">{{ 'customer.addresses.country' | t }}</label>
+                      <select id="AddressCountry{{ address.id }}" name="address[country]" class="form-select" data-address-country-select data-form-id="{{ address.id }}" data-default="{{ address.country }}">
+                        {{ all_country_option_tags }}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="AddressProvince{{ address.id }}" class="form-label">{{ 'customer.addresses.province' | t }}</label>
+                      <select id="AddressProvince{{ address.id }}" name="address[province]" class="form-select" data-address-province-select data-default="{{ address.province }}">
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="AddressZip{{ address.id }}" class="form-label">{{ 'customer.addresses.zip' | t }}</label>
+                      <input type="text" id="AddressZip{{ address.id }}" name="address[zip]" class="form-input" value="{{ address.zip }}">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="AddressPhone{{ address.id }}" class="form-label">{{ 'customer.addresses.phone' | t }}</label>
+                    <input type="tel" id="AddressPhone{{ address.id }}" name="address[phone]" class="form-input" value="{{ address.phone }}">
+                  </div>
+
+                  <div class="form-group form-group--checkbox">
+                    <input type="checkbox" id="AddressDefault{{ address.id }}" name="address[default]" value="1" class="form-checkbox" {% if address == customer.default_address %}checked{% endif %}>
+                    <label for="AddressDefault{{ address.id }}" class="form-label">{{ 'customer.addresses.set_default' | t }}</label>
+                  </div>
+
+                  <div class="address-form__actions">
+                    <button type="submit" class="btn btn--primary">{{ 'customer.addresses.update' | t }}</button>
+                    <button type="button" class="btn btn--outline" data-address-toggle-edit="{{ address.id }}">{{ 'customer.addresses.cancel' | t }}</button>
+                  </div>
+                {%- endform -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  // Toggle new address form
+  const toggleNewBtns = document.querySelectorAll('[data-address-toggle-new]');
+  const newForm = document.getElementById('AddressNewForm');
+
+  toggleNewBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      newForm.hidden = !newForm.hidden;
+    });
+  });
+
+  // Toggle edit address forms
+  const toggleEditBtns = document.querySelectorAll('[data-address-toggle-edit]');
+
+  toggleEditBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const addressId = btn.dataset.addressToggleEdit;
+      const editForm = document.getElementById(`AddressEditForm-${addressId}`);
+      if (editForm) {
+        editForm.hidden = !editForm.hidden;
+      }
+    });
+  });
+
+  // Delete address
+  const deleteBtns = document.querySelectorAll('[data-address-delete]');
+
+  deleteBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const confirmed = confirm(btn.dataset.confirm);
+      if (confirmed) {
+        const addressId = btn.dataset.addressDelete;
+        Shopify.postLink(`/account/addresses/${addressId}`, {
+          parameters: { _method: 'delete' }
+        });
+      }
+    });
+  });
+
+  // Country/Province selector
+  const countrySelects = document.querySelectorAll('[data-address-country-select]');
+
+  countrySelects.forEach(select => {
+    const formId = select.dataset.formId;
+    const provinceSelect = document.querySelector(`[id="AddressProvince${formId}"]`);
+
+    select.addEventListener('change', () => {
+      updateProvinces(select, provinceSelect);
+    });
+
+    // Initialize
+    if (select.dataset.default) {
+      select.value = select.dataset.default;
+    }
+    updateProvinces(select, provinceSelect);
+
+    if (provinceSelect && provinceSelect.dataset.default) {
+      provinceSelect.value = provinceSelect.dataset.default;
+    }
+  });
+
+  function updateProvinces(countrySelect, provinceSelect) {
+    if (!provinceSelect) return;
+
+    const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+    const provinces = JSON.parse(selectedOption.dataset.provinces || '[]');
+
+    provinceSelect.innerHTML = '';
+
+    if (provinces.length === 0) {
+      provinceSelect.parentElement.hidden = true;
+    } else {
+      provinceSelect.parentElement.hidden = false;
+      provinces.forEach(province => {
+        const option = document.createElement('option');
+        option.value = province[0];
+        option.textContent = province[1];
+        provinceSelect.appendChild(option);
+      });
+    }
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main_addresses.name",
+  "tag": "section",
+  "class": "section-main-addresses",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

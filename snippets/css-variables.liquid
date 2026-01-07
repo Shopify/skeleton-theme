@@ -1,18 +1,246 @@
+{% comment %}
+  CSS Variables - Influence Theme Design System
+  Comprehensive design tokens for typography, spacing, colors, and animations
+{% endcomment %}
+
 {% style %}
-  {% # Loads all font variantions with display: swap %}
-  {{ settings.type_primary_font | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {%- comment -%} Load heading font variants {%- endcomment -%}
+  {{ settings.type_heading_font | font_face: font_display: 'swap' }}
+  {{ settings.type_heading_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+  {{ settings.type_heading_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {{ settings.type_heading_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+
+  {%- comment -%} Load body font variants {%- endcomment -%}
+  {{ settings.type_body_font | font_face: font_display: 'swap' }}
+  {{ settings.type_body_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+  {{ settings.type_body_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {{ settings.type_body_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
 
   :root {
-    --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
-    --font-primary--style: {{ settings.type_primary_font.style }};
-    --font-primary--weight: {{ settings.type_primary_font.weight }};
+    /* ========================================
+       TYPOGRAPHY
+       ======================================== */
+
+    /* Font Families */
+    --font-heading-family: {{ settings.type_heading_font.family }}, {{ settings.type_heading_font.fallback_families }};
+    --font-heading-style: {{ settings.type_heading_font.style }};
+    --font-heading-weight: {{ settings.type_heading_font.weight }};
+
+    --font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+    --font-body-style: {{ settings.type_body_font.style }};
+    --font-body-weight: {{ settings.type_body_font.weight }};
+
+    /* Font Size Scale (Fluid Typography) */
+    --font-size-xs: clamp(0.6875rem, 0.65rem + 0.1vw, 0.75rem);      /* 11-12px */
+    --font-size-sm: clamp(0.75rem, 0.7rem + 0.15vw, 0.875rem);       /* 12-14px */
+    --font-size-base: clamp(0.875rem, 0.8rem + 0.2vw, 1rem);         /* 14-16px */
+    --font-size-md: clamp(1rem, 0.9rem + 0.3vw, 1.125rem);           /* 16-18px */
+    --font-size-lg: clamp(1.125rem, 1rem + 0.4vw, 1.375rem);         /* 18-22px */
+    --font-size-xl: clamp(1.25rem, 1.1rem + 0.5vw, 1.625rem);        /* 20-26px */
+    --font-size-2xl: clamp(1.5rem, 1.3rem + 0.7vw, 2rem);            /* 24-32px */
+    --font-size-3xl: clamp(1.875rem, 1.5rem + 1vw, 2.5rem);          /* 30-40px */
+    --font-size-4xl: clamp(2.25rem, 1.8rem + 1.5vw, 3.25rem);        /* 36-52px */
+    --font-size-5xl: clamp(2.75rem, 2rem + 2vw, 4rem);               /* 44-64px */
+    --font-size-display: clamp(3.5rem, 2.5rem + 3vw, 6rem);          /* 56-96px */
+
+    /* Line Heights */
+    --line-height-tight: 1.1;
+    --line-height-snug: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
+    --line-height-loose: 2;
+
+    /* Letter Spacing */
+    --letter-spacing-tighter: -0.05em;
+    --letter-spacing-tight: -0.025em;
+    --letter-spacing-normal: 0;
+    --letter-spacing-wide: 0.025em;
+    --letter-spacing-wider: 0.05em;
+    --letter-spacing-widest: 0.1em;
+
+    /* ========================================
+       SPACING (8px base scale)
+       ======================================== */
+    --space-0: 0;
+    --space-1: 0.25rem;   /* 4px */
+    --space-2: 0.5rem;    /* 8px */
+    --space-3: 0.75rem;   /* 12px */
+    --space-4: 1rem;      /* 16px */
+    --space-5: 1.25rem;   /* 20px */
+    --space-6: 1.5rem;    /* 24px */
+    --space-8: 2rem;      /* 32px */
+    --space-10: 2.5rem;   /* 40px */
+    --space-12: 3rem;     /* 48px */
+    --space-16: 4rem;     /* 64px */
+    --space-20: 5rem;     /* 80px */
+    --space-24: 6rem;     /* 96px */
+    --space-32: 8rem;     /* 128px */
+    --space-40: 10rem;    /* 160px */
+    --space-48: 12rem;    /* 192px */
+
+    /* Section Spacing (responsive) */
+    --section-spacing-sm: clamp(2rem, 4vw, 3rem);
+    --section-spacing-md: clamp(3rem, 6vw, 5rem);
+    --section-spacing-lg: clamp(4rem, 8vw, 7rem);
+    --section-spacing-xl: clamp(5rem, 10vw, 10rem);
+
+    /* Grid Gap */
+    --grid-gap-sm: clamp(0.75rem, 2vw, 1rem);
+    --grid-gap-md: clamp(1rem, 2.5vw, 1.5rem);
+    --grid-gap-lg: clamp(1.5rem, 3vw, 2rem);
+    --grid-gap-xl: clamp(2rem, 4vw, 3rem);
+
+    /* ========================================
+       LAYOUT
+       ======================================== */
     --page-width: {{ settings.max_page_width }};
     --page-margin: {{ settings.min_page_margin }}px;
-    --color-background: {{ settings.background_color }};
-    --color-foreground: {{ settings.foreground_color }};
-    --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+    --page-margin-mobile: max({{ settings.min_page_margin | divided_by: 2 }}px, 16px);
+
+    /* Content widths */
+    --content-width-narrow: 40rem;   /* 640px - for reading */
+    --content-width-medium: 60rem;   /* 960px - for content */
+    --content-width-wide: 80rem;     /* 1280px - for layouts */
+
+    /* Z-index scale */
+    --z-below: -1;
+    --z-base: 0;
+    --z-above: 1;
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-fixed: 300;
+    --z-overlay: 400;
+    --z-modal: 500;
+    --z-toast: 600;
+
+    /* ========================================
+       COLORS
+       ======================================== */
+
+    /* Color Scheme 1 (Primary/Default) */
+    --color-scheme-1-background: {{ settings.scheme_1_background }};
+    --color-scheme-1-foreground: {{ settings.scheme_1_foreground }};
+    --color-scheme-1-accent: {{ settings.scheme_1_accent }};
+    --color-scheme-1-muted: {{ settings.scheme_1_muted }};
+
+    /* Color Scheme 2 (Inverse/Dark) */
+    --color-scheme-2-background: {{ settings.scheme_2_background }};
+    --color-scheme-2-foreground: {{ settings.scheme_2_foreground }};
+    --color-scheme-2-accent: {{ settings.scheme_2_accent }};
+    --color-scheme-2-muted: {{ settings.scheme_2_muted }};
+
+    /* Semantic Colors */
+    --color-sale: {{ settings.color_sale }};
+    --color-error: {{ settings.color_error }};
+    --color-success: {{ settings.color_success }};
+
+    /* Default color scheme (Scheme 1) */
+    --color-background: var(--color-scheme-1-background);
+    --color-foreground: var(--color-scheme-1-foreground);
+    --color-accent: var(--color-scheme-1-accent);
+    --color-muted: var(--color-scheme-1-muted);
+
+    /* ========================================
+       ANIMATION
+       ======================================== */
+
+    /* Durations */
+    --duration-instant: 0ms;
+    --duration-fast: 150ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+    --duration-slower: 700ms;
+    --duration-slowest: 1000ms;
+
+    /* Easing Functions */
+    --ease-linear: linear;
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ease-elegant: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --ease-dramatic: cubic-bezier(0.6, 0, 0.2, 1);
+
+    /* Animation toggle (respects user preference) */
+    --animation-enabled: {{ settings.enable_animations | default: true }};
+
+    /* ========================================
+       BORDERS & RADIUS
+       ======================================== */
+    --border-width: 1px;
+    --border-width-thick: 2px;
+    --border-color: var(--color-muted);
+    --border-color-dark: var(--color-foreground);
+
+    --radius-none: 0;
+    --radius-sm: 0.125rem;    /* 2px */
+    --radius-md: 0.25rem;     /* 4px */
+    --radius-lg: 0.5rem;      /* 8px */
+    --radius-xl: 1rem;        /* 16px */
+    --radius-full: 9999px;
+
+    --radius-inputs: {{ settings.input_corner_radius }}px;
+    --radius-buttons: {{ settings.button_corner_radius }}px;
+
+    /* ========================================
+       SHADOWS
+       ======================================== */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+    /* ========================================
+       FOCUS & ACCESSIBILITY
+       ======================================== */
+    --focus-ring-width: 2px;
+    --focus-ring-offset: 2px;
+    --focus-ring-color: var(--color-accent);
+
+    /* Minimum touch target size */
+    --touch-target-min: 44px;
+
+    /* ========================================
+       HEADER
+       ======================================== */
+    --header-height: 4rem;
+    --header-height-scrolled: 3.5rem;
+    --announcement-bar-height: 2.5rem;
+
+    /* ========================================
+       PRODUCT
+       ======================================== */
+    --product-card-aspect-ratio: {{ settings.product_card_aspect_ratio | default: '3/4' }};
+    --product-card-gap: var(--grid-gap-md);
+
+    /* ========================================
+       BUTTONS
+       ======================================== */
+    --button-height: 3rem;
+    --button-height-sm: 2.25rem;
+    --button-height-lg: 3.5rem;
+    --button-padding-x: var(--space-6);
+    --button-font-size: var(--font-size-sm);
+    --button-text-transform: {% if settings.button_uppercase %}uppercase{% else %}none{% endif %};
+    --button-letter-spacing: {% if settings.button_uppercase %}var(--letter-spacing-wider){% else %}var(--letter-spacing-normal){% endif %};
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --duration-fast: 0ms;
+      --duration-normal: 0ms;
+      --duration-slow: 0ms;
+      --duration-slower: 0ms;
+      --duration-slowest: 0ms;
+    }
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 749px) {
+    :root {
+      --page-margin: var(--page-margin-mobile);
+    }
   }
 {% endstyle %}

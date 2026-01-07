@@ -1,0 +1,248 @@
+{% comment %}
+  Testimonials Section - Influence Theme
+  Displays customer testimonials in carousel or grid format
+{% endcomment %}
+
+{%- liquid
+  assign section_id = 'Testimonials-' | append: section.id
+  assign layout = section.settings.layout
+  assign columns = section.settings.columns
+-%}
+
+<section id="{{ section_id }}" class="testimonials section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="testimonials__heading section-heading text-{{ section.settings.heading_alignment }}">
+        {{ section.settings.heading }}
+      </h2>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div
+        class="testimonials__{{ layout }}{% if layout == 'carousel' %} swiper{% endif %}"
+        {% if layout == 'carousel' %}data-testimonials-carousel{% endif %}
+        style="--testimonials-columns: {{ columns }};"
+      >
+        <div class="{% if layout == 'carousel' %}swiper-wrapper{% else %}testimonials__grid grid{% endif %}">
+          {%- for block in section.blocks -%}
+            <div class="testimonial{% if layout == 'carousel' %} swiper-slide{% endif %}" {{ block.shopify_attributes }}>
+              {%- if block.settings.rating > 0 -%}
+                <div class="testimonial__rating" aria-label="{{ 'testimonials.rating' | t: rating: block.settings.rating }}">
+                  {%- for i in (1..5) -%}
+                    {%- if i <= block.settings.rating -%}
+                      {% render 'icon', icon: 'star-filled', size: 'sm' %}
+                    {%- else -%}
+                      {% render 'icon', icon: 'star', size: 'sm' %}
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.quote != blank -%}
+                <blockquote class="testimonial__quote">
+                  {{ block.settings.quote }}
+                </blockquote>
+              {%- endif -%}
+
+              <div class="testimonial__author">
+                {%- if block.settings.author_image -%}
+                  <div class="testimonial__author-image">
+                    {{
+                      block.settings.author_image
+                      | image_url: width: 80
+                      | image_tag:
+                        loading: 'lazy',
+                        width: 40,
+                        height: 40,
+                        class: 'testimonial__avatar'
+                    }}
+                  </div>
+                {%- endif -%}
+                <div class="testimonial__author-info">
+                  {%- if block.settings.author_name != blank -%}
+                    <cite class="testimonial__author-name">{{ block.settings.author_name }}</cite>
+                  {%- endif -%}
+                  {%- if block.settings.author_title != blank -%}
+                    <span class="testimonial__author-title">{{ block.settings.author_title }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        {%- if layout == 'carousel' and section.blocks.size > columns -%}
+          <div class="testimonials__navigation">
+            <button type="button" class="testimonials__nav-btn testimonials__nav-btn--prev" aria-label="{{ 'accessibility.previous' | t }}">
+              {% render 'icon', icon: 'chevron-left' %}
+            </button>
+            <div class="testimonials__pagination"></div>
+            <button type="button" class="testimonials__nav-btn testimonials__nav-btn--next" aria-label="{{ 'accessibility.next' | t }}">
+              {% render 'icon', icon: 'chevron-right' %}
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{%- if layout == 'carousel' and section.blocks.size > columns -%}
+  <script>
+    (function() {
+      const carousel = document.querySelector('[data-testimonials-carousel]');
+      if (!carousel) return;
+
+      const wrapper = carousel.querySelector('.swiper-wrapper');
+      const slides = carousel.querySelectorAll('.swiper-slide');
+      const prevBtn = carousel.parentElement.querySelector('.testimonials__nav-btn--prev');
+      const nextBtn = carousel.parentElement.querySelector('.testimonials__nav-btn--next');
+      const pagination = carousel.parentElement.querySelector('.testimonials__pagination');
+
+      let currentIndex = 0;
+      const slidesPerView = {{ columns }};
+      const totalSlides = slides.length;
+      const maxIndex = Math.max(0, totalSlides - slidesPerView);
+
+      function updateCarousel() {
+        const slideWidth = slides[0].offsetWidth;
+        const gap = parseInt(getComputedStyle(wrapper).gap) || 0;
+        const offset = currentIndex * (slideWidth + gap);
+        wrapper.style.transform = `translateX(-${offset}px)`;
+
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex >= maxIndex;
+      }
+
+      prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+          currentIndex--;
+          updateCarousel();
+        }
+      });
+
+      nextBtn.addEventListener('click', () => {
+        if (currentIndex < maxIndex) {
+          currentIndex++;
+          updateCarousel();
+        }
+      });
+
+      // Initialize
+      wrapper.style.transition = 'transform 0.3s ease';
+      updateCarousel();
+
+      // Handle resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(updateCarousel, 100);
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.testimonials.name",
+  "tag": "section",
+  "class": "section-testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "What our customers say"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "t:labels.heading_alignment",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.testimonials.settings.layout.label",
+      "options": [
+        { "value": "grid", "label": "t:sections.testimonials.settings.layout.options.grid" },
+        { "value": "carousel", "label": "t:sections.testimonials.settings.layout.options.carousel" }
+      ],
+      "default": "carousel"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:labels.columns_desktop",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "t:blocks.testimonial.name",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "t:blocks.testimonial.settings.rating.label",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "t:blocks.testimonial.settings.quote.label",
+          "default": "This is the best purchase I've made. The quality is exceptional and the service was outstanding."
+        },
+        {
+          "type": "image_picker",
+          "id": "author_image",
+          "label": "t:blocks.testimonial.settings.author_image.label"
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "t:blocks.testimonial.settings.author_name.label",
+          "default": "Customer Name"
+        },
+        {
+          "type": "text",
+          "id": "author_title",
+          "label": "t:blocks.testimonial.settings.author_title.label",
+          "default": "Verified Buyer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.testimonials.name",
+      "blocks": [
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "testimonial" }
+      ]
+    }
+  ]
+}
+{% endschema %}

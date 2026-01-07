@@ -1,0 +1,79 @@
+{% comment %}
+  Article Card Snippet - Influence Theme
+  Renders a blog article card
+
+  Usage:
+  {% render 'article-card', article: article %}
+  {% render 'article-card', article: article, show_date: true, show_excerpt: true %}
+{% endcomment %}
+
+{%- liquid
+  assign show_date = show_date | default: true
+  assign show_author = show_author | default: true
+  assign show_tags = show_tags | default: false
+  assign show_excerpt = show_excerpt | default: true
+  assign image_ratio = image_ratio | default: 'landscape'
+
+  case image_ratio
+    when 'landscape'
+      assign aspect_ratio = '16-9'
+    when 'portrait'
+      assign aspect_ratio = '3-4'
+    when 'square'
+      assign aspect_ratio = '1-1'
+  endcase
+-%}
+
+<div class="article-card{% if settings.enable_image_zoom %} hover-zoom{% endif %}">
+  {%- if article.image -%}
+    <a href="{{ article.url }}" class="article-card__media-link">
+      <div class="article-card__media media aspect-{{ aspect_ratio }}">
+        {{
+          article.image
+          | image_url: width: 800
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 1200px) 33vw, (min-width: 750px) 50vw, 100vw',
+            widths: '165, 360, 535, 750, 1000',
+            class: 'article-card__image'
+        }}
+      </div>
+    </a>
+  {%- endif -%}
+
+  <div class="article-card__content">
+    {%- if show_tags and article.tags.size > 0 -%}
+      <div class="article-card__tags">
+        {%- for tag in article.tags limit: 2 -%}
+          <a href="{{ article.url }}/tagged/{{ tag | handle }}" class="article-card__tag">
+            {{ tag }}
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <h3 class="article-card__title h4">
+      <a href="{{ article.url }}">{{ article.title }}</a>
+    </h3>
+
+    {%- if show_excerpt and article.excerpt_or_content != blank -%}
+      <p class="article-card__excerpt">
+        {{ article.excerpt_or_content | strip_html | truncate: 150 }}
+      </p>
+    {%- endif -%}
+
+    <div class="article-card__meta">
+      {%- if show_author -%}
+        <span class="article-card__author">{{ article.author }}</span>
+      {%- endif -%}
+      {%- if show_author and show_date -%}
+        <span class="article-card__separator">·</span>
+      {%- endif -%}
+      {%- if show_date -%}
+        <time class="article-card__date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+          {{ article.published_at | date: format: 'abbreviated_date' }}
+        </time>
+      {%- endif -%}
+    </div>
+  </div>
+</div>

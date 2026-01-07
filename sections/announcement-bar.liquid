@@ -1,0 +1,255 @@
+{% comment %}
+  Announcement Bar Section - Influence Theme
+  Features: Dismissible, multiple announcements carousel option, customizable color scheme
+{% endcomment %}
+
+{%- if section.blocks.size > 0 -%}
+  <div
+    class="announcement-bar {% render 'color-scheme', scheme: section.settings.color_scheme %}"
+    data-announcement-bar
+    role="region"
+    aria-label="{{ 'accessibility.announcement' | t }}"
+  >
+    <div class="announcement-bar__inner container">
+      {%- if section.blocks.size == 1 -%}
+        {%- assign block = section.blocks.first -%}
+        <div class="announcement-bar__message" {{ block.shopify_attributes }}>
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}" class="announcement-bar__link">
+              {{ block.settings.text }}
+            </a>
+          {%- else -%}
+            <p class="announcement-bar__text">{{ block.settings.text }}</p>
+          {%- endif -%}
+        </div>
+      {%- else -%}
+        {%- comment -%} Multiple announcements - carousel {%- endcomment -%}
+        <div class="announcement-bar__carousel" data-announcement-carousel>
+          {%- for block in section.blocks -%}
+            <div
+              class="announcement-bar__message{% if forloop.first %} is-active{% endif %}"
+              {{ block.shopify_attributes }}
+              data-announcement-slide="{{ forloop.index0 }}"
+              {% unless forloop.first %}hidden{% endunless %}
+            >
+              {%- if block.settings.link != blank -%}
+                <a href="{{ block.settings.link }}" class="announcement-bar__link">
+                  {{ block.settings.text }}
+                </a>
+              {%- else -%}
+                <p class="announcement-bar__text">{{ block.settings.text }}</p>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+
+        {%- comment -%} Carousel navigation {%- endcomment -%}
+        <div class="announcement-bar__nav">
+          <button
+            type="button"
+            class="announcement-bar__nav-btn"
+            data-announcement-prev
+            aria-label="{{ 'accessibility.previous' | t }}"
+          >
+            {% render 'icon', icon: 'chevron-left', size: 'sm' %}
+          </button>
+          <button
+            type="button"
+            class="announcement-bar__nav-btn"
+            data-announcement-next
+            aria-label="{{ 'accessibility.next' | t }}"
+          >
+            {% render 'icon', icon: 'chevron-right', size: 'sm' %}
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if section.blocks.size > 1 -%}
+    <script>
+      (function() {
+        const carousel = document.querySelector('[data-announcement-carousel]');
+        if (!carousel) return;
+
+        const slides = carousel.querySelectorAll('[data-announcement-slide]');
+        const prevBtn = document.querySelector('[data-announcement-prev]');
+        const nextBtn = document.querySelector('[data-announcement-next]');
+        let currentIndex = 0;
+        let autoplayInterval;
+
+        function showSlide(index) {
+          slides.forEach((slide, i) => {
+            slide.classList.remove('is-active');
+            slide.hidden = true;
+            if (i === index) {
+              slide.classList.add('is-active');
+              slide.hidden = false;
+            }
+          });
+          currentIndex = index;
+        }
+
+        function nextSlide() {
+          const next = (currentIndex + 1) % slides.length;
+          showSlide(next);
+        }
+
+        function prevSlide() {
+          const prev = (currentIndex - 1 + slides.length) % slides.length;
+          showSlide(prev);
+        }
+
+        // Navigation buttons
+        if (prevBtn) prevBtn.addEventListener('click', () => {
+          prevSlide();
+          resetAutoplay();
+        });
+        if (nextBtn) nextBtn.addEventListener('click', () => {
+          nextSlide();
+          resetAutoplay();
+        });
+
+        // Autoplay
+        function startAutoplay() {
+          autoplayInterval = setInterval(nextSlide, {{ section.settings.autoplay_speed | default: 5000 }});
+        }
+
+        function resetAutoplay() {
+          clearInterval(autoplayInterval);
+          startAutoplay();
+        }
+
+        {% if section.settings.autoplay %}
+        startAutoplay();
+        {% endif %}
+      })();
+    </script>
+  {%- endif -%}
+{%- endif -%}
+
+{% stylesheet %}
+  .announcement-bar {
+    position: relative;
+  }
+
+  .announcement-bar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--announcement-bar-height);
+    padding-block: var(--space-2);
+    gap: var(--space-4);
+  }
+
+  .announcement-bar__message {
+    text-align: center;
+  }
+
+  .announcement-bar__text,
+  .announcement-bar__link {
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .announcement-bar__link {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .announcement-bar__carousel {
+    position: relative;
+    flex: 1;
+    text-align: center;
+  }
+
+  .announcement-bar__nav {
+    display: flex;
+    gap: var(--space-1);
+  }
+
+  .announcement-bar__nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    opacity: 0.7;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .announcement-bar__nav-btn:hover {
+    opacity: 1;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.announcement_bar.name",
+  "class": "section-announcement-bar",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.announcement_bar.settings.color_scheme.label",
+      "options": [
+        {
+          "value": "scheme-1",
+          "label": "t:options.color_scheme.scheme_1"
+        },
+        {
+          "value": "scheme-2",
+          "label": "t:options.color_scheme.scheme_2"
+        }
+      ],
+      "default": "scheme-2"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate announcements",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 3000,
+      "max": 10000,
+      "step": 500,
+      "unit": "ms",
+      "label": "Change slides every",
+      "default": 5000
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.announcement_bar.settings.text.label",
+          "default": "Welcome to our store"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.announcement_bar.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "default": {
+    "blocks": [
+      {
+        "type": "announcement",
+        "settings": {
+          "text": "Free shipping on orders over $100"
+        }
+      }
+    ]
+  }
+}
+{% endschema %}

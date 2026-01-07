@@ -1,0 +1,224 @@
+{% comment %}
+  Rich Text Section - Influence Theme
+  Editorial typography with drop cap option
+{% endcomment %}
+
+{%- liquid
+  assign content_alignment = section.settings.content_alignment
+  assign text_style = section.settings.text_style
+-%}
+
+<section class="rich-text section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="rich-text__inner text-{{ content_alignment }}{% if section.settings.narrow_width %} container--narrow{% endif %}">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'subheading' -%}
+          {%- if block.settings.text != blank -%}
+            <p class="rich-text__subheading subheading" {{ block.shopify_attributes }}>
+              {{ block.settings.text }}
+            </p>
+          {%- endif -%}
+
+        {%- when 'heading' -%}
+          {%- if block.settings.text != blank -%}
+            <h2 class="rich-text__heading {{ block.settings.size }}" {{ block.shopify_attributes }}>
+              {{ block.settings.text }}
+            </h2>
+          {%- endif -%}
+
+        {%- when 'text' -%}
+          {%- if block.settings.text != blank -%}
+            <div
+              class="rich-text__text rte{% if text_style == 'large' %} text-lg{% endif %}{% if section.settings.enable_drop_cap %} drop-cap{% endif %}"
+              {{ block.shopify_attributes }}
+            >
+              {{ block.settings.text }}
+            </div>
+          {%- endif -%}
+
+        {%- when 'button' -%}
+          {%- if block.settings.label != blank -%}
+            <div class="rich-text__button" {{ block.shopify_attributes }}>
+              <a
+                href="{{ block.settings.link }}"
+                class="btn btn--{{ block.settings.style }}"
+              >
+                {{ block.settings.label }}
+              </a>
+            </div>
+          {%- endif -%}
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .rich-text__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .rich-text__inner.text-center {
+    align-items: center;
+  }
+
+  .rich-text__subheading {
+    margin-bottom: var(--space-2);
+  }
+
+  .rich-text__heading {
+    max-width: 40rem;
+  }
+
+  .rich-text__text {
+    max-width: 40rem;
+  }
+
+  .rich-text__button {
+    margin-top: var(--space-4);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.rich_text.name",
+  "class": "section-rich-text",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "t:sections.rich_text.settings.content_alignment.label",
+      "options": [
+        { "value": "left", "label": "t:sections.rich_text.settings.content_alignment.options.left" },
+        { "value": "center", "label": "t:sections.rich_text.settings.content_alignment.options.center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "text_style",
+      "label": "t:sections.rich_text.settings.text_style.label",
+      "options": [
+        { "value": "body", "label": "t:sections.rich_text.settings.text_style.options.body" },
+        { "value": "large", "label": "t:sections.rich_text.settings.text_style.options.large" }
+      ],
+      "default": "body"
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow_width",
+      "label": "Narrow width",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_drop_cap",
+      "label": "t:sections.rich_text.settings.enable_drop_cap.label",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.rich_text.settings.color_scheme.label",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "subheading",
+      "name": "Subheading",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "Subheading"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "name": "t:sections.rich_text.blocks.heading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.heading",
+          "default": "Talk about your brand"
+        },
+        {
+          "type": "select",
+          "id": "size",
+          "label": "Heading size",
+          "options": [
+            { "value": "h2", "label": "Large" },
+            { "value": "h3", "label": "Medium" },
+            { "value": "h4", "label": "Small" }
+          ],
+          "default": "h2"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:sections.rich_text.blocks.text.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "<p>Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.</p>"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "t:sections.rich_text.blocks.button.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:labels.button_label",
+          "default": "Learn more"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:labels.button_link"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            { "value": "primary", "label": "Primary" },
+            { "value": "secondary", "label": "Secondary" }
+          ],
+          "default": "primary"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.rich_text.name",
+      "blocks": [
+        { "type": "subheading" },
+        { "type": "heading" },
+        { "type": "text" },
+        { "type": "button" }
+      ]
+    }
+  ]
+}
+{% endschema %}

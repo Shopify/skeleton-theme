@@ -1,0 +1,179 @@
+{% comment %}
+  Blog Posts Section - Influence Theme
+  Displays featured blog articles from a selected blog
+{% endcomment %}
+
+{%- liquid
+  assign blog = blogs[section.settings.blog]
+  assign posts_to_show = section.settings.posts_to_show
+  assign columns_desktop = section.settings.columns_desktop
+  assign columns_mobile = section.settings.columns_mobile
+-%}
+
+<section class="blog-posts section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container">
+    {%- if section.settings.heading != blank or section.settings.show_view_all -%}
+      <div class="blog-posts__header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="blog-posts__heading section-heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.show_view_all and blog -%}
+          <a href="{{ blog.url }}" class="blog-posts__view-all link-with-arrow">
+            {{ 'blog.view_all' | t }}
+            {% render 'icon', icon: 'arrow-right', size: 'sm' %}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if blog != blank and blog.articles.size > 0 -%}
+      <div
+        class="blog-posts__grid grid"
+        style="--grid-columns-desktop: {{ columns_desktop }}; --grid-columns-mobile: {{ columns_mobile }};"
+      >
+        {%- for article in blog.articles limit: posts_to_show -%}
+          <article class="blog-posts__item">
+            {% render 'article-card',
+              article: article,
+              show_date: section.settings.show_date,
+              show_author: section.settings.show_author,
+              show_excerpt: section.settings.show_excerpt,
+              image_ratio: section.settings.image_ratio
+            %}
+          </article>
+        {%- endfor -%}
+      </div>
+    {%- else -%}
+      {%- comment -%} Placeholder content {%- endcomment -%}
+      <div
+        class="blog-posts__grid grid"
+        style="--grid-columns-desktop: {{ columns_desktop }}; --grid-columns-mobile: {{ columns_mobile }};"
+      >
+        {%- for i in (1..posts_to_show) -%}
+          <article class="blog-posts__item">
+            <div class="article-card">
+              <div class="article-card__media media aspect-16-9">
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'article-card__placeholder' }}
+              </div>
+              <div class="article-card__content">
+                <h3 class="article-card__title h4">
+                  <a href="#">{{ 'blog.onboarding.title' | t }}</a>
+                </h3>
+                <p class="article-card__excerpt">
+                  {{ 'blog.onboarding.excerpt' | t }}
+                </p>
+                <div class="article-card__meta">
+                  <span class="article-card__author">{{ 'blog.onboarding.author' | t }}</span>
+                  <span class="article-card__separator">·</span>
+                  <time class="article-card__date">{{ 'now' | date: format: 'abbreviated_date' }}</time>
+                </div>
+              </div>
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.blog_posts.name",
+  "tag": "section",
+  "class": "section-blog-posts",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "From the journal"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "t:sections.blog_posts.settings.blog.label"
+    },
+    {
+      "type": "range",
+      "id": "posts_to_show",
+      "label": "t:sections.blog_posts.settings.posts_to_show.label",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "t:sections.blog_posts.settings.show_view_all.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "t:labels.columns_mobile",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "t:labels.image_ratio",
+      "options": [
+        { "value": "landscape", "label": "t:options.image_ratio.landscape" },
+        { "value": "portrait", "label": "t:options.image_ratio.portrait" },
+        { "value": "square", "label": "t:options.image_ratio.square" }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.blog_posts.settings.header_article_card.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "t:sections.blog_posts.settings.show_date.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "t:sections.blog_posts.settings.show_author.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "t:sections.blog_posts.settings.show_excerpt.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.blog_posts.name"
+    }
+  ]
+}
+{% endschema %}

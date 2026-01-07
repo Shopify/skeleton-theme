@@ -1,0 +1,213 @@
+{% comment %}
+  Newsletter Section - Influence Theme (REQUIRED FOR THEME STORE)
+  Email signup form for marketing
+{% endcomment %}
+
+{%- liquid
+  assign section_id = 'Newsletter-' | append: section.id
+-%}
+
+<section id="{{ section_id }}" class="newsletter section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container{% if section.settings.narrow_container %} container--narrow{% endif %}">
+    <div class="newsletter__inner text-{{ section.settings.text_alignment }}">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'subheading' -%}
+            {%- if block.settings.text != blank -%}
+              <p class="newsletter__subheading subheading" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </p>
+            {%- endif -%}
+
+          {%- when 'heading' -%}
+            {%- if block.settings.text != blank -%}
+              <h2 class="newsletter__heading {{ block.settings.heading_size }}" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </h2>
+            {%- endif -%}
+
+          {%- when 'text' -%}
+            {%- if block.settings.text != blank -%}
+              <div class="newsletter__text rte" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </div>
+            {%- endif -%}
+
+          {%- when 'form' -%}
+            <div class="newsletter__form" {{ block.shopify_attributes }}>
+              {%- form 'customer', id: 'NewsletterForm', class: 'newsletter-form' -%}
+                <input type="hidden" name="contact[tags]" value="newsletter">
+
+                {%- if form.posted_successfully? -%}
+                  <div class="form-message form-message--success" tabindex="-1" autofocus>
+                    {% render 'icon', icon: 'checkmark' %}
+                    {{ 'newsletter.success' | t }}
+                  </div>
+                {%- else -%}
+                  {%- if form.errors -%}
+                    <div class="form-message form-message--error">
+                      {{ form.errors.messages['email'] }}
+                    </div>
+                  {%- endif -%}
+
+                  <div class="newsletter-form__field">
+                    <label for="NewsletterEmail-{{ section.id }}" class="visually-hidden">
+                      {{ 'newsletter.email_placeholder' | t }}
+                    </label>
+                    <input
+                      type="email"
+                      id="NewsletterEmail-{{ section.id }}"
+                      name="contact[email]"
+                      class="form-input newsletter-form__input"
+                      placeholder="{{ 'newsletter.email_placeholder' | t }}"
+                      required
+                      autocomplete="email"
+                      {% if form.errors %}
+                        aria-invalid="true"
+                        aria-describedby="Newsletter-error-{{ section.id }}"
+                      {% endif %}
+                    >
+                    <button type="submit" class="btn btn--{{ block.settings.button_style }} newsletter-form__btn">
+                      {{ block.settings.button_label | default: 'newsletter.subscribe' | t }}
+                    </button>
+                  </div>
+                {%- endif -%}
+              {%- endform -%}
+
+              {%- if block.settings.disclaimer != blank -%}
+                <p class="newsletter-form__disclaimer">{{ block.settings.disclaimer }}</p>
+              {%- endif -%}
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.newsletter.name",
+  "tag": "section",
+  "class": "section-newsletter",
+  "settings": [
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:labels.text_alignment",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow_container",
+      "label": "t:sections.newsletter.settings.narrow_container.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-2"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "subheading",
+      "name": "t:blocks.subheading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "Subscribe today"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "name": "t:blocks.heading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.heading",
+          "default": "Join our newsletter"
+        },
+        {
+          "type": "select",
+          "id": "heading_size",
+          "label": "t:labels.heading_size",
+          "options": [
+            { "value": "h3", "label": "t:options.heading_size.small" },
+            { "value": "h2", "label": "t:options.heading_size.medium" },
+            { "value": "h1", "label": "t:options.heading_size.large" }
+          ],
+          "default": "h2"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:blocks.text.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "<p>Get exclusive access to new arrivals, sales, and members-only offers.</p>"
+        }
+      ]
+    },
+    {
+      "type": "form",
+      "name": "t:blocks.form.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:labels.button_label",
+          "default": "Subscribe"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "t:labels.button_style",
+          "options": [
+            { "value": "primary", "label": "t:options.button_style.primary" },
+            { "value": "secondary", "label": "t:options.button_style.secondary" }
+          ],
+          "default": "primary"
+        },
+        {
+          "type": "text",
+          "id": "disclaimer",
+          "label": "t:sections.newsletter.settings.disclaimer.label",
+          "default": "By subscribing, you agree to our privacy policy."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.newsletter.name",
+      "blocks": [
+        { "type": "subheading" },
+        { "type": "heading" },
+        { "type": "text" },
+        { "type": "form" }
+      ]
+    }
+  ]
+}
+{% endschema %}

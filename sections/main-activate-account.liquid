@@ -1,0 +1,73 @@
+{% comment %}
+  Main Activate Account Section - Influence Theme
+  Account activation form
+{% endcomment %}
+
+<section class="main-activate-account section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container container--narrow">
+    <div class="account-form">
+      <h1 class="account-form__title h2">{{ 'customer.activate_account.title' | t }}</h1>
+      <p class="account-form__subtitle">{{ 'customer.activate_account.subtext' | t }}</p>
+
+      {%- form 'activate_customer_password', class: 'account-form__form' -%}
+        {%- if form.errors -%}
+          <div class="form-message form-message--error">
+            {{ form.errors | default_errors }}
+          </div>
+        {%- endif -%}
+
+        <div class="form-group">
+          <label for="ActivatePassword" class="form-label">{{ 'customer.activate_account.password' | t }}</label>
+          <input
+            type="password"
+            id="ActivatePassword"
+            name="customer[password]"
+            class="form-input"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="ActivatePasswordConfirm" class="form-label">{{ 'customer.activate_account.password_confirm' | t }}</label>
+          <input
+            type="password"
+            id="ActivatePasswordConfirm"
+            name="customer[password_confirmation]"
+            class="form-input"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">
+          {{ 'customer.activate_account.submit' | t }}
+        </button>
+
+        <p class="account-form__decline">
+          <a href="{{ routes.account_url }}">{{ 'customer.activate_account.cancel' | t }}</a>
+        </p>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.main_activate_account.name",
+  "tag": "section",
+  "class": "section-main-activate-account",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

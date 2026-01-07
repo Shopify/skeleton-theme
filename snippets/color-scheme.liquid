@@ -1,0 +1,21 @@
+{% comment %}
+  Color Scheme Snippet
+  Dynamically applies color scheme classes based on section settings
+
+  Usage:
+  {% render 'color-scheme', scheme: section.settings.color_scheme %}
+
+  Or inline:
+  <div class="{% render 'color-scheme', scheme: section.settings.color_scheme %}">
+{% endcomment %}
+
+{%- liquid
+  case scheme
+    when 'scheme-1', '1', 'light', 'primary'
+      echo 'color-scheme-1'
+    when 'scheme-2', '2', 'dark', 'inverse'
+      echo 'color-scheme-2'
+    else
+      echo 'color-scheme-1'
+  endcase
+-%}

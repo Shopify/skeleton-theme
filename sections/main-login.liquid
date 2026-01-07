@@ -1,0 +1,154 @@
+{% comment %}
+  Main Login Section - Influence Theme
+  Customer login form
+{% endcomment %}
+
+<section class="main-login section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container container--narrow">
+    <div class="account-form">
+      <h1 class="account-form__title h2">{{ 'customer.login.title' | t }}</h1>
+
+      {%- form 'customer_login', class: 'account-form__form' -%}
+        {%- if form.errors -%}
+          <div class="form-message form-message--error">
+            {{ form.errors | default_errors }}
+          </div>
+        {%- endif -%}
+
+        <div class="form-group">
+          <label for="CustomerEmail" class="form-label">{{ 'customer.login.email' | t }}</label>
+          <input
+            type="email"
+            id="CustomerEmail"
+            name="customer[email]"
+            class="form-input"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="off"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="CustomerPassword" class="form-label">{{ 'customer.login.password' | t }}</label>
+          <input
+            type="password"
+            id="CustomerPassword"
+            name="customer[password]"
+            class="form-input"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <div class="account-form__forgot">
+          <a href="#recover" class="link" data-show-recover>
+            {{ 'customer.login.forgot_password' | t }}
+          </a>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">
+          {{ 'customer.login.sign_in' | t }}
+        </button>
+      {%- endform -%}
+
+      <div class="account-form__footer">
+        <p>{{ 'customer.login.new_customer' | t }}</p>
+        <a href="{{ routes.account_register_url }}" class="btn btn--outline">
+          {{ 'customer.register.title' | t }}
+        </a>
+      </div>
+    </div>
+
+    {%- comment -%} Password Recovery Form {%- endcomment -%}
+    <div class="account-form account-form--recover" id="recover" hidden>
+      <h1 class="account-form__title h2">{{ 'customer.recover_password.title' | t }}</h1>
+      <p class="account-form__subtitle">{{ 'customer.recover_password.subtext' | t }}</p>
+
+      {%- form 'recover_customer_password', class: 'account-form__form' -%}
+        {%- if form.posted_successfully? -%}
+          <div class="form-message form-message--success">
+            {{ 'customer.recover_password.success' | t }}
+          </div>
+        {%- endif -%}
+
+        <div class="form-group">
+          <label for="RecoverEmail" class="form-label">{{ 'customer.recover_password.email' | t }}</label>
+          <input
+            type="email"
+            id="RecoverEmail"
+            name="email"
+            class="form-input"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="off"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">
+          {{ 'customer.recover_password.submit' | t }}
+        </button>
+      {%- endform -%}
+
+      <div class="account-form__footer">
+        <a href="#login" class="link" data-show-login>
+          {{ 'customer.recover_password.back_to_login' | t }}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  const loginForm = document.querySelector('.account-form:not(.account-form--recover)');
+  const recoverForm = document.querySelector('.account-form--recover');
+  const showRecoverLinks = document.querySelectorAll('[data-show-recover]');
+  const showLoginLinks = document.querySelectorAll('[data-show-login]');
+
+  showRecoverLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      loginForm.hidden = true;
+      recoverForm.hidden = false;
+      recoverForm.querySelector('input[type="email"]').focus();
+    });
+  });
+
+  showLoginLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      recoverForm.hidden = true;
+      loginForm.hidden = false;
+      loginForm.querySelector('input[type="email"]').focus();
+    });
+  });
+
+  // Show recover form if URL hash is #recover
+  if (window.location.hash === '#recover') {
+    loginForm.hidden = true;
+    recoverForm.hidden = false;
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.main_login.name",
+  "tag": "section",
+  "class": "section-main-login",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

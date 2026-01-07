@@ -1,0 +1,214 @@
+{% comment %}
+  Contact Form Section - Influence Theme
+  Displays a contact form with customizable fields
+{% endcomment %}
+
+<section class="contact-form-section section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container{% if section.settings.narrow_container %} container--narrow{% endif %}">
+    <div class="contact-form-section__inner">
+      {%- if section.settings.heading != blank or section.settings.text != blank -%}
+        <div class="contact-form-section__header text-{{ section.settings.text_alignment }}">
+          {%- if section.settings.heading != blank -%}
+            <h2 class="contact-form-section__heading {{ section.settings.heading_size }}">
+              {{ section.settings.heading }}
+            </h2>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <div class="contact-form-section__text rte">
+              {{ section.settings.text }}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- form 'contact', id: 'ContactForm', class: 'contact-form' -%}
+        {%- if form.posted_successfully? -%}
+          <div class="form-message form-message--success" tabindex="-1" autofocus>
+            {% render 'icon', icon: 'checkmark' %}
+            {{ 'contact.form.success' | t }}
+          </div>
+        {%- else -%}
+          {%- if form.errors -%}
+            <div class="form-message form-message--error">
+              {{ form.errors | default_errors }}
+            </div>
+          {%- endif -%}
+
+          <div class="contact-form__fields">
+            <div class="contact-form__row">
+              <div class="form-group">
+                <label for="ContactForm-name" class="form-label">
+                  {{ 'contact.form.name' | t }}
+                  <span aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="ContactForm-name"
+                  name="contact[{{ 'contact.form.name' | t }}]"
+                  class="form-input"
+                  autocomplete="name"
+                  required
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="ContactForm-email" class="form-label">
+                  {{ 'contact.form.email' | t }}
+                  <span aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="ContactForm-email"
+                  name="contact[email]"
+                  class="form-input"
+                  autocomplete="email"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  required
+                  {% if form.errors contains 'email' %}
+                    aria-invalid="true"
+                  {% endif %}
+                >
+              </div>
+            </div>
+
+            {%- if section.settings.show_phone -%}
+              <div class="form-group">
+                <label for="ContactForm-phone" class="form-label">
+                  {{ 'contact.form.phone' | t }}
+                </label>
+                <input
+                  type="tel"
+                  id="ContactForm-phone"
+                  name="contact[{{ 'contact.form.phone' | t }}]"
+                  class="form-input"
+                  autocomplete="tel"
+                >
+              </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_subject -%}
+              <div class="form-group">
+                <label for="ContactForm-subject" class="form-label">
+                  {{ 'contact.form.subject' | t }}
+                </label>
+                <input
+                  type="text"
+                  id="ContactForm-subject"
+                  name="contact[{{ 'contact.form.subject' | t }}]"
+                  class="form-input"
+                >
+              </div>
+            {%- endif -%}
+
+            <div class="form-group">
+              <label for="ContactForm-message" class="form-label">
+                {{ 'contact.form.message' | t }}
+                <span aria-hidden="true">*</span>
+              </label>
+              <textarea
+                id="ContactForm-message"
+                name="contact[{{ 'contact.form.message' | t }}]"
+                class="form-input form-textarea"
+                rows="6"
+                required
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="contact-form__submit">
+            <button type="submit" class="btn btn--primary{% if section.settings.full_width_button %} btn--full{% endif %}">
+              {{ 'contact.form.submit' | t }}
+            </button>
+          </div>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.contact_form.name",
+  "tag": "section",
+  "class": "section-contact-form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Contact us"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:labels.heading_size",
+      "options": [
+        { "value": "h3", "label": "t:options.heading_size.small" },
+        { "value": "h2", "label": "t:options.heading_size.medium" },
+        { "value": "h1", "label": "t:options.heading_size.large" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:labels.text",
+      "default": "<p>Have a question? We'd love to hear from you.</p>"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:labels.text_alignment",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow_container",
+      "label": "t:sections.contact_form.settings.narrow_container.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.contact_form.settings.header_form_fields.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_phone",
+      "label": "t:sections.contact_form.settings.show_phone.label",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subject",
+      "label": "t:sections.contact_form.settings.show_subject.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width_button",
+      "label": "t:sections.contact_form.settings.full_width_button.label",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.contact_form.name"
+    }
+  ]
+}
+{% endschema %}
