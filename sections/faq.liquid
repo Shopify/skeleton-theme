@@ -1,0 +1,147 @@
+{% comment %}
+  FAQ Section - Influence Theme
+  Displays frequently asked questions in accordion format
+{% endcomment %}
+
+<section class="faq section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container{% if section.settings.narrow_container %} container--narrow{% endif %}">
+    {%- if section.settings.heading != blank or section.settings.text != blank -%}
+      <div class="faq__header text-{{ section.settings.text_alignment }}">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="faq__heading {{ section.settings.heading_size }}">
+            {{ section.settings.heading }}
+          </h2>
+        {%- endif -%}
+        {%- if section.settings.text != blank -%}
+          <div class="faq__text rte">
+            {{ section.settings.text }}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div class="faq__list">
+        {%- for block in section.blocks -%}
+          <details class="faq__item" {{ block.shopify_attributes }}>
+            <summary class="faq__question">
+              <span class="faq__question-text">{{ block.settings.question }}</span>
+              <span class="faq__icon">
+                {% render 'icon', icon: 'plus', size: 'sm' %}
+              </span>
+            </summary>
+            <div class="faq__answer rte">
+              {{ block.settings.answer }}
+            </div>
+          </details>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.faq.name",
+  "tag": "section",
+  "class": "section-faq",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Frequently asked questions"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:labels.heading_size",
+      "options": [
+        { "value": "h3", "label": "t:options.heading_size.small" },
+        { "value": "h2", "label": "t:options.heading_size.medium" },
+        { "value": "h1", "label": "t:options.heading_size.large" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:labels.text"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "t:labels.text_alignment",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow_container",
+      "label": "t:sections.faq.settings.narrow_container.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "t:blocks.question.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "t:blocks.question.settings.question.label",
+          "default": "What is your shipping policy?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "t:blocks.question.settings.answer.label",
+          "default": "<p>We offer free standard shipping on all orders over $100. Orders are typically processed within 1-2 business days and delivered within 5-7 business days.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.faq.name",
+      "blocks": [
+        {
+          "type": "question",
+          "settings": {
+            "question": "What is your shipping policy?",
+            "answer": "<p>We offer free standard shipping on all orders over $100. Orders are typically processed within 1-2 business days and delivered within 5-7 business days.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We accept returns within 30 days of purchase. Items must be unworn, unwashed, and in their original packaging with all tags attached.</p>"
+          }
+        },
+        {
+          "type": "question",
+          "settings": {
+            "question": "How can I track my order?",
+            "answer": "<p>Once your order ships, you'll receive an email with tracking information. You can also track your order by logging into your account.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

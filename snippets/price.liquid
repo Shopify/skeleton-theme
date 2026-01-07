@@ -1,0 +1,60 @@
+{% comment %}
+  Price Snippet - Influence Theme
+  Renders product price with sale, compare-at, and unit pricing
+
+  Usage:
+  {% render 'price', product: product %}
+  {% render 'price', variant: variant %}
+{% endcomment %}
+
+{%- liquid
+  if variant
+    assign target = variant
+  else
+    assign target = product.selected_or_first_available_variant
+  endif
+
+  assign on_sale = false
+  if target.compare_at_price > target.price
+    assign on_sale = true
+  endif
+
+  assign price_varies = false
+  if product and product.price_varies
+    assign price_varies = true
+  endif
+-%}
+
+<div class="price{% if on_sale %} price--on-sale{% endif %}{% if product.available == false %} price--sold-out{% endif %}">
+  {%- if on_sale -%}
+    <span class="price__sale">
+      {%- if price_varies -%}
+        {{ 'product.from' | t }}
+      {%- endif -%}
+      {{ target.price | money }}
+    </span>
+    <span class="price__compare">
+      <span class="visually-hidden">{{ 'product.regular_price' | t }}</span>
+      {{ target.compare_at_price | money }}
+    </span>
+  {%- else -%}
+    <span class="price__regular">
+      {%- if price_varies -%}
+        {{ 'product.from' | t }}
+      {%- endif -%}
+      {{ target.price | money }}
+    </span>
+  {%- endif -%}
+
+  {%- if target.unit_price_measurement -%}
+    <span class="price__unit">
+      <span class="visually-hidden">{{ 'product.unit_price' | t }}</span>
+      {{ target.unit_price | money }}
+      <span aria-hidden="true">/</span>
+      {%- if target.unit_price_measurement.reference_value != 1 -%}
+        {{ target.unit_price_measurement.reference_value }}
+      {%- endif -%}
+      {{ target.unit_price_measurement.reference_unit }}
+    </span>
+  {%- endif -%}
+</div>

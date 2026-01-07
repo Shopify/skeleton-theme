@@ -1,0 +1,63 @@
+{% comment %}
+  Main 404 Section - Influence Theme
+  Displays 404 error page with search and navigation
+{% endcomment %}
+
+<section class="main-404 section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container">
+    <div class="main-404__content text-center">
+      <span class="main-404__code">404</span>
+      <h1 class="main-404__heading h1">{{ 'general.404.title' | t }}</h1>
+      <p class="main-404__text">{{ 'general.404.subtext' | t }}</p>
+
+      {%- if section.settings.show_search -%}
+        <div class="main-404__search">
+          <form action="{{ routes.search_url }}" method="get" role="search" class="search-form">
+            <label for="Search-404" class="visually-hidden">{{ 'search.placeholder' | t }}</label>
+            <input
+              type="search"
+              id="Search-404"
+              name="q"
+              class="search-form__input form-input"
+              placeholder="{{ 'search.placeholder' | t }}"
+            >
+            <input type="hidden" name="type" value="product,article,page">
+            <button type="submit" class="btn btn--primary">
+              {{ 'search.search' | t }}
+            </button>
+          </form>
+        </div>
+      {%- endif -%}
+
+      <a href="{{ routes.root_url }}" class="btn btn--outline main-404__home-btn">
+        {{ 'general.404.back_home' | t }}
+      </a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.main_404.name",
+  "tag": "section",
+  "class": "section-main-404",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "t:sections.main_404.settings.show_search.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

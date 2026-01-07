@@ -1,73 +1,309 @@
 {% layout none %}
+{% comment %}
+  Gift Card Template - Influence Theme (REQUIRED FOR THEME STORE)
+  Features: QR Code, Apple Wallet, Copy code functionality
+{% endcomment %}
 
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
-    {% # Inlined CSS Variables %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>{{ 'gift_card.title' | t }} - {{ shop.name }}</title>
+
     {% render 'css-variables' %}
-
-    {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
-
-    {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
-    {% style %}
-      main {
+    <style>
+      .gift-card {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-lg);
+        background: var(--color-background);
+        color: var(--color-foreground);
+      }
+
+      .gift-card__container {
+        max-width: 400px;
+        width: 100%;
         text-align: center;
       }
-      main img {
-        display: unset;
+
+      .gift-card__logo {
+        margin-bottom: var(--space-lg);
       }
-    {% endstyle %}
+
+      .gift-card__logo img {
+        max-width: 150px;
+        height: auto;
+      }
+
+      .gift-card__shop-name {
+        font-size: var(--font-size-2xl);
+        margin-bottom: var(--space-lg);
+      }
+
+      .gift-card__image {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        margin: 0 auto var(--space-lg);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .gift-card__balance {
+        font-size: var(--font-size-4xl);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--space-sm);
+      }
+
+      .gift-card__status {
+        display: inline-block;
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: var(--border-radius);
+        font-size: var(--font-size-sm);
+        margin-bottom: var(--space-md);
+      }
+
+      .gift-card__status--expired {
+        background: var(--color-error);
+        color: white;
+      }
+
+      .gift-card__status--active {
+        background: var(--color-success);
+        color: white;
+      }
+
+      .gift-card__expires {
+        font-size: var(--font-size-sm);
+        color: var(--color-foreground-muted);
+        margin-bottom: var(--space-lg);
+      }
+
+      .gift-card__code {
+        background: var(--color-background-secondary);
+        border: 2px dashed var(--color-border);
+        border-radius: var(--border-radius);
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+      }
+
+      .gift-card__code-value {
+        font-family: var(--font-family-monospace, monospace);
+        font-size: var(--font-size-lg);
+        letter-spacing: 0.1em;
+        word-break: break-all;
+        margin-bottom: var(--space-sm);
+      }
+
+      .gift-card__copy-btn {
+        font-size: var(--font-size-sm);
+        background: none;
+        border: none;
+        color: var(--color-primary);
+        cursor: pointer;
+        text-decoration: underline;
+      }
+
+      .gift-card__copy-btn:hover {
+        color: var(--color-primary-hover);
+      }
+
+      .gift-card__qr {
+        margin: var(--space-lg) auto;
+        padding: var(--space-md);
+        background: white;
+        border-radius: var(--border-radius);
+        display: inline-block;
+      }
+
+      .gift-card__qr img {
+        display: block;
+        width: 120px;
+        height: 120px;
+      }
+
+      .gift-card__qr-label {
+        font-size: var(--font-size-sm);
+        color: var(--color-foreground-muted);
+        margin-top: var(--space-sm);
+      }
+
+      .gift-card__apple-wallet {
+        margin: var(--space-lg) 0;
+      }
+
+      .gift-card__apple-wallet img {
+        height: 44px;
+        width: auto;
+      }
+
+      .gift-card__instructions {
+        font-size: var(--font-size-sm);
+        color: var(--color-foreground-muted);
+        margin-top: var(--space-lg);
+      }
+
+      .gift-card__print {
+        margin-top: var(--space-md);
+      }
+
+      .gift-card__print-btn {
+        font-size: var(--font-size-sm);
+        background: none;
+        border: none;
+        color: var(--color-primary);
+        cursor: pointer;
+        text-decoration: underline;
+      }
+
+      @media print {
+        .gift-card__copy-btn,
+        .gift-card__print-btn,
+        .gift-card__apple-wallet {
+          display: none;
+        }
+      }
+    </style>
 
     {{ content_for_header }}
   </head>
 
   <body>
-    <main>
-      <div class="shopify-section">
-        <h1>{{ gift_card.balance | money }}</h1>
+    <main class="gift-card">
+      <div class="gift-card__container">
+        {%- comment -%} Logo or Shop Name {%- endcomment -%}
+        {%- if settings.logo -%}
+          <div class="gift-card__logo">
+            {{ settings.logo | image_url: width: 300 | image_tag: alt: shop.name }}
+          </div>
+        {%- else -%}
+          <h1 class="gift-card__shop-name">{{ shop.name }}</h1>
+        {%- endif -%}
 
-        {% if gift_card.enabled == false or gift_card.expired %}
-          <p>{{ 'gift_card.expired' | t }}</p>
-        {% endif %}
+        {%- comment -%} Gift Card Image {%- endcomment -%}
+        <div class="gift-card__image">
+          <img
+            src="{{ 'gift-card/card.svg' | shopify_asset_url }}"
+            alt="{{ 'gift_card.card' | t }}"
+            width="300"
+            height="200"
+            loading="eager"
+          >
+        </div>
 
-        {% if gift_card.expires_on %}
-          {% assign expires_on = gift_card.expires_on | date: '%B %e, %Y' %}
-          <p>
+        {%- comment -%} Balance {%- endcomment -%}
+        <p class="gift-card__balance">{{ gift_card.balance | money }}</p>
+
+        {%- comment -%} Status {%- endcomment -%}
+        {%- if gift_card.enabled == false or gift_card.expired -%}
+          <span class="gift-card__status gift-card__status--expired">
+            {{ 'gift_card.expired' | t }}
+          </span>
+        {%- else -%}
+          <span class="gift-card__status gift-card__status--active">
+            {{ 'gift_card.active' | t }}
+          </span>
+        {%- endif -%}
+
+        {%- comment -%} Expiry Date {%- endcomment -%}
+        {%- if gift_card.expires_on -%}
+          {%- assign expires_on = gift_card.expires_on | date: format: 'date' -%}
+          <p class="gift-card__expires">
             {{ 'gift_card.expires_on' | t: expires_on: expires_on }}
           </p>
-        {% endif %}
+        {%- endif -%}
 
-        <p>
-          {% if settings.logo %}
-            {{ settings.logo | image_url: width: 300 | image_tag: alt: shop.name }}
-          {% else %}
-            <img
-              src="{{ 'gift-card/card.svg' | shopify_asset_url }}"
-              alt="{{ 'gift_card.card' | t }}"
-              width="300"
-              height="200"
-            >
-          {% endif %}
+        {%- comment -%} Gift Card Code {%- endcomment -%}
+        <div class="gift-card__code">
+          <p class="gift-card__code-value" id="gift-card-code">
+            {{ gift_card.code | format_code }}
+          </p>
+          <button
+            type="button"
+            class="gift-card__copy-btn"
+            onclick="copyCode()"
+            data-copy-text="{{ 'gift_card.copy' | t }}"
+            data-copied-text="{{ 'gift_card.copied' | t }}"
+          >
+            {{ 'gift_card.copy' | t }}
+          </button>
+        </div>
+
+        {%- comment -%} QR Code (REQUIRED FOR THEME STORE) {%- endcomment -%}
+        <div class="gift-card__qr">
+          <img
+            src="{{ gift_card.qr_code_url }}"
+            alt="{{ 'gift_card.qr_code' | t }}"
+            width="120"
+            height="120"
+            loading="eager"
+          >
+          <p class="gift-card__qr-label">{{ 'gift_card.scan_code' | t }}</p>
+        </div>
+
+        {%- comment -%} Apple Wallet (REQUIRED FOR THEME STORE) {%- endcomment -%}
+        {%- if gift_card.pass_url -%}
+          <div class="gift-card__apple-wallet">
+            <a href="{{ gift_card.pass_url }}">
+              <img
+                src="{{ 'gift-card/add-to-apple-wallet.svg' | shopify_asset_url }}"
+                alt="{{ 'gift_card.add_to_apple_wallet' | t }}"
+                width="168"
+                height="44"
+                loading="lazy"
+              >
+            </a>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Instructions {%- endcomment -%}
+        <p class="gift-card__instructions">
+          {{ 'gift_card.use_at_checkout' | t }}
         </p>
 
-        <h2>{{ shop.name }}</h2>
-        <p>{{ 'gift_card.use_at_checkout' | t }}</p>
-        <p>{{ gift_card.code | format_code }}</p>
-
-        {% if gift_card.pass_url %}
-          <a href="{{ gift_card.pass_url }}">
-            <img
-              src="{{ 'gift-card/add-to-apple-wallet.svg' | shopify_asset_url }}"
-              alt="{{ 'gift_card.add_to_apple_wallet' | t }}"
-              width="200"
-              height="60"
-            >
-          </a>
-        {% endif %}
+        {%- comment -%} Print Button {%- endcomment -%}
+        <div class="gift-card__print">
+          <button type="button" class="gift-card__print-btn" onclick="window.print()">
+            {{ 'gift_card.print' | t }}
+          </button>
+        </div>
       </div>
     </main>
+
+    <script>
+      function copyCode() {
+        const codeElement = document.getElementById('gift-card-code');
+        const code = codeElement.textContent.trim().replace(/\s/g, '');
+        const button = document.querySelector('[data-copy-text]');
+
+        navigator.clipboard.writeText(code).then(() => {
+          button.textContent = button.dataset.copiedText;
+          setTimeout(() => {
+            button.textContent = button.dataset.copyText;
+          }, 2000);
+        }).catch(() => {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = code;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          button.textContent = button.dataset.copiedText;
+          setTimeout(() => {
+            button.textContent = button.dataset.copyText;
+          }, 2000);
+        });
+      }
+    </script>
   </body>
 </html>

@@ -1,0 +1,130 @@
+{% comment %}
+  Product Card Snippet - Influence Theme
+  Renders a product card with hover effects, secondary image, quick add
+
+  Usage:
+  {% render 'product-card', product: product %}
+  {% render 'product-card', product: product, show_vendor: true %}
+{% endcomment %}
+
+{%- liquid
+  assign show_vendor = show_vendor | default: settings.show_vendor
+  assign show_secondary_image = show_secondary_image | default: settings.show_secondary_image
+  assign enable_quick_add = enable_quick_add | default: settings.enable_quick_add
+
+  assign first_variant = product.selected_or_first_available_variant
+  assign on_sale = false
+  if first_variant.compare_at_price > first_variant.price
+    assign on_sale = true
+  endif
+-%}
+
+<div class="product-card{% if settings.enable_image_zoom %} hover-zoom{% endif %}">
+  {%- comment -%} Product Media {%- endcomment -%}
+  <div class="product-card__media media aspect-{{ settings.product_card_aspect_ratio | replace: '/', '-' }}">
+    {%- if product.featured_media -%}
+      {{
+        product.featured_media
+        | image_url: width: 600
+        | image_tag:
+          loading: 'lazy',
+          sizes: '(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw',
+          widths: '165, 360, 535, 750, 1000',
+          class: 'product-card__image product-card__primary-image'
+      }}
+
+      {%- if show_secondary_image and product.media.size > 1 -%}
+        {{
+          product.media[1]
+          | image_url: width: 600
+          | image_tag:
+            loading: 'lazy',
+            sizes: '(min-width: 1200px) 25vw, (min-width: 750px) 33vw, 50vw',
+            widths: '165, 360, 535, 750, 1000',
+            class: 'product-card__image product-card__secondary-image'
+        }}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder' }}
+    {%- endif -%}
+
+    {%- comment -%} Badges {%- endcomment -%}
+    <div class="product-card__badges">
+      {%- if on_sale -%}
+        <span class="badge badge--sale">{{ 'product.on_sale' | t }}</span>
+      {%- endif -%}
+      {%- if product.available == false -%}
+        <span class="badge badge--soldout">{{ 'product.sold_out' | t }}</span>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Quick Add {%- endcomment -%}
+    {%- if enable_quick_add and product.available -%}
+      <div class="product-card__quick-add">
+        {%- if product.variants.size == 1 -%}
+          <form action="{{ routes.cart_add_url }}" method="post" class="product-card__quick-add-form">
+            <input type="hidden" name="id" value="{{ first_variant.id }}">
+            <button type="submit" class="btn btn--primary btn--full btn--sm">
+              {{ 'product.add_to_cart' | t }}
+            </button>
+          </form>
+        {%- else -%}
+          <a href="{{ product.url }}" class="btn btn--primary btn--full btn--sm">
+            {{ 'product.choose_options' | t }}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Product Info {%- endcomment -%}
+  <div class="product-card__info">
+    {%- if show_vendor and product.vendor != blank -%}
+      <p class="product-card__vendor">{{ product.vendor }}</p>
+    {%- endif -%}
+
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    <div class="product-card__price price">
+      {%- if on_sale -%}
+        <span class="price__sale">{{ first_variant.price | money }}</span>
+        <span class="price__compare">{{ first_variant.compare_at_price | money }}</span>
+      {%- else -%}
+        <span class="price__regular">{{ first_variant.price | money }}</span>
+      {%- endif -%}
+
+      {%- if first_variant.unit_price_measurement -%}
+        <span class="price__unit">
+          {{ first_variant.unit_price | money }}
+          <span aria-hidden="true">/</span>
+          {%- if first_variant.unit_price_measurement.reference_value != 1 -%}
+            {{ first_variant.unit_price_measurement.reference_value }}
+          {%- endif -%}
+          {{ first_variant.unit_price_measurement.reference_unit }}
+        </span>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Color swatches if available {%- endcomment -%}
+    {%- for option in product.options_with_values -%}
+      {%- assign option_name_downcase = option.name | downcase -%}
+      {%- if option_name_downcase == 'color' or option_name_downcase == 'colour' -%}
+        <div class="product-card__swatches">
+          {%- for value in option.values limit: 5 -%}
+            {%- assign swatch = value | handle | append: '.png' | file_url -%}
+            <span
+              class="product-card__swatch"
+              style="--swatch-color: {{ value | handle | replace: '-', '' }}; --swatch-image: url('{{ swatch }}')"
+              title="{{ value }}"
+            ></span>
+          {%- endfor -%}
+          {%- if option.values.size > 5 -%}
+            <span class="product-card__swatch-more">+{{ option.values.size | minus: 5 }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>

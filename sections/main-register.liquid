@@ -1,0 +1,99 @@
+{% comment %}
+  Main Register Section - Influence Theme
+  Customer registration form
+{% endcomment %}
+
+<section class="main-register section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container container--narrow">
+    <div class="account-form">
+      <h1 class="account-form__title h2">{{ 'customer.register.title' | t }}</h1>
+
+      {%- form 'create_customer', class: 'account-form__form' -%}
+        {%- if form.errors -%}
+          <div class="form-message form-message--error">
+            {{ form.errors | default_errors }}
+          </div>
+        {%- endif -%}
+
+        <div class="form-group">
+          <label for="RegisterFirstName" class="form-label">{{ 'customer.register.first_name' | t }}</label>
+          <input
+            type="text"
+            id="RegisterFirstName"
+            name="customer[first_name]"
+            class="form-input"
+            autocomplete="given-name"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="RegisterLastName" class="form-label">{{ 'customer.register.last_name' | t }}</label>
+          <input
+            type="text"
+            id="RegisterLastName"
+            name="customer[last_name]"
+            class="form-input"
+            autocomplete="family-name"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="RegisterEmail" class="form-label">{{ 'customer.register.email' | t }}</label>
+          <input
+            type="email"
+            id="RegisterEmail"
+            name="customer[email]"
+            class="form-input"
+            autocomplete="email"
+            autocorrect="off"
+            autocapitalize="off"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="RegisterPassword" class="form-label">{{ 'customer.register.password' | t }}</label>
+          <input
+            type="password"
+            id="RegisterPassword"
+            name="customer[password]"
+            class="form-input"
+            autocomplete="new-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">
+          {{ 'customer.register.submit' | t }}
+        </button>
+      {%- endform -%}
+
+      <div class="account-form__footer">
+        <p>{{ 'customer.register.already_have_account' | t }}</p>
+        <a href="{{ routes.account_login_url }}" class="btn btn--outline">
+          {{ 'customer.login.sign_in' | t }}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.main_register.name",
+  "tag": "section",
+  "class": "section-main-register",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

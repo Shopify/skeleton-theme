@@ -1,0 +1,320 @@
+{% comment %}
+  Main Article Section - Influence Theme
+  Displays a single blog article with featured image, content, and comments
+{% endcomment %}
+
+<article class="main-article section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container container--narrow">
+    {%- comment -%} Article Header {%- endcomment -%}
+    <header class="article-header">
+      {%- if section.settings.show_breadcrumb -%}
+        <nav class="article-breadcrumb" aria-label="{{ 'accessibility.breadcrumb' | t }}">
+          <a href="{{ routes.root_url }}">{{ 'breadcrumb.home' | t }}</a>
+          <span class="article-breadcrumb__separator">/</span>
+          <a href="{{ blog.url }}">{{ blog.title }}</a>
+          <span class="article-breadcrumb__separator">/</span>
+          <span aria-current="page">{{ article.title }}</span>
+        </nav>
+      {%- endif -%}
+
+      {%- if section.settings.show_tags and article.tags.size > 0 -%}
+        <div class="article-header__tags">
+          {%- for tag in article.tags -%}
+            <a href="{{ blog.url }}/tagged/{{ tag | handle }}" class="article-header__tag">
+              {{ tag }}
+            </a>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      <h1 class="article-header__title h1">{{ article.title }}</h1>
+
+      {%- if section.settings.show_date or section.settings.show_author -%}
+        <div class="article-header__meta">
+          {%- if section.settings.show_author -%}
+            <span class="article-header__author">
+              {{ 'blog.by' | t }} {{ article.author }}
+            </span>
+          {%- endif -%}
+          {%- if section.settings.show_author and section.settings.show_date -%}
+            <span class="article-header__separator">·</span>
+          {%- endif -%}
+          {%- if section.settings.show_date -%}
+            <time class="article-header__date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+              {{ article.published_at | date: format: 'date' }}
+            </time>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </header>
+
+    {%- comment -%} Featured Image {%- endcomment -%}
+    {%- if section.settings.show_featured_image and article.image -%}
+      <figure class="article-featured-image">
+        {{
+          article.image
+          | image_url: width: 1400
+          | image_tag:
+            loading: 'eager',
+            sizes: '(min-width: 1200px) 900px, (min-width: 750px) 80vw, 100vw',
+            widths: '375, 750, 1100, 1400',
+            class: 'article-featured-image__img',
+            alt: article.image.alt | default: article.title
+        }}
+        {%- if article.image.alt != blank -%}
+          <figcaption class="article-featured-image__caption">
+            {{ article.image.alt }}
+          </figcaption>
+        {%- endif -%}
+      </figure>
+    {%- endif -%}
+
+    {%- comment -%} Article Content {%- endcomment -%}
+    <div class="article-content rte">
+      {{ article.content }}
+    </div>
+
+    {%- comment -%} Social Share {%- endcomment -%}
+    {%- if section.settings.show_share -%}
+      <div class="article-share">
+        <span class="article-share__label">{{ 'article.share' | t }}</span>
+        <div class="article-share__links">
+          <a
+            href="https://www.facebook.com/sharer/sharer.php?u={{ article.url | prepend: request.origin | url_encode }}"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            class="article-share__link"
+            aria-label="{{ 'accessibility.share_facebook' | t }}"
+          >
+            {% render 'icon', icon: 'facebook' %}
+          </a>
+          <a
+            href="https://twitter.com/intent/tweet?url={{ article.url | prepend: request.origin | url_encode }}&text={{ article.title | url_encode }}"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            class="article-share__link"
+            aria-label="{{ 'accessibility.share_twitter' | t }}"
+          >
+            {% render 'icon', icon: 'twitter' %}
+          </a>
+          <a
+            href="https://pinterest.com/pin/create/button/?url={{ article.url | prepend: request.origin | url_encode }}&media={{ article.image | image_url: width: 1200 | prepend: 'https:' | url_encode }}&description={{ article.title | url_encode }}"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            class="article-share__link"
+            aria-label="{{ 'accessibility.share_pinterest' | t }}"
+          >
+            {% render 'icon', icon: 'pinterest' %}
+          </a>
+          <a
+            href="mailto:?subject={{ article.title | url_encode }}&body={{ article.url | prepend: request.origin | url_encode }}"
+            class="article-share__link"
+            aria-label="{{ 'accessibility.share_email' | t }}"
+          >
+            {% render 'icon', icon: 'email' %}
+          </a>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Article Navigation {%- endcomment -%}
+    {%- if section.settings.show_navigation -%}
+      {%- if blog.previous_article or blog.next_article -%}
+        <nav class="article-navigation" aria-label="{{ 'article.navigation' | t }}">
+          {%- if blog.previous_article -%}
+            <a href="{{ blog.previous_article.url }}" class="article-navigation__link article-navigation__link--prev">
+              {% render 'icon', icon: 'arrow-left' %}
+              <span class="article-navigation__text">
+                <span class="article-navigation__label">{{ 'article.previous' | t }}</span>
+                <span class="article-navigation__title">{{ blog.previous_article.title | truncate: 50 }}</span>
+              </span>
+            </a>
+          {%- endif -%}
+          {%- if blog.next_article -%}
+            <a href="{{ blog.next_article.url }}" class="article-navigation__link article-navigation__link--next">
+              <span class="article-navigation__text">
+                <span class="article-navigation__label">{{ 'article.next' | t }}</span>
+                <span class="article-navigation__title">{{ blog.next_article.title | truncate: 50 }}</span>
+              </span>
+              {% render 'icon', icon: 'arrow-right' %}
+            </a>
+          {%- endif -%}
+        </nav>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} Comments {%- endcomment -%}
+    {%- if blog.comments_enabled? -%}
+      <div class="article-comments" id="comments">
+        <h2 class="article-comments__heading h3">
+          {{ 'blog.comments.title' | t: count: article.comments_count }}
+        </h2>
+
+        {%- if article.comments_count > 0 -%}
+          {%- paginate article.comments by 10 -%}
+            <div class="article-comments__list">
+              {%- for comment in article.comments -%}
+                <div class="article-comment" id="comment-{{ comment.id }}">
+                  <div class="article-comment__header">
+                    <span class="article-comment__author">{{ comment.author }}</span>
+                    <time class="article-comment__date" datetime="{{ comment.created_at | date: '%Y-%m-%d' }}">
+                      {{ comment.created_at | date: format: 'abbreviated_date' }}
+                    </time>
+                  </div>
+                  <div class="article-comment__content">
+                    {{ comment.content }}
+                  </div>
+                </div>
+              {%- endfor -%}
+            </div>
+
+            {%- if paginate.pages > 1 -%}
+              <nav class="pagination" aria-label="{{ 'accessibility.pagination' | t }}">
+                <ul class="pagination__list">
+                  {%- if paginate.previous -%}
+                    <li class="pagination__item">
+                      <a href="{{ paginate.previous.url }}#comments" class="pagination__link">
+                        {{ 'pagination.previous' | t }}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                  {%- if paginate.next -%}
+                    <li class="pagination__item">
+                      <a href="{{ paginate.next.url }}#comments" class="pagination__link">
+                        {{ 'pagination.next' | t }}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                </ul>
+              </nav>
+            {%- endif -%}
+          {%- endpaginate -%}
+        {%- endif -%}
+
+        {%- comment -%} Comment Form {%- endcomment -%}
+        <div class="article-comment-form">
+          <h3 class="article-comment-form__heading h4">{{ 'blog.comments.leave_comment' | t }}</h3>
+
+          {%- form 'new_comment', article -%}
+            {%- if form.posted_successfully? -%}
+              <div class="form-message form-message--success">
+                {%- if blog.moderated? -%}
+                  {{ 'blog.comments.success_moderated' | t }}
+                {%- else -%}
+                  {{ 'blog.comments.success' | t }}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            {%- if form.errors -%}
+              <div class="form-message form-message--error">
+                {{ form.errors | default_errors }}
+              </div>
+            {%- endif -%}
+
+            <div class="form-group">
+              <label for="CommentAuthor" class="form-label">{{ 'blog.comments.name' | t }}</label>
+              <input
+                type="text"
+                id="CommentAuthor"
+                name="comment[author]"
+                class="form-input"
+                value="{{ form.author }}"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="CommentEmail" class="form-label">{{ 'blog.comments.email' | t }}</label>
+              <input
+                type="email"
+                id="CommentEmail"
+                name="comment[email]"
+                class="form-input"
+                value="{{ form.email }}"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="CommentBody" class="form-label">{{ 'blog.comments.message' | t }}</label>
+              <textarea
+                id="CommentBody"
+                name="comment[body]"
+                class="form-input form-textarea"
+                rows="5"
+                required
+              >{{ form.body }}</textarea>
+            </div>
+
+            <button type="submit" class="btn btn--primary">
+              {{ 'blog.comments.submit' | t }}
+            </button>
+          {%- endform -%}
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+</article>
+
+{% schema %}
+{
+  "name": "t:sections.main_article.name",
+  "tag": "section",
+  "class": "section-main-article",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "t:sections.main_article.settings.show_breadcrumb.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_image",
+      "label": "t:sections.main_article.settings.show_featured_image.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "t:sections.main_article.settings.show_tags.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "t:sections.main_article.settings.show_date.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "t:sections.main_article.settings.show_author.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share",
+      "label": "t:sections.main_article.settings.show_share.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "t:sections.main_article.settings.show_navigation.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

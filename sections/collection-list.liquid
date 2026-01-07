@@ -1,0 +1,103 @@
+{% comment %}
+  Collection List Section - Influence Theme
+  Displays a grid of collections for list-collections template
+{% endcomment %}
+
+{%- liquid
+  assign columns_desktop = section.settings.columns_desktop
+  assign columns_mobile = section.settings.columns_mobile
+  assign show_collection_count = section.settings.show_collection_count
+  assign image_ratio = section.settings.image_ratio
+-%}
+
+<section class="collection-list section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container">
+    {%- if section.settings.heading != blank -%}
+      <h1 class="collection-list__heading section-heading text-{{ section.settings.heading_alignment }}">
+        {{ section.settings.heading }}
+      </h1>
+    {%- endif -%}
+
+    <div
+      class="collection-list__grid grid"
+      style="--grid-columns-desktop: {{ columns_desktop }}; --grid-columns-mobile: {{ columns_mobile }};"
+    >
+      {%- for collection in collections -%}
+        <div class="collection-list__item">
+          {% render 'collection-card', collection: collection, show_count: show_collection_count, image_ratio: image_ratio %}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.collection_list.name",
+  "tag": "section",
+  "class": "section-collection-list",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Collections"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "t:labels.heading_alignment",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "t:labels.image_ratio",
+      "options": [
+        { "value": "landscape", "label": "t:options.image_ratio.landscape" },
+        { "value": "portrait", "label": "t:options.image_ratio.portrait" },
+        { "value": "square", "label": "t:options.image_ratio.square" }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_count",
+      "label": "t:sections.collection_list.settings.show_collection_count.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "t:labels.columns_mobile",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

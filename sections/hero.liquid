@@ -1,0 +1,365 @@
+{% comment %}
+  Hero Section - Influence Theme
+  Features: Full-bleed image/video, overlay, multiple layouts, content positioning
+{% endcomment %}
+
+{%- liquid
+  assign height_class = 'hero--' | append: section.settings.height
+  assign content_position = section.settings.content_position | split: '_'
+  assign vertical_align = content_position[0]
+  assign horizontal_align = content_position[1]
+-%}
+
+<section
+  class="hero {{ height_class }} {% render 'color-scheme', scheme: section.settings.color_scheme %}"
+  style="--hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
+>
+  {%- comment -%} Background Media {%- endcomment -%}
+  <div class="hero__media full-width">
+    {%- if section.settings.video_url != blank -%}
+      {%- liquid
+        assign video_id = section.settings.video_url | split: 'v=' | last | split: '&' | first
+        if section.settings.video_url contains 'youtu.be'
+          assign video_id = section.settings.video_url | split: '/' | last | split: '?' | first
+        endif
+        if section.settings.video_url contains 'vimeo'
+          assign video_id = section.settings.video_url | split: '/' | last | split: '?' | first
+        endif
+      -%}
+      {%- if section.settings.video_url contains 'youtube' or section.settings.video_url contains 'youtu.be' -%}
+        <iframe
+          src="https://www.youtube.com/embed/{{ video_id }}?autoplay=1&mute=1&loop=1&playlist={{ video_id }}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
+          frameborder="0"
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+          loading="lazy"
+          class="hero__video"
+        ></iframe>
+      {%- elsif section.settings.video_url contains 'vimeo' -%}
+        <iframe
+          src="https://player.vimeo.com/video/{{ video_id }}?autoplay=1&loop=1&muted=1&background=1"
+          frameborder="0"
+          allow="autoplay; fullscreen"
+          allowfullscreen
+          loading="lazy"
+          class="hero__video"
+        ></iframe>
+      {%- endif -%}
+    {%- elsif section.settings.image != blank -%}
+      {{
+        section.settings.image
+        | image_url: width: 2000
+        | image_tag:
+          loading: 'eager',
+          fetchpriority: 'high',
+          sizes: '100vw',
+          widths: '375, 550, 750, 1000, 1250, 1500, 1750, 2000',
+          class: 'hero__image'
+      }}
+    {%- else -%}
+      <div class="hero__placeholder">
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'hero__placeholder-svg' }}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Overlay {%- endcomment -%}
+    {%- if section.settings.overlay_opacity > 0 -%}
+      <div class="hero__overlay"></div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Content {%- endcomment -%}
+  <div class="hero__content hero__content--{{ vertical_align }} hero__content--{{ horizontal_align }}">
+    <div class="hero__content-inner">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'subheading' -%}
+            {%- if block.settings.text != blank -%}
+              <p class="hero__subheading subheading" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </p>
+            {%- endif -%}
+
+          {%- when 'heading' -%}
+            {%- if block.settings.text != blank -%}
+              <h1 class="hero__heading heading-display" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </h1>
+            {%- endif -%}
+
+          {%- when 'text' -%}
+            {%- if block.settings.text != blank -%}
+              <div class="hero__text" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </div>
+            {%- endif -%}
+
+          {%- when 'button' -%}
+            {%- if block.settings.label != blank -%}
+              <div class="hero__buttons" {{ block.shopify_attributes }}>
+                <a
+                  href="{{ block.settings.link }}"
+                  class="btn btn--{{ block.settings.style }}"
+                >
+                  {{ block.settings.label }}
+                </a>
+              </div>
+            {%- endif -%}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero--small { min-height: 40vh; }
+  .hero--medium { min-height: 60vh; }
+  .hero--large { min-height: 80vh; }
+  .hero--full { min-height: 100vh; }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__image,
+  .hero__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero__placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-muted);
+  }
+
+  .hero__placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgb(0 0 0 / var(--hero-overlay-opacity, 0.3));
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: var(--space-8);
+  }
+
+  .hero__content--top { align-items: flex-start; }
+  .hero__content--middle { align-items: center; }
+  .hero__content--bottom { align-items: flex-end; }
+
+  .hero__content--left { justify-content: flex-start; text-align: left; }
+  .hero__content--center { justify-content: center; text-align: center; }
+  .hero__content--right { justify-content: flex-end; text-align: right; }
+
+  .hero__content-inner {
+    max-width: var(--content-width-medium);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .hero__content--center .hero__content-inner {
+    align-items: center;
+  }
+
+  .hero__content--right .hero__content-inner {
+    align-items: flex-end;
+  }
+
+  .hero__subheading {
+    margin-bottom: var(--space-2);
+  }
+
+  .hero__heading {
+    margin-bottom: var(--space-2);
+  }
+
+  .hero__text {
+    font-size: var(--font-size-lg);
+    max-width: 40rem;
+  }
+
+  .hero__buttons {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  @media (max-width: 749px) {
+    .hero--full { min-height: 80vh; }
+    .hero--large { min-height: 60vh; }
+    .hero__heading { font-size: var(--font-size-4xl); }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.hero.name",
+  "class": "section-hero",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.hero.settings.image.label"
+    },
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "t:sections.hero.settings.video.label",
+      "info": "YouTube or Vimeo URL"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:sections.hero.settings.height.label",
+      "options": [
+        { "value": "small", "label": "t:sections.hero.settings.height.options.small" },
+        { "value": "medium", "label": "t:sections.hero.settings.height.options.medium" },
+        { "value": "large", "label": "t:sections.hero.settings.height.options.large" },
+        { "value": "full", "label": "t:sections.hero.settings.height.options.full" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "t:sections.hero.settings.overlay_opacity.label",
+      "default": 30
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "t:sections.hero.settings.content_position.label",
+      "options": [
+        { "value": "top_left", "label": "t:sections.hero.settings.content_position.options.top_left" },
+        { "value": "top_center", "label": "t:sections.hero.settings.content_position.options.top_center" },
+        { "value": "top_right", "label": "t:sections.hero.settings.content_position.options.top_right" },
+        { "value": "middle_left", "label": "t:sections.hero.settings.content_position.options.middle_left" },
+        { "value": "middle_center", "label": "t:sections.hero.settings.content_position.options.middle_center" },
+        { "value": "middle_right", "label": "t:sections.hero.settings.content_position.options.middle_right" },
+        { "value": "bottom_left", "label": "t:sections.hero.settings.content_position.options.bottom_left" },
+        { "value": "bottom_center", "label": "t:sections.hero.settings.content_position.options.bottom_center" },
+        { "value": "bottom_right", "label": "t:sections.hero.settings.content_position.options.bottom_right" }
+      ],
+      "default": "middle_center"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.hero.settings.color_scheme.label",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-2"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "subheading",
+      "name": "t:sections.hero.blocks.subheading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "New Collection"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "name": "t:sections.hero.blocks.heading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.heading",
+          "default": "Make a Statement"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:sections.hero.blocks.text.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "<p>Discover our latest arrivals and find your perfect look.</p>"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "t:sections.hero.blocks.button.name",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.hero.blocks.button.settings.label.label",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.hero.blocks.button.settings.link.label"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "t:sections.hero.blocks.button.settings.style.label",
+          "options": [
+            { "value": "primary", "label": "t:sections.hero.blocks.button.settings.style.options.primary" },
+            { "value": "secondary", "label": "t:sections.hero.blocks.button.settings.style.options.secondary" }
+          ],
+          "default": "primary"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hero.name",
+      "blocks": [
+        { "type": "subheading" },
+        { "type": "heading" },
+        { "type": "text" },
+        { "type": "button" }
+      ]
+    }
+  ]
+}
+{% endschema %}

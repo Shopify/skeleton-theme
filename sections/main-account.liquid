@@ -1,0 +1,114 @@
+{% comment %}
+  Main Account Section - Influence Theme
+  Displays customer account dashboard with order history
+{% endcomment %}
+
+<section class="main-account section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container">
+    <header class="account-header">
+      <h1 class="account-header__title h2">{{ 'customer.account.title' | t }}</h1>
+      <a href="{{ routes.account_logout_url }}" class="account-header__logout link">
+        {{ 'customer.account.logout' | t }}
+      </a>
+    </header>
+
+    <div class="account-content">
+      {%- comment -%} Account Details {%- endcomment -%}
+      <div class="account-details">
+        <h2 class="account-details__heading h4">{{ 'customer.account.details' | t }}</h2>
+        <p class="account-details__name">{{ customer.name }}</p>
+        <p class="account-details__email">{{ customer.email }}</p>
+
+        {%- if customer.default_address -%}
+          <address class="account-details__address">
+            {{ customer.default_address | format_address }}
+          </address>
+        {%- endif -%}
+
+        <a href="{{ routes.account_addresses_url }}" class="account-details__link link">
+          {{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})
+        </a>
+      </div>
+
+      {%- comment -%} Order History {%- endcomment -%}
+      <div class="account-orders">
+        <h2 class="account-orders__heading h4">{{ 'customer.orders.title' | t }}</h2>
+
+        {%- if customer.orders.size > 0 -%}
+          <div class="account-orders__table-wrapper">
+            <table class="account-orders__table">
+              <thead>
+                <tr>
+                  <th>{{ 'customer.orders.order_number' | t }}</th>
+                  <th>{{ 'customer.orders.date' | t }}</th>
+                  <th>{{ 'customer.orders.payment_status' | t }}</th>
+                  <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+                  <th class="text-right">{{ 'customer.orders.total' | t }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {%- for order in customer.orders -%}
+                  <tr>
+                    <td>
+                      <a href="{{ order.customer_url }}">{{ order.name }}</a>
+                    </td>
+                    <td>{{ order.created_at | date: format: 'date' }}</td>
+                    <td>{{ order.financial_status_label }}</td>
+                    <td>{{ order.fulfillment_status_label }}</td>
+                    <td class="text-right">{{ order.total_price | money_with_currency }}</td>
+                  </tr>
+                {%- endfor -%}
+              </tbody>
+            </table>
+          </div>
+
+          {%- comment -%} Pagination {%- endcomment -%}
+          {%- paginate customer.orders by 20 -%}
+            {%- if paginate.pages > 1 -%}
+              <nav class="pagination" aria-label="{{ 'accessibility.pagination' | t }}">
+                <ul class="pagination__list">
+                  {%- if paginate.previous -%}
+                    <li>
+                      <a href="{{ paginate.previous.url }}" class="pagination__link">
+                        {{ 'pagination.previous' | t }}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                  {%- if paginate.next -%}
+                    <li>
+                      <a href="{{ paginate.next.url }}" class="pagination__link">
+                        {{ 'pagination.next' | t }}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                </ul>
+              </nav>
+            {%- endif -%}
+          {%- endpaginate -%}
+        {%- else -%}
+          <p class="account-orders__empty">{{ 'customer.orders.none' | t }}</p>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.main_account.name",
+  "tag": "section",
+  "class": "section-main-account",
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

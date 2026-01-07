@@ -1,0 +1,42 @@
+{% comment %}
+  Icon Snippet - Renders SVG icons from the sprite
+
+  Usage:
+  {% render 'icon', icon: 'cart' %}
+  {% render 'icon', icon: 'search', size: 'lg' %}
+  {% render 'icon', icon: 'menu', class: 'header__icon' %}
+
+  Parameters:
+  - icon: (required) Name of the icon
+  - size: (optional) 'sm', 'md' (default), 'lg'
+  - class: (optional) Additional CSS classes
+  - aria_label: (optional) Accessible label for the icon
+{% endcomment %}
+
+{%- liquid
+  assign icon_class = 'icon'
+
+  case size
+    when 'sm'
+      assign icon_class = icon_class | append: ' icon--sm'
+    when 'lg'
+      assign icon_class = icon_class | append: ' icon--lg'
+  endcase
+
+  if class != blank
+    assign icon_class = icon_class | append: ' ' | append: class
+  endif
+-%}
+
+<svg
+  class="{{ icon_class }}"
+  {% if aria_label %}
+    aria-label="{{ aria_label }}"
+    role="img"
+  {% else %}
+    aria-hidden="true"
+    focusable="false"
+  {% endif %}
+>
+  <use href="#icon-{{ icon }}"></use>
+</svg>

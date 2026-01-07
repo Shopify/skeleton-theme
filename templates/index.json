@@ -1,20 +1,201 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "hero": {
+      "type": "hero",
+      "blocks": {
+        "subheading": {
+          "type": "subheading",
+          "settings": {
+            "text": "New Collection"
+          }
+        },
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text": "Define Your Style",
+            "heading_size": "h1"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "Discover our curated selection of contemporary fashion designed for the modern individual."
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "button_label": "Shop Now",
+            "button_link": "",
+            "button_style": "primary"
+          }
+        }
+      },
+      "block_order": ["subheading", "heading", "text", "button"],
+      "settings": {
+        "content_position": "center-center",
+        "overlay_opacity": 40,
+        "color_scheme": "scheme-2"
+      }
+    },
+    "featured_collection": {
+      "type": "featured-collection",
+      "settings": {
+        "heading": "Featured Collection",
+        "heading_alignment": "center",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "columns_mobile": 2,
+        "show_view_all": true
+      }
+    },
+    "image_with_text": {
+      "type": "image-with-text",
+      "blocks": {
+        "subheading": {
+          "type": "subheading",
+          "settings": {
+            "text": "Our Story"
+          }
+        },
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text": "Crafted with Purpose",
+            "heading_size": "h2"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>We believe in creating timeless pieces that transcend seasons. Each item in our collection is thoughtfully designed and responsibly made.</p>"
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "button_label": "Learn More",
+            "button_link": "",
+            "button_style": "outline"
+          }
+        }
+      },
+      "block_order": ["subheading", "heading", "text", "button"],
+      "settings": {
+        "image_position": "left",
+        "content_alignment": "left"
+      }
+    },
+    "rich_text": {
+      "type": "rich-text",
+      "blocks": {
+        "subheading": {
+          "type": "subheading",
+          "settings": {
+            "text": "Editorial"
+          }
+        },
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text": "The Art of Dressing Well",
+            "heading_size": "h2"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Fashion is not about following trends blindly. It's about understanding your own style and expressing it with confidence. Our collection is designed to help you do just that.</p>"
+          }
+        }
+      },
+      "block_order": ["subheading", "heading", "text"],
+      "settings": {
+        "text_alignment": "center",
+        "narrow_container": true
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "testimonial_1": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "The quality is exceptional. These pieces have become staples in my wardrobe.",
+            "author_name": "Sarah M.",
+            "author_title": "Verified Buyer"
+          }
+        },
+        "testimonial_2": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "Finally, a brand that understands timeless design. I recommend them to everyone.",
+            "author_name": "James L.",
+            "author_title": "Verified Buyer"
+          }
+        },
+        "testimonial_3": {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "quote": "Impeccable craftsmanship and attention to detail. Worth every penny.",
+            "author_name": "Emma R.",
+            "author_title": "Verified Buyer"
+          }
+        }
+      },
+      "block_order": ["testimonial_1", "testimonial_2", "testimonial_3"],
+      "settings": {
+        "heading": "What Our Customers Say",
+        "layout": "carousel",
+        "columns": 3
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "blocks": {
+        "subheading": {
+          "type": "subheading",
+          "settings": {
+            "text": "Stay Connected"
+          }
+        },
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text": "Join Our Community",
+            "heading_size": "h2"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Be the first to know about new arrivals, exclusive offers, and style inspiration.</p>"
+          }
+        },
+        "form": {
+          "type": "form",
+          "settings": {
+            "button_label": "Subscribe",
+            "button_style": "primary"
+          }
+        }
+      },
+      "block_order": ["subheading", "heading", "text", "form"],
+      "settings": {
+        "color_scheme": "scheme-2",
+        "narrow_container": true
+      }
     }
   },
   "order": [
-    "main"
+    "hero",
+    "featured_collection",
+    "image_with_text",
+    "rich_text",
+    "testimonials",
+    "newsletter"
   ]
 }

@@ -1,0 +1,61 @@
+{% comment %}
+  Main Page Section - Influence Theme
+  Displays page content
+{% endcomment %}
+
+<section class="main-page section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container{% if section.settings.narrow_container %} container--narrow{% endif %}">
+    {%- if section.settings.show_title -%}
+      <h1 class="main-page__title {{ section.settings.heading_size }}">{{ page.title }}</h1>
+    {%- endif -%}
+
+    {%- if page.content != blank -%}
+      <div class="main-page__content rte">
+        {{ page.content }}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.main_page.name",
+  "tag": "section",
+  "class": "section-main-page",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "t:sections.main_page.settings.show_title.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:labels.heading_size",
+      "options": [
+        { "value": "h3", "label": "t:options.heading_size.small" },
+        { "value": "h2", "label": "t:options.heading_size.medium" },
+        { "value": "h1", "label": "t:options.heading_size.large" }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow_container",
+      "label": "t:sections.main_page.settings.narrow_container.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

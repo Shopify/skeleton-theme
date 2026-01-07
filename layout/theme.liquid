@@ -1,36 +1,56 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
-    {% # Inlined CSS Variables %}
+    {% comment %} Inlined CSS Variables {% endcomment %}
     {% render 'css-variables' %}
 
     {% comment %}
       Font preloading:
       1. Preconnect to font CDN for faster connection
-      2. Preload only the critical font variant (base weight)
+      2. Preload only the critical font variants (heading + body base weight)
       3. Additional variants load on-demand via @font-face
     {% endcomment %}
-    {% unless settings.type_primary_font.system? %}
-      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
 
-      {% comment %} Preload the base font variant for initial page render {% endcomment %}
-      {{ settings.type_primary_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {% unless settings.type_heading_font.system? %}
+      {{ settings.type_heading_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
     {% endunless %}
 
-    {% # Load and preload the critical CSS %}
+    {% unless settings.type_body_font.system? %}
+      {{ settings.type_body_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {% endunless %}
+
+    {% comment %} Critical CSS - loaded synchronously {% endcomment %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
 
-    {% # Social, title, etc. %}
+    {% comment %} Non-critical CSS - loaded asynchronously {% endcomment %}
+    <link rel="preload" href="{{ 'theme.css' | asset_url }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>{{ 'theme.css' | asset_url | stylesheet_tag }}</noscript>
+
+    {% comment %} Meta tags for SEO and social sharing {% endcomment %}
     {% render 'meta-tags' %}
 
+    {% comment %} Shopify required header content {% endcomment %}
     {{ content_for_header }}
   </head>
 
-  <body>
+  <body class="template-{{ template.name }}{% if template.suffix %} template-{{ template.name }}-{{ template.suffix }}{% endif %}">
+    <a href="#main-content" class="skip-link visually-hidden">
+      {{ 'accessibility.skip_to_content' | t }}
+    </a>
+
+    {% comment %} SVG icon sprite - hidden, referenced by icon snippet {% endcomment %}
+    {% render 'icons-sprite' %}
+
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="main-content" role="main">
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
+
+    {% comment %} Overlay for drawers/modals {% endcomment %}
+    <div class="overlay" data-overlay></div>
   </body>
 </html>

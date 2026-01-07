@@ -1,0 +1,8 @@
+{% comment %}
+  Icons Sprite - Include SVG sprite directly in the page
+  This allows using icons via <use href="#icon-name">
+{% endcomment %}
+
+<div style="display: none;">
+  {{ 'icons.svg' | asset_url | inline_asset_content }}
+</div>

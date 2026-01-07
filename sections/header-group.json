@@ -1,22 +1,31 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "type": "header",
   "name": "t:general.header",
   "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement-1": {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping on orders over $100"
+          }
+        }
+      },
+      "block_order": ["announcement-1"],
+      "settings": {
+        "color_scheme": "scheme-2"
+      }
+    },
     "header": {
       "type": "header",
-      "settings": {}
+      "settings": {
+        "menu": "main-menu",
+        "enable_sticky": true,
+        "show_search": true,
+        "show_account": true
+      }
     }
   },
-  "order": [
-    "header"
-  ],
+  "order": ["announcement-bar", "header"]
 }
