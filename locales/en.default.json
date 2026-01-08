@@ -6,6 +6,7 @@
       "back_home": "Back to home"
     },
     "skip_to_content": "Skip to content",
+    "view_all": "View all",
     "social": {
       "share": "Share",
       "share_on_facebook": "Share on Facebook",
@@ -20,6 +21,7 @@
     "menu": "Menu",
     "search": "Search",
     "main_navigation": "Main navigation",
+    "utility_navigation": "Utility navigation",
     "pagination": "Pagination",
     "previous_page": "Previous page",
     "next_page": "Next page",
@@ -29,7 +31,10 @@
     "share_facebook": "Share on Facebook",
     "share_twitter": "Share on Twitter",
     "share_pinterest": "Share on Pinterest",
-    "share_email": "Share by email"
+    "share_email": "Share by email",
+    "announcement": "Announcement",
+    "dismiss_announcement": "Dismiss announcement",
+    "back_to_top": "Back to top"
   },
   "newsletter": {
     "email_placeholder": "Enter your email",
@@ -40,6 +45,7 @@
     "title": "Search",
     "placeholder": "Search our store",
     "search": "Search",
+    "results": "Search results",
     "no_results": "No results found for \"{{ terms }}\"",
     "no_results_html": "No results found for \"{{ terms }}\"",
     "results_count": "{{ count }} results for \"{{ terms }}\"",
@@ -47,6 +53,7 @@
     "view_all": "View all results",
     "all": "All",
     "products": "Products",
+    "collections": "Collections",
     "articles": "Articles",
     "pages": "Pages",
     "suggestions": "Search suggestions",
@@ -58,6 +65,13 @@
       "price_asc": "Price: Low to High",
       "price_desc": "Price: High to Low"
     }
+  },
+  "announcement": {
+    "ends_in": "Ends in",
+    "days": "d",
+    "hours": "h",
+    "minutes": "m",
+    "seconds": "s"
   },
   "collection": {
     "products_count": "{{ count }} products",
@@ -322,6 +336,9 @@
   },
   "testimonials": {
     "rating": "{{ rating }} out of 5 stars"
+  },
+  "footer": {
+    "follow_on_shop": "Follow on Shop"
   },
   "date_formats": {
     "date": "%B %d, %Y",
