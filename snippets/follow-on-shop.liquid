@@ -1,0 +1,26 @@
+{% comment %}
+  Follow on Shop Button - Influence Theme
+  Required Theme Store feature using login_button filter
+
+  Usage:
+  {% render 'follow-on-shop' %}
+  {% render 'follow-on-shop', class: 'footer__follow-shop' %}
+
+  Parameters:
+  - class: (optional) Additional CSS classes
+{% endcomment %}
+
+{%- liquid
+  assign follow_class = 'follow-on-shop'
+  if class != blank
+    assign follow_class = follow_class | append: ' ' | append: class
+  endif
+-%}
+
+{%- if shop.features.follow_on_shop? -%}
+  <div class="{{ follow_class }}">
+    {% form 'follow' %}
+      {{ form | login_button: action: 'follow' }}
+    {% endform %}
+  </div>
+{%- endif -%}

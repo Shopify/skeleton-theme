@@ -1,0 +1,41 @@
+{% comment %}
+  Footer Contact Content Snippet - Influence Theme
+  Displays contact information in footer contact block
+
+  Usage:
+  {% render 'footer-contact-content', block: block %}
+{% endcomment %}
+
+<ul class="footer__contact-list">
+  {%- if block.settings.phone != blank -%}
+    <li class="footer__contact-item">
+      {% render 'icon', icon: 'phone', size: 'sm' %}
+      <a href="tel:{{ block.settings.phone | replace: ' ', '' | replace: '-', '' }}" class="footer__link">
+        {{ block.settings.phone }}
+      </a>
+    </li>
+  {%- endif -%}
+
+  {%- if block.settings.email != blank -%}
+    <li class="footer__contact-item">
+      {% render 'icon', icon: 'mail', size: 'sm' %}
+      <a href="mailto:{{ block.settings.email }}" class="footer__link">
+        {{ block.settings.email }}
+      </a>
+    </li>
+  {%- endif -%}
+
+  {%- if block.settings.address != blank -%}
+    <li class="footer__contact-item footer__contact-item--address">
+      {% render 'icon', icon: 'map-pin', size: 'sm' %}
+      <span>{{ block.settings.address | newline_to_br }}</span>
+    </li>
+  {%- endif -%}
+
+  {%- if block.settings.hours != blank -%}
+    <li class="footer__contact-item">
+      {% render 'icon', icon: 'clock', size: 'sm' %}
+      <span>{{ block.settings.hours }}</span>
+    </li>
+  {%- endif -%}
+</ul>

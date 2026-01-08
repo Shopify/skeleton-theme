@@ -1,0 +1,95 @@
+{% comment %}
+  Announcement Countdown Snippet - Influence Theme
+  Displays a countdown timer in the announcement bar
+
+  Usage:
+  {% render 'announcement-countdown', block: block %}
+{% endcomment %}
+
+{%- liquid
+  assign end_date = block.settings.end_date
+  assign text = block.settings.text
+  assign link = block.settings.link
+-%}
+
+<div
+  class="announcement-countdown"
+  data-countdown
+  data-end-date="{{ end_date }}"
+  {{ block.shopify_attributes }}
+>
+  {%- if text != blank -%}
+    {%- if link != blank -%}
+      <a href="{{ link }}" class="announcement-countdown__text announcement-bar__link">{{ text }}</a>
+    {%- else -%}
+      <p class="announcement-countdown__text">{{ text }}</p>
+    {%- endif -%}
+  {%- endif -%}
+
+  <div class="announcement-countdown__timer" data-countdown-timer>
+    <span class="announcement-countdown__unit">
+      <span class="announcement-countdown__value" data-countdown-days>00</span>
+      <span class="announcement-countdown__label">{{ 'announcement.days' | t }}</span>
+    </span>
+    <span class="announcement-countdown__separator">:</span>
+    <span class="announcement-countdown__unit">
+      <span class="announcement-countdown__value" data-countdown-hours>00</span>
+      <span class="announcement-countdown__label">{{ 'announcement.hours' | t }}</span>
+    </span>
+    <span class="announcement-countdown__separator">:</span>
+    <span class="announcement-countdown__unit">
+      <span class="announcement-countdown__value" data-countdown-minutes>00</span>
+      <span class="announcement-countdown__label">{{ 'announcement.minutes' | t }}</span>
+    </span>
+    <span class="announcement-countdown__separator">:</span>
+    <span class="announcement-countdown__unit">
+      <span class="announcement-countdown__value" data-countdown-seconds>00</span>
+      <span class="announcement-countdown__label">{{ 'announcement.seconds' | t }}</span>
+    </span>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const countdowns = document.querySelectorAll('[data-countdown]');
+
+    countdowns.forEach(countdown => {
+      const endDateStr = countdown.dataset.endDate;
+      if (!endDateStr) return;
+
+      const endDate = new Date(endDateStr.replace(' ', 'T'));
+      if (isNaN(endDate.getTime())) return;
+
+      const daysEl = countdown.querySelector('[data-countdown-days]');
+      const hoursEl = countdown.querySelector('[data-countdown-hours]');
+      const minutesEl = countdown.querySelector('[data-countdown-minutes]');
+      const secondsEl = countdown.querySelector('[data-countdown-seconds]');
+
+      function updateCountdown() {
+        const now = new Date();
+        const diff = endDate - now;
+
+        if (diff <= 0) {
+          if (daysEl) daysEl.textContent = '00';
+          if (hoursEl) hoursEl.textContent = '00';
+          if (minutesEl) minutesEl.textContent = '00';
+          if (secondsEl) secondsEl.textContent = '00';
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+        if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+        if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+        if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    });
+  })();
+</script>
