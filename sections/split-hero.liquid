@@ -1,0 +1,507 @@
+{% comment %}
+  Split Hero Section - Influence Theme
+  Two-column hero with image + content side by side
+  Alternative to full-bleed heroes with more room for storytelling
+{% endcomment %}
+
+{%- liquid
+  assign section_id = 'SplitHero-' | append: section.id
+  assign image_position = section.settings.image_position
+  assign split_ratio = section.settings.split_ratio
+  assign height = section.settings.height
+  assign vertical_alignment = section.settings.vertical_alignment
+  assign content_alignment = section.settings.content_alignment
+  assign mobile_image_position = section.settings.mobile_image_position
+-%}
+
+<section
+  id="{{ section_id }}"
+  class="split-hero section split-hero--{{ image_position }} split-hero--{{ height }} split-hero--mobile-image-{{ mobile_image_position }} {% render 'color-scheme', scheme: section.settings.color_scheme %}"
+  data-section-id="{{ section.id }}"
+  data-section-type="split-hero"
+>
+  <div class="split-hero__grid split-hero__grid--{{ split_ratio }}">
+    {%- comment -%} Image Side {%- endcomment -%}
+    <div class="split-hero__media">
+      <div class="split-hero__media-inner{% if section.settings.enable_parallax %} split-hero__media-inner--parallax{% endif %}">
+        {%- if section.settings.image != blank -%}
+          {{
+            section.settings.image
+            | image_url: width: 1600
+            | image_tag:
+              loading: 'eager',
+              fetchpriority: 'high',
+              sizes: '(min-width: 990px) 50vw, 100vw',
+              widths: '375, 550, 750, 1000, 1200, 1400, 1600',
+              class: 'split-hero__image'
+          }}
+        {%- else -%}
+          <div class="split-hero__placeholder">
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'split-hero__placeholder-svg' }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} Content Side {%- endcomment -%}
+    <div class="split-hero__content split-hero__content--{{ vertical_alignment }} text-{{ content_alignment }}">
+      <div class="split-hero__content-inner{% if content_alignment == 'center' %} split-hero__content-inner--center{% endif %}">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'subheading' -%}
+              {%- if block.settings.text != blank -%}
+                <p class="split-hero__subheading subheading" {{ block.shopify_attributes }}>
+                  {{ block.settings.text }}
+                </p>
+              {%- endif -%}
+
+            {%- when 'heading' -%}
+              {%- if block.settings.text != blank -%}
+                <h1 class="split-hero__heading" {{ block.shopify_attributes }}>
+                  {{ block.settings.text }}
+                </h1>
+              {%- endif -%}
+
+            {%- when 'text' -%}
+              {%- if block.settings.text != blank -%}
+                <div class="split-hero__text rte" {{ block.shopify_attributes }}>
+                  {{ block.settings.text }}
+                </div>
+              {%- endif -%}
+
+            {%- when 'button' -%}
+              {%- if block.settings.label != blank -%}
+                <div class="split-hero__buttons" {{ block.shopify_attributes }}>
+                  <a
+                    href="{{ block.settings.link }}"
+                    class="split-hero__btn btn btn--{{ block.settings.style }}"
+                  >
+                    <span>{{ block.settings.label }}</span>
+                    {%- if block.settings.show_arrow -%}
+                      <svg class="split-hero__btn-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                        <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    {%- endif -%}
+                  </a>
+                </div>
+              {%- endif -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{%- if section.settings.enable_parallax -%}
+  <script>
+    (function() {
+      const section = document.getElementById('{{ section_id }}');
+      if (!section) return;
+
+      // Check for reduced motion preference
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return;
+
+      const mediaInner = section.querySelector('.split-hero__media-inner--parallax');
+      if (!mediaInner) return;
+
+      let ticking = false;
+
+      function handleScroll() {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const rect = section.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+
+            // Only animate when section is in view
+            if (rect.bottom > 0 && rect.top < windowHeight) {
+              const scrollProgress = (windowHeight - rect.top) / (windowHeight + rect.height);
+              const parallaxOffset = (scrollProgress - 0.5) * 50; // ±25px range
+              mediaInner.style.transform = `translateY(${parallaxOffset}px)`;
+            }
+
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+
+      // Use IntersectionObserver to only listen when visible
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          window.addEventListener('scroll', handleScroll, { passive: true });
+          handleScroll(); // Initial position
+        } else {
+          window.removeEventListener('scroll', handleScroll);
+        }
+      }, { threshold: 0 });
+
+      observer.observe(section);
+    })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  .split-hero {
+    width: 100%;
+  }
+
+  /* Height options */
+  .split-hero--auto .split-hero__grid { min-height: auto; }
+  .split-hero--medium .split-hero__grid { min-height: 60vh; }
+  .split-hero--large .split-hero__grid { min-height: 80vh; }
+  .split-hero--full .split-hero__grid { min-height: 100vh; min-height: 100svh; }
+
+  /* Grid layout */
+  .split-hero__grid {
+    display: grid;
+  }
+
+  @media (min-width: 990px) {
+    .split-hero__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .split-hero__grid--wide-image {
+      grid-template-columns: 1.5fr 1fr;
+    }
+
+    .split-hero__grid--wide-content {
+      grid-template-columns: 1fr 1.5fr;
+    }
+
+    /* Image position swap */
+    .split-hero--right .split-hero__media {
+      order: 2;
+    }
+  }
+
+  /* Media side */
+  .split-hero__media {
+    position: relative;
+    overflow: hidden;
+    min-height: 50vh;
+  }
+
+  @media (min-width: 990px) {
+    .split-hero__media {
+      min-height: 100%;
+    }
+  }
+
+  .split-hero__media-inner {
+    position: absolute;
+    inset: 0;
+  }
+
+  .split-hero__media-inner--parallax {
+    inset: -25px 0;
+    will-change: transform;
+  }
+
+  .split-hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .split-hero__placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--color-muted) 0%, var(--color-background) 100%);
+  }
+
+  .split-hero__placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.5;
+  }
+
+  /* Content side */
+  .split-hero__content {
+    display: flex;
+    padding: var(--space-12) var(--page-margin);
+  }
+
+  @media (min-width: 990px) {
+    .split-hero__content {
+      padding: var(--space-16) var(--space-12);
+    }
+  }
+
+  .split-hero__content--top { align-items: flex-start; }
+  .split-hero__content--center { align-items: center; }
+  .split-hero__content--bottom { align-items: flex-end; }
+
+  .split-hero__content-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 32rem;
+  }
+
+  .split-hero__content-inner--center {
+    align-items: center;
+  }
+
+  /* Typography */
+  .split-hero__subheading {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-muted-foreground);
+  }
+
+  .split-hero__heading {
+    font-family: var(--font-heading-family);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: var(--font-heading-weight);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .split-hero__text {
+    font-size: var(--font-size-lg);
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  .split-hero__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .split-hero__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .split-hero__btn-arrow {
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+
+  .split-hero__btn:hover .split-hero__btn-arrow {
+    transform: translateX(4px);
+  }
+
+  /* Mobile stacking */
+  @media (max-width: 989px) {
+    .split-hero--mobile-image-bottom .split-hero__media {
+      order: 2;
+    }
+
+    .split-hero__media {
+      min-height: 40vh;
+    }
+
+    .split-hero--full .split-hero__media {
+      min-height: 50vh;
+    }
+
+    .split-hero__content {
+      padding: var(--space-8) var(--page-margin);
+    }
+
+    .split-hero__heading {
+      font-size: clamp(1.75rem, 8vw, 2.5rem);
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .split-hero__media-inner--parallax {
+      inset: 0;
+    }
+
+    .split-hero__btn-arrow {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.split_hero.name",
+  "tag": "section",
+  "class": "section-split-hero",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.split_hero.settings.image.label"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "t:sections.split_hero.settings.image_position.label",
+      "options": [
+        { "value": "left", "label": "t:sections.split_hero.settings.image_position.options.left" },
+        { "value": "right", "label": "t:sections.split_hero.settings.image_position.options.right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "split_ratio",
+      "label": "t:sections.split_hero.settings.split_ratio.label",
+      "options": [
+        { "value": "equal", "label": "t:sections.split_hero.settings.split_ratio.options.equal" },
+        { "value": "wide-image", "label": "t:sections.split_hero.settings.split_ratio.options.wide_image" },
+        { "value": "wide-content", "label": "t:sections.split_hero.settings.split_ratio.options.wide_content" }
+      ],
+      "default": "equal"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:sections.split_hero.settings.height.label",
+      "options": [
+        { "value": "auto", "label": "t:sections.split_hero.settings.height.options.auto" },
+        { "value": "medium", "label": "t:sections.split_hero.settings.height.options.medium" },
+        { "value": "large", "label": "t:sections.split_hero.settings.height.options.large" },
+        { "value": "full", "label": "t:sections.split_hero.settings.height.options.full" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:sections.split_hero.settings.vertical_alignment.label",
+      "options": [
+        { "value": "top", "label": "t:options.alignment.top" },
+        { "value": "center", "label": "t:options.alignment.center" },
+        { "value": "bottom", "label": "t:options.alignment.bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "t:sections.split_hero.settings.content_alignment.label",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "t:sections.split_hero.settings.enable_parallax.label",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_position",
+      "label": "t:sections.split_hero.settings.mobile_image_position.label",
+      "options": [
+        { "value": "top", "label": "t:sections.split_hero.settings.mobile_image_position.options.top" },
+        { "value": "bottom", "label": "t:sections.split_hero.settings.mobile_image_position.options.bottom" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "subheading",
+      "name": "t:sections.split_hero.blocks.subheading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "New Arrival"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "name": "t:sections.split_hero.blocks.heading.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.heading",
+          "default": "Tell Your Story"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:sections.split_hero.blocks.text.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "<p>Use this section to share your brand story, highlight a collection, or feature key products. The split layout provides ample room for compelling copy alongside beautiful imagery.</p>"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "t:sections.split_hero.blocks.button.name",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:labels.button_label",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:labels.button_link"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "t:labels.button_style",
+          "options": [
+            { "value": "primary", "label": "t:options.button_style.primary" },
+            { "value": "secondary", "label": "t:options.button_style.secondary" }
+          ],
+          "default": "primary"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_arrow",
+          "label": "t:sections.split_hero.blocks.button.settings.show_arrow.label",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.split_hero.name",
+      "blocks": [
+        { "type": "subheading" },
+        { "type": "heading" },
+        { "type": "text" },
+        { "type": "button" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -29,7 +29,542 @@
     "share_facebook": "Share on Facebook",
     "share_twitter": "Share on Twitter",
     "share_pinterest": "Share on Pinterest",
-    "share_email": "Share by email"
+    "share_email": "Share by email",
+    "play_video": "Play video",
+    "pause_video": "Pause video",
+    "gallery_image": "Image {{ index }} of {{ total }}",
+    "gallery_lightbox": "Image gallery lightbox",
+    "gallery_lightbox_close": "Close gallery",
+    "gallery_lightbox_prev": "Previous image",
+    "gallery_lightbox_next": "Next image"
+  },
+  "labels": {
+    "heading": "Heading",
+    "heading_alignment": "Heading alignment",
+    "text": "Text",
+    "image": "Image",
+    "color_scheme": "Color scheme",
+    "columns_desktop": "Columns on desktop",
+    "columns_mobile": "Columns on mobile",
+    "button_label": "Button label",
+    "button_link": "Button link",
+    "button_style": "Button style",
+    "full_width": "Full width"
+  },
+  "options": {
+    "alignment": {
+      "left": "Left",
+      "center": "Center",
+      "right": "Right",
+      "top": "Top",
+      "bottom": "Bottom"
+    },
+    "color_scheme": {
+      "scheme_1": "Scheme 1",
+      "scheme_2": "Scheme 2"
+    },
+    "aspect_ratio": {
+      "landscape": "Landscape (16:9)",
+      "portrait": "Portrait (3:4)",
+      "square": "Square (1:1)",
+      "original": "Original"
+    },
+    "button_style": {
+      "primary": "Primary",
+      "secondary": "Secondary"
+    }
+  },
+  "sections": {
+    "lookbook": {
+      "name": "Lookbook",
+      "view_product": "View {{ product }}",
+      "settings": {
+        "image": {
+          "label": "Image"
+        },
+        "image_ratio": {
+          "label": "Image aspect ratio"
+        },
+        "hotspot_style": {
+          "label": "Hotspot style",
+          "options": {
+            "minimal": "Minimal",
+            "numbered": "Numbered",
+            "icon": "Icon"
+          }
+        },
+        "hotspot_color": {
+          "label": "Hotspot color",
+          "options": {
+            "light": "Light",
+            "dark": "Dark",
+            "accent": "Accent"
+          }
+        },
+        "enable_quick_add": {
+          "label": "Enable quick add"
+        }
+      },
+      "blocks": {
+        "hotspot": {
+          "name": "Product hotspot",
+          "settings": {
+            "product": {
+              "label": "Product"
+            },
+            "horizontal_position": {
+              "label": "Horizontal position"
+            },
+            "vertical_position": {
+              "label": "Vertical position"
+            }
+          }
+        }
+      }
+    },
+    "image_gallery": {
+      "name": "Image gallery",
+      "settings": {
+        "layout": {
+          "label": "Layout",
+          "options": {
+            "grid": "Grid",
+            "masonry": "Masonry",
+            "asymmetric": "Asymmetric"
+          }
+        },
+        "gap": {
+          "label": "Gap between images",
+          "options": {
+            "none": "None",
+            "small": "Small",
+            "medium": "Medium",
+            "large": "Large"
+          }
+        },
+        "image_ratio": {
+          "label": "Image aspect ratio",
+          "options": {
+            "natural": "Natural"
+          },
+          "info": "Masonry layout always uses natural aspect ratio"
+        },
+        "enable_lightbox": {
+          "label": "Enable lightbox"
+        },
+        "hover_effect": {
+          "label": "Hover effect",
+          "options": {
+            "none": "None",
+            "zoom": "Zoom",
+            "overlay": "Overlay",
+            "caption": "Caption reveal"
+          }
+        }
+      },
+      "blocks": {
+        "image": {
+          "name": "Image",
+          "settings": {
+            "caption": {
+              "label": "Caption"
+            },
+            "link": {
+              "label": "Link",
+              "info": "Ignored when lightbox is enabled"
+            },
+            "size": {
+              "label": "Size",
+              "options": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+              },
+              "info": "Only applies to asymmetric layout"
+            }
+          }
+        }
+      }
+    },
+    "video": {
+      "name": "Video",
+      "no_video": "Add a video URL or upload a video",
+      "settings": {
+        "header_video": {
+          "content": "Video source"
+        },
+        "video_url": {
+          "label": "Video URL",
+          "info": "YouTube or Vimeo URL"
+        },
+        "video": {
+          "label": "Shopify-hosted video",
+          "info": "Upload a video in Settings > Files"
+        },
+        "cover_image": {
+          "label": "Cover image"
+        },
+        "header_style": {
+          "content": "Style"
+        },
+        "video_style": {
+          "label": "Video style",
+          "options": {
+            "standard": "Standard (click to play)",
+            "ambient": "Ambient (autoplay, muted, looped)"
+          },
+          "info": "Ambient style autoplays muted video as a background"
+        },
+        "aspect_ratio": {
+          "label": "Aspect ratio"
+        },
+        "loop": {
+          "label": "Loop video"
+        },
+        "show_controls": {
+          "label": "Show video controls"
+        },
+        "header_content": {
+          "content": "Content"
+        },
+        "text_position": {
+          "label": "Text position",
+          "options": {
+            "none": "None",
+            "overlay": "Overlay on video",
+            "below": "Below video"
+          }
+        },
+        "content_position": {
+          "label": "Content alignment"
+        }
+      },
+      "blocks": {
+        "subheading": {
+          "name": "Subheading"
+        },
+        "heading": {
+          "name": "Heading"
+        },
+        "text": {
+          "name": "Text"
+        },
+        "button": {
+          "name": "Button"
+        }
+      }
+    },
+    "split_hero": {
+      "name": "Split hero",
+      "settings": {
+        "image": {
+          "label": "Image"
+        },
+        "image_position": {
+          "label": "Image position",
+          "options": {
+            "left": "Left",
+            "right": "Right"
+          }
+        },
+        "split_ratio": {
+          "label": "Split ratio",
+          "options": {
+            "equal": "Equal (50/50)",
+            "wide_image": "Wide image (60/40)",
+            "wide_content": "Wide content (40/60)"
+          }
+        },
+        "height": {
+          "label": "Section height",
+          "options": {
+            "auto": "Auto",
+            "medium": "Medium",
+            "large": "Large",
+            "full": "Full screen"
+          }
+        },
+        "vertical_alignment": {
+          "label": "Content vertical alignment"
+        },
+        "content_alignment": {
+          "label": "Content text alignment"
+        },
+        "enable_parallax": {
+          "label": "Enable parallax effect"
+        },
+        "mobile_image_position": {
+          "label": "Mobile image position",
+          "options": {
+            "top": "Top",
+            "bottom": "Bottom"
+          }
+        }
+      },
+      "blocks": {
+        "subheading": {
+          "name": "Subheading"
+        },
+        "heading": {
+          "name": "Heading"
+        },
+        "text": {
+          "name": "Text"
+        },
+        "button": {
+          "name": "Button",
+          "settings": {
+            "show_arrow": {
+              "label": "Show arrow"
+            }
+          }
+        }
+      }
+    },
+    "marquee": {
+      "name": "Scrolling marquee",
+      "settings": {
+        "header_animation": {
+          "content": "Animation"
+        },
+        "speed": {
+          "label": "Animation duration",
+          "info": "Time in seconds for one complete scroll"
+        },
+        "direction": {
+          "label": "Scroll direction",
+          "options": {
+            "left": "Left",
+            "right": "Right"
+          }
+        },
+        "pause_on_hover": {
+          "label": "Pause on hover"
+        },
+        "header_typography": {
+          "content": "Typography"
+        },
+        "text_size": {
+          "label": "Text size",
+          "options": {
+            "small": "Small",
+            "medium": "Medium",
+            "large": "Large",
+            "xl": "Extra large"
+          }
+        },
+        "font": {
+          "label": "Font",
+          "options": {
+            "body": "Body",
+            "heading": "Heading"
+          }
+        },
+        "text_transform": {
+          "label": "Text style",
+          "options": {
+            "none": "Normal",
+            "uppercase": "Uppercase",
+            "italic": "Italic"
+          }
+        },
+        "enable_stroke": {
+          "label": "Stroke text (outline only)",
+          "info": "Creates a high-fashion outline text effect"
+        },
+        "header_style": {
+          "content": "Style"
+        },
+        "divider": {
+          "label": "Divider between items",
+          "options": {
+            "none": "None",
+            "dot": "Dot (•)",
+            "star": "Star (✦)",
+            "dash": "Dash (—)",
+            "custom": "Custom"
+          }
+        },
+        "custom_divider": {
+          "label": "Custom divider",
+          "info": "Used when divider is set to Custom"
+        },
+        "spacing": {
+          "label": "Item spacing",
+          "options": {
+            "compact": "Compact",
+            "normal": "Normal",
+            "spacious": "Spacious"
+          }
+        }
+      },
+      "blocks": {
+        "text": {
+          "name": "Text item",
+          "settings": {
+            "link": {
+              "label": "Link (optional)"
+            }
+          }
+        }
+      }
+    },
+    "hero": {
+      "name": "Hero",
+      "settings": {
+        "header_media": {
+          "content": "Media"
+        },
+        "image": {
+          "label": "Image"
+        },
+        "video": {
+          "label": "Video URL"
+        },
+        "header_layout": {
+          "content": "Layout"
+        },
+        "height": {
+          "label": "Section height",
+          "options": {
+            "small": "Small",
+            "medium": "Medium",
+            "large": "Large",
+            "full": "Full screen"
+          }
+        },
+        "content_position": {
+          "label": "Content position",
+          "options": {
+            "top_left": "Top left",
+            "top_center": "Top center",
+            "top_right": "Top right",
+            "middle_left": "Middle left",
+            "middle_center": "Middle center",
+            "middle_right": "Middle right",
+            "bottom_left": "Bottom left",
+            "bottom_center": "Bottom center",
+            "bottom_right": "Bottom right"
+          }
+        },
+        "show_scroll_indicator": {
+          "label": "Show scroll indicator"
+        },
+        "header_overlay": {
+          "content": "Overlay"
+        },
+        "overlay_style": {
+          "label": "Overlay style",
+          "options": {
+            "solid": "Solid",
+            "gradient": "Gradient",
+            "vignette": "Vignette"
+          }
+        },
+        "overlay_opacity": {
+          "label": "Overlay opacity"
+        }
+      },
+      "blocks": {
+        "subheading": {
+          "name": "Subheading"
+        },
+        "heading": {
+          "name": "Heading"
+        },
+        "text": {
+          "name": "Text"
+        },
+        "button": {
+          "name": "Button",
+          "settings": {
+            "label": {
+              "label": "Label"
+            },
+            "link": {
+              "label": "Link"
+            },
+            "style": {
+              "label": "Style",
+              "options": {
+                "primary": "Primary",
+                "secondary": "Secondary"
+              }
+            }
+          }
+        }
+      }
+    },
+    "image_with_text": {
+      "name": "Image with text",
+      "settings": {
+        "image": {
+          "label": "Image"
+        },
+        "image_position": {
+          "label": "Image position",
+          "options": {
+            "left": "Left",
+            "right": "Right"
+          }
+        },
+        "content_alignment": {
+          "label": "Content alignment",
+          "options": {
+            "left": "Left",
+            "center": "Center"
+          }
+        },
+        "color_scheme": {
+          "label": "Color scheme"
+        }
+      },
+      "blocks": {
+        "heading": {
+          "name": "Heading"
+        },
+        "text": {
+          "name": "Text"
+        },
+        "button": {
+          "name": "Button"
+        }
+      }
+    },
+    "testimonials": {
+      "name": "Testimonials",
+      "settings": {
+        "layout": {
+          "label": "Layout",
+          "options": {
+            "grid": "Grid",
+            "carousel": "Carousel"
+          }
+        }
+      }
+    }
+  },
+  "blocks": {
+    "testimonial": {
+      "name": "Testimonial",
+      "settings": {
+        "rating": {
+          "label": "Rating"
+        },
+        "quote": {
+          "label": "Quote"
+        },
+        "author_image": {
+          "label": "Author image"
+        },
+        "author_name": {
+          "label": "Author name"
+        },
+        "author_title": {
+          "label": "Author title"
+        }
+      }
+    }
   },
   "newsletter": {
     "email_placeholder": "Enter your email",

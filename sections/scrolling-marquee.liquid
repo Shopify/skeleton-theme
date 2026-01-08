@@ -1,0 +1,456 @@
+{% comment %}
+  Scrolling Marquee Section - Influence Theme
+  Continuous horizontal scrolling text banner
+  High-fashion runway-inspired aesthetic (Balenciaga, Off-White style)
+{% endcomment %}
+
+{%- liquid
+  assign section_id = 'Marquee-' | append: section.id
+  assign speed = section.settings.speed
+  assign direction = section.settings.direction
+  assign text_size = section.settings.text_size
+  assign font = section.settings.font
+  assign text_transform = section.settings.text_transform
+  assign enable_stroke = section.settings.enable_stroke
+  assign divider = section.settings.divider
+  assign spacing = section.settings.spacing
+
+  case divider
+    when 'dot'
+      assign divider_char = '•'
+    when 'star'
+      assign divider_char = '✦'
+    when 'dash'
+      assign divider_char = '—'
+    when 'custom'
+      assign divider_char = section.settings.custom_divider
+    else
+      assign divider_char = ''
+  endcase
+-%}
+
+<section
+  id="{{ section_id }}"
+  class="marquee section marquee--{{ text_size }} marquee--{{ font }} marquee--{{ spacing }}{% if text_transform == 'uppercase' %} marquee--uppercase{% elsif text_transform == 'italic' %} marquee--italic{% endif %}{% if enable_stroke %} marquee--stroke{% endif %} {% render 'color-scheme', scheme: section.settings.color_scheme %}"
+  style="--marquee-duration: {{ speed }}s;"
+  {% if section.settings.pause_on_hover %}data-pause-on-hover{% endif %}
+  data-section-id="{{ section.id }}"
+  data-section-type="marquee"
+>
+  {%- if section.blocks.size > 0 -%}
+    <div class="marquee__track marquee__track--{{ direction }}" aria-hidden="true">
+      {%- comment -%} First copy of content {%- endcomment -%}
+      <div class="marquee__content">
+        {%- for block in section.blocks -%}
+          {%- if block.settings.text != blank -%}
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" class="marquee__item" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </a>
+            {%- else -%}
+              <span class="marquee__item" {{ block.shopify_attributes }}>
+                {{ block.settings.text }}
+              </span>
+            {%- endif -%}
+
+            {%- if divider != 'none' and forloop.last == false -%}
+              <span class="marquee__divider">{{ divider_char }}</span>
+            {%- elsif divider != 'none' -%}
+              <span class="marquee__divider">{{ divider_char }}</span>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Duplicate for seamless loop {%- endcomment -%}
+      <div class="marquee__content">
+        {%- for block in section.blocks -%}
+          {%- if block.settings.text != blank -%}
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" class="marquee__item">
+                {{ block.settings.text }}
+              </a>
+            {%- else -%}
+              <span class="marquee__item">
+                {{ block.settings.text }}
+              </span>
+            {%- endif -%}
+
+            {%- if divider != 'none' and forloop.last == false -%}
+              <span class="marquee__divider">{{ divider_char }}</span>
+            {%- elsif divider != 'none' -%}
+              <span class="marquee__divider">{{ divider_char }}</span>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Third copy for extra long screens {%- endcomment -%}
+      <div class="marquee__content">
+        {%- for block in section.blocks -%}
+          {%- if block.settings.text != blank -%}
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" class="marquee__item">
+                {{ block.settings.text }}
+              </a>
+            {%- else -%}
+              <span class="marquee__item">
+                {{ block.settings.text }}
+              </span>
+            {%- endif -%}
+
+            {%- if divider != 'none' and forloop.last == false -%}
+              <span class="marquee__divider">{{ divider_char }}</span>
+            {%- elsif divider != 'none' -%}
+              <span class="marquee__divider">{{ divider_char }}</span>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {%- comment -%} Screen reader accessible version {%- endcomment -%}
+    <div class="visually-hidden">
+      {%- for block in section.blocks -%}
+        {%- if block.settings.text != blank -%}
+          <p>{{ block.settings.text }}</p>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- else -%}
+    {%- comment -%} Placeholder for editor {%- endcomment -%}
+    <div class="marquee__track marquee__track--{{ direction }}" aria-hidden="true">
+      <div class="marquee__content">
+        <span class="marquee__item">Add text items to create your marquee</span>
+        <span class="marquee__divider">{{ divider_char }}</span>
+      </div>
+      <div class="marquee__content">
+        <span class="marquee__item">Add text items to create your marquee</span>
+        <span class="marquee__divider">{{ divider_char }}</span>
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+  .marquee {
+    overflow: hidden;
+    padding: var(--space-4) 0;
+    white-space: nowrap;
+  }
+
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee-scroll var(--marquee-duration, 30s) linear infinite;
+  }
+
+  .marquee__track--right {
+    animation-direction: reverse;
+  }
+
+  /* Pause on hover */
+  [data-pause-on-hover]:hover .marquee__track {
+    animation-play-state: paused;
+  }
+
+  /* Reduced motion - show static centered text */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+      animation: none;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .marquee__content:not(:first-child) {
+      display: none;
+    }
+  }
+
+  .marquee__content {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .marquee__item {
+    display: inline-block;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity var(--duration-fast);
+  }
+
+  a.marquee__item:hover {
+    opacity: 0.7;
+  }
+
+  a.marquee__item:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  .marquee__divider {
+    display: inline-block;
+    opacity: 0.4;
+  }
+
+  /* Text sizes */
+  .marquee--small {
+    font-size: var(--font-size-sm);
+    padding: var(--space-3) 0;
+  }
+
+  .marquee--medium {
+    font-size: var(--font-size-lg);
+  }
+
+  .marquee--large {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    padding: var(--space-6) 0;
+  }
+
+  .marquee--xl {
+    font-size: clamp(2rem, 6vw, 4rem);
+    padding: var(--space-8) 0;
+  }
+
+  /* Font styles */
+  .marquee--heading {
+    font-family: var(--font-heading-family);
+    font-weight: var(--font-heading-weight);
+  }
+
+  .marquee--body {
+    font-family: var(--font-body-family);
+  }
+
+  /* Text transforms */
+  .marquee--uppercase {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .marquee--italic {
+    font-style: italic;
+  }
+
+  /* Stroke text effect - high fashion aesthetic */
+  .marquee--stroke .marquee__item {
+    color: transparent;
+    -webkit-text-stroke: 1px currentColor;
+    text-stroke: 1px currentColor;
+  }
+
+  .marquee--stroke.marquee--large .marquee__item,
+  .marquee--stroke.marquee--xl .marquee__item {
+    -webkit-text-stroke: 2px currentColor;
+    text-stroke: 2px currentColor;
+  }
+
+  .marquee--stroke .marquee__divider {
+    color: var(--color-foreground);
+    -webkit-text-stroke: 0;
+    text-stroke: 0;
+  }
+
+  /* Spacing options */
+  .marquee--compact .marquee__item,
+  .marquee--compact .marquee__divider {
+    padding-inline: var(--space-4);
+  }
+
+  .marquee--normal .marquee__item,
+  .marquee--normal .marquee__divider {
+    padding-inline: var(--space-6);
+  }
+
+  .marquee--spacious .marquee__item,
+  .marquee--spacious .marquee__divider {
+    padding-inline: var(--space-10);
+  }
+
+  /* Animation keyframes */
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-33.333%);
+    }
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 749px) {
+    .marquee--large {
+      font-size: clamp(1.25rem, 5vw, 1.75rem);
+    }
+
+    .marquee--xl {
+      font-size: clamp(1.5rem, 7vw, 2.5rem);
+    }
+
+    .marquee--spacious .marquee__item,
+    .marquee--spacious .marquee__divider {
+      padding-inline: var(--space-6);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.marquee.name",
+  "tag": "section",
+  "class": "section-marquee",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.marquee.settings.header_animation.content"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "t:sections.marquee.settings.speed.label",
+      "info": "t:sections.marquee.settings.speed.info",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "default": 30,
+      "unit": "s"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "t:sections.marquee.settings.direction.label",
+      "options": [
+        { "value": "left", "label": "t:sections.marquee.settings.direction.options.left" },
+        { "value": "right", "label": "t:sections.marquee.settings.direction.options.right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "t:sections.marquee.settings.pause_on_hover.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.marquee.settings.header_typography.content"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "t:sections.marquee.settings.text_size.label",
+      "options": [
+        { "value": "small", "label": "t:sections.marquee.settings.text_size.options.small" },
+        { "value": "medium", "label": "t:sections.marquee.settings.text_size.options.medium" },
+        { "value": "large", "label": "t:sections.marquee.settings.text_size.options.large" },
+        { "value": "xl", "label": "t:sections.marquee.settings.text_size.options.xl" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "select",
+      "id": "font",
+      "label": "t:sections.marquee.settings.font.label",
+      "options": [
+        { "value": "body", "label": "t:sections.marquee.settings.font.options.body" },
+        { "value": "heading", "label": "t:sections.marquee.settings.font.options.heading" }
+      ],
+      "default": "heading"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "t:sections.marquee.settings.text_transform.label",
+      "options": [
+        { "value": "none", "label": "t:sections.marquee.settings.text_transform.options.none" },
+        { "value": "uppercase", "label": "t:sections.marquee.settings.text_transform.options.uppercase" },
+        { "value": "italic", "label": "t:sections.marquee.settings.text_transform.options.italic" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_stroke",
+      "label": "t:sections.marquee.settings.enable_stroke.label",
+      "info": "t:sections.marquee.settings.enable_stroke.info",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.marquee.settings.header_style.content"
+    },
+    {
+      "type": "select",
+      "id": "divider",
+      "label": "t:sections.marquee.settings.divider.label",
+      "options": [
+        { "value": "none", "label": "t:sections.marquee.settings.divider.options.none" },
+        { "value": "dot", "label": "t:sections.marquee.settings.divider.options.dot" },
+        { "value": "star", "label": "t:sections.marquee.settings.divider.options.star" },
+        { "value": "dash", "label": "t:sections.marquee.settings.divider.options.dash" },
+        { "value": "custom", "label": "t:sections.marquee.settings.divider.options.custom" }
+      ],
+      "default": "star"
+    },
+    {
+      "type": "text",
+      "id": "custom_divider",
+      "label": "t:sections.marquee.settings.custom_divider.label",
+      "info": "t:sections.marquee.settings.custom_divider.info",
+      "default": "✦"
+    },
+    {
+      "type": "select",
+      "id": "spacing",
+      "label": "t:sections.marquee.settings.spacing.label",
+      "options": [
+        { "value": "compact", "label": "t:sections.marquee.settings.spacing.options.compact" },
+        { "value": "normal", "label": "t:sections.marquee.settings.spacing.options.normal" },
+        { "value": "spacious", "label": "t:sections.marquee.settings.spacing.options.spacious" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-2"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "t:sections.marquee.blocks.text.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "Marquee Text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.marquee.blocks.text.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.marquee.name",
+      "blocks": [
+        { "type": "text", "settings": { "text": "Free Shipping on Orders $100+" } },
+        { "type": "text", "settings": { "text": "New Collection Available" } },
+        { "type": "text", "settings": { "text": "Sign Up for 10% Off" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
