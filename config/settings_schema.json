@@ -37,60 +37,95 @@
     "name": "t:settings_schema.colors.name",
     "settings": [
       {
-        "type": "header",
-        "content": "t:settings_schema.colors.settings.scheme_1.header"
-      },
-      {
-        "type": "color",
-        "id": "scheme_1_background",
-        "label": "t:settings_schema.colors.settings.background.label",
-        "default": "#FFFFFF"
-      },
-      {
-        "type": "color",
-        "id": "scheme_1_foreground",
-        "label": "t:settings_schema.colors.settings.foreground.label",
-        "default": "#1A1A1A"
-      },
-      {
-        "type": "color",
-        "id": "scheme_1_accent",
-        "label": "t:settings_schema.colors.settings.accent.label",
-        "default": "#000000"
-      },
-      {
-        "type": "color",
-        "id": "scheme_1_muted",
-        "label": "t:settings_schema.colors.settings.muted.label",
-        "default": "#757575"
-      },
-      {
-        "type": "header",
-        "content": "t:settings_schema.colors.settings.scheme_2.header"
-      },
-      {
-        "type": "color",
-        "id": "scheme_2_background",
-        "label": "t:settings_schema.colors.settings.background.label",
-        "default": "#1A1A1A"
-      },
-      {
-        "type": "color",
-        "id": "scheme_2_foreground",
-        "label": "t:settings_schema.colors.settings.foreground.label",
-        "default": "#FFFFFF"
-      },
-      {
-        "type": "color",
-        "id": "scheme_2_accent",
-        "label": "t:settings_schema.colors.settings.accent.label",
-        "default": "#FFFFFF"
-      },
-      {
-        "type": "color",
-        "id": "scheme_2_muted",
-        "label": "t:settings_schema.colors.settings.muted.label",
-        "default": "#A0A0A0"
+        "type": "color_scheme_group",
+        "id": "color_schemes",
+        "definition": [
+          {
+            "type": "color",
+            "id": "background",
+            "label": "t:settings_schema.colors.settings.background.label",
+            "info": "t:settings_schema.colors.settings.background.info"
+          },
+          {
+            "type": "color",
+            "id": "text",
+            "label": "t:settings_schema.colors.settings.text.label",
+            "info": "t:settings_schema.colors.settings.text.info"
+          },
+          {
+            "type": "color",
+            "id": "button",
+            "label": "t:settings_schema.colors.settings.button.label",
+            "info": "t:settings_schema.colors.settings.button.info"
+          },
+          {
+            "type": "color",
+            "id": "button_label",
+            "label": "t:settings_schema.colors.settings.button_label.label",
+            "info": "t:settings_schema.colors.settings.button_label.info"
+          },
+          {
+            "type": "color",
+            "id": "secondary_button_label",
+            "label": "t:settings_schema.colors.settings.secondary_button_label.label",
+            "info": "t:settings_schema.colors.settings.secondary_button_label.info"
+          },
+          {
+            "type": "color",
+            "id": "shadow",
+            "label": "t:settings_schema.colors.settings.shadow.label",
+            "info": "t:settings_schema.colors.settings.shadow.info"
+          }
+        ],
+        "role": {
+          "text": "text",
+          "background": {
+            "solid": "background",
+            "gradient": "background_gradient"
+          },
+          "links": "secondary_button_label",
+          "icons": "text",
+          "primary_button": "button",
+          "on_primary_button": "button_label",
+          "primary_button_border": "button",
+          "secondary_button": "background",
+          "on_secondary_button": "secondary_button_label",
+          "secondary_button_border": "secondary_button_label"
+        },
+        "default": {
+          "scheme_1": {
+            "background": "#FFFFFF",
+            "text": "#1A1A1A",
+            "button": "#1A1A1A",
+            "button_label": "#FFFFFF",
+            "secondary_button_label": "#1A1A1A",
+            "shadow": "#1A1A1A"
+          },
+          "scheme_2": {
+            "background": "#1A1A1A",
+            "text": "#FFFFFF",
+            "button": "#FFFFFF",
+            "button_label": "#1A1A1A",
+            "secondary_button_label": "#FFFFFF",
+            "shadow": "#1A1A1A"
+          },
+          "scheme_3": {
+            "background": "#F5F5F5",
+            "text": "#1A1A1A",
+            "button": "#1A1A1A",
+            "button_label": "#FFFFFF",
+            "secondary_button_label": "#1A1A1A",
+            "shadow": "#1A1A1A"
+          },
+          "scheme_4": {
+            "background": "#C4A87C",
+            "text": "#1A1A1A",
+            "button": "#1A1A1A",
+            "button_label": "#FFFFFF",
+            "secondary_button_label": "#1A1A1A",
+            "shadow": "#1A1A1A"
+          }
+        }
       },
       {
         "type": "header",
