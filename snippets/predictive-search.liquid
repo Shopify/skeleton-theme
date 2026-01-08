@@ -1,0 +1,429 @@
+{% comment %}
+  Predictive Search Component - Influence Theme
+  Provides real-time search suggestions with products, collections, articles, and pages
+
+  Usage:
+  {% render 'predictive-search' %}
+{% endcomment %}
+
+<predictive-search class="predictive-search" data-predictive-search>
+  <form
+    action="{{ routes.search_url }}"
+    method="get"
+    role="search"
+    class="predictive-search__form"
+  >
+    <div class="predictive-search__input-wrapper">
+      <label for="predictive-search-input" class="visually-hidden">
+        {{ 'search.placeholder' | t }}
+      </label>
+      {% render 'icon', icon: 'search', class: 'predictive-search__icon' %}
+      <input
+        type="search"
+        id="predictive-search-input"
+        name="q"
+        class="predictive-search__input form-input"
+        placeholder="{{ 'search.placeholder' | t }}"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        data-predictive-search-input
+        aria-controls="predictive-search-results"
+        aria-expanded="false"
+        aria-autocomplete="list"
+        aria-haspopup="listbox"
+      >
+      <input type="hidden" name="type" value="product,article,page">
+      <button
+        type="button"
+        class="predictive-search__clear"
+        aria-label="{{ 'accessibility.close' | t }}"
+        data-predictive-search-clear
+        hidden
+      >
+        {% render 'icon', icon: 'close', size: 'sm' %}
+      </button>
+    </div>
+
+    <button type="submit" class="predictive-search__submit btn btn--primary">
+      {{ 'search.search' | t }}
+    </button>
+
+    <button
+      type="button"
+      class="predictive-search__close"
+      aria-label="{{ 'accessibility.close' | t }}"
+      data-search-close
+    >
+      {% render 'icon', icon: 'close' %}
+    </button>
+  </form>
+
+  <div
+    id="predictive-search-results"
+    class="predictive-search__results"
+    role="listbox"
+    aria-label="{{ 'search.results' | t }}"
+    data-predictive-search-results
+    hidden
+  >
+    <div class="predictive-search__loading" data-predictive-search-loading hidden>
+      <span class="predictive-search__loading-spinner"></span>
+      <span>{{ 'search.loading' | t }}</span>
+    </div>
+
+    <div class="predictive-search__content" data-predictive-search-content>
+      {%- comment -%} Results populated via JavaScript {%- endcomment -%}
+    </div>
+  </div>
+</predictive-search>
+
+<script>
+  class PredictiveSearch extends HTMLElement {
+    constructor() {
+      super();
+      this.input = this.querySelector('[data-predictive-search-input]');
+      this.results = this.querySelector('[data-predictive-search-results]');
+      this.content = this.querySelector('[data-predictive-search-content]');
+      this.loading = this.querySelector('[data-predictive-search-loading]');
+      this.clearButton = this.querySelector('[data-predictive-search-clear]');
+      this.closeButton = this.querySelector('[data-search-close]');
+      this.form = this.querySelector('form');
+
+      this.cachedResults = {};
+      this.debounceTimeout = null;
+      this.selectedIndex = -1;
+      this.abortController = null;
+
+      this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+      // Input handling with debounce
+      this.input.addEventListener('input', this.onInput.bind(this));
+
+      // Keyboard navigation
+      this.input.addEventListener('keydown', this.onKeydown.bind(this));
+
+      // Clear button
+      this.clearButton?.addEventListener('click', this.onClear.bind(this));
+
+      // Close button
+      this.closeButton?.addEventListener('click', () => {
+        this.close();
+        const searchContainer = document.querySelector('[data-search-container]');
+        if (searchContainer) searchContainer.hidden = true;
+      });
+
+      // Close on click outside
+      document.addEventListener('click', (e) => {
+        if (!this.contains(e.target)) {
+          this.close();
+        }
+      });
+
+      // Focus handling
+      this.input.addEventListener('focus', () => {
+        if (this.input.value.length >= 2) {
+          this.open();
+        }
+      });
+    }
+
+    onInput() {
+      const query = this.input.value.trim();
+
+      // Show/hide clear button
+      this.clearButton.hidden = query.length === 0;
+
+      // Clear previous timeout
+      clearTimeout(this.debounceTimeout);
+
+      if (query.length < 2) {
+        this.close();
+        return;
+      }
+
+      // Debounce search
+      this.debounceTimeout = setTimeout(() => {
+        this.search(query);
+      }, 300);
+    }
+
+    onKeydown(e) {
+      const resultItems = this.results.querySelectorAll('[data-result-item]');
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          this.selectedIndex = Math.min(this.selectedIndex + 1, resultItems.length - 1);
+          this.updateSelection(resultItems);
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+          this.updateSelection(resultItems);
+          break;
+        case 'Enter':
+          if (this.selectedIndex >= 0 && resultItems[this.selectedIndex]) {
+            e.preventDefault();
+            const link = resultItems[this.selectedIndex].querySelector('a');
+            if (link) link.click();
+          }
+          break;
+        case 'Escape':
+          e.preventDefault();
+          this.close();
+          this.input.blur();
+          break;
+      }
+    }
+
+    updateSelection(items) {
+      items.forEach((item, index) => {
+        item.classList.toggle('is-selected', index === this.selectedIndex);
+        if (index === this.selectedIndex) {
+          item.scrollIntoView({ block: 'nearest' });
+        }
+      });
+    }
+
+    onClear() {
+      this.input.value = '';
+      this.input.focus();
+      this.close();
+      this.clearButton.hidden = true;
+    }
+
+    async search(query) {
+      // Check cache
+      if (this.cachedResults[query]) {
+        this.renderResults(this.cachedResults[query]);
+        return;
+      }
+
+      // Abort previous request
+      if (this.abortController) {
+        this.abortController.abort();
+      }
+      this.abortController = new AbortController();
+
+      this.showLoading();
+
+      try {
+        const response = await fetch(
+          `${window.Shopify.routes.root}search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product,collection,article,page&resources[limit]=6&resources[options][unavailable_products]=hide`,
+          { signal: this.abortController.signal }
+        );
+
+        if (!response.ok) throw new Error('Search failed');
+
+        const data = await response.json();
+
+        // Cache results
+        this.cachedResults[query] = data;
+
+        this.renderResults(data);
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Predictive search error:', error);
+          this.close();
+        }
+      }
+    }
+
+    renderResults(data) {
+      const resources = data.resources?.results || {};
+      const products = resources.products || [];
+      const collections = resources.collections || [];
+      const articles = resources.articles || [];
+      const pages = resources.pages || [];
+
+      const hasResults = products.length || collections.length || articles.length || pages.length;
+
+      if (!hasResults) {
+        this.content.innerHTML = `
+          <div class="predictive-search__no-results">
+            <p>${this.getNoResultsMessage()}</p>
+            <ul class="predictive-search__suggestions">
+              <li>{{ 'search.suggestion_1' | t }}</li>
+              <li>{{ 'search.suggestion_2' | t }}</li>
+              <li>{{ 'search.suggestion_3' | t }}</li>
+            </ul>
+          </div>
+        `;
+        this.open();
+        return;
+      }
+
+      let html = '';
+      let itemIndex = 0;
+
+      // Products section
+      if (products.length) {
+        html += `
+          <div class="predictive-search__section">
+            <h3 class="predictive-search__section-title">{{ 'search.products' | t }}</h3>
+            <ul class="predictive-search__products" role="listbox">
+              ${products.map(product => {
+                const itemHtml = `
+                  <li class="predictive-search__product" data-result-item data-index="${itemIndex}" role="option">
+                    <a href="${product.url}" class="predictive-search__product-link">
+                      ${product.featured_image?.url ? `
+                        <div class="predictive-search__product-image">
+                          <img
+                            src="${this.getSizedImageUrl(product.featured_image.url, '80x')}"
+                            alt="${product.featured_image.alt || product.title}"
+                            width="60"
+                            height="75"
+                            loading="lazy"
+                          >
+                        </div>
+                      ` : `
+                        <div class="predictive-search__product-image predictive-search__product-image--placeholder">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <path d="m21 15-5-5L5 21"/>
+                          </svg>
+                        </div>
+                      `}
+                      <div class="predictive-search__product-info">
+                        ${product.vendor ? `<span class="predictive-search__product-vendor">${product.vendor}</span>` : ''}
+                        <span class="predictive-search__product-title">${product.title}</span>
+                        <span class="predictive-search__product-price">${this.formatMoney(product.price)}</span>
+                      </div>
+                    </a>
+                  </li>
+                `;
+                itemIndex++;
+                return itemHtml;
+              }).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      // Collections section
+      if (collections.length) {
+        html += `
+          <div class="predictive-search__section">
+            <h3 class="predictive-search__section-title">{{ 'search.collections' | t }}</h3>
+            <ul class="predictive-search__list" role="listbox">
+              ${collections.map(collection => {
+                const itemHtml = `
+                  <li data-result-item data-index="${itemIndex}" role="option">
+                    <a href="${collection.url}" class="predictive-search__link">
+                      ${collection.title}
+                    </a>
+                  </li>
+                `;
+                itemIndex++;
+                return itemHtml;
+              }).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      // Articles section
+      if (articles.length) {
+        html += `
+          <div class="predictive-search__section">
+            <h3 class="predictive-search__section-title">{{ 'search.articles' | t }}</h3>
+            <ul class="predictive-search__list" role="listbox">
+              ${articles.map(article => {
+                const itemHtml = `
+                  <li data-result-item data-index="${itemIndex}" role="option">
+                    <a href="${article.url}" class="predictive-search__link">
+                      ${article.title}
+                    </a>
+                  </li>
+                `;
+                itemIndex++;
+                return itemHtml;
+              }).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      // Pages section
+      if (pages.length) {
+        html += `
+          <div class="predictive-search__section">
+            <h3 class="predictive-search__section-title">{{ 'search.pages' | t }}</h3>
+            <ul class="predictive-search__list" role="listbox">
+              ${pages.map(page => {
+                const itemHtml = `
+                  <li data-result-item data-index="${itemIndex}" role="option">
+                    <a href="${page.url}" class="predictive-search__link">
+                      ${page.title}
+                    </a>
+                  </li>
+                `;
+                itemIndex++;
+                return itemHtml;
+              }).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      // View all link
+      html += `
+        <div class="predictive-search__footer">
+          <a href="${window.Shopify.routes.root}search?q=${encodeURIComponent(this.input.value)}" class="predictive-search__view-all btn btn--secondary btn--sm">
+            {{ 'search.view_all' | t }}
+          </a>
+        </div>
+      `;
+
+      this.content.innerHTML = html;
+      this.selectedIndex = -1;
+      this.open();
+    }
+
+    getNoResultsMessage() {
+      return `{{ 'search.no_results' | t: terms: '${this.input.value}' }}`;
+    }
+
+    getSizedImageUrl(url, size) {
+      if (!url) return '';
+      const match = url.match(/\.(jpg|jpeg|gif|png|bmp|bitmap|tiff|tif|webp)(\?v=\d+)?$/i);
+      if (match) {
+        const prefix = url.split(match[0])[0];
+        return `${prefix}_${size}${match[0]}`;
+      }
+      return url;
+    }
+
+    formatMoney(cents) {
+      if (typeof Shopify !== 'undefined' && Shopify.formatMoney) {
+        return Shopify.formatMoney(cents, window.theme?.moneyFormat || '${{ amount }}');
+      }
+      return '$' + (cents / 100).toFixed(2);
+    }
+
+    showLoading() {
+      this.loading.hidden = false;
+      this.content.innerHTML = '';
+      this.open();
+    }
+
+    open() {
+      this.results.hidden = false;
+      this.loading.hidden = true;
+      this.input.setAttribute('aria-expanded', 'true');
+    }
+
+    close() {
+      this.results.hidden = true;
+      this.input.setAttribute('aria-expanded', 'false');
+      this.selectedIndex = -1;
+    }
+  }
+
+  customElements.define('predictive-search', PredictiveSearch);
+</script>

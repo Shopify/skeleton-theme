@@ -1,27 +1,51 @@
 {% comment %}
   Announcement Bar Section - Influence Theme
-  Features: Dismissible, multiple announcements carousel option, customizable color scheme
+  Premium Features:
+  - Dismissible with cookie persistence
+  - Multiple announcements carousel
+  - Icon support per announcement
+  - Countdown timer block
+  - Customizable color scheme
 {% endcomment %}
+
+{%- liquid
+  assign section_id = section.id
+  assign enable_dismiss = section.settings.enable_dismiss
+  assign dismiss_days = section.settings.dismiss_days | default: 7
+-%}
 
 {%- if section.blocks.size > 0 -%}
   <div
     class="announcement-bar {% render 'color-scheme', scheme: section.settings.color_scheme %}"
+    id="announcement-bar-{{ section_id }}"
     data-announcement-bar
+    data-section-id="{{ section_id }}"
+    data-dismiss-days="{{ dismiss_days }}"
     role="region"
     aria-label="{{ 'accessibility.announcement' | t }}"
+    {% if enable_dismiss %}data-dismissible{% endif %}
   >
     <div class="announcement-bar__inner container">
       {%- if section.blocks.size == 1 -%}
         {%- assign block = section.blocks.first -%}
-        <div class="announcement-bar__message" {{ block.shopify_attributes }}>
-          {%- if block.settings.link != blank -%}
-            <a href="{{ block.settings.link }}" class="announcement-bar__link">
-              {{ block.settings.text }}
-            </a>
-          {%- else -%}
-            <p class="announcement-bar__text">{{ block.settings.text }}</p>
-          {%- endif -%}
-        </div>
+        {%- if block.type == 'announcement' -%}
+          <div class="announcement-bar__message" {{ block.shopify_attributes }}>
+            {%- if block.settings.icon != 'none' -%}
+              <span class="announcement-bar__icon">
+                {% render 'icon', icon: block.settings.icon, size: 'sm' %}
+              </span>
+            {%- endif -%}
+            {%- if block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" class="announcement-bar__link">
+                {{ block.settings.text }}
+              </a>
+            {%- else -%}
+              <p class="announcement-bar__text">{{ block.settings.text }}</p>
+            {%- endif -%}
+          </div>
+        {%- elsif block.type == 'countdown' -%}
+          {% render 'announcement-countdown', block: block %}
+        {%- endif -%}
       {%- else -%}
         {%- comment -%} Multiple announcements - carousel {%- endcomment -%}
         <div class="announcement-bar__carousel" data-announcement-carousel>
@@ -32,12 +56,21 @@
               data-announcement-slide="{{ forloop.index0 }}"
               {% unless forloop.first %}hidden{% endunless %}
             >
-              {%- if block.settings.link != blank -%}
-                <a href="{{ block.settings.link }}" class="announcement-bar__link">
-                  {{ block.settings.text }}
-                </a>
-              {%- else -%}
-                <p class="announcement-bar__text">{{ block.settings.text }}</p>
+              {%- if block.type == 'announcement' -%}
+                {%- if block.settings.icon != 'none' -%}
+                  <span class="announcement-bar__icon">
+                    {% render 'icon', icon: block.settings.icon, size: 'sm' %}
+                  </span>
+                {%- endif -%}
+                {%- if block.settings.link != blank -%}
+                  <a href="{{ block.settings.link }}" class="announcement-bar__link">
+                    {{ block.settings.text }}
+                  </a>
+                {%- else -%}
+                  <p class="announcement-bar__text">{{ block.settings.text }}</p>
+                {%- endif -%}
+              {%- elsif block.type == 'countdown' -%}
+                {% render 'announcement-countdown', block: block %}
               {%- endif -%}
             </div>
           {%- endfor -%}
@@ -63,18 +96,55 @@
           </button>
         </div>
       {%- endif -%}
+
+      {%- comment -%} Dismiss button {%- endcomment -%}
+      {%- if enable_dismiss -%}
+        <button
+          type="button"
+          class="announcement-bar__dismiss"
+          aria-label="{{ 'accessibility.dismiss_announcement' | t }}"
+          data-announcement-dismiss
+        >
+          {% render 'icon', icon: 'close', size: 'sm' %}
+        </button>
+      {%- endif -%}
     </div>
   </div>
 
-  {%- if section.blocks.size > 1 -%}
-    <script>
-      (function() {
-        const carousel = document.querySelector('[data-announcement-carousel]');
-        if (!carousel) return;
+  <script>
+    (function() {
+      const bar = document.querySelector('[data-announcement-bar]');
+      if (!bar) return;
 
+      const sectionId = bar.dataset.sectionId;
+      const dismissDays = parseInt(bar.dataset.dismissDays) || 7;
+      const isDismissible = bar.hasAttribute('data-dismissible');
+      const dismissBtn = bar.querySelector('[data-announcement-dismiss]');
+      const carousel = bar.querySelector('[data-announcement-carousel]');
+      const cookieName = `announcement_dismissed_${sectionId}`;
+
+      // Check if already dismissed
+      if (isDismissible && getCookie(cookieName)) {
+        bar.remove();
+        return;
+      }
+
+      // Dismiss functionality
+      if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+          setCookie(cookieName, 'true', dismissDays);
+          bar.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          bar.style.opacity = '0';
+          bar.style.transform = 'translateY(-100%)';
+          setTimeout(() => bar.remove(), 300);
+        });
+      }
+
+      // Carousel functionality
+      if (carousel) {
         const slides = carousel.querySelectorAll('[data-announcement-slide]');
-        const prevBtn = document.querySelector('[data-announcement-prev]');
-        const nextBtn = document.querySelector('[data-announcement-next]');
+        const prevBtn = bar.querySelector('[data-announcement-prev]');
+        const nextBtn = bar.querySelector('[data-announcement-next]');
         let currentIndex = 0;
         let autoplayInterval;
 
@@ -100,7 +170,6 @@
           showSlide(prev);
         }
 
-        // Navigation buttons
         if (prevBtn) prevBtn.addEventListener('click', () => {
           prevSlide();
           resetAutoplay();
@@ -110,22 +179,29 @@
           resetAutoplay();
         });
 
-        // Autoplay
         function startAutoplay() {
           autoplayInterval = setInterval(nextSlide, {{ section.settings.autoplay_speed | default: 5000 }});
         }
 
         function resetAutoplay() {
           clearInterval(autoplayInterval);
-          startAutoplay();
+          {% if section.settings.autoplay %}startAutoplay();{% endif %}
         }
 
-        {% if section.settings.autoplay %}
-        startAutoplay();
-        {% endif %}
-      })();
-    </script>
-  {%- endif -%}
+        {% if section.settings.autoplay %}startAutoplay();{% endif %}
+      }
+
+      // Cookie helpers
+      function setCookie(name, value, days) {
+        const expires = new Date(Date.now() + days * 864e5).toUTCString();
+        document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`;
+      }
+
+      function getCookie(name) {
+        return document.cookie.split('; ').find(row => row.startsWith(name + '='));
+      }
+    })();
+  </script>
 {%- endif -%}
 
 {% stylesheet %}
@@ -143,7 +219,16 @@
   }
 
   .announcement-bar__message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
     text-align: center;
+  }
+
+  .announcement-bar__icon {
+    display: flex;
+    flex-shrink: 0;
   }
 
   .announcement-bar__text,
@@ -181,6 +266,64 @@
   .announcement-bar__nav-btn:hover {
     opacity: 1;
   }
+
+  .announcement-bar__dismiss {
+    position: absolute;
+    right: var(--page-margin);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    opacity: 0.7;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .announcement-bar__dismiss:hover {
+    opacity: 1;
+  }
+
+  /* Countdown styles */
+  .announcement-countdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .announcement-countdown__text {
+    margin: 0;
+  }
+
+  .announcement-countdown__timer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .announcement-countdown__unit {
+    display: flex;
+    align-items: baseline;
+    gap: 0.15em;
+  }
+
+  .announcement-countdown__value {
+    font-weight: 600;
+  }
+
+  .announcement-countdown__label {
+    font-size: 0.75em;
+    opacity: 0.8;
+  }
+
+  .announcement-countdown__separator {
+    opacity: 0.5;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -199,9 +342,33 @@
       "default": "scheme_2"
     },
     {
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.dismiss.header"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_dismiss",
+      "label": "t:sections.announcement_bar.settings.dismiss.enable.label",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "dismiss_days",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "d",
+      "label": "t:sections.announcement_bar.settings.dismiss.days.label",
+      "default": 7
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.autoplay.header"
+    },
+    {
       "type": "checkbox",
       "id": "autoplay",
-      "label": "Auto-rotate announcements",
+      "label": "t:sections.announcement_bar.settings.autoplay.enable.label",
       "default": true
     },
     {
@@ -211,20 +378,77 @@
       "max": 9500,
       "step": 500,
       "unit": "ms",
-      "label": "Change slides every",
+      "label": "t:sections.announcement_bar.settings.autoplay.speed.label",
       "default": 5000
     }
   ],
   "blocks": [
     {
       "type": "announcement",
-      "name": "Announcement",
+      "name": "t:sections.announcement_bar.blocks.announcement.name",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "t:sections.announcement_bar.settings.text.label",
+          "default": "Welcome to our store"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.announcement_bar.settings.link.label"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:sections.announcement_bar.settings.icon.label",
+          "options": [
+            {
+              "value": "none",
+              "label": "t:sections.announcement_bar.settings.icon.options.none"
+            },
+            {
+              "value": "truck",
+              "label": "t:sections.announcement_bar.settings.icon.options.shipping"
+            },
+            {
+              "value": "gift",
+              "label": "t:sections.announcement_bar.settings.icon.options.gift"
+            },
+            {
+              "value": "tag",
+              "label": "t:sections.announcement_bar.settings.icon.options.sale"
+            },
+            {
+              "value": "clock",
+              "label": "t:sections.announcement_bar.settings.icon.options.limited"
+            },
+            {
+              "value": "star",
+              "label": "t:sections.announcement_bar.settings.icon.options.featured"
+            }
+          ],
+          "default": "none"
+        }
+      ]
+    },
+    {
+      "type": "countdown",
+      "name": "t:sections.announcement_bar.blocks.countdown.name",
+      "limit": 1,
       "settings": [
         {
           "type": "text",
           "id": "text",
-          "label": "t:sections.announcement_bar.settings.text.label",
-          "default": "Welcome to our store"
+          "label": "t:sections.announcement_bar.blocks.countdown.settings.text.label",
+          "default": "Sale ends in"
+        },
+        {
+          "type": "text",
+          "id": "end_date",
+          "label": "t:sections.announcement_bar.blocks.countdown.settings.end_date.label",
+          "info": "t:sections.announcement_bar.blocks.countdown.settings.end_date.info",
+          "placeholder": "2025-12-31 23:59"
         },
         {
           "type": "url",
@@ -240,7 +464,8 @@
       {
         "type": "announcement",
         "settings": {
-          "text": "Free shipping on orders over $100"
+          "text": "Free shipping on orders over $100",
+          "icon": "truck"
         }
       }
     ]

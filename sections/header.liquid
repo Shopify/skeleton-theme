@@ -1,11 +1,18 @@
 {% comment %}
   Header Section - Influence Theme
-  Features: Sticky header, transparent mode, mega menu, mobile drawer, search, account
+  Premium Features:
+  - Smart sticky header (always, hide-on-scroll, reduce-on-scroll)
+  - Transparent mode for hero overlays
+  - Enhanced mega menu with featured images
+  - Predictive search
+  - Mobile drawer with search, social, promos
+  - Icon customization
+  - Utility navigation
 {% endcomment %}
 
 {%- liquid
   assign logo_width = section.settings.logo_width | default: 120
-  assign sticky_header = section.settings.enable_sticky
+  assign sticky_behavior = section.settings.sticky_behavior | default: 'always'
   assign transparent_header = section.settings.enable_transparent
   assign is_homepage = false
   if template.name == 'index'
@@ -15,179 +22,234 @@
   if transparent_header and is_homepage
     assign enable_transparent = true
   endif
+  assign cart_badge_style = section.settings.cart_badge_style | default: 'number'
 -%}
 
 <header
-  class="header{% if sticky_header %} header--sticky{% endif %}{% if enable_transparent %} header--transparent{% endif %} {% render 'color-scheme', scheme: section.settings.color_scheme %}"
+  class="header{% if sticky_behavior != 'none' %} header--sticky{% endif %}{% if sticky_behavior == 'reduce' %} header--reduce-enabled{% endif %}{% if enable_transparent %} header--transparent{% endif %}"
   data-header
-  {% if sticky_header %}data-sticky-header{% endif %}
+  data-sticky-behavior="{{ sticky_behavior }}"
+  data-transparent-home="{{ enable_transparent }}"
 >
-  <div class="header__inner container{% if section.settings.logo_position == 'center' %} header__inner--logo-center{% endif %}">
-    {%- comment -%} Mobile menu button {%- endcomment -%}
-    <button
-      type="button"
-      class="header__icon-btn header__menu-toggle hide-desktop"
-      aria-label="{{ 'accessibility.open_menu' | t }}"
-      aria-expanded="false"
-      aria-controls="mobile-drawer"
-      data-drawer-toggle="mobile-drawer"
-    >
-      {% render 'icon', icon: 'menu' %}
-    </button>
-
-    {%- comment -%} Logo {%- endcomment -%}
-    <div class="header__logo{% if section.settings.logo_position == 'center' %} header__logo--center{% endif %}">
-      <a href="{{ routes.root_url }}" class="header__logo-link">
-        {%- if settings.logo != blank -%}
-          {%- assign logo_height = logo_width | divided_by: settings.logo.aspect_ratio -%}
-          {{
-            settings.logo
-            | image_url: width: logo_width
-            | image_tag:
-              width: logo_width,
-              height: logo_height,
-              alt: settings.logo.alt | default: shop.name,
-              loading: 'eager',
-              class: 'header__logo-image'
-          }}
-        {%- else -%}
-          <span class="header__logo-text h4">{{ shop.name }}</span>
+  {%- comment -%} Utility Navigation (optional) {%- endcomment -%}
+  {%- if section.settings.show_utility_nav and section.settings.utility_menu != blank -%}
+    <div class="header__utility color-scheme-2">
+      <div class="container">
+        <nav class="header__utility-nav" aria-label="{{ 'accessibility.utility_navigation' | t }}">
+          <ul class="header__utility-list">
+            {%- for link in section.settings.utility_menu.links -%}
+              <li>
+                <a href="{{ link.url }}" class="header__utility-link">{{ link.title }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+        {%- comment -%} Localization in utility bar {%- endcomment -%}
+        {%- if section.settings.show_locale_utility -%}
+          <div class="header__utility-locale">
+            {% render 'header-localization' %}
+          </div>
         {%- endif -%}
-      </a>
+      </div>
     </div>
+  {%- endif -%}
 
-    {%- comment -%} Desktop Navigation {%- endcomment -%}
-    <nav class="header__nav hide-mobile hide-tablet" aria-label="{{ 'accessibility.main_navigation' | t }}">
-      {%- for link in section.settings.menu.links -%}
-        {%- if link.links.size > 0 -%}
-          <div class="header__nav-item header__nav-item--has-dropdown">
+  <div class="header__main">
+    <div class="header__inner container{% if section.settings.logo_position == 'center' %} header__inner--logo-center{% endif %}">
+      {%- comment -%} Mobile menu button {%- endcomment -%}
+      <button
+        type="button"
+        class="header__icon-btn header__menu-toggle hide-desktop"
+        aria-label="{{ 'accessibility.open_menu' | t }}"
+        aria-expanded="false"
+        aria-controls="mobile-drawer"
+        data-drawer-toggle="mobile-drawer"
+      >
+        {% render 'icon', icon: 'menu' %}
+      </button>
+
+      {%- comment -%} Logo {%- endcomment -%}
+      <div class="header__logo{% if section.settings.logo_position == 'center' %} header__logo--center{% endif %}">
+        <a href="{{ routes.root_url }}" class="header__logo-link">
+          {%- if settings.logo != blank -%}
+            {%- assign logo_height = logo_width | divided_by: settings.logo.aspect_ratio -%}
+            {{
+              settings.logo
+              | image_url: width: logo_width
+              | image_tag:
+                width: logo_width,
+                height: logo_height,
+                alt: settings.logo.alt | default: shop.name,
+                loading: 'eager',
+                class: 'header__logo-image'
+            }}
+          {%- else -%}
+            <span class="header__logo-text h4">{{ shop.name }}</span>
+          {%- endif -%}
+        </a>
+      </div>
+
+      {%- comment -%} Desktop Navigation {%- endcomment -%}
+      <nav class="header__nav hide-mobile hide-tablet" aria-label="{{ 'accessibility.main_navigation' | t }}">
+        {%- for link in section.settings.menu.links -%}
+          {%- if link.links.size > 0 -%}
+            <div class="header__nav-item header__nav-item--has-dropdown" data-mega-menu-trigger>
+              <a
+                href="{{ link.url }}"
+                class="header__nav-link"
+                {% if link.current %}aria-current="page"{% endif %}
+                aria-expanded="false"
+                aria-controls="mega-menu-{{ forloop.index }}"
+              >
+                {{ link.title }}
+                {% render 'icon', icon: 'chevron-down', size: 'sm' %}
+              </a>
+
+              {%- comment -%} Enhanced Mega Menu {%- endcomment -%}
+              <div class="mega-menu" id="mega-menu-{{ forloop.index }}" data-mega-menu>
+                <div class="mega-menu__inner container">
+                  <div class="mega-menu__content">
+                    {%- for child_link in link.links -%}
+                      <div class="mega-menu__column">
+                        {%- if child_link.url != '#' -%}
+                          <a href="{{ child_link.url }}" class="mega-menu__heading">
+                            {{ child_link.title }}
+                          </a>
+                        {%- else -%}
+                          <span class="mega-menu__heading">{{ child_link.title }}</span>
+                        {%- endif -%}
+
+                        {%- if child_link.links.size > 0 -%}
+                          <ul class="mega-menu__links">
+                            {%- for grandchild_link in child_link.links -%}
+                              <li>
+                                <a href="{{ grandchild_link.url }}" class="mega-menu__link">
+                                  {{ grandchild_link.title }}
+                                </a>
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+
+                  {%- comment -%} Featured promo in mega menu {%- endcomment -%}
+                  {%- if section.settings.mega_menu_promo_image != blank -%}
+                    <div class="mega-menu__promo">
+                      <a href="{{ section.settings.mega_menu_promo_link | default: '#' }}" class="mega-menu__promo-link">
+                        <div class="mega-menu__promo-image">
+                          {{
+                            section.settings.mega_menu_promo_image
+                            | image_url: width: 400
+                            | image_tag:
+                              loading: 'lazy',
+                              class: 'mega-menu__promo-img'
+                          }}
+                        </div>
+                        {%- if section.settings.mega_menu_promo_text != blank -%}
+                          <span class="mega-menu__promo-text">{{ section.settings.mega_menu_promo_text }}</span>
+                        {%- endif -%}
+                      </a>
+                    </div>
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+          {%- else -%}
             <a
               href="{{ link.url }}"
               class="header__nav-link"
               {% if link.current %}aria-current="page"{% endif %}
             >
               {{ link.title }}
-              {% render 'icon', icon: 'chevron-down', size: 'sm' %}
             </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </nav>
 
-            {%- comment -%} Mega Menu / Dropdown {%- endcomment -%}
-            <div class="mega-menu">
-              <div class="mega-menu__inner">
-                {%- for child_link in link.links -%}
-                  <div class="mega-menu__column">
-                    {%- if child_link.url != '#' -%}
-                      <a href="{{ child_link.url }}" class="mega-menu__heading">
-                        {{ child_link.title }}
-                      </a>
-                    {%- else -%}
-                      <h3 class="mega-menu__heading">{{ child_link.title }}</h3>
-                    {%- endif -%}
-
-                    {%- if child_link.links.size > 0 -%}
-                      <ul class="mega-menu__links">
-                        {%- for grandchild_link in child_link.links -%}
-                          <li>
-                            <a href="{{ grandchild_link.url }}" class="mega-menu__link">
-                              {{ grandchild_link.title }}
-                            </a>
-                          </li>
-                        {%- endfor -%}
-                      </ul>
-                    {%- endif -%}
-                  </div>
-                {%- endfor -%}
-              </div>
-            </div>
-          </div>
-        {%- else -%}
-          <a
-            href="{{ link.url }}"
-            class="header__nav-link"
-            {% if link.current %}aria-current="page"{% endif %}
+      {%- comment -%} Header Icons (Search, Account, Cart) {%- endcomment -%}
+      <div class="header__icons">
+        {%- if section.settings.show_search -%}
+          <button
+            type="button"
+            class="header__icon-btn"
+            aria-label="{{ 'accessibility.search' | t }}"
+            aria-expanded="false"
+            aria-controls="header-search"
+            data-search-toggle
           >
-            {{ link.title }}
+            {% render 'icon', icon: 'search' %}
+          </button>
+        {%- endif -%}
+
+        {%- if shop.customer_accounts_enabled and section.settings.show_account -%}
+          <a href="{{ routes.account_url }}" class="header__icon-btn hide-mobile" aria-label="{{ 'customer.account.title' | t }}">
+            {% render 'icon', icon: 'account' %}
+            <span class="visually-hidden">
+              {%- if customer -%}
+                {{ 'customer.account.title' | t }}
+              {%- else -%}
+                {{ 'customer.log_in' | t }}
+              {%- endif -%}
+            </span>
           </a>
         {%- endif -%}
-      {%- endfor -%}
-    </nav>
 
-    {%- comment -%} Header Icons (Search, Account, Cart) {%- endcomment -%}
-    <div class="header__icons">
-      {%- if section.settings.show_search -%}
-        <button
-          type="button"
-          class="header__icon-btn"
-          aria-label="{{ 'accessibility.search' | t }}"
-          data-search-toggle
-        >
-          {% render 'icon', icon: 'search' %}
-        </button>
-      {%- endif -%}
-
-      {%- if shop.customer_accounts_enabled and section.settings.show_account -%}
-        <a href="{{ routes.account_url }}" class="header__icon-btn hide-mobile">
-          {% render 'icon', icon: 'account' %}
-          <span class="visually-hidden">
-            {%- if customer -%}
-              {{ 'customer.account.title' | t }}
-            {%- else -%}
-              {{ 'customer.log_in' | t }}
-            {%- endif -%}
-          </span>
+        <a href="{{ routes.cart_url }}" class="header__icon-btn header__cart-btn" aria-label="{{ 'cart.title' | t }}" data-cart-toggle>
+          {% render 'icon', icon: 'cart' %}
+          <span class="visually-hidden">{{ 'cart.title' | t }}</span>
+          {%- case cart_badge_style -%}
+            {%- when 'number' -%}
+              <span class="header__cart-count{% if cart.item_count == 0 %} hidden{% endif %}" data-cart-count>{{ cart.item_count }}</span>
+            {%- when 'dot' -%}
+              <span class="header__cart-dot{% if cart.item_count == 0 %} hidden{% endif %}" data-cart-dot aria-hidden="true"></span>
+          {%- endcase -%}
         </a>
-      {%- endif -%}
-
-      <a href="{{ routes.cart_url }}" class="header__icon-btn header__cart-btn" data-cart-toggle>
-        {% render 'icon', icon: 'cart' %}
-        <span class="visually-hidden">{{ 'cart.title' | t }}</span>
-        {%- if cart.item_count > 0 -%}
-          <span class="header__cart-count" data-cart-count>{{ cart.item_count }}</span>
-        {%- endif -%}
-      </a>
+      </div>
     </div>
   </div>
 
-  {%- comment -%} Search Bar (Hidden by default, shown via JS) {%- endcomment -%}
-  <div class="header__search" data-search-container hidden>
+  {%- comment -%} Predictive Search (Hidden by default, shown via JS) {%- endcomment -%}
+  <div class="header__search" id="header-search" data-search-container hidden>
     <div class="container">
-      <form action="{{ routes.search_url }}" method="get" role="search" class="search-form">
-        <label for="header-search" class="visually-hidden">{{ 'search.placeholder' | t }}</label>
-        <input
-          type="search"
-          id="header-search"
-          name="q"
-          class="search-form__input form-input"
-          placeholder="{{ 'search.placeholder' | t }}"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-        >
-        <input type="hidden" name="type" value="product,article,page">
-        <button type="submit" class="btn btn--primary">
-          {{ 'search.search' | t }}
-        </button>
-        <button type="button" class="header__icon-btn" data-search-close aria-label="{{ 'accessibility.close' | t }}">
-          {% render 'icon', icon: 'close' %}
-        </button>
-      </form>
+      {% render 'predictive-search' %}
     </div>
   </div>
 </header>
 
 {%- comment -%} Mobile Drawer {%- endcomment -%}
-<div class="drawer drawer--left" id="mobile-drawer" data-drawer="mobile-drawer" aria-hidden="true">
+<div class="drawer drawer--left" id="mobile-drawer" data-drawer="mobile-drawer" aria-hidden="true" aria-label="{{ 'accessibility.menu' | t }}">
   <div class="drawer__header">
-    <span class="drawer__title">{{ 'accessibility.menu' | t }}</span>
+    <span class="drawer__title h5">{{ 'accessibility.menu' | t }}</span>
     <button
       type="button"
-      class="header__icon-btn"
+      class="drawer__close"
       aria-label="{{ 'accessibility.close' | t }}"
       data-drawer-close
     >
       {% render 'icon', icon: 'close' %}
     </button>
   </div>
+
+  {%- comment -%} Search in drawer {%- endcomment -%}
+  {%- if section.settings.show_search_in_drawer -%}
+    <div class="drawer__search">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="drawer__search-form">
+        <label for="drawer-search" class="visually-hidden">{{ 'search.placeholder' | t }}</label>
+        {% render 'icon', icon: 'search', size: 'sm' %}
+        <input
+          type="search"
+          id="drawer-search"
+          name="q"
+          class="drawer__search-input form-input"
+          placeholder="{{ 'search.placeholder' | t }}"
+          autocomplete="off"
+        >
+        <input type="hidden" name="type" value="product,article,page">
+      </form>
+    </div>
+  {%- endif -%}
 
   <nav class="drawer__content drawer__nav" aria-label="{{ 'accessibility.main_navigation' | t }}">
     {%- for link in section.settings.menu.links -%}
@@ -198,6 +260,11 @@
             {% render 'icon', icon: 'chevron-down', size: 'sm' %}
           </summary>
           <div class="drawer__nav-submenu">
+            {%- if link.url != '#' -%}
+              <a href="{{ link.url }}" class="drawer__nav-sublink drawer__nav-sublink--parent">
+                {{ 'general.view_all' | t }}
+              </a>
+            {%- endif -%}
             {%- for child_link in link.links -%}
               <a href="{{ child_link.url }}" class="drawer__nav-sublink">
                 {{ child_link.title }}
@@ -214,15 +281,32 @@
   </nav>
 
   <div class="drawer__footer">
+    {%- comment -%} Account link {%- endcomment -%}
     {%- if shop.customer_accounts_enabled -%}
       <a href="{{ routes.account_url }}" class="drawer__footer-link">
         {% render 'icon', icon: 'account' %}
-        {%- if customer -%}
-          {{ 'customer.account.title' | t }}
-        {%- else -%}
-          {{ 'customer.log_in' | t }}
-        {%- endif -%}
+        <span>
+          {%- if customer -%}
+            {{ 'customer.account.title' | t }}
+          {%- else -%}
+            {{ 'customer.log_in' | t }}
+          {%- endif -%}
+        </span>
       </a>
+    {%- endif -%}
+
+    {%- comment -%} Localization {%- endcomment -%}
+    {%- if section.settings.show_locale_drawer -%}
+      <div class="drawer__localization">
+        {% render 'header-localization' %}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Social links {%- endcomment -%}
+    {%- if section.settings.show_social_drawer -%}
+      <div class="drawer__social">
+        {% render 'social-icons' %}
+      </div>
     {%- endif -%}
   </div>
 </div>
@@ -231,49 +315,107 @@
   // Header functionality
   (function() {
     const header = document.querySelector('[data-header]');
-    const stickyHeader = document.querySelector('[data-sticky-header]');
+    if (!header) return;
+
+    const stickyBehavior = header.dataset.stickyBehavior;
+    const isTransparentHome = header.dataset.transparentHome === 'true';
     const searchContainer = document.querySelector('[data-search-container]');
     const searchToggle = document.querySelector('[data-search-toggle]');
-    const searchClose = document.querySelector('[data-search-close]');
     const drawerToggles = document.querySelectorAll('[data-drawer-toggle]');
     const drawerCloses = document.querySelectorAll('[data-drawer-close]');
     const overlay = document.querySelector('[data-overlay]');
+    const megaMenuTriggers = document.querySelectorAll('[data-mega-menu-trigger]');
 
-    // Sticky header scroll behavior
-    if (stickyHeader) {
-      let lastScroll = 0;
-      window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
-        if (currentScroll > 100) {
-          stickyHeader.classList.add('header--scrolled');
-          if (stickyHeader.classList.contains('header--transparent')) {
-            stickyHeader.classList.remove('header--transparent');
-          }
-        } else {
-          stickyHeader.classList.remove('header--scrolled');
-          {% if enable_transparent %}
-          stickyHeader.classList.add('header--transparent');
-          {% endif %}
+    // Smart sticky header behavior
+    if (stickyBehavior && stickyBehavior !== 'none') {
+      let lastScrollY = window.scrollY;
+      let ticking = false;
+
+      function updateHeader() {
+        const currentScrollY = window.scrollY;
+        const scrollingDown = currentScrollY > lastScrollY;
+        const pastThreshold = currentScrollY > 100;
+
+        // Add scrolled state
+        header.classList.toggle('header--scrolled', pastThreshold);
+
+        // Handle transparent mode
+        if (header.classList.contains('header--transparent') && pastThreshold) {
+          header.classList.remove('header--transparent');
+        } else if (!pastThreshold && isTransparentHome) {
+          header.classList.add('header--transparent');
         }
-        lastScroll = currentScroll;
+
+        // Smart hide behavior
+        if (stickyBehavior === 'smart') {
+          if (scrollingDown && pastThreshold) {
+            header.classList.add('header--hidden');
+          } else {
+            header.classList.remove('header--hidden');
+          }
+        }
+
+        // Reduce on scroll behavior
+        if (stickyBehavior === 'reduce') {
+          header.classList.toggle('header--reduced', pastThreshold);
+        }
+
+        lastScrollY = currentScrollY;
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(updateHeader);
+          ticking = true;
+        }
       }, { passive: true });
     }
 
     // Search toggle
     if (searchToggle && searchContainer) {
       searchToggle.addEventListener('click', () => {
-        searchContainer.hidden = !searchContainer.hidden;
-        if (!searchContainer.hidden) {
-          searchContainer.querySelector('input').focus();
+        const isOpen = !searchContainer.hidden;
+        searchContainer.hidden = isOpen;
+        searchToggle.setAttribute('aria-expanded', !isOpen);
+        if (!isOpen) {
+          const searchInput = searchContainer.querySelector('input[type="search"]');
+          if (searchInput) {
+            setTimeout(() => searchInput.focus(), 100);
+          }
         }
       });
+    }
 
-      if (searchClose) {
-        searchClose.addEventListener('click', () => {
-          searchContainer.hidden = true;
+    // Mega menu keyboard accessibility
+    megaMenuTriggers.forEach(trigger => {
+      const link = trigger.querySelector('.header__nav-link');
+      const menu = trigger.querySelector('[data-mega-menu]');
+
+      if (link && menu) {
+        link.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const isExpanded = link.getAttribute('aria-expanded') === 'true';
+            link.setAttribute('aria-expanded', !isExpanded);
+          }
+        });
+
+        menu.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            link.setAttribute('aria-expanded', 'false');
+            link.focus();
+          }
+        });
+
+        trigger.addEventListener('mouseenter', () => {
+          link.setAttribute('aria-expanded', 'true');
+        });
+        trigger.addEventListener('mouseleave', () => {
+          link.setAttribute('aria-expanded', 'false');
         });
       }
-    }
+    });
 
     // Drawer functionality
     function openDrawer(drawerId) {
@@ -283,6 +425,9 @@
         drawer.setAttribute('aria-hidden', 'false');
         document.body.setAttribute('data-drawer-open', '');
         if (overlay) overlay.classList.add('is-active');
+
+        const focusable = drawer.querySelector('button, a, input');
+        if (focusable) focusable.focus();
       }
     }
 
@@ -299,23 +444,46 @@
     drawerToggles.forEach(toggle => {
       toggle.addEventListener('click', (e) => {
         const drawerId = e.currentTarget.getAttribute('data-drawer-toggle');
-        openDrawer(drawerId);
+        const drawerBtn = e.currentTarget;
+        const isExpanded = drawerBtn.getAttribute('aria-expanded') === 'true';
+
+        if (isExpanded) {
+          closeDrawer();
+          drawerBtn.setAttribute('aria-expanded', 'false');
+        } else {
+          openDrawer(drawerId);
+          drawerBtn.setAttribute('aria-expanded', 'true');
+        }
       });
     });
 
     drawerCloses.forEach(close => {
-      close.addEventListener('click', closeDrawer);
+      close.addEventListener('click', () => {
+        closeDrawer();
+        drawerToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
+      });
     });
 
     if (overlay) {
-      overlay.addEventListener('click', closeDrawer);
+      overlay.addEventListener('click', () => {
+        closeDrawer();
+        drawerToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
+        if (searchContainer && !searchContainer.hidden) {
+          searchContainer.hidden = true;
+          searchToggle?.setAttribute('aria-expanded', 'false');
+        }
+      });
     }
 
-    // Close drawer on escape
+    // Close drawer/search on escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeDrawer();
-        if (searchContainer) searchContainer.hidden = true;
+        drawerToggles.forEach(toggle => toggle.setAttribute('aria-expanded', 'false'));
+        if (searchContainer && !searchContainer.hidden) {
+          searchContainer.hidden = true;
+          searchToggle?.setAttribute('aria-expanded', 'false');
+        }
       }
     });
   })();
@@ -327,10 +495,18 @@
   "class": "section-header",
   "settings": [
     {
+      "type": "header",
+      "content": "t:sections.header.settings.navigation.header"
+    },
+    {
       "type": "link_list",
       "id": "menu",
       "label": "t:sections.header.settings.menu.label",
       "default": "main-menu"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.logo.header"
     },
     {
       "type": "select",
@@ -359,16 +535,43 @@
       "default": 120
     },
     {
-      "type": "checkbox",
-      "id": "enable_sticky",
-      "label": "t:sections.header.settings.sticky.label",
-      "default": true
+      "type": "header",
+      "content": "t:sections.header.settings.sticky.header"
+    },
+    {
+      "type": "select",
+      "id": "sticky_behavior",
+      "label": "t:sections.header.settings.sticky_behavior.label",
+      "options": [
+        {
+          "value": "always",
+          "label": "t:sections.header.settings.sticky_behavior.options.always"
+        },
+        {
+          "value": "smart",
+          "label": "t:sections.header.settings.sticky_behavior.options.smart"
+        },
+        {
+          "value": "reduce",
+          "label": "t:sections.header.settings.sticky_behavior.options.reduce"
+        },
+        {
+          "value": "none",
+          "label": "t:sections.header.settings.sticky_behavior.options.none"
+        }
+      ],
+      "default": "always"
     },
     {
       "type": "checkbox",
       "id": "enable_transparent",
       "label": "t:sections.header.settings.transparent.label",
+      "info": "t:sections.header.settings.transparent.info",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.icons.header"
     },
     {
       "type": "checkbox",
@@ -383,10 +586,86 @@
       "default": true
     },
     {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "t:labels.color_scheme",
-      "default": "scheme_1"
+      "type": "select",
+      "id": "cart_badge_style",
+      "label": "t:sections.header.settings.cart_badge.label",
+      "options": [
+        {
+          "value": "number",
+          "label": "t:sections.header.settings.cart_badge.options.number"
+        },
+        {
+          "value": "dot",
+          "label": "t:sections.header.settings.cart_badge.options.dot"
+        },
+        {
+          "value": "none",
+          "label": "t:sections.header.settings.cart_badge.options.none"
+        }
+      ],
+      "default": "number"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.utility_nav.header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_utility_nav",
+      "label": "t:sections.header.settings.utility_nav.show.label",
+      "default": false
+    },
+    {
+      "type": "link_list",
+      "id": "utility_menu",
+      "label": "t:sections.header.settings.utility_nav.menu.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_locale_utility",
+      "label": "t:sections.header.settings.utility_nav.locale.label",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.mobile_drawer.header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search_in_drawer",
+      "label": "t:sections.header.settings.mobile_drawer.search.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_locale_drawer",
+      "label": "t:sections.header.settings.mobile_drawer.locale.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_social_drawer",
+      "label": "t:sections.header.settings.mobile_drawer.social.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.mega_menu.header"
+    },
+    {
+      "type": "image_picker",
+      "id": "mega_menu_promo_image",
+      "label": "t:sections.header.settings.mega_menu.promo_image.label"
+    },
+    {
+      "type": "text",
+      "id": "mega_menu_promo_text",
+      "label": "t:sections.header.settings.mega_menu.promo_text.label"
+    },
+    {
+      "type": "url",
+      "id": "mega_menu_promo_link",
+      "label": "t:sections.header.settings.mega_menu.promo_link.label"
     }
   ]
 }
