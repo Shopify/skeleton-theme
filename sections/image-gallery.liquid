@@ -1,0 +1,767 @@
+{% comment %}
+  Image Gallery Section - Influence Theme
+  Multi-image gallery with grid, masonry, and asymmetric layouts
+  Essential for campaign imagery and editorial storytelling
+{% endcomment %}
+
+{%- liquid
+  assign section_id = 'ImageGallery-' | append: section.id
+  assign layout = section.settings.layout
+  assign columns = section.settings.columns_desktop
+  assign columns_mobile = section.settings.columns_mobile
+  assign enable_lightbox = section.settings.enable_lightbox
+  assign hover_effect = section.settings.hover_effect
+-%}
+
+<section
+  id="{{ section_id }}"
+  class="image-gallery section {% render 'color-scheme', scheme: section.settings.color_scheme %}"
+  data-section-id="{{ section.id }}"
+  data-section-type="image-gallery"
+>
+  <div class="{% if section.settings.full_width %}container--full{% else %}container{% endif %}">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="image-gallery__heading section-heading text-{{ section.settings.heading_alignment }}">
+        {{ section.settings.heading }}
+      </h2>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <div
+        class="image-gallery__grid image-gallery__grid--{{ layout }} image-gallery--hover-{{ hover_effect }}"
+        style="--gallery-columns: {{ columns }}; --gallery-columns-mobile: {{ columns_mobile }}; --gallery-gap: var(--space-{{ section.settings.gap }});"
+      >
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign size_class = ''
+            if layout == 'asymmetric'
+              assign size_class = 'image-gallery__item--' | append: block.settings.size
+            endif
+          -%}
+          <figure class="image-gallery__item {{ size_class }}" {{ block.shopify_attributes }}>
+            {%- if enable_lightbox -%}
+              <button
+                type="button"
+                class="image-gallery__link"
+                data-lightbox-trigger
+                data-image-index="{{ forloop.index0 }}"
+                data-image-src="{{ block.settings.image | image_url: width: 2000 }}"
+                data-image-alt="{{ block.settings.image.alt | default: block.settings.caption }}"
+                aria-label="{{ 'accessibility.gallery_image' | t: index: forloop.index, total: section.blocks.size }}"
+              >
+            {%- elsif block.settings.link != blank -%}
+              <a href="{{ block.settings.link }}" class="image-gallery__link">
+            {%- else -%}
+              <div class="image-gallery__link">
+            {%- endif -%}
+
+              <div class="image-gallery__media image-gallery__media--{{ section.settings.image_ratio }}">
+                {%- if block.settings.image != blank -%}
+                  {{
+                    block.settings.image
+                    | image_url: width: 1200
+                    | image_tag:
+                      loading: 'lazy',
+                      sizes: '(min-width: 990px) 400px, (min-width: 750px) 50vw, 100vw',
+                      widths: '300, 400, 500, 600, 800, 1000, 1200',
+                      class: 'image-gallery__image'
+                  }}
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'image-gallery__placeholder' }}
+                {%- endif -%}
+
+                {%- if hover_effect == 'overlay' or enable_lightbox -%}
+                  <div class="image-gallery__overlay">
+                    {%- if enable_lightbox -%}
+                      <span class="image-gallery__zoom-icon">
+                        {% render 'icon', icon: 'plus' %}
+                      </span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+
+              {%- if block.settings.caption != blank -%}
+                <figcaption class="image-gallery__caption{% if hover_effect == 'caption' %} image-gallery__caption--reveal{% endif %}">
+                  {{ block.settings.caption }}
+                </figcaption>
+              {%- endif -%}
+
+            {%- if enable_lightbox -%}
+              </button>
+            {%- elsif block.settings.link != blank -%}
+              </a>
+            {%- else -%}
+              </div>
+            {%- endif -%}
+          </figure>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Lightbox Modal {%- endcomment -%}
+  {%- if enable_lightbox and section.blocks.size > 0 -%}
+    <div
+      id="gallery-lightbox-{{ section.id }}"
+      class="image-gallery__lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label="{{ 'accessibility.gallery_lightbox' | t }}"
+      data-lightbox
+      hidden
+    >
+      <div class="image-gallery__lightbox-backdrop" data-lightbox-close></div>
+
+      <div class="image-gallery__lightbox-container">
+        <button
+          type="button"
+          class="image-gallery__lightbox-close"
+          aria-label="{{ 'accessibility.close' | t }}"
+          data-lightbox-close
+        >
+          {% render 'icon', icon: 'close' %}
+        </button>
+
+        {%- if section.blocks.size > 1 -%}
+          <button
+            type="button"
+            class="image-gallery__lightbox-nav image-gallery__lightbox-nav--prev"
+            aria-label="{{ 'accessibility.previous' | t }}"
+            data-lightbox-prev
+          >
+            {% render 'icon', icon: 'chevron-left' %}
+          </button>
+
+          <button
+            type="button"
+            class="image-gallery__lightbox-nav image-gallery__lightbox-nav--next"
+            aria-label="{{ 'accessibility.next' | t }}"
+            data-lightbox-next
+          >
+            {% render 'icon', icon: 'chevron-right' %}
+          </button>
+        {%- endif -%}
+
+        <div class="image-gallery__lightbox-content">
+          <img
+            src=""
+            alt=""
+            class="image-gallery__lightbox-image"
+            data-lightbox-image
+          >
+          <p class="image-gallery__lightbox-caption" data-lightbox-caption></p>
+        </div>
+
+        <div class="image-gallery__lightbox-counter" data-lightbox-counter>
+          <span data-lightbox-current>1</span> / <span data-lightbox-total>{{ section.blocks.size }}</span>
+        </div>
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+{%- if enable_lightbox and section.blocks.size > 0 -%}
+  <script>
+    (function() {
+      const section = document.getElementById('{{ section_id }}');
+      const lightbox = document.getElementById('gallery-lightbox-{{ section.id }}');
+      if (!section || !lightbox) return;
+
+      const triggers = section.querySelectorAll('[data-lightbox-trigger]');
+      const image = lightbox.querySelector('[data-lightbox-image]');
+      const caption = lightbox.querySelector('[data-lightbox-caption]');
+      const currentCounter = lightbox.querySelector('[data-lightbox-current]');
+      const prevBtn = lightbox.querySelector('[data-lightbox-prev]');
+      const nextBtn = lightbox.querySelector('[data-lightbox-next]');
+      const closeElements = lightbox.querySelectorAll('[data-lightbox-close]');
+
+      let currentIndex = 0;
+      let focusedElementBeforeOpen = null;
+      const totalImages = triggers.length;
+
+      const images = Array.from(triggers).map(trigger => ({
+        src: trigger.dataset.imageSrc,
+        alt: trigger.dataset.imageAlt || ''
+      }));
+
+      function openLightbox(index) {
+        currentIndex = index;
+        focusedElementBeforeOpen = document.activeElement;
+        updateImage();
+        lightbox.hidden = false;
+        document.body.style.overflow = 'hidden';
+        lightbox.querySelector('[data-lightbox-close]').focus();
+      }
+
+      function closeLightbox() {
+        lightbox.hidden = true;
+        document.body.style.overflow = '';
+        if (focusedElementBeforeOpen) {
+          focusedElementBeforeOpen.focus();
+        }
+      }
+
+      function updateImage() {
+        const imageData = images[currentIndex];
+        image.src = imageData.src;
+        image.alt = imageData.alt;
+        caption.textContent = imageData.alt;
+        caption.hidden = !imageData.alt;
+        if (currentCounter) {
+          currentCounter.textContent = currentIndex + 1;
+        }
+        updateNavButtons();
+      }
+
+      function updateNavButtons() {
+        if (prevBtn) prevBtn.disabled = currentIndex === 0;
+        if (nextBtn) nextBtn.disabled = currentIndex === totalImages - 1;
+      }
+
+      function goToPrev() {
+        if (currentIndex > 0) {
+          currentIndex--;
+          updateImage();
+        }
+      }
+
+      function goToNext() {
+        if (currentIndex < totalImages - 1) {
+          currentIndex++;
+          updateImage();
+        }
+      }
+
+      // Event listeners
+      triggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+          openLightbox(parseInt(trigger.dataset.imageIndex, 10));
+        });
+      });
+
+      closeElements.forEach(el => {
+        el.addEventListener('click', closeLightbox);
+      });
+
+      if (prevBtn) prevBtn.addEventListener('click', goToPrev);
+      if (nextBtn) nextBtn.addEventListener('click', goToNext);
+
+      // Keyboard navigation
+      lightbox.addEventListener('keydown', (e) => {
+        switch (e.key) {
+          case 'Escape':
+            closeLightbox();
+            break;
+          case 'ArrowLeft':
+            goToPrev();
+            break;
+          case 'ArrowRight':
+            goToNext();
+            break;
+        }
+      });
+
+      // Touch swipe support
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      lightbox.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      lightbox.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) goToNext();
+          else goToPrev();
+        }
+      }, { passive: true });
+    })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  .image-gallery__heading {
+    margin-bottom: var(--space-8);
+  }
+
+  /* Grid Layout */
+  .image-gallery__grid--grid {
+    display: grid;
+    grid-template-columns: repeat(var(--gallery-columns, 3), 1fr);
+    gap: var(--gallery-gap, var(--space-4));
+  }
+
+  /* Masonry Layout */
+  .image-gallery__grid--masonry {
+    columns: var(--gallery-columns, 3);
+    column-gap: var(--gallery-gap, var(--space-4));
+  }
+
+  .image-gallery__grid--masonry .image-gallery__item {
+    break-inside: avoid;
+    margin-bottom: var(--gallery-gap, var(--space-4));
+  }
+
+  /* Asymmetric Layout */
+  .image-gallery__grid--asymmetric {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: minmax(200px, auto);
+    gap: var(--gallery-gap, var(--space-4));
+  }
+
+  .image-gallery__grid--asymmetric .image-gallery__item--small {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .image-gallery__grid--asymmetric .image-gallery__item--medium {
+    grid-column: span 3;
+    grid-row: span 1;
+  }
+
+  .image-gallery__grid--asymmetric .image-gallery__item--large {
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+
+  /* Gallery Item */
+  .image-gallery__item {
+    margin: 0;
+  }
+
+  .image-gallery__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .image-gallery__media {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-muted);
+  }
+
+  /* Aspect ratios */
+  .image-gallery__media--portrait { aspect-ratio: 3 / 4; }
+  .image-gallery__media--landscape { aspect-ratio: 4 / 3; }
+  .image-gallery__media--square { aspect-ratio: 1 / 1; }
+  .image-gallery__media--natural { aspect-ratio: auto; }
+
+  .image-gallery__grid--masonry .image-gallery__media {
+    aspect-ratio: auto;
+  }
+
+  .image-gallery__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  .image-gallery__placeholder {
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+  }
+
+  /* Overlay */
+  .image-gallery__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0);
+    transition: background var(--duration-normal);
+  }
+
+  .image-gallery__zoom-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity var(--duration-normal), transform var(--duration-normal);
+  }
+
+  /* Hover effects */
+  .image-gallery--hover-zoom .image-gallery__link:hover .image-gallery__image,
+  .image-gallery--hover-zoom .image-gallery__link:focus-visible .image-gallery__image {
+    transform: scale(1.05);
+  }
+
+  .image-gallery--hover-overlay .image-gallery__link:hover .image-gallery__overlay,
+  .image-gallery--hover-overlay .image-gallery__link:focus-visible .image-gallery__overlay {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .image-gallery__link:hover .image-gallery__zoom-icon,
+  .image-gallery__link:focus-visible .image-gallery__zoom-icon {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Caption */
+  .image-gallery__caption {
+    padding: var(--space-3) 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-muted-foreground);
+  }
+
+  .image-gallery__caption--reveal {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--space-4);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    color: #fff;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity var(--duration-normal), transform var(--duration-normal);
+  }
+
+  .image-gallery--hover-caption .image-gallery__link:hover .image-gallery__caption--reveal,
+  .image-gallery--hover-caption .image-gallery__link:focus-visible .image-gallery__caption--reveal {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Focus state */
+  .image-gallery__link:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  /* Lightbox */
+  .image-gallery__lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image-gallery__lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+  }
+
+  .image-gallery__lightbox-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+  }
+
+  .image-gallery__lightbox-close {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: opacity var(--duration-fast);
+  }
+
+  .image-gallery__lightbox-close:hover {
+    opacity: 0.7;
+  }
+
+  .image-gallery__lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    transition: background var(--duration-fast);
+  }
+
+  .image-gallery__lightbox-nav:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .image-gallery__lightbox-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .image-gallery__lightbox-nav--prev {
+    left: var(--space-4);
+  }
+
+  .image-gallery__lightbox-nav--next {
+    right: var(--space-4);
+  }
+
+  .image-gallery__lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .image-gallery__lightbox-image {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+  }
+
+  .image-gallery__lightbox-caption {
+    margin-top: var(--space-4);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--font-size-sm);
+    text-align: center;
+  }
+
+  .image-gallery__lightbox-counter {
+    position: absolute;
+    bottom: var(--space-4);
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 989px) {
+    .image-gallery__grid--grid,
+    .image-gallery__grid--asymmetric {
+      grid-template-columns: repeat(var(--gallery-columns-mobile, 2), 1fr);
+    }
+
+    .image-gallery__grid--masonry {
+      columns: var(--gallery-columns-mobile, 2);
+    }
+
+    .image-gallery__grid--asymmetric .image-gallery__item--small,
+    .image-gallery__grid--asymmetric .image-gallery__item--medium,
+    .image-gallery__grid--asymmetric .image-gallery__item--large {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+  }
+
+  @media (max-width: 749px) {
+    .image-gallery__lightbox-container {
+      padding: var(--space-4);
+    }
+
+    .image-gallery__lightbox-nav {
+      width: 40px;
+      height: 40px;
+    }
+
+    .image-gallery__lightbox-image {
+      max-height: 60vh;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .image-gallery__image,
+    .image-gallery__overlay,
+    .image-gallery__zoom-icon,
+    .image-gallery__caption--reveal {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.image_gallery.name",
+  "tag": "section",
+  "class": "section-image-gallery",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "t:labels.heading_alignment",
+      "options": [
+        { "value": "left", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:sections.image_gallery.settings.layout.label",
+      "options": [
+        { "value": "grid", "label": "t:sections.image_gallery.settings.layout.options.grid" },
+        { "value": "masonry", "label": "t:sections.image_gallery.settings.layout.options.masonry" },
+        { "value": "asymmetric", "label": "t:sections.image_gallery.settings.layout.options.asymmetric" }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:labels.columns_mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "gap",
+      "label": "t:sections.image_gallery.settings.gap.label",
+      "options": [
+        { "value": "0", "label": "t:sections.image_gallery.settings.gap.options.none" },
+        { "value": "2", "label": "t:sections.image_gallery.settings.gap.options.small" },
+        { "value": "4", "label": "t:sections.image_gallery.settings.gap.options.medium" },
+        { "value": "6", "label": "t:sections.image_gallery.settings.gap.options.large" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "t:sections.image_gallery.settings.image_ratio.label",
+      "options": [
+        { "value": "portrait", "label": "t:options.aspect_ratio.portrait" },
+        { "value": "landscape", "label": "t:options.aspect_ratio.landscape" },
+        { "value": "square", "label": "t:options.aspect_ratio.square" },
+        { "value": "natural", "label": "t:sections.image_gallery.settings.image_ratio.options.natural" }
+      ],
+      "default": "natural",
+      "info": "t:sections.image_gallery.settings.image_ratio.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_lightbox",
+      "label": "t:sections.image_gallery.settings.enable_lightbox.label",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "hover_effect",
+      "label": "t:sections.image_gallery.settings.hover_effect.label",
+      "options": [
+        { "value": "none", "label": "t:sections.image_gallery.settings.hover_effect.options.none" },
+        { "value": "zoom", "label": "t:sections.image_gallery.settings.hover_effect.options.zoom" },
+        { "value": "overlay", "label": "t:sections.image_gallery.settings.hover_effect.options.overlay" },
+        { "value": "caption", "label": "t:sections.image_gallery.settings.hover_effect.options.caption" }
+      ],
+      "default": "zoom"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "t:labels.full_width",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "t:sections.image_gallery.blocks.image.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:labels.image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "t:sections.image_gallery.blocks.image.settings.caption.label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.image_gallery.blocks.image.settings.link.label",
+          "info": "t:sections.image_gallery.blocks.image.settings.link.info"
+        },
+        {
+          "type": "select",
+          "id": "size",
+          "label": "t:sections.image_gallery.blocks.image.settings.size.label",
+          "options": [
+            { "value": "small", "label": "t:sections.image_gallery.blocks.image.settings.size.options.small" },
+            { "value": "medium", "label": "t:sections.image_gallery.blocks.image.settings.size.options.medium" },
+            { "value": "large", "label": "t:sections.image_gallery.blocks.image.settings.size.options.large" }
+          ],
+          "default": "medium",
+          "info": "t:sections.image_gallery.blocks.image.settings.size.info"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.image_gallery.name",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}
