@@ -186,7 +186,11 @@
 {% schema %}
 {
   "name": "t:sections.announcement_bar.name",
+  "tag": "section",
   "class": "section-announcement-bar",
+  "enabled_on": {
+    "groups": ["header"]
+  },
   "settings": [
     {
       "type": "select",
@@ -214,7 +218,7 @@
       "type": "range",
       "id": "autoplay_speed",
       "min": 3000,
-      "max": 10000,
+      "max": 9500,
       "step": 500,
       "unit": "ms",
       "label": "Change slides every",

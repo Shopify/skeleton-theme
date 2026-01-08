@@ -1,0 +1,522 @@
+{% comment %}
+  3D Product Carousel Section - Influence Theme
+  Based on Codrops 3D Carousel (MIT License)
+
+  Features: 3D rotating carousel showcasing a single product's images
+  with title overlaid in the center of the carousel
+{% endcomment %}
+
+{%- liquid
+  assign product = section.settings.product
+  assign images_to_show = section.settings.images_to_show | default: 4
+  assign height_class = 'carousel-3d--' | append: section.settings.height
+  assign display_title = section.settings.custom_title | default: product.title | default: 'Product Title'
+-%}
+
+<section
+  class="carousel-3d {{ height_class }} {% render 'color-scheme', scheme: section.settings.color_scheme %}"
+  data-carousel-3d
+  data-radius="{{ section.settings.carousel_radius }}"
+  style="
+    --carousel-radius: {{ section.settings.carousel_radius }}px;
+    --card-width: 280px;
+    --card-height: 380px;
+  "
+>
+  {%- comment -%} 3D Scene with centered title overlay {%- endcomment -%}
+  <div class="carousel-3d__scene">
+    {%- comment -%} Title overlay - centered in the middle of the carousel {%- endcomment -%}
+    <div class="carousel-3d__title-overlay">
+      {%- if product != blank -%}
+        <a href="{{ product.url }}" class="carousel-3d__title-link">
+          <h2 class="carousel-3d__title carousel-3d__title--{{ section.settings.title_size }}">
+            <span>{{ display_title }}</span>
+          </h2>
+        </a>
+      {%- else -%}
+        <h2 class="carousel-3d__title carousel-3d__title--{{ section.settings.title_size }}">
+          <span>{{ display_title }}</span>
+        </h2>
+      {%- endif -%}
+
+      {%- comment -%} Product info below title {%- endcomment -%}
+      {%- if section.settings.show_price and product != blank -%}
+        <p class="carousel-3d__price">
+          {{ product.price | money }}
+          {%- if product.compare_at_price > product.price -%}
+            <span class="carousel-3d__compare-price">{{ product.compare_at_price | money }}</span>
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+
+      {%- if section.settings.show_variants and product != blank and product.has_only_default_variant == false -%}
+        <div class="carousel-3d__variants">
+          {%- for option in product.options_with_values -%}
+            <span class="carousel-3d__variant-group">
+              {{ option.name }}: {{ option.values | join: ', ' }}
+            </span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.cta_text != blank and product != blank -%}
+        <a href="{{ product.url }}" class="carousel-3d__cta btn btn--{{ section.settings.cta_style }}">
+          {{ section.settings.cta_text }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Carousel track {%- endcomment -%}
+    <div class="carousel-3d__carousel" data-carousel-track>
+      {%- if product != blank and product.media.size > 0 -%}
+        {%- for media in product.media limit: images_to_show -%}
+          {%- if media.media_type == 'image' -%}
+            <div class="carousel-3d__cell" data-carousel-cell>
+              <a href="{{ product.url }}" class="carousel-3d__card">
+                <div class="carousel-3d__card-face carousel-3d__card-face--front">
+                  {{
+                    media
+                    | image_url: width: 600
+                    | image_tag:
+                      loading: 'lazy',
+                      sizes: '280px',
+                      widths: '280, 400, 560',
+                      class: 'carousel-3d__image',
+                      alt: media.alt | default: product.title
+                  }}
+                </div>
+                <div class="carousel-3d__card-face carousel-3d__card-face--back">
+                  {{
+                    media
+                    | image_url: width: 600
+                    | image_tag:
+                      loading: 'lazy',
+                      sizes: '280px',
+                      widths: '280, 400, 560',
+                      class: 'carousel-3d__image',
+                      alt: media.alt | default: product.title
+                  }}
+                </div>
+              </a>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}
+        {%- comment -%} Placeholder cards when no product selected {%- endcomment -%}
+        {%- for i in (1..images_to_show) -%}
+          <div class="carousel-3d__cell" data-carousel-cell>
+            <div class="carousel-3d__card carousel-3d__card--placeholder">
+              <div class="carousel-3d__card-face carousel-3d__card-face--front">
+                {{ 'product-1' | placeholder_svg_tag: 'carousel-3d__placeholder' }}
+              </div>
+              <div class="carousel-3d__card-face carousel-3d__card-face--back">
+                {{ 'product-2' | placeholder_svg_tag: 'carousel-3d__placeholder' }}
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .carousel-3d {
+    position: relative;
+    width: 100%;
+  }
+
+  /* Height variants */
+  .carousel-3d--medium { min-height: 70vh; }
+  .carousel-3d--large { min-height: 85vh; }
+  .carousel-3d--full { min-height: 100vh; min-height: 100svh; }
+
+  /* 3D Scene container - centers everything */
+  .carousel-3d__scene {
+    perspective: 1000px;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Title overlay - sits in center, above carousel */
+  .carousel-3d__title-overlay {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+
+  .carousel-3d__title-link {
+    text-decoration: none;
+    color: inherit;
+    transition: opacity var(--duration-normal) var(--ease-out);
+  }
+
+  .carousel-3d__title-link:hover {
+    opacity: 0.7;
+  }
+
+  .carousel-3d__title {
+    font-family: var(--font-heading-family);
+    font-weight: var(--font-heading-weight);
+    line-height: 1.1;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .carousel-3d__title span {
+    display: inline-block;
+  }
+
+  .carousel-3d__title--small { font-size: clamp(1rem, 3vw, 1.5rem); }
+  .carousel-3d__title--medium { font-size: clamp(1.25rem, 4vw, 2rem); }
+  .carousel-3d__title--large { font-size: clamp(1.5rem, 5vw, 2.5rem); }
+
+  /* Product info */
+  .carousel-3d__price {
+    font-size: var(--font-size-sm);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .carousel-3d__compare-price {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+
+  .carousel-3d__variants {
+    font-size: var(--font-size-xs);
+    opacity: 0.7;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+
+  .carousel-3d__cta {
+    margin-top: var(--space-2);
+    font-size: var(--font-size-xs);
+    padding: var(--space-2) var(--space-4);
+  }
+
+  /* Carousel track - positioned absolute behind title */
+  .carousel-3d__carousel {
+    position: absolute;
+    width: var(--card-width);
+    height: var(--card-height);
+    top: 50%;
+    left: 50%;
+    margin-top: calc(var(--card-height) / -2);
+    margin-left: calc(var(--card-width) / -2);
+    transform-style: preserve-3d;
+    transform: translateZ(calc(var(--carousel-radius) * -1)) rotateY(0deg);
+    will-change: transform;
+  }
+
+  /* Individual cell positioning */
+  .carousel-3d__cell {
+    position: absolute;
+    width: var(--card-width);
+    height: var(--card-height);
+    left: 0;
+    top: 0;
+    transform-style: preserve-3d;
+  }
+
+  /* Card styling */
+  .carousel-3d__card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Card faces */
+  .carousel-3d__card-face {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    background-color: var(--color-muted);
+  }
+
+  .carousel-3d__card-face--back {
+    transform: rotateY(180deg);
+  }
+
+  .carousel-3d__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .carousel-3d__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.5;
+  }
+
+  /* Mobile: horizontal scroll instead of 3D */
+  @media (max-width: 749px) {
+    .carousel-3d--medium,
+    .carousel-3d--large,
+    .carousel-3d--full {
+      min-height: auto;
+    }
+
+    .carousel-3d__scene {
+      perspective: none;
+      flex-direction: column;
+      padding: var(--space-12) 0;
+      gap: var(--space-8);
+    }
+
+    .carousel-3d__title-overlay {
+      position: relative;
+    }
+
+    .carousel-3d__carousel {
+      position: relative;
+      display: flex;
+      gap: var(--space-4);
+      width: 100%;
+      height: auto;
+      top: auto;
+      left: auto;
+      margin: 0;
+      transform: none !important;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding: var(--space-4) var(--page-margin);
+    }
+
+    .carousel-3d__cell {
+      position: relative;
+      flex: 0 0 75vw;
+      max-width: 280px;
+      height: 380px;
+      transform: none !important;
+      scroll-snap-align: center;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-3d__carousel {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  (function() {
+    const section = document.querySelector('[data-carousel-3d]');
+    if (!section) return;
+
+    const carousel = section.querySelector('[data-carousel-track]');
+    const cells = section.querySelectorAll('[data-carousel-cell]');
+    const radius = parseInt(section.dataset.radius) || 500;
+    const cellCount = cells.length;
+
+    // Skip 3D on mobile
+    if (window.innerWidth < 750) return;
+
+    // Need at least 2 cells for carousel
+    if (cellCount < 2) return;
+
+    // Calculate transforms for circular arrangement
+    const angleStep = 360 / cellCount;
+    cells.forEach((cell, i) => {
+      const angle = i * angleStep;
+      cell.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+    });
+
+    // Scroll-driven rotation
+    let ticking = false;
+    let currentRotation = 0;
+
+    function updateCarousel() {
+      const rect = section.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      // Calculate progress: 0 when section enters, 1 when it leaves
+      const start = rect.top - viewportHeight;
+      const end = rect.bottom;
+      const progress = Math.max(0, Math.min(1, -start / (end - start + viewportHeight)));
+
+      // Rotate based on scroll progress (full 360 rotation over scroll)
+      const targetRotation = progress * -360;
+
+      // Smooth interpolation
+      currentRotation += (targetRotation - currentRotation) * 0.1;
+
+      // Apply rotation
+      carousel.style.transform = `translateZ(-${radius}px) rotateY(${currentRotation}deg)`;
+
+      ticking = false;
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        requestAnimationFrame(updateCarousel);
+        ticking = true;
+      }
+    }
+
+    // Initialize
+    window.addEventListener('scroll', onScroll, { passive: true });
+    updateCarousel();
+
+    // Cleanup on section unload (for theme editor)
+    if (Shopify.designMode) {
+      document.addEventListener('shopify:section:unload', function(e) {
+        if (e.target.contains(section)) {
+          window.removeEventListener('scroll', onScroll);
+        }
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.product_carousel_3d.name",
+  "class": "section-product-carousel-3d",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.product_carousel_3d.settings.header_product.content"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:sections.product_carousel_3d.settings.product.label"
+    },
+    {
+      "type": "text",
+      "id": "custom_title",
+      "label": "t:sections.product_carousel_3d.settings.custom_title.label",
+      "info": "t:sections.product_carousel_3d.settings.custom_title.info"
+    },
+    {
+      "type": "range",
+      "id": "images_to_show",
+      "min": 3,
+      "max": 8,
+      "step": 1,
+      "label": "t:sections.product_carousel_3d.settings.images_to_show.label",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_carousel_3d.settings.header_display.content"
+    },
+    {
+      "type": "select",
+      "id": "title_size",
+      "label": "t:sections.product_carousel_3d.settings.title_size.label",
+      "options": [
+        { "value": "small", "label": "t:sections.product_carousel_3d.settings.title_size.options.small" },
+        { "value": "medium", "label": "t:sections.product_carousel_3d.settings.title_size.options.medium" },
+        { "value": "large", "label": "t:sections.product_carousel_3d.settings.title_size.options.large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "t:sections.product_carousel_3d.settings.show_price.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_variants",
+      "label": "t:sections.product_carousel_3d.settings.show_variants.label",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_carousel_3d.settings.header_cta.content"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "t:sections.product_carousel_3d.settings.cta_text.label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "t:sections.product_carousel_3d.settings.cta_style.label",
+      "options": [
+        { "value": "primary", "label": "t:sections.product_carousel_3d.settings.cta_style.options.primary" },
+        { "value": "secondary", "label": "t:sections.product_carousel_3d.settings.cta_style.options.secondary" },
+        { "value": "outline", "label": "t:sections.product_carousel_3d.settings.cta_style.options.outline" }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product_carousel_3d.settings.header_layout.content"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:sections.product_carousel_3d.settings.height.label",
+      "options": [
+        { "value": "medium", "label": "t:sections.product_carousel_3d.settings.height.options.medium" },
+        { "value": "large", "label": "t:sections.product_carousel_3d.settings.height.options.large" },
+        { "value": "full", "label": "t:sections.product_carousel_3d.settings.height.options.full" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "range",
+      "id": "carousel_radius",
+      "min": 400,
+      "max": 700,
+      "step": 50,
+      "unit": "px",
+      "label": "t:sections.product_carousel_3d.settings.carousel_radius.label",
+      "default": 500
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "t:sections.product_carousel_3d.settings.color_scheme.label",
+      "options": [
+        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
+        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+      ],
+      "default": "scheme-2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.product_carousel_3d.presets.name"
+    }
+  ]
+}
+{% endschema %}

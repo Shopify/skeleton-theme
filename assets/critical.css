@@ -311,8 +311,14 @@ main {
   grid-column: 2;
 }
 
-/* Full-width content */
-.shopify-section > .full-width {
+/* Full-width sections - break out of content grid */
+.shopify-section > .full-width,
+.section-header > *,
+.section-footer > *,
+.section-hero > *,
+.section-announcement-bar > *,
+.section-image-with-text > *,
+.section-product-carousel-3d > * {
   grid-column: 1 / -1;
 }
 
@@ -979,21 +985,29 @@ dialog::backdrop {
   background-color: rgb(0 0 0 / 0.5);
 }
 
-/* Icon sizing */
+/* Icon sizing and appearance */
 .icon {
+  display: inline-block;
   width: 1.25rem;
   height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
   flex-shrink: 0;
+  vertical-align: middle;
 }
 
 .icon--sm {
   width: 1rem;
   height: 1rem;
+  min-width: 1rem;
+  min-height: 1rem;
 }
 
 .icon--lg {
   width: 1.5rem;
   height: 1.5rem;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
 }
 
 /* Divider */
@@ -1028,3 +1042,55 @@ dialog::backdrop {
   color: var(--color-muted);
   max-width: 30rem;
 }
+
+/* ========================================
+   HEADER - Critical Styles
+   ======================================== */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background-color: var(--color-background);
+}
+
+.header--transparent {
+  background-color: transparent;
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  height: var(--header-height);
+  gap: var(--space-6);
+  position: relative;
+}
+
+/* ========================================
+   DRAWER - Critical Styles (Prevent FOUC)
+   ======================================== */
+
+.drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(100vw, 24rem);
+  max-height: 100vh;
+  background-color: var(--color-background);
+  z-index: var(--z-modal);
+  transform: translateX(-100%);
+  visibility: hidden;
+}
+
+.drawer--right {
+  left: auto;
+  right: 0;
+  transform: translateX(100%);
+}
+
+.drawer.is-open {
+  transform: translateX(0);
+  visibility: visible;
+}
+

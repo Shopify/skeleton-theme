@@ -4,6 +4,7 @@
 {% endcomment %}
 
 <footer class="footer section {% render 'color-scheme', scheme: section.settings.color_scheme %}">
+  <div class="container">
   {%- if section.blocks.size > 0 -%}
     <div class="footer__main">
       {%- for block in section.blocks -%}
@@ -231,6 +232,7 @@
         {%- endfor -%}
       </div>
     {%- endif -%}
+  </div>
   </div>
 </footer>
 

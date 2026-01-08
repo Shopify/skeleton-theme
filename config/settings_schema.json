@@ -127,7 +127,7 @@
         "type": "font_picker",
         "id": "type_heading_font",
         "label": "t:settings_schema.typography.settings.heading_font.label",
-        "default": "cormorant_garamond_n4",
+        "default": "assistant_n4",
         "info": "t:settings_schema.typography.settings.heading_font.info"
       },
       {

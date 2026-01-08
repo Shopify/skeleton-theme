@@ -6,7 +6,7 @@
         "show_tag_filter": true,
         "articles_per_page": 9,
         "columns_desktop": 3,
-        "columns_mobile": 1,
+        "columns_mobile": "1",
         "image_ratio": "landscape",
         "show_date": true,
         "show_author": true,

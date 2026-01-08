@@ -18,7 +18,7 @@
         "heading": "You may also like",
         "posts_to_show": 3,
         "columns_desktop": 3,
-        "columns_mobile": 1,
+        "columns_mobile": "1",
         "show_date": true,
         "show_author": false,
         "show_excerpt": false

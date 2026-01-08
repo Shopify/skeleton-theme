@@ -7,8 +7,14 @@
   assign logo_width = section.settings.logo_width | default: 120
   assign sticky_header = section.settings.enable_sticky
   assign transparent_header = section.settings.enable_transparent
-  assign is_homepage = template.name == 'index'
-  assign enable_transparent = transparent_header and is_homepage
+  assign is_homepage = false
+  if template.name == 'index'
+    assign is_homepage = true
+  endif
+  assign enable_transparent = false
+  if transparent_header and is_homepage
+    assign enable_transparent = true
+  endif
 -%}
 
 <header
@@ -16,7 +22,7 @@
   data-header
   {% if sticky_header %}data-sticky-header{% endif %}
 >
-  <div class="header__inner container">
+  <div class="header__inner container{% if section.settings.logo_position == 'center' %} header__inner--logo-center{% endif %}">
     {%- comment -%} Mobile menu button {%- endcomment -%}
     <button
       type="button"

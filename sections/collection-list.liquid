@@ -80,13 +80,14 @@
       "default": 3
     },
     {
-      "type": "range",
+      "type": "select",
       "id": "columns_mobile",
       "label": "t:labels.columns_mobile",
-      "min": 1,
-      "max": 2,
-      "step": 1,
-      "default": 1
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1"
     },
     {
       "type": "select",

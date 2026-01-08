@@ -8,7 +8,7 @@
         "image_ratio": "landscape",
         "show_collection_count": true,
         "columns_desktop": 3,
-        "columns_mobile": 1
+        "columns_mobile": "1"
       }
     }
   },

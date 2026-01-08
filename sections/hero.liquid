@@ -1,6 +1,7 @@
 {% comment %}
   Hero Section - Influence Theme
-  Features: Full-bleed image/video, overlay, multiple layouts, content positioning
+  Editorial fashion-forward hero with cinematic presence
+  Features: Full-bleed image/video, gradient overlays, animated content, multiple layouts
 {% endcomment %}
 
 {%- liquid
@@ -8,14 +9,18 @@
   assign content_position = section.settings.content_position | split: '_'
   assign vertical_align = content_position[0]
   assign horizontal_align = content_position[1]
+  assign overlay_style = section.settings.overlay_style | default: 'solid'
 -%}
 
 <section
-  class="hero {{ height_class }} {% render 'color-scheme', scheme: section.settings.color_scheme %}"
-  style="--hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
+  class="hero {{ height_class }} hero--{{ overlay_style }} {% if section.settings.enable_parallax %}hero--parallax{% endif %}"
+  style="
+    --hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --hero-content-width: {{ section.settings.content_width | default: 'medium' }};
+  "
 >
   {%- comment -%} Background Media {%- endcomment -%}
-  <div class="hero__media full-width">
+  <div class="hero__media">
     {%- if section.settings.video_url != blank -%}
       {%- liquid
         assign video_id = section.settings.video_url | split: 'v=' | last | split: '&' | first
@@ -48,12 +53,12 @@
     {%- elsif section.settings.image != blank -%}
       {{
         section.settings.image
-        | image_url: width: 2000
+        | image_url: width: 2400
         | image_tag:
           loading: 'eager',
           fetchpriority: 'high',
           sizes: '100vw',
-          widths: '375, 550, 750, 1000, 1250, 1500, 1750, 2000',
+          widths: '375, 550, 750, 1000, 1250, 1500, 1750, 2000, 2400',
           class: 'hero__image'
       }}
     {%- else -%}
@@ -75,21 +80,21 @@
         {%- case block.type -%}
           {%- when 'subheading' -%}
             {%- if block.settings.text != blank -%}
-              <p class="hero__subheading subheading" {{ block.shopify_attributes }}>
-                {{ block.settings.text }}
+              <p class="hero__subheading" {{ block.shopify_attributes }}>
+                <span class="hero__subheading-text">{{ block.settings.text }}</span>
               </p>
             {%- endif -%}
 
           {%- when 'heading' -%}
             {%- if block.settings.text != blank -%}
-              <h1 class="hero__heading heading-display" {{ block.shopify_attributes }}>
+              <h1 class="hero__heading" {{ block.shopify_attributes }}>
                 {{ block.settings.text }}
               </h1>
             {%- endif -%}
 
           {%- when 'text' -%}
             {%- if block.settings.text != blank -%}
-              <div class="hero__text" {{ block.shopify_attributes }}>
+              <div class="hero__text rte" {{ block.shopify_attributes }}>
                 {{ block.settings.text }}
               </div>
             {%- endif -%}
@@ -99,9 +104,12 @@
               <div class="hero__buttons" {{ block.shopify_attributes }}>
                 <a
                   href="{{ block.settings.link }}"
-                  class="btn btn--{{ block.settings.style }}"
+                  class="hero__btn btn btn--{{ block.settings.style }}"
                 >
-                  {{ block.settings.label }}
+                  <span>{{ block.settings.label }}</span>
+                  <svg class="hero__btn-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </a>
               </div>
             {%- endif -%}
@@ -109,6 +117,14 @@
       {%- endfor -%}
     </div>
   </div>
+
+  {%- comment -%} Scroll indicator {%- endcomment -%}
+  {%- if section.settings.show_scroll_indicator and section.settings.height == 'full' -%}
+    <div class="hero__scroll-indicator">
+      <span class="hero__scroll-text">Scroll</span>
+      <span class="hero__scroll-line"></span>
+    </div>
+  {%- endif -%}
 </section>
 
 {% stylesheet %}
@@ -118,16 +134,24 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    width: 100%;
   }
 
-  .hero--small { min-height: 40vh; }
-  .hero--medium { min-height: 60vh; }
-  .hero--large { min-height: 80vh; }
-  .hero--full { min-height: 100vh; }
+  /* Height variants */
+  .hero--small { min-height: 50vh; }
+  .hero--medium { min-height: 70vh; }
+  .hero--large { min-height: 85vh; }
+  .hero--full { min-height: 100vh; min-height: 100svh; }
 
+  /* Media container */
   .hero__media {
     position: absolute;
     inset: 0;
+    z-index: 0;
+  }
+
+  .hero--parallax .hero__media {
+    will-change: transform;
   }
 
   .hero__image,
@@ -137,80 +161,238 @@
     object-fit: cover;
   }
 
+  /* Subtle zoom animation on image */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__image {
+      animation: heroImageZoom 20s ease-in-out infinite alternate;
+    }
+  }
+
+  @keyframes heroImageZoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+  }
+
   .hero__placeholder {
     width: 100%;
     height: 100%;
-    background-color: var(--color-muted);
+    background: linear-gradient(135deg, var(--color-muted) 0%, var(--color-background) 100%);
   }
 
   .hero__placeholder-svg {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0.5;
   }
 
+  /* Overlay styles */
   .hero__overlay {
     position: absolute;
     inset: 0;
+    z-index: 1;
+  }
+
+  .hero--solid .hero__overlay {
     background-color: rgb(0 0 0 / var(--hero-overlay-opacity, 0.3));
   }
 
+  .hero--gradient .hero__overlay {
+    background: linear-gradient(
+      to top,
+      rgb(0 0 0 / calc(var(--hero-overlay-opacity, 0.3) * 1.5)) 0%,
+      rgb(0 0 0 / calc(var(--hero-overlay-opacity, 0.3) * 0.5)) 50%,
+      transparent 100%
+    );
+  }
+
+  .hero--vignette .hero__overlay {
+    background: radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      rgb(0 0 0 / calc(var(--hero-overlay-opacity, 0.3) * 0.3)) 50%,
+      rgb(0 0 0 / var(--hero-overlay-opacity, 0.3)) 100%
+    );
+  }
+
+  /* Content positioning */
   .hero__content {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     display: flex;
     width: 100%;
     height: 100%;
-    padding: var(--space-8);
+    padding: var(--space-12) var(--page-margin);
+    color: #fff;
   }
 
-  .hero__content--top { align-items: flex-start; }
+  .hero__content--top { align-items: flex-start; padding-top: calc(var(--header-height) + var(--space-12)); }
   .hero__content--middle { align-items: center; }
-  .hero__content--bottom { align-items: flex-end; }
+  .hero__content--bottom { align-items: flex-end; padding-bottom: var(--space-16); }
 
   .hero__content--left { justify-content: flex-start; text-align: left; }
   .hero__content--center { justify-content: center; text-align: center; }
   .hero__content--right { justify-content: flex-end; text-align: right; }
 
   .hero__content-inner {
-    max-width: var(--content-width-medium);
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-6);
+    max-width: 48rem;
   }
 
-  .hero__content--center .hero__content-inner {
-    align-items: center;
-  }
+  .hero__content--center .hero__content-inner { align-items: center; }
+  .hero__content--right .hero__content-inner { align-items: flex-end; }
 
-  .hero__content--right .hero__content-inner {
-    align-items: flex-end;
-  }
-
+  /* Subheading - editorial style */
   .hero__subheading {
-    margin-bottom: var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-4);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
   }
 
+  .hero__subheading::before,
+  .hero__subheading::after {
+    content: '';
+    width: 2rem;
+    height: 1px;
+    background-color: currentColor;
+    opacity: 0.5;
+  }
+
+  .hero__content--left .hero__subheading::before { display: none; }
+  .hero__content--right .hero__subheading::after { display: none; }
+
+  /* Heading - dramatic scale */
   .hero__heading {
-    margin-bottom: var(--space-2);
+    font-family: var(--font-heading-family);
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: var(--font-heading-weight);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
   }
 
+  /* Text */
   .hero__text {
     font-size: var(--font-size-lg);
-    max-width: 40rem;
+    line-height: 1.6;
+    max-width: 36rem;
+    opacity: 0.9;
   }
 
+  .hero__content--center .hero__text { margin-inline: auto; }
+
+  /* Button with arrow animation */
   .hero__buttons {
     margin-top: var(--space-4);
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    gap: var(--space-4);
   }
 
+  .hero__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    transition: all var(--duration-normal) var(--ease-out);
+  }
+
+  .hero__btn--primary {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+  }
+
+  .hero__btn--secondary {
+    background: transparent;
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .hero__btn-arrow {
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+
+  .hero__btn:hover .hero__btn-arrow {
+    transform: translateX(4px);
+  }
+
+  .hero__btn:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+  }
+
+  /* Scroll indicator */
+  .hero__scroll-indicator {
+    position: absolute;
+    bottom: var(--space-8);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    color: #fff;
+    z-index: 2;
+  }
+
+  .hero__scroll-text {
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .hero__scroll-line {
+    width: 1px;
+    height: 3rem;
+    background: linear-gradient(to bottom, currentColor, transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(0.5); }
+    50% { opacity: 1; transform: scaleY(1); }
+  }
+
+  /* Mobile adjustments */
   @media (max-width: 749px) {
-    .hero--full { min-height: 80vh; }
-    .hero--large { min-height: 60vh; }
-    .hero__heading { font-size: var(--font-size-4xl); }
+    .hero--full { min-height: 85vh; min-height: 85svh; }
+    .hero--large { min-height: 70vh; }
+
+    .hero__content {
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .hero__heading {
+      font-size: clamp(2rem, 10vw, 3.5rem);
+    }
+
+    .hero__text {
+      font-size: var(--font-size-base);
+    }
+
+    .hero__subheading::before,
+    .hero__subheading::after {
+      width: 1rem;
+    }
+
+    .hero__scroll-indicator {
+      display: none;
+    }
   }
 {% endstylesheet %}
 
@@ -220,6 +402,10 @@
   "class": "section-hero",
   "tag": "section",
   "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.hero.settings.header_media.content"
+    },
     {
       "type": "image_picker",
       "id": "image",
@@ -232,6 +418,10 @@
       "info": "YouTube or Vimeo URL"
     },
     {
+      "type": "header",
+      "content": "t:sections.hero.settings.header_layout.content"
+    },
+    {
       "type": "select",
       "id": "height",
       "label": "t:sections.hero.settings.height.label",
@@ -241,17 +431,7 @@
         { "value": "large", "label": "t:sections.hero.settings.height.options.large" },
         { "value": "full", "label": "t:sections.hero.settings.height.options.full" }
       ],
-      "default": "large"
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity",
-      "min": 0,
-      "max": 100,
-      "step": 5,
-      "unit": "%",
-      "label": "t:sections.hero.settings.overlay_opacity.label",
-      "default": 30
+      "default": "full"
     },
     {
       "type": "select",
@@ -271,14 +451,35 @@
       "default": "middle_center"
     },
     {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "t:sections.hero.settings.show_scroll_indicator.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hero.settings.header_overlay.content"
+    },
+    {
       "type": "select",
-      "id": "color_scheme",
-      "label": "t:sections.hero.settings.color_scheme.label",
+      "id": "overlay_style",
+      "label": "t:sections.hero.settings.overlay_style.label",
       "options": [
-        { "value": "scheme-1", "label": "t:options.color_scheme.scheme_1" },
-        { "value": "scheme-2", "label": "t:options.color_scheme.scheme_2" }
+        { "value": "solid", "label": "t:sections.hero.settings.overlay_style.options.solid" },
+        { "value": "gradient", "label": "t:sections.hero.settings.overlay_style.options.gradient" },
+        { "value": "vignette", "label": "t:sections.hero.settings.overlay_style.options.vignette" }
       ],
-      "default": "scheme-2"
+      "default": "gradient"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "t:sections.hero.settings.overlay_opacity.label",
+      "default": 40
     }
   ],
   "blocks": [

@@ -71,6 +71,10 @@
 </section>
 
 {% stylesheet %}
+  .image-with-text {
+    padding-inline: 0;
+  }
+
   .image-with-text__grid {
     display: grid;
     gap: var(--space-8);
@@ -80,7 +84,7 @@
   @media (min-width: 990px) {
     .image-with-text__grid {
       grid-template-columns: 1fr 1fr;
-      gap: var(--space-16);
+      gap: 0;
     }
 
     .image-with-text__grid--reverse .image-with-text__media {
@@ -111,6 +115,13 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding: var(--space-8) var(--page-margin);
+  }
+
+  @media (min-width: 990px) {
+    .image-with-text__content {
+      padding: var(--space-16) var(--space-12);
+    }
   }
 
   .image-with-text__content.text-center {

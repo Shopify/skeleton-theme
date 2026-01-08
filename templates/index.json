@@ -12,29 +12,44 @@
         "heading": {
           "type": "heading",
           "settings": {
-            "text": "Define Your Style",
-            "heading_size": "h1"
+            "text": "Define Your Style"
           }
         },
         "text": {
           "type": "text",
           "settings": {
-            "text": "Discover our curated selection of contemporary fashion designed for the modern individual."
+            "text": "<p>Discover our curated selection of contemporary fashion designed for the modern individual.</p>"
           }
         },
         "button": {
           "type": "button",
           "settings": {
-            "button_label": "Shop Now",
-            "button_link": "",
-            "button_style": "primary"
+            "label": "Shop Now",
+            "link": "",
+            "style": "primary"
           }
         }
       },
       "block_order": ["subheading", "heading", "text", "button"],
       "settings": {
-        "content_position": "center-center",
-        "overlay_opacity": 40,
+        "height": "full",
+        "content_position": "middle_center",
+        "show_scroll_indicator": true,
+        "overlay_style": "gradient",
+        "overlay_opacity": 40
+      }
+    },
+    "product_carousel_3d": {
+      "type": "product-carousel-3d",
+      "settings": {
+        "images_to_show": 6,
+        "title_size": "large",
+        "show_price": true,
+        "show_variants": false,
+        "cta_text": "Shop Now",
+        "cta_style": "primary",
+        "height": "large",
+        "carousel_radius": 500,
         "color_scheme": "scheme-2"
       }
     },
@@ -42,10 +57,8 @@
       "type": "featured-collection",
       "settings": {
         "heading": "Featured Collection",
-        "heading_alignment": "center",
         "products_to_show": 8,
-        "columns_desktop": 4,
-        "columns_mobile": 2,
+        "columns_desktop": "4",
         "show_view_all": true
       }
     },
@@ -192,6 +205,7 @@
   },
   "order": [
     "hero",
+    "product_carousel_3d",
     "featured_collection",
     "image_with_text",
     "rich_text",

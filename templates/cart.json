@@ -12,8 +12,7 @@
       "settings": {
         "heading": "You may also like",
         "products_to_show": 4,
-        "columns_desktop": 4,
-        "columns_mobile": 2
+        "columns_desktop": "4"
       }
     }
   },
