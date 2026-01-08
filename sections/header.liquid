@@ -18,7 +18,7 @@
 -%}
 
 <header
-  class="header{% if sticky_header %} header--sticky{% endif %}{% if enable_transparent %} header--transparent{% endif %}"
+  class="header{% if sticky_header %} header--sticky{% endif %}{% if enable_transparent %} header--transparent{% endif %} {% render 'color-scheme', scheme: section.settings.color_scheme %}"
   data-header
   {% if sticky_header %}data-sticky-header{% endif %}
 >
@@ -381,6 +381,12 @@
       "id": "show_account",
       "label": "t:sections.header.settings.show_account.label",
       "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
     }
   ]
 }

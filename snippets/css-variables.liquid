@@ -117,28 +117,20 @@
        COLORS
        ======================================== */
 
-    /* Color Scheme 1 (Primary/Default) */
-    --color-scheme-1-background: {{ settings.scheme_1_background }};
-    --color-scheme-1-foreground: {{ settings.scheme_1_foreground }};
-    --color-scheme-1-accent: {{ settings.scheme_1_accent }};
-    --color-scheme-1-muted: {{ settings.scheme_1_muted }};
-
-    /* Color Scheme 2 (Inverse/Dark) */
-    --color-scheme-2-background: {{ settings.scheme_2_background }};
-    --color-scheme-2-foreground: {{ settings.scheme_2_foreground }};
-    --color-scheme-2-accent: {{ settings.scheme_2_accent }};
-    --color-scheme-2-muted: {{ settings.scheme_2_muted }};
-
     /* Semantic Colors */
     --color-sale: {{ settings.color_sale }};
     --color-error: {{ settings.color_error }};
     --color-success: {{ settings.color_success }};
 
-    /* Default color scheme (Scheme 1) */
-    --color-background: var(--color-scheme-1-background);
-    --color-foreground: var(--color-scheme-1-foreground);
-    --color-accent: var(--color-scheme-1-accent);
-    --color-muted: var(--color-scheme-1-muted);
+    /* Default color scheme (applied to body) */
+    --color-background: {{ settings.color_schemes.scheme_1.settings.background }};
+    --color-foreground: {{ settings.color_schemes.scheme_1.settings.text }};
+    --color-button: {{ settings.color_schemes.scheme_1.settings.button }};
+    --color-button-label: {{ settings.color_schemes.scheme_1.settings.button_label }};
+    --color-secondary-button-label: {{ settings.color_schemes.scheme_1.settings.secondary_button_label }};
+    --color-shadow: {{ settings.color_schemes.scheme_1.settings.shadow }};
+    --color-accent: {{ settings.color_schemes.scheme_1.settings.button }};
+    --color-muted: color-mix(in srgb, {{ settings.color_schemes.scheme_1.settings.text }} 60%, {{ settings.color_schemes.scheme_1.settings.background }});
 
     /* ========================================
        ANIMATION
@@ -243,4 +235,24 @@
       --page-margin: var(--page-margin-mobile);
     }
   }
+
+  /* ========================================
+     COLOR SCHEME CLASSES
+     Generated from color_scheme_group settings
+     ======================================== */
+  {%- for scheme in settings.color_schemes -%}
+    .color-{{ scheme.id }} {
+      --color-background: {{ scheme.settings.background }};
+      --color-foreground: {{ scheme.settings.text }};
+      --color-button: {{ scheme.settings.button }};
+      --color-button-label: {{ scheme.settings.button_label }};
+      --color-secondary-button-label: {{ scheme.settings.secondary_button_label }};
+      --color-shadow: {{ scheme.settings.shadow }};
+      --color-accent: {{ scheme.settings.button }};
+      --color-muted: color-mix(in srgb, {{ scheme.settings.text }} 60%, {{ scheme.settings.background }});
+      --border-color: color-mix(in srgb, {{ scheme.settings.text }} 20%, {{ scheme.settings.background }});
+      background-color: var(--color-background);
+      color: var(--color-foreground);
+    }
+  {%- endfor -%}
 {% endstyle %}

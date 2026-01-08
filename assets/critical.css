@@ -802,25 +802,9 @@ main {
 
 /* ========================================
    COLOR SCHEMES
+   Note: Color scheme classes (.color-scheme_1, etc.) are generated
+   dynamically from the color_scheme_group settings in css-variables.liquid
    ======================================== */
-
-.color-scheme-1 {
-  --color-background: var(--color-scheme-1-background);
-  --color-foreground: var(--color-scheme-1-foreground);
-  --color-accent: var(--color-scheme-1-accent);
-  --color-muted: var(--color-scheme-1-muted);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}
-
-.color-scheme-2 {
-  --color-background: var(--color-scheme-2-background);
-  --color-foreground: var(--color-scheme-2-foreground);
-  --color-accent: var(--color-scheme-2-accent);
-  --color-muted: var(--color-scheme-2-muted);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}
 
 /* ========================================
    ANIMATIONS
