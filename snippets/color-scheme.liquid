@@ -1,21 +1,15 @@
 {% comment %}
   Color Scheme Snippet
-  Dynamically applies color scheme classes based on section settings
+  Outputs the CSS class for a color scheme from the color_scheme_group settings
 
   Usage:
   {% render 'color-scheme', scheme: section.settings.color_scheme %}
 
-  Or inline:
+  Or inline as a class:
   <div class="{% render 'color-scheme', scheme: section.settings.color_scheme %}">
+
+  The color_scheme setting type returns a color_scheme object which has an id property.
+  This snippet outputs the class name in the format: color-{scheme_id}
 {% endcomment %}
 
-{%- liquid
-  case scheme
-    when 'scheme-1', '1', 'light', 'primary'
-      echo 'color-scheme-1'
-    when 'scheme-2', '2', 'dark', 'inverse'
-      echo 'color-scheme-2'
-    else
-      echo 'color-scheme-1'
-  endcase
--%}
+{%- if scheme != blank -%}color-{{ scheme }}{%- endif -%}

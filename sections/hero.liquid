@@ -13,7 +13,7 @@
 -%}
 
 <section
-  class="hero {{ height_class }} hero--{{ overlay_style }} {% if section.settings.enable_parallax %}hero--parallax{% endif %}"
+  class="hero {{ height_class }} hero--{{ overlay_style }} {% if section.settings.enable_parallax %}hero--parallax{% endif %} {% render 'color-scheme', scheme: section.settings.color_scheme %}"
   style="
     --hero-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
     --hero-content-width: {{ section.settings.content_width | default: 'medium' }};
@@ -480,6 +480,12 @@
       "unit": "%",
       "label": "t:sections.hero.settings.overlay_opacity.label",
       "default": 40
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.hero.settings.color_scheme.label",
+      "default": "scheme_2"
     }
   ],
   "blocks": [

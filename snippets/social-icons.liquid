@@ -1,0 +1,137 @@
+{% comment %}
+  Social Icons Snippet - Influence Theme
+  Displays social media links from global settings
+
+  Usage:
+  {% render 'social-icons' %}
+  {% render 'social-icons', class: 'footer__social' %}
+
+  Parameters:
+  - class: (optional) Additional CSS classes
+{% endcomment %}
+
+{%- liquid
+  assign social_class = 'social-icons'
+  if class != blank
+    assign social_class = social_class | append: ' ' | append: class
+  endif
+
+  assign has_social = false
+  if settings.social_instagram_link != blank
+    assign has_social = true
+  elsif settings.social_facebook_link != blank
+    assign has_social = true
+  elsif settings.social_twitter_link != blank
+    assign has_social = true
+  elsif settings.social_pinterest_link != blank
+    assign has_social = true
+  elsif settings.social_youtube_link != blank
+    assign has_social = true
+  elsif settings.social_tiktok_link != blank
+    assign has_social = true
+  elsif settings.social_linkedin_link != blank
+    assign has_social = true
+  endif
+-%}
+
+{%- if has_social -%}
+  <ul class="{{ social_class }}" role="list">
+    {%- if settings.social_instagram_link != blank -%}
+      <li>
+        <a
+          href="{{ settings.social_instagram_link }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Instagram"
+          class="social-icons__link"
+        >
+          {% render 'icon', icon: 'instagram' %}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if settings.social_facebook_link != blank -%}
+      <li>
+        <a
+          href="{{ settings.social_facebook_link }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Facebook"
+          class="social-icons__link"
+        >
+          {% render 'icon', icon: 'facebook' %}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if settings.social_twitter_link != blank -%}
+      <li>
+        <a
+          href="{{ settings.social_twitter_link }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="X (Twitter)"
+          class="social-icons__link"
+        >
+          {% render 'icon', icon: 'twitter' %}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if settings.social_pinterest_link != blank -%}
+      <li>
+        <a
+          href="{{ settings.social_pinterest_link }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Pinterest"
+          class="social-icons__link"
+        >
+          {% render 'icon', icon: 'pinterest' %}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if settings.social_youtube_link != blank -%}
+      <li>
+        <a
+          href="{{ settings.social_youtube_link }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="YouTube"
+          class="social-icons__link"
+        >
+          {% render 'icon', icon: 'youtube' %}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if settings.social_tiktok_link != blank -%}
+      <li>
+        <a
+          href="{{ settings.social_tiktok_link }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="TikTok"
+          class="social-icons__link"
+        >
+          {% render 'icon', icon: 'tiktok' %}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if settings.social_linkedin_link != blank -%}
+      <li>
+        <a
+          href="{{ settings.social_linkedin_link }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="LinkedIn"
+          class="social-icons__link"
+        >
+          {% render 'icon', icon: 'linkedin' %}
+        </a>
+      </li>
+    {%- endif -%}
+  </ul>
+{%- endif -%}

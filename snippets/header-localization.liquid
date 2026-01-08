@@ -1,0 +1,70 @@
+{% comment %}
+  Header Localization - Country/Currency and Language Selectors
+  Used in header utility bar and mobile drawer
+
+  Usage:
+  {% render 'header-localization' %}
+{% endcomment %}
+
+{%- liquid
+  assign show_country = localization.available_countries.size > 1
+  assign show_language = localization.available_languages.size > 1
+-%}
+
+{%- if show_country or show_language -%}
+  <div class="header-localization">
+    {%- comment -%} Language Selector {%- endcomment -%}
+    {%- if show_language -%}
+      <div class="header-localization__item">
+        {%- form 'localization', id: 'header-language-form', class: 'header-localization__form' -%}
+          <label for="header-language-select" class="visually-hidden">
+            {{ 'localization.language_label' | t }}
+          </label>
+          <select
+            id="header-language-select"
+            name="locale_code"
+            class="header-localization__select"
+            onchange="this.form.submit()"
+          >
+            {%- for language in localization.available_languages -%}
+              <option
+                value="{{ language.iso_code }}"
+                {% if language.iso_code == localization.language.iso_code %}selected{% endif %}
+              >
+                {{ language.endonym_name | capitalize }}
+              </option>
+            {%- endfor -%}
+          </select>
+          {% render 'icon', icon: 'chevron-down', size: 'sm', class: 'header-localization__icon' %}
+        {%- endform -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Country/Currency Selector {%- endcomment -%}
+    {%- if show_country -%}
+      <div class="header-localization__item">
+        {%- form 'localization', id: 'header-country-form', class: 'header-localization__form' -%}
+          <label for="header-country-select" class="visually-hidden">
+            {{ 'localization.country_label' | t }}
+          </label>
+          <select
+            id="header-country-select"
+            name="country_code"
+            class="header-localization__select"
+            onchange="this.form.submit()"
+          >
+            {%- for country in localization.available_countries -%}
+              <option
+                value="{{ country.iso_code }}"
+                {% if country.iso_code == localization.country.iso_code %}selected{% endif %}
+              >
+                {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+              </option>
+            {%- endfor -%}
+          </select>
+          {% render 'icon', icon: 'chevron-down', size: 'sm', class: 'header-localization__icon' %}
+        {%- endform -%}
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}

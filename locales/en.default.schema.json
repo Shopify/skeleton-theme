@@ -18,23 +18,29 @@
     "colors": {
       "name": "Colors",
       "settings": {
-        "scheme_1": {
-          "header": "Scheme 1 (Light)"
-        },
-        "scheme_2": {
-          "header": "Scheme 2 (Dark)"
-        },
         "background": {
-          "label": "Background"
+          "label": "Background",
+          "info": "Used for section backgrounds"
         },
-        "foreground": {
-          "label": "Text"
+        "text": {
+          "label": "Text",
+          "info": "Used for headings, body text, and icons"
         },
-        "accent": {
-          "label": "Accent"
+        "button": {
+          "label": "Primary button background",
+          "info": "Used for solid buttons and accents"
         },
-        "muted": {
-          "label": "Muted text"
+        "button_label": {
+          "label": "Primary button text",
+          "info": "Text color on solid buttons"
+        },
+        "secondary_button_label": {
+          "label": "Outline button text",
+          "info": "Used for outline buttons and links"
+        },
+        "shadow": {
+          "label": "Shadow",
+          "info": "Used for shadows and overlays"
         },
         "semantic": {
           "header": "Semantic colors"
