@@ -1,0 +1,29 @@
+<section style="padding:40px; text-align:center; background:#f7f7f7;">
+  <h1>{{ section.settings.title }}</h1>
+  <p>{{ section.settings.subtitle }}</p>
+</section>
+
+{% schema %}
+{
+  "name": "Roza Hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "العنوان",
+      "default": "مرحبا بك في متجر روزا"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "الوصف",
+      "default": "نقدم لك ثيمات احترافية وتجربة تسوق مميزة"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Roza Hero Section"
+    }
+  ]
+}
+{% endschema %}
