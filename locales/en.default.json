@@ -48,5 +48,26 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "product": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "on_sale": "Sale",
+    "quantity": "Quantity",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity",
+    "description": "Description",
+    "dimensions": "Dimensions & fit",
+    "materials": "Materials & construction",
+    "shipping_returns": "Shipping & returns",
+    "care": "Care & maintenance",
+    "select_variant": "Select variant",
+    "gallery": "Product gallery",
+    "gallery_thumbnails": "Gallery thumbnails",
+    "gallery_prev": "Previous image",
+    "gallery_next": "Next image",
+    "gallery_image_n": "Image {{ n }}",
+    "close": "Close",
+    "cart_empty": "Your cart is empty"
   }
 }

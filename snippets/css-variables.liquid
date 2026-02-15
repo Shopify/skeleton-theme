@@ -1,18 +1,104 @@
 {% style %}
-  {% # Loads all font variantions with display: swap %}
+  {% # Loads all font variations with display: swap %}
   {{ settings.type_primary_font | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
 
   :root {
+    /* Font system */
     --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
     --font-primary--style: {{ settings.type_primary_font.style }};
     --font-primary--weight: {{ settings.type_primary_font.weight }};
+
+    /* Font weights */
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+
+    /* Type scale */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-md: 1.125rem;
+    --text-lg: 1.25rem;
+    --text-xl: 1.563rem;
+    --text-2xl: 1.953rem;
+    --text-3xl: 2.441rem;
+    --text-4xl: 3.052rem;
+
+    /* Line heights */
+    --leading-tight: 1.15;
+    --leading-snug: 1.3;
+    --leading-normal: 1.6;
+
+    /* Letter spacing */
+    --tracking-tight: -0.02em;
+    --tracking-normal: 0em;
+    --tracking-wide: 0.05em;
+    --tracking-wider: 0.1em;
+    --tracking-widest: 0.15em;
+
+    /* Layout */
     --page-width: {{ settings.max_page_width }};
     --page-margin: {{ settings.min_page_margin }}px;
-    --color-background: {{ settings.background_color }};
-    --color-foreground: {{ settings.foreground_color }};
+
+    /* Scandinavian color palette */
+    --color-background: {{ settings.background_color | default: '#F5F0EB' }};
+    --color-foreground: {{ settings.foreground_color | default: '#2C2C2C' }};
+    --color-warm-white: #F5F0EB;
+    --color-snow: #FAFAF7;
+    --color-cream: #EDE8E0;
+    --color-linen: #E8E0D4;
+    --color-charcoal: #2C2C2C;
+    --color-dark-gray: #4A4A4A;
+    --color-medium-gray: #8C8C8C;
+    --color-light-gray: #C4C0B9;
+    --color-soft-gray: #D9D5CE;
+    --color-oak: #B8956A;
+    --color-sage: #8B9E8B;
+    --color-terracotta: #C47B5A;
+    --color-error: #B85C5C;
+
+    /* Spacing scale */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 2.5rem;
+    --space-8: 3rem;
+    --space-10: 4rem;
+    --space-12: 5rem;
+    --space-14: 6rem;
+    --space-16: 8rem;
+
+    /* Borders & Radius */
+    --radius-sm: 2px;
+    --radius-md: 4px;
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(44, 44, 44, 0.06);
+    --shadow-md: 0 4px 16px rgba(44, 44, 44, 0.08);
+    --shadow-lg: 0 8px 32px rgba(44, 44, 44, 0.10);
+
+    /* Animation */
+    --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-fast: 200ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+    --duration-slower: 800ms;
+  }
+
+  @media (max-width: 768px) {
+    :root {
+      --text-4xl: 2.441rem;
+      --text-3xl: 1.953rem;
+      --text-2xl: 1.563rem;
+      --page-margin: max({{ settings.min_page_margin }}px, 20px);
+    }
   }
 {% endstyle %}

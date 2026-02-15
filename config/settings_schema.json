@@ -2,7 +2,7 @@
   {
     "name": "theme_info",
     "theme_name": "Skeleton",
-    "theme_version": "0.1.0",
+    "theme_version": "0.2.0",
     "theme_author": "Shopify",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
@@ -59,13 +59,13 @@
       {
         "type": "color",
         "id": "background_color",
-        "default": "#FFFFFF",
+        "default": "#F5F0EB",
         "label": "t:labels.background"
       },
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
+        "default": "#2C2C2C",
         "label": "t:labels.foreground"
       },
       {
@@ -76,7 +76,7 @@
         "step": 1,
         "unit": "px",
         "label": "t:labels.input_corner_radius",
-        "default": 4
+        "default": 2
       }
     ]
   }

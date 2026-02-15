@@ -1,0 +1,206 @@
+{% comment %}
+  Product recommendations section - "Complete the look" / "You may also like"
+  Uses Shopify's product recommendations API for algorithmic suggestions.
+{% endcomment %}
+
+<product-recommendations class="recommendations" data-url="{{ routes.product_recommendations_url }}?product_id={{ product.id }}&limit={{ section.settings.products_to_show }}&section_id={{ section.id }}">
+  {%- if recommendations.performed and recommendations.products.size > 0 -%}
+    <div class="recommendations__inner">
+      <h2 class="recommendations__title">{{ section.settings.heading | default: 'You may also like' }}</h2>
+
+      <div class="recommendations__grid">
+        {%- for product in recommendations.products -%}
+          <a href="{{ product.url }}" class="recommendations__card">
+            <div class="recommendations__card-image-wrapper">
+              {%- if product.featured_image -%}
+                {{- product.featured_image
+                  | image_url: width: 600
+                  | image_tag:
+                      widths: '300, 400, 600',
+                      sizes: '(min-width: 1024px) 25vw, 50vw',
+                      loading: 'lazy',
+                      class: 'recommendations__card-image',
+                      alt: product.featured_image.alt | default: product.title
+                -}}
+              {%- endif -%}
+            </div>
+            <div class="recommendations__card-info">
+              {%- if product.vendor != blank and section.settings.show_vendor -%}
+                <span class="recommendations__card-vendor label">{{ product.vendor }}</span>
+              {%- endif -%}
+              <span class="recommendations__card-title">{{ product.title }}</span>
+              <span class="recommendations__card-price">{{ product.price | money }}</span>
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</product-recommendations>
+
+{% stylesheet %}
+  .recommendations {
+    padding: var(--space-14) 0;
+    border-top: 1px solid var(--color-soft-gray);
+  }
+
+  .recommendations__inner {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 0 var(--space-5);
+  }
+
+  @media (min-width: 1024px) {
+    .recommendations__inner {
+      padding: 0 var(--space-8);
+    }
+  }
+
+  .recommendations__title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-light);
+    letter-spacing: var(--tracking-tight);
+    text-align: center;
+    margin-bottom: var(--space-10);
+  }
+
+  .recommendations__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5) var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .recommendations__grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-6);
+    }
+  }
+
+  .recommendations__card {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .recommendations__card:hover {
+    opacity: 1;
+  }
+
+  .recommendations__card-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-cream);
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-sm);
+  }
+
+  .recommendations__card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--duration-slower) var(--ease-smooth);
+  }
+
+  .recommendations__card:hover .recommendations__card-image {
+    transform: scale(1.04);
+  }
+
+  .recommendations__card-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .recommendations__card-vendor {
+    font-size: var(--text-xs);
+    color: var(--color-medium-gray);
+  }
+
+  .recommendations__card-title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-charcoal);
+    line-height: var(--leading-snug);
+  }
+
+  .recommendations__card-price {
+    font-size: var(--text-sm);
+    color: var(--color-dark-gray);
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class ProductRecommendations extends HTMLElement {
+    connectedCallback() {
+      const url = this.dataset.url;
+      if (!url) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              this.loadRecommendations(url);
+              observer.unobserve(this);
+            }
+          });
+        },
+        { rootMargin: '400px' }
+      );
+      observer.observe(this);
+    }
+
+    async loadRecommendations(url) {
+      try {
+        const response = await fetch(url);
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newContent = doc.querySelector('product-recommendations');
+        if (newContent && newContent.innerHTML.trim()) {
+          this.innerHTML = newContent.innerHTML;
+        }
+      } catch (error) {
+        console.error('Failed to load recommendations:', error);
+      }
+    }
+  }
+
+  if (!customElements.get('product-recommendations')) {
+    customElements.define('product-recommendations', ProductRecommendations);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:product.recommendations",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:product.recommendations_heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": "t:product.products_to_show",
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "t:product.show_vendor",
+      "default": false
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

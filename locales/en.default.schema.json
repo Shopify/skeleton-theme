@@ -71,6 +71,25 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
+  },
+  "product": {
+    "section_settings": "Product page settings",
+    "show_short_description": "Show short description",
+    "show_dynamic_checkout": "Show dynamic checkout button",
+    "trust_badges": "Trust badges",
+    "show_trust_badges": "Show trust badges",
+    "trust_text_1": "Trust badge 1",
+    "trust_text_2": "Trust badge 2",
+    "trust_text_3": "Trust badge 3",
+    "product_details": "Product details",
+    "dimensions": "Dimensions & fit",
+    "materials": "Materials & construction",
+    "shipping_returns": "Shipping & returns",
+    "care": "Care & maintenance",
+    "recommendations": "Product recommendations",
+    "recommendations_heading": "Heading",
+    "products_to_show": "Products to show",
+    "show_vendor": "Show vendor"
   }
 }

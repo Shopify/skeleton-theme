@@ -29,8 +29,15 @@
   <body>
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="MainContent" role="main">
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
+
+    {% comment %} Product page JS - deferred for performance {% endcomment %}
+    {% if request.page_type == 'product' %}
+      <script src="{{ 'product.js' | asset_url }}" defer></script>
+    {% endif %}
   </body>
 </html>
