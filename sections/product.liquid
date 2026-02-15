@@ -154,7 +154,7 @@
 
       {%- comment -%} Add to cart form {%- endcomment -%}
       <product-form class="pdp__form reveal" style="--reveal-i:5">
-        {%- form 'product', product, id: 'ProductForm', data-product-id: product.id -%}
+        {%- form 'product', product, id: 'ProductForm' -%}
           <input type="hidden" name="id" value="{{ current_variant.id }}">
 
           <div class="pdp__qty">
@@ -321,10 +321,10 @@
 
   /* ================================================================
      Staggered reveal animation
+     Fallback: if animation doesn't run, content stays visible.
      ================================================================ */
   .reveal {
-    opacity: 0;
-    animation: revealUp 0.8s var(--ease-out-expo) both;
+    animation: revealUp 0.8s var(--ease-out-expo, ease-out) both;
     animation-delay: calc(0.15s + var(--reveal-i, 0) * 0.09s);
   }
 
@@ -335,7 +335,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    animation: scaleReveal 1s var(--ease-out-expo) both;
+    animation: scaleReveal 1s var(--ease-out-expo, ease-out) both;
   }
   @media (min-width: 1024px) {
     .pdp__media {
@@ -1016,6 +1016,7 @@
   ],
   "disabled_on": {
     "groups": ["header", "footer"]
-  }
+  },
+  "templates": ["product"]
 }
 {% endschema %}
