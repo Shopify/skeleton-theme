@@ -4,10 +4,10 @@
 {% endcomment %}
 
 <product-recommendations class="recommendations" data-url="{{ routes.product_recommendations_url }}?product_id={{ product.id }}&limit={{ section.settings.products_to_show }}&section_id={{ section.id }}">
-  {%- if recommendations.performed and recommendations.products.size > 0 -%}
-    <div class="recommendations__inner">
-      <h2 class="recommendations__title">{{ section.settings.heading | default: 'You may also like' }}</h2>
+  <div class="recommendations__inner">
+    <h2 class="recommendations__title">{{ section.settings.heading | default: 'You may also like' }}</h2>
 
+    {%- if recommendations.performed and recommendations.products.size > 0 -%}
       <div class="recommendations__grid">
         {%- for product in recommendations.products -%}
           <a href="{{ product.url }}" class="recommendations__card">
@@ -34,8 +34,8 @@
           </a>
         {%- endfor -%}
       </div>
-    </div>
-  {%- endif -%}
+    {%- endif -%}
+  </div>
 </product-recommendations>
 
 {% stylesheet %}
@@ -199,8 +199,14 @@
       "default": false
     }
   ],
+  "presets": [
+    {
+      "name": "t:product.recommendations"
+    }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
-  }
+  },
+  "templates": ["product"]
 }
 {% endschema %}

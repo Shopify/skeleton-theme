@@ -357,9 +357,6 @@
   </cart-drawer>
 </product-page>
 
-{%- comment -%} Product JSON-LD for SEO {%- endcomment -%}
-{{ product | structured_data }}
-
 {%- comment -%} Variant data for JS {%- endcomment -%}
 <script type="application/json" id="ProductJSON-{{ section.id }}">
   {{ product.variants | json }}
