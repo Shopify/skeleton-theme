@@ -1,112 +1,82 @@
-/** Critical CSS for the theme. This file is included on every page. */
+/* ================================================================
+   Critical CSS — loaded on every page, preloaded.
+   Nordic Editorial theme foundation.
+   ================================================================ */
 
-/* Reset styles inspired by https://www.joshwcomeau.com/css/custom-css-reset/ */
-* {
-  box-sizing: border-box;
-  margin: 0;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  min-height: 100svh;
-}
-
-html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
-  overflow: hidden;
-}
-
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-input,
-textarea,
-select {
-  font: inherit;
-  border-radius: var(--style-border-radius-inputs);
-}
-
-select {
-  background-color: var(--color-background);
-  color: currentcolor;
-}
-
-dialog {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}
-
-p {
-  text-wrap: pretty;
-}
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  overflow-wrap: break-word;
-}
-
-p:empty {
-  display: none;
-}
-
+/* --- Reset --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+body { display: flex; flex-direction: column; margin: 0; min-height: 100svh; }
+html:has(dialog[scroll-lock][open], details[scroll-lock][open]) { overflow: hidden; }
+img, picture, video, canvas, svg { display: block; max-width: 100%; height: auto; }
+input, textarea, select { font: inherit; border-radius: var(--style-border-radius-inputs); }
+select { background-color: var(--color-bg); color: currentcolor; }
+dialog { background-color: var(--color-bg); color: var(--color-text); }
+p { text-wrap: pretty; }
+p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+p:empty { display: none; }
 :is(p, h1, h2, h3, h4, h5, h6):first-child,
-:empty:first-child + :where(p, h1, h2, h3, h4, h5, h6) {
-  margin-block-start: 0;
-}
-
+:empty:first-child + :where(p, h1, h2, h3, h4, h5, h6) { margin-block-start: 0; }
 :is(p, h1, h2, h3, h4, h5, h6):last-child,
-:where(p, h1, h2, h3, h4, h5, h6) + :has(+ :empty:last-child) {
-  margin-block-end: 0;
-}
+:where(p, h1, h2, h3, h4, h5, h6) + :has(+ :empty:last-child) { margin-block-end: 0; }
 
-/** Scandinavian theme styles */
+/* --- Body --- */
 body {
-  font-family: var(--font-primary--family);
-  font-weight: var(--font-weight-regular);
+  font-family: var(--font-body);
+  font-weight: var(--font-body-weight);
   font-size: var(--text-base);
   line-height: var(--leading-normal);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: var(--font-weight-light);
-  line-height: var(--leading-tight);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-charcoal);
+/* --- Grain texture overlay (subtle paper feel) --- */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
 }
 
-h1 { font-size: var(--text-4xl); }
-h2 { font-size: var(--text-3xl); }
-h3 { font-size: var(--text-2xl); }
-h4 { font-size: var(--text-xl); }
+/* --- Headings: Serif with editorial presence --- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  font-style: var(--font-heading-style);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tighter);
+  color: var(--color-ink);
+}
+h1 { font-size: var(--text-5xl); }
+h2 { font-size: var(--text-4xl); }
+h3 { font-size: var(--text-3xl); }
+h4 { font-size: var(--text-2xl); }
 
+/* --- Links --- */
 a {
-  color: var(--color-charcoal);
+  color: var(--color-ink);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
   transition: opacity var(--duration-normal) var(--ease-smooth);
 }
+a:hover { opacity: 0.65; }
 
-a:hover {
-  opacity: 0.7;
+/* --- Label: uppercase tracked sans --- */
+.label {
+  font-family: var(--font-body);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-iron);
 }
 
-/* Utility: visually hidden (accessible) */
+/* --- Visually hidden (accessible) --- */
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -119,16 +89,7 @@ a:hover {
   border: 0;
 }
 
-/* Label style - uppercase tracking */
-.label {
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-  color: var(--color-medium-gray);
-}
-
-/** Section layout utilities */
+/* --- Section grid --- */
 .shopify-section {
   --content-width: min(
     calc(var(--page-width) - var(--page-margin) * 2),
@@ -136,22 +97,43 @@ a:hover {
   );
   --content-margin: minmax(var(--page-margin), 1fr);
   --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
-
   position: relative;
   grid-template-columns: var(--content-grid);
   display: grid;
   width: 100%;
 }
+.shopify-section > * { grid-column: 2; }
+.shopify-section > .full-width { grid-column: 1 / -1; }
 
-.shopify-section > * {
-  grid-column: 2;
+/* ================================================================
+   Keyframe animations
+   ================================================================ */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.shopify-section > .full-width {
-  grid-column: 1 / -1;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-/* Reduced motion */
+@keyframes scaleReveal {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes wipeIn {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+/* --- Reduced motion --- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

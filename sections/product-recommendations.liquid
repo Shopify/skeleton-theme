@@ -1,6 +1,6 @@
 {% comment %}
-  Product recommendations section - "Complete the look" / "You may also like"
-  Uses Shopify's product recommendations API for algorithmic suggestions.
+  Product recommendations — "You may also like"
+  Uses Shopify's product recommendations API, loaded lazily via IntersectionObserver.
 {% endcomment %}
 
 <product-recommendations class="recommendations" data-url="{{ routes.product_recommendations_url }}?product_id={{ product.id }}&limit={{ section.settings.products_to_show }}&section_id={{ section.id }}">
@@ -26,7 +26,7 @@
             </div>
             <div class="recommendations__card-info">
               {%- if product.vendor != blank and section.settings.show_vendor -%}
-                <span class="recommendations__card-vendor label">{{ product.vendor }}</span>
+                <span class="recommendations__card-vendor">{{ product.vendor }}</span>
               {%- endif -%}
               <span class="recommendations__card-title">{{ product.title }}</span>
               <span class="recommendations__card-price">{{ product.price | money }}</span>
@@ -40,14 +40,14 @@
 
 {% stylesheet %}
   .recommendations {
-    padding: var(--space-14) 0;
-    border-top: 1px solid var(--color-soft-gray);
+    padding: var(--space-20) 0;
+    border-top: 1px solid var(--color-sand);
   }
 
   .recommendations__inner {
     max-width: var(--page-width);
     margin: 0 auto;
-    padding: 0 var(--space-5);
+    padding: 0 var(--page-margin);
   }
 
   @media (min-width: 1024px) {
@@ -57,23 +57,27 @@
   }
 
   .recommendations__title {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-light);
+    font-family: var(--font-heading);
+    font-weight: var(--font-heading-weight);
+    font-style: var(--font-heading-style);
+    font-size: var(--text-3xl);
     letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
     text-align: center;
-    margin-bottom: var(--space-10);
+    margin-bottom: var(--space-12);
+    color: var(--color-ink);
   }
 
   .recommendations__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-5) var(--space-4);
+    gap: var(--space-6) var(--space-4);
   }
 
   @media (min-width: 768px) {
     .recommendations__grid {
       grid-template-columns: repeat(4, 1fr);
-      gap: var(--space-6);
+      gap: var(--space-8);
     }
   }
 
@@ -92,7 +96,7 @@
   .recommendations__card-image-wrapper {
     position: relative;
     overflow: hidden;
-    background-color: var(--color-cream);
+    background-color: var(--color-parchment);
     aspect-ratio: 4 / 5;
     border-radius: var(--radius-sm);
   }
@@ -115,20 +119,26 @@
   }
 
   .recommendations__card-vendor {
-    font-size: var(--text-xs);
-    color: var(--color-medium-gray);
+    font-family: var(--font-body);
+    font-size: var(--text-2xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    color: var(--color-driftwood);
   }
 
   .recommendations__card-title {
+    font-family: var(--font-body);
     font-size: var(--text-sm);
-    font-weight: var(--font-weight-regular);
-    color: var(--color-charcoal);
+    font-weight: var(--font-body-weight);
+    color: var(--color-ink);
     line-height: var(--leading-snug);
   }
 
   .recommendations__card-price {
+    font-family: var(--font-heading);
     font-size: var(--text-sm);
-    color: var(--color-dark-gray);
+    color: var(--color-iron);
   }
 {% endstylesheet %}
 

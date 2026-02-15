@@ -12,12 +12,12 @@
   <div class="header__icons">
     {% if shop.customer_accounts_enabled %}
       <a href="{{ routes.account_url }}" aria-label="Account">
-        {{ 'icon-account.svg' | inline_asset_content }}
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </a>
     {% endif %}
 
     <a href="{{ routes.cart_url }}" aria-label="Cart ({{ cart.item_count }} items)" class="header__cart-link">
-      {{ 'icon-cart.svg' | inline_asset_content }}
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       {% if cart.item_count > 0 %}
         <span class="cart-count">{{ cart.item_count }}</span>
       {% endif %}
@@ -26,46 +26,56 @@
 </header>
 
 {% stylesheet %}
-  header {
+  .header {
     height: 4rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 var(--space-5);
+    padding: 0 var(--page-margin);
+    border-bottom: 1px solid var(--color-sand);
+    background: var(--color-bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
 
   @media (min-width: 1024px) {
-    header {
+    .header {
       height: 5rem;
       padding: 0 var(--space-8);
     }
   }
 
-  header a {
+  .header a {
     position: relative;
     text-decoration: none;
-    color: var(--color-charcoal);
+    color: var(--color-ink);
+    transition: opacity var(--duration-fast) var(--ease-smooth);
   }
 
-  header a:hover {
-    opacity: 0.7;
+  .header a:hover {
+    opacity: 0.6;
   }
 
   .header__title {
-    font-size: var(--text-sm);
-    font-weight: var(--font-weight-medium);
-    letter-spacing: var(--tracking-widest);
+    font-family: var(--font-heading);
+    font-weight: var(--font-heading-weight);
+    font-style: var(--font-heading-style);
+    font-size: var(--text-md);
+    letter-spacing: var(--tracking-wide);
     text-transform: uppercase;
+    margin: 0;
   }
 
   .header__title a {
     text-decoration: none;
-    color: var(--color-charcoal);
+    color: var(--color-ink);
   }
 
-  header svg {
+  .header svg {
     width: 1.25rem;
     height: 1.25rem;
+    color: var(--color-ink);
   }
 
   .header__menu,
@@ -76,10 +86,36 @@
   }
 
   .header__menu a {
+    font-family: var(--font-body);
     font-size: var(--text-xs);
-    font-weight: var(--font-weight-medium);
+    font-weight: 500;
     letter-spacing: var(--tracking-widest);
     text-transform: uppercase;
+    color: var(--color-iron);
+    position: relative;
+  }
+
+  .header__menu a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--color-ink);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--duration-normal) var(--ease-out-expo);
+  }
+
+  .header__menu a:hover {
+    opacity: 1;
+    color: var(--color-ink);
+  }
+
+  .header__menu a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
   }
 
   .header__cart-link {
@@ -89,9 +125,10 @@
   }
 
   .cart-count {
+    font-family: var(--font-body);
     font-size: var(--text-xs);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-charcoal);
+    font-weight: 500;
+    color: var(--color-forest);
     min-width: 1rem;
     text-align: center;
   }
