@@ -37,6 +37,10 @@
     "alignment": "Alignment",
     "background": "Background",
     "foreground": "Foreground",
+    "accent": "Accent color",
+    "heading_font": "Heading font",
+    "heading_font_info": "Serif typeface for editorial headings",
+    "body_font": "Body font",
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
     "input_corner_radius": "Input corner radius",
@@ -71,6 +75,25 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
+  },
+  "product": {
+    "section_settings": "Product page settings",
+    "show_short_description": "Show short description",
+    "show_dynamic_checkout": "Show dynamic checkout button",
+    "trust_badges": "Trust badges",
+    "show_trust_badges": "Show trust badges",
+    "trust_text_1": "Trust badge 1",
+    "trust_text_2": "Trust badge 2",
+    "trust_text_3": "Trust badge 3",
+    "product_details": "Product details",
+    "dimensions": "Dimensions & fit",
+    "materials": "Materials & construction",
+    "shipping_returns": "Shipping & returns",
+    "care": "Care & maintenance",
+    "recommendations": "Product recommendations",
+    "recommendations_heading": "Heading",
+    "products_to_show": "Products to show",
+    "show_vendor": "Show vendor"
   }
 }

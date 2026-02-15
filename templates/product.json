@@ -11,10 +11,26 @@
   "sections": {
     "main": {
       "type": "product",
-      "settings": {}
+      "settings": {
+        "show_short_description": true,
+        "show_dynamic_checkout": true,
+        "show_trust_badges": true,
+        "trust_text_1": "Free shipping over $100",
+        "trust_text_2": "30-day easy returns",
+        "trust_text_3": "5-year warranty"
+      }
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "heading": "You may also like",
+        "products_to_show": 4,
+        "show_vendor": false
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "recommendations"
   ]
 }

@@ -2,7 +2,7 @@
   {
     "name": "theme_info",
     "theme_name": "Skeleton",
-    "theme_version": "0.1.0",
+    "theme_version": "0.3.0",
     "theme_author": "Shopify",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
@@ -16,9 +16,16 @@
       },
       {
         "type": "font_picker",
+        "id": "type_heading_font",
+        "default": "cormorant_n4",
+        "label": "t:labels.heading_font",
+        "info": "t:labels.heading_font_info"
+      },
+      {
+        "type": "font_picker",
         "id": "type_primary_font",
         "default": "work_sans_n4",
-        "label": "t:general.primary"
+        "label": "t:labels.body_font"
       }
     ]
   },
@@ -59,14 +66,20 @@
       {
         "type": "color",
         "id": "background_color",
-        "default": "#FFFFFF",
+        "default": "#F0EBE3",
         "label": "t:labels.background"
       },
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
+        "default": "#1C1C1C",
         "label": "t:labels.foreground"
+      },
+      {
+        "type": "color",
+        "id": "accent_color",
+        "default": "#3D5A3D",
+        "label": "t:labels.accent"
       },
       {
         "type": "range",
@@ -76,7 +89,7 @@
         "step": 1,
         "unit": "px",
         "label": "t:labels.input_corner_radius",
-        "default": 4
+        "default": 0
       }
     ]
   }
