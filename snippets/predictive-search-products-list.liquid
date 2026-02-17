@@ -1,0 +1,185 @@
+{%- doc -%}
+  Renders the predictive search products list for empty state and recently viewed products
+
+  @param {string} title - title of the result list
+  @param {object[]} products - array of products
+  @param {string[]} [order_ids] - array of product ids
+  @param {number} [limit] - limit of products to display
+  @param {string} [products_test_id] - a playwright test id, used to differentiate empty state from 'real' search results
+{%- enddoc -%}
+{%- liquid
+  assign recently_viewed_title_text = 'content.recently_viewed_products' | t
+-%}
+<div
+  id="predictive-search-products"
+  class="predictive-search-results__products"
+  {% if products_test_id %}
+    data-testid="{{ products_test_id }}"
+  {% endif %}
+>
+  {% if title == recently_viewed_title_text %}
+    <div
+      class="recently-viewed-wrapper"
+      ref="recentlyViewedWrapper"
+    >
+      <h4
+        class="predictive-search-results__title"
+        ref="recentlyViewedTitle[]"
+      >
+        {{ title }}
+        <button
+          class="predictive-search-results__clear button button-unstyled"
+          type="button"
+          on:click="/clearRecentlyViewedProducts"
+        >
+          {{ 'actions.clear' | t }}
+        </button>
+      </h4>
+      <ul
+        class="predictive-search-results__list predictive-search-results__wrapper-products list-unstyled"
+        role="listbox"
+        aria-label="{{ title }}"
+      >
+        {% liquid
+          assign limit = limit | default: 8
+        %}
+        {% comment %}
+          If we're searching for recently viewed products by id, we need to reorder the products.
+          The order here comes from the search terms, and we display the products in the order of the ids.
+        {% endcomment %}
+        {% if order_ids != blank %}
+          {% for _id in order_ids %}
+            {% assign int_id = _id | times: 1 %}
+            {% assign product = products | find: 'id', int_id %}
+            <li
+              class="predictive-search-results__card predictive-search-results__card--product"
+              ref="recentlyViewedItems[]"
+            >
+              {% render 'resource-card',
+                resource_type: 'product',
+                resource: product,
+                image_width: 500,
+                image_hover: true,
+                image_aspect_ratio: '4 / 5'
+              %}
+            </li>
+          {% endfor %}
+        {% else %}
+          {% for product in products limit: limit %}
+            <li
+              class="predictive-search-results__card predictive-search-results__card--product"
+              ref="recentlyViewedItems[]"
+            >
+              {% render 'resource-card',
+                resource_type: 'product',
+                resource: product,
+                image_width: 500,
+                image_hover: true,
+                image_aspect_ratio: '4 / 5'
+              %}
+            </li>
+          {% endfor %}
+        {% endif %}
+      </ul>
+    </div>
+  {% else %}
+    <h4 class="predictive-search-results__title">
+      {{ title }}
+    </h4>
+    <ul
+      class="predictive-search-results__list predictive-search-results__wrapper-products list-unstyled"
+      role="listbox"
+      aria-label="{{ title }}"
+    >
+      {% liquid
+        assign limit = limit | default: 8
+      %}
+      {% for product in products limit: limit %}
+        <li
+          class="predictive-search-results__card predictive-search-results__card--product"
+          ref="resultsItems[]"
+        >
+          {% render 'resource-card',
+            resource_type: 'product',
+            resource: product,
+            image_width: 500,
+            image_hover: true,
+            image_aspect_ratio: '4 / 5'
+          %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .predictive-search-results__products {
+    padding-inline: var(--padding-xl);
+  }
+
+  .recently-viewed-wrapper {
+    display: grid;
+    grid-template-rows: auto auto;
+    max-height: 1000px;
+    opacity: 1;
+    overflow: visible;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: top center;
+    transform: translateY(0);
+  }
+
+  .recently-viewed-wrapper.removing {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .predictive-search-results__clear.button-unstyled {
+    color: var(--color-foreground);
+    opacity: 0.68;
+    transition: opacity var(--animation-speed-medium) var(--animation-easing);
+    padding: 0;
+    margin-left: var(--margin-sm);
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .recently-viewed-wrapper.removing .predictive-search-results__card {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  .recently-viewed-wrapper > * {
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .predictive-search-results__wrapper-products .predictive-search-results__card:nth-child(1) {
+    animation-delay: 30ms;
+  }
+
+  .predictive-search-results__wrapper-products .predictive-search-results__card:nth-child(2) {
+    animation-delay: 60ms;
+  }
+
+  .predictive-search-results__wrapper-products .predictive-search-results__card:nth-child(3) {
+    animation-delay: 90ms;
+  }
+
+  .predictive-search-results__wrapper-products .predictive-search-results__card:nth-child(4) {
+    animation-delay: 120ms;
+  }
+
+  .predictive-search-results__wrapper-products .predictive-search-results__card:nth-child(n + 5) {
+    animation-delay: 150ms;
+  }
+
+  .predictive-search-results__wrapper-products {
+    animation-delay: 50ms;
+  }
+{% endstylesheet %}

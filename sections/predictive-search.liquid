@@ -1,0 +1,645 @@
+{%- if predictive_search.performed or search.performed -%}
+  <div
+    id="predictive-search-results"
+    class="predictive-search-dropdown"
+    role="listbox"
+    aria-label="{{ 'content.search_results_label' | t }}"
+    aria-expanded="true"
+    data-transition-container
+    style="--color-shadow: rgb(var(--color-foreground-rgb) / var(--opacity-10-25));"
+  >
+    <div
+      class="predictive-search-results__inner"
+      data-search-results
+    >
+      {% if predictive_search.performed %}
+        {% assign search_results_count = predictive_search.resources.products.size
+          | plus: predictive_search.resources.pages.size
+          | plus: predictive_search.resources.articles.size
+          | plus: predictive_search.resources.collections.size
+          | plus: predictive_search.resources.queries.size
+        %}
+      {% else %}
+        {% assign search_results_count = search.results_count %}
+      {% endif %}
+
+      <div
+        class="visually-hidden"
+        role="status"
+        aria-live="polite"
+      >
+        {%- if predictive_search.performed and search_results_count > 0 -%}
+          {{ 'accessibility.search_results_count' | t: count: search_results_count, query: predictive_search.terms }}
+        {%- elsif predictive_search.performed and search_results_count == 0 -%}
+          {{ 'accessibility.search_results_no_results' | t: query: predictive_search.terms }}
+        {%- endif -%}
+      </div>
+
+      {% if predictive_search.performed %}
+        {%- if search_results_count > 0 -%}
+          {% assign shared_results_index = 0 %}
+          {% if predictive_search.resources.queries.size > 0 %}
+            {% assign shared_results_index = shared_results_index
+              | plus: predictive_search.resources.collections.size
+            %}
+            <ul
+              class="predictive-search-results__list predictive-search-results__wrapper predictive-search-results__wrapper-queries list-unstyled"
+              role="listbox"
+              aria-labelledby="predictive-search-queries"
+            >
+              {%- for resource in predictive_search.resources.queries -%}
+                <li
+                  class="predictive-search-results__card--query"
+                  ref="resultsItems[]"
+                  data-search-result-index="search-results-{{ shared_results_index | plus: forloop.index }}"
+                  on:keydown="/onSearchKeyDown"
+                >
+                  <a
+                    class="pills__pill predictive-search-results__pill"
+                    href="{{ resource.url }}"
+                  >
+                    <span
+                      aria-label="{{ resource.text }}"
+                    >
+                      {{ resource.styled_text }}
+                    </span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          {% if predictive_search.resources.products.size > 0 %}
+            {%- liquid
+              assign title = 'content.search_results_resource_products' | t
+              assign products = predictive_search.resources.products
+              render 'predictive-search-products-list', title: title, products: products
+            -%}
+          {% endif %}
+
+          {% if predictive_search.resources.collections.size > 0 %}
+            {% assign shared_results_index = shared_results_index | plus: predictive_search.resources.articles.size %}
+            {% assign resource_title = 'content.search_results_resource_collections' | t %}
+
+            {% render 'predictive-search-resource-carousel',
+              title: resource_title,
+              resource_type: 'collection',
+              resources: predictive_search.resources.collections
+            %}
+          {% endif %}
+
+          {% if predictive_search.resources.pages.size > 0 %}
+            {% assign shared_results_index = shared_results_index | plus: predictive_search.resources.products.size %}
+            {% assign resource_title = 'content.search_results_resource_pages' | t %}
+
+            {% render 'predictive-search-resource-carousel',
+              title: resource_title,
+              resource_type: 'page',
+              resources: predictive_search.resources.pages
+            %}
+          {% endif %}
+
+          {% if predictive_search.resources.articles.size > 0 %}
+            {% assign shared_results_index = shared_results_index | plus: predictive_search.resources.pages.size %}
+            {% assign resource_title = 'content.search_results_resource_articles' | t %}
+
+            {% render 'predictive-search-resource-carousel',
+              title: resource_title,
+              resource_type: 'article',
+              resources: predictive_search.resources.articles
+            %}
+          {% endif %}
+        {% else %}
+          <p class="predictive-search-results__no-results">
+            {{ 'content.search_results_no_results' | t: terms: predictive_search.terms }}
+          </p>
+        {% endif %}
+      {% else %}
+        {% assign shared_results_index = 0 %}
+        {%- liquid
+          assign title = 'content.recently_viewed_products' | t
+          assign products = search.results
+
+          comment
+            Searching for recently viewed products by id doesn't preserve the order of the products.
+            To work around this, we get the product ids into an array then use that to reorder them.
+          endcomment
+          if search.terms contains 'id:'
+            assign new_products_ids = search.terms | replace: 'id:', '' | split: ' OR '
+          endif
+          render 'predictive-search-products-list', title: title, products: products, order_ids: new_products_ids, limit: 4
+        -%}
+      {% endif %}
+
+      {% if predictive_search.performed %}
+        {%- if search_results_count > 0 -%}
+          {% assign total_results = predictive_search.resources.products.size
+            | plus: predictive_search.resources.collections.size
+            | plus: predictive_search.resources.pages.size
+            | plus: predictive_search.resources.articles.size
+          %}
+          {% assign single_result_url = null %}
+          {% if total_results == 1 %}
+            {% if predictive_search.resources.products.size == 1 %}
+              {% assign single_result_url = predictive_search.resources.products.first.url %}
+            {% elsif predictive_search.resources.collections.size == 1 %}
+              {% assign single_result_url = predictive_search.resources.collections.first.url %}
+            {% elsif predictive_search.resources.pages.size == 1 %}
+              {% assign single_result_url = predictive_search.resources.pages.first.url %}
+            {% elsif predictive_search.resources.articles.size == 1 %}
+              {% assign single_result_url = predictive_search.resources.articles.first.url %}
+            {% endif %}
+          {% endif %}
+
+          {% if single_result_url %}
+            <div data-single-result-url="{{ single_result_url }}"></div>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  input[type='search']::-webkit-search-decoration {
+    -webkit-appearance: none; /* stylelint-disable-line */
+  }
+
+  .predictive-search-dropdown {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--layer-base);
+  }
+
+  .search-action .predictive-search {
+    z-index: calc(var(--layer-header-menu) + 2);
+  }
+
+  .search-action .search-modal .predictive-search {
+    z-index: var(--layer-window-overlay);
+  }
+
+  .header__column--right .predictive-search-form__content-wrapper {
+    right: 0;
+    left: unset;
+  }
+
+  .search-modal .predictive-search-form__content-wrapper {
+    width: 100%;
+
+    @media screen and (min-width: 750px) {
+      height: fit-content;
+    }
+  }
+
+  .dialog-modal .predictive-search-form__header-inner {
+    @media screen and (min-width: 750px) {
+      border: 0;
+    }
+  }
+
+  .header[transparent] :is(.predictive-search):not(:focus-within) {
+    background-color: transparent;
+  }
+
+  .header[transparent] .predictive-search-form__header-inner {
+    border-color: var(--color-foreground);
+  }
+
+  .search-modal__content .predictive-search-form__content {
+    max-height: var(--modal-max-height);
+  }
+
+  .predictive-search:has(.predictive-search-dropdown) .search-input {
+    outline-color: transparent;
+  }
+
+  .predictive-search:has(.predictive-search-dropdown) .predictive-search-form__header-inner:focus-within {
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-left-color: transparent;
+
+    @media screen and (max-width: 749px) {
+      border-bottom-color: transparent;
+    }
+  }
+
+  .predictive-search:has(.predictive-search-dropdown[aria-expanded='true'])
+    .predictive-search-form__header-inner:focus-within {
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-left-color: transparent;
+    border-radius: var(--search-border-radius);
+
+    @media screen and (max-width: 749px) {
+      border-radius: var(--style-border-radius-inputs);
+    }
+  }
+
+  .dialog-modal .predictive-search-form__header {
+    border: 0;
+    border-radius: 0;
+    background-color: var(--color-background);
+    border-bottom: var(--style-border-width) solid var(--color-border);
+
+    @media screen and (min-width: 750px) {
+      padding: var(--padding-2xs) var(--padding-2xs) 0;
+      border-bottom: var(--search-border-width) solid var(--color-border);
+    }
+
+    @media screen and (max-width: 749px) {
+      transition: box-shadow 0.2s ease;
+      box-shadow: none;
+    }
+  }
+
+  .search-action .predictive-search:has(.predictive-search-dropdown) .predictive-search-form__header:focus-within {
+    border-radius: var(--search-border-radius) var(--search-border-radius) 0 0;
+    transition: box-shadow var(--animation-speed) var(--animation-easing);
+    background-color: var(--color-background);
+
+    @media screen and (max-width: 749px) {
+      border-radius: var(--style-border-radius-inputs) var(--style-border-radius-inputs) 0 0;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .dialog-modal .predictive-search__close-modal-button {
+      padding-inline-start: var(--margin-xs);
+      margin-inline-start: 0;
+    }
+  }
+
+  .dialog-modal[open] {
+    @media screen and (max-width: 749px) {
+      border-radius: 0;
+    }
+  }
+
+  .dialog-modal .predictive-search-form__header:has(.predictive-search-form__header-inner:focus-within) {
+    @media screen and (min-width: 750px) {
+      border-bottom-color: transparent;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .dialog-modal {
+      .predictive-search__reset-button-icon {
+        display: none;
+      }
+
+      .predictive-search__reset-button-text {
+        display: block;
+      }
+
+      .predictive-search-form__content {
+        /* The parent has overflow auto, we want to prevent a double scrollbar during animation */
+        max-height: 100%;
+      }
+
+      .predictive-search-form__content-wrapper {
+        box-shadow: none;
+      }
+
+      .predictive-search-form__header {
+        box-shadow: none;
+      }
+
+      .predictive-search-form__footer {
+        padding-block: var(--padding-2xl);
+      }
+    }
+  }
+
+  .predictive-search-results__pill {
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--color-foreground);
+    transition: background-color var(--animation-speed-medium) var(--animation-timing-hover),
+      box-shadow var(--animation-speed-medium) var(--animation-timing-bounce),
+      transform var(--animation-speed-medium) var(--animation-timing-bounce);
+    margin: 2px;
+
+    &:hover {
+      transform: scale(1.03);
+      box-shadow: 0 2px 5px rgb(0 0 0 / var(--opacity-8));
+    }
+  }
+
+  .predictive-search-results__pill mark {
+    background-color: transparent;
+    font-weight: 200;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-80));
+  }
+
+  .predictive-search-results__pill:focus,
+  .predictive-search-results__pill:hover,
+  .predictive-search-results__card--query:is([aria-selected='true'], :focus-within) .predictive-search-results__pill {
+    --pill-background-color: rgb(var(--color-foreground-rgb) / var(--opacity-8));
+
+    background-color: var(--pill-background-color);
+    outline: var(--border-width-sm) solid var(--color-border);
+    border: var(--border-width-sm);
+    text-decoration: none;
+  }
+
+  .predictive-search-results__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size--body-md);
+    font-weight: 500;
+    margin-block: var(--margin-sm) var(--margin-xs);
+    width: 100%;
+    text-transform: var(--title-case);
+
+    &:first-of-type {
+      margin-block-start: 0;
+    }
+
+    @media screen and (max-width: 749px) {
+      margin-block: var(--margin-lg) var(--margin-sm);
+    }
+  }
+
+  .predictive-search-results__wrapper.predictive-search-results__wrapper-queries {
+    margin-bottom: var(--margin-lg);
+    padding-inline: var(--padding-xl);
+    gap: var(--gap-2xs);
+  }
+
+  .predictive-search-results__card {
+    --title-font-size: var(--font-size--md);
+    --title-margin-block: var(--margin-xs);
+
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    scroll-margin-block: calc(var(--title-font-size) + var(--title-margin-block) + var(--padding-sm))
+      calc(var(--padding-xl) + var(--button-padding-block) * 2);
+    transition: transform var(--animation-speed-medium) var(--animation-timing-default),
+      background-color var(--animation-speed-medium) var(--animation-timing-hover),
+      border-color var(--animation-speed-medium) var(--animation-timing-hover);
+
+    &:nth-last-child(3) {
+      scroll-snap-align: end;
+    }
+
+    &:active {
+      transform: scale(0.97);
+      transition: transform 100ms var(--animation-timing-active);
+    }
+  }
+
+  .recently-viewed-wrapper .predictive-search-results__card {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .recently-viewed-wrapper.removing .predictive-search-results__card {
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+  }
+
+  .predictive-search-results__card--product,
+  .recently-viewed-wrapper .predictive-search-results__card--product {
+    &:active {
+      transform: scale(0.97);
+      transition: transform 100ms var(--animation-timing-active);
+    }
+
+    &:hover {
+      background-color: var(--card-bg-hover);
+      border-radius: var(--product-corner-radius);
+      padding: calc(var(--padding-2xs) + 2px);
+      margin: calc((var(--padding-2xs) + 2px) * -1);
+    }
+
+    &:is([aria-selected='true'].keyboard-focus, &:focus-visible, &:has(.resource-card:focus-visible)) {
+      background-color: var(--card-bg-hover);
+      padding: calc(var(--padding-2xs) + 1px);
+      margin: calc((var(--padding-2xs) + 1px) * -1);
+      outline: var(--border-width-sm) solid var(--color-border);
+      border-radius: calc(var(--product-corner-radius) + 1px);
+      border-color: var(--card-border-focus);
+    }
+  }
+
+  .predictive-search-results__card:not(.predictive-search-results__card--product) {
+    padding: var(--padding-sm);
+    border: var(--border-width-sm) solid var(--color-border);
+    border-radius: var(--card-corner-radius);
+    width: 60cqi;
+    content-visibility: visible;
+
+    @media screen and (min-width: 750px) {
+      width: 27.5cqi;
+    }
+
+    &:hover {
+      border-color: var(--card-border-hover);
+      background-color: var(--card-bg-hover);
+    }
+
+    &[aria-selected='true'].keyboard-focus {
+      border-color: var(--card-border-hover);
+      background-color: var(--card-bg-hover);
+    }
+
+    &:active {
+      transform: scale(0.97);
+      transition: transform var(--animation-speed-medium) var(--animation-timing-active);
+    }
+  }
+
+  @keyframes search-element-scale-in {
+    0% {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+
+    40% {
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes search-element-scale-out {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+  }
+
+  @keyframes search-element-slide-in-top {
+    from {
+      margin-top: calc(var(--modal-top-margin) + var(--padding-sm));
+      opacity: 0;
+    }
+
+    to {
+      margin-top: var(--modal-top-margin);
+      opacity: 1;
+    }
+  }
+
+  @keyframes search-element-slide-out-top {
+    from {
+      margin-top: var(--modal-top-margin);
+      opacity: 1;
+    }
+
+    to {
+      margin-top: calc(var(--modal-top-margin) + var(--padding-sm));
+      opacity: 0;
+    }
+  }
+
+  @keyframes content-slide {
+    from {
+      transform: translateY(var(--slide-from, 0));
+      opacity: var(--slide-opacity-from, 1);
+    }
+
+    to {
+      transform: translateY(var(--slide-to, 0));
+      opacity: var(--slide-opacity-to, 1);
+    }
+  }
+
+  .predictive-search-results__list {
+    --slide-width: 27.5%;
+    --slideshow-gap: var(--gap-md);
+
+    /* Make space for the outline to be visible */
+    padding-block-start: var(--border-width-sm);
+  }
+
+  .predictive-search-results__list slideshow-arrows {
+    @media screen and (max-width: 749px) {
+      display: none;
+    }
+  }
+
+  .predictive-search-results__no-results {
+    animation-delay: 100ms;
+    transition: opacity var(--animation-speed-medium) var(--animation-timing-fade-in);
+  }
+
+  .predictive-search-results__no-results,
+  .predictive-search-results__wrapper,
+  .predictive-search-results__wrapper-products .predictive-search-results__card {
+    animation: search-element-slide-up var(--animation-speed-medium) var(--animation-timing-bounce) backwards;
+  }
+
+  .predictive-search-results__no-results:last-child {
+    margin-block: var(--margin-lg);
+    text-align: center;
+  }
+
+  slideshow-slide .resource-card {
+    /* stylelint-disable-next-line declaration-no-important */
+    animation-delay: 0ms !important;
+  }
+
+  .predictive-search-results__list,
+  .predictive-search-results__wrapper {
+    animation-duration: var(--animation-speed-medium);
+  }
+
+  .predictive-search-results__wrapper-queries {
+    animation-delay: 50ms;
+  }
+
+  .predictive-search-results__list:nth-of-type(2) {
+    animation-delay: 150ms;
+  }
+
+  .predictive-search-results__list:nth-of-type(3) {
+    animation-delay: 200ms;
+  }
+
+  .predictive-search-results__list:nth-of-type(4) {
+    animation-delay: 250ms;
+  }
+
+  .predictive-search-results__list:last-child {
+    margin-block-end: 0;
+  }
+
+  [data-resource-type] {
+    /* stylelint-disable-next-line declaration-no-important */
+    animation-delay: 0ms !important;
+  }
+
+  .predictive-search-results__no-results.removing,
+  .predictive-search-results__wrapper.removing {
+    animation: search-element-slide-down var(--animation-speed-medium) var(--animation-timing-fade-out) forwards;
+  }
+
+  .predictive-search-results__card.removing {
+    animation: fadeOut var(--animation-speed-medium) var(--animation-timing-fade-out) forwards;
+  }
+
+  .predictive-search-results__wrapper {
+    transition: opacity var(--animation-speed-medium) var(--animation-timing-fade-in);
+  }
+
+  @keyframes search-element-slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes search-element-slide-down {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  .predictive-search-results__card--query {
+    transition: transform var(--animation-speed-medium) var(--animation-timing-bounce);
+    transform-origin: center;
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.predictive_search",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ]
+}
+{% endschema %}

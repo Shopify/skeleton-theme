@@ -1,0 +1,66 @@
+[part='list'] {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: var(--overflow-list-alignment);
+  column-gap: 1rem;
+  padding-block: var(--overflow-list-padding-block, 0);
+  padding-inline: var(--overflow-list-padding-inline, 0);
+  height: 100%;
+
+  @media screen and (max-width: 749px) {
+    justify-content: var(--overflow-list-alignment-mobile);
+  }
+
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+[part='list'],
+[part='overflow-list'],
+[part='placeholder'] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Make sure the "more" slot can be measured */
+slot[name='more']:not([hidden]) {
+  display: flex;
+  height: 100%;
+}
+
+slot[name='more'] .button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-paragraph-family);
+  font-size: var(--font-paragraph-size);
+  text-transform: var(--text-transform);
+  color: currentcolor;
+  text-align: start;
+}
+
+[part='overflow'] {
+  display: none;
+}
+
+[part='placeholder'] {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+}
+
+:host([disabled]) {
+  slot[name='more'] {
+    display: none;
+  }
+}

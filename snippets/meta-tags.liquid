@@ -1,6 +1,20 @@
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta
+  http-equiv="X-UA-Compatible"
+  content="IE=edge"
+>
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+<meta
+  name="view-transition"
+  content="same-origin"
+>
+<meta
+  name="theme-color"
+  content=""
+>
 
 {%- liquid
   assign og_title = page_title | default: shop.name
@@ -58,10 +72,6 @@
 {%- endif -%}
 
 {%- if request.page_type == 'product' -%}
-  <script type="application/ld+json">
-    {{ product | structured_data }}
-  </script>
-
   <meta
     property="og:price:amount"
     content="{{ product.price | money_without_currency | strip_html }}"
@@ -72,6 +82,12 @@
   >
 {%- endif -%}
 
+{%- if settings.social_twitter_link != blank -%}
+  <meta
+    name="twitter:site"
+    content="{{ settings.social_twitter_link | split: 'twitter.com/' | last | prepend: '@' }}"
+  >
+{%- endif -%}
 <meta
   name="twitter:card"
   content="summary_large_image"

@@ -1,0 +1,414 @@
+{% comment %}
+  Renders gift card recipient form.
+  Accepts:
+  - product: {Object} product object.
+  - form: {Object} the product form object.
+  - section: {Object} section to which this snippet belongs.
+
+  Usage:
+  {% render 'gift-card-recipient-form', product: product, form: form, section: section, block: block %}
+{% endcomment %}
+
+<script
+  src="{{ 'gift-card-recipient-form.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+<gift-card-recipient-form
+  class="recipient-form"
+  data-section-id="{{ section.id }}"
+  data-product-variant-id="{{ product.selected_or_first_available_variant.id }}"
+>
+  <fieldset
+    class="gift-card-form-option"
+  >
+    <legend class="recipient-form__send-to">
+      {{ 'content.recipient_form_send_to' | t }}
+    </legend>
+    <label class="gift-card-form-option__button-label">
+      <input
+        type="radio"
+        id="My-email-button-{{ block.id }}"
+        name="gift-card-delivery-{{ block.id }}"
+        ref="myEmailButton"
+        on:change="/toggleRecipientForm/self"
+        value="self"
+        checked
+        aria-controls="recipient-fields"
+      >
+      <span>{{- 'content.recipient_form_email_label_my_email' | t -}}</span>
+    </label>
+    <label class="gift-card-form-option__button-label">
+      <input
+        type="radio"
+        id="Recipient-email-button-{{ block.id }}"
+        name="gift-card-delivery-{{ block.id }}"
+        ref="recipientEmailButton"
+        on:change="/toggleRecipientForm/recipient_form"
+        value="recipient_form"
+        aria-controls="recipient-fields"
+      >
+      <span>{{ 'content.recipient_form_email_label' | t }}</span>
+    </label>
+  </fieldset>
+  <div
+    ref="recipientFields"
+    class="recipient-fields"
+    hidden
+  >
+    <div>
+      <div class="field">
+        <input
+          ref="recipientEmail"
+          class="recipient-fields__input"
+          id="Recipient-email-{{ block.id }}"
+          type="email"
+          placeholder="{{ 'content.recipient_form_email_address' | t }}"
+          name="properties[Recipient email]"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="email"
+          pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
+          value="{{ form.email }}"
+          {% if form.errors contains 'email' %}
+            aria-invalid="true"
+            aria-describedby="RecipientForm-email-error-{{ block.id }}"
+          {% endif %}
+        >
+      </div>
+
+      <div
+        ref="emailError"
+        class="recipient-form__message{% unless form.errors contains 'email' %} hidden{% endunless %}"
+      >
+        {{- 'icon-error.svg' | inline_asset_content -}}
+        <span>
+          {%- if form.errors contains 'email' -%}
+            {{ form.errors.messages.email }}.
+          {%- endif -%}
+        </span>
+      </div>
+    </div>
+
+    <div>
+      <div class="field">
+        <input
+          ref="recipientName"
+          class="recipient-fields__input"
+          autocomplete="name"
+          type="text"
+          id="Recipient-name-{{ block.id }}"
+          name="properties[Recipient name]"
+          placeholder="{{ 'content.recipient_form_name_label' | t }}"
+          value="{{ form.name }}"
+          maxlength="100"
+          {% if form.errors contains 'name' %}
+            aria-invalid="true"
+            aria-describedby="RecipientForm-name-error-{{ block.id }}"
+          {% endif %}
+        >
+      </div>
+
+      <div
+        ref="nameError"
+        class="recipient-form__message{% unless form.errors contains 'name' %} hidden{% endunless %}"
+      >
+        {{- 'icon-error.svg' | inline_asset_content -}}
+        <span>
+          {%- if form.errors contains 'name' -%}
+            {{ form.errors.messages.name }}.
+          {%- endif -%}
+        </span>
+      </div>
+    </div>
+
+    <div>
+      {%- assign max_chars_message = 200 -%}
+      {%- assign current_chars = form.message | size -%}
+      {%- assign max_chars_message_rendered = 'content.recipient_form_characters_used'
+        | t: used_chars: current_chars, max_chars: max_chars_message
+      -%}
+      {%- assign message_label_rendered = 'content.recipient_form_message' | t -%}
+      <div class="field">
+        <textarea
+          ref="recipientMessage"
+          rows="10"
+          id="Recipient-message-{{ block.id }}"
+          class="recipient-fields__input recipient-fields__textarea"
+          name="properties[Message]"
+          maxlength="{{ max_chars_message }}"
+          placeholder="{{ 'content.recipient_form_message' | t }}"
+          aria-label="{{ message_label_rendered }} {{ max_chars_message_rendered }}"
+          {% if form.errors contains 'message' %}
+            aria-invalid="true"
+            aria-describedby="RecipientForm-message-error-{{ block.id }}"
+          {% endif %}
+        >{{ form.message }}</textarea>
+
+        <label
+          for="Recipient-message-{{ block.id }}"
+          class="recipient-form-field-label"
+        >
+          <span
+            ref="characterCount"
+            data-template="{{ 'content.recipient_form_characters_used' | t: used_chars: '[current]', max_chars: '[max]' }}"
+            data-max="{{ max_chars_message }}"
+          >
+            {{- max_chars_message_rendered -}}
+          </span>
+        </label>
+      </div>
+
+      <div
+        ref="messageError"
+        class="recipient-form__message{% unless form.errors contains 'message' %} hidden{% endunless %}"
+      >
+        {{- 'icon-error.svg' | inline_asset_content -}}
+        <span>
+          {%- if form.errors contains 'message' -%}
+            {{ form.errors.messages.message }}.
+          {%- endif -%}
+        </span>
+      </div>
+    </div>
+
+    <div>
+      <div class="field field--send-on">
+        <div for="Recipient-send-on-{{ block.id }}">
+          {{ 'content.recipient_form_send_on_label' | t }}
+        </div>
+        <input
+          ref="recipientSendOn"
+          class="recipient-fields__input"
+          autocomplete="send_on"
+          type="date"
+          id="Recipient-send-on-{{ block.id }}"
+          name="properties[Send on]"
+          placeholder="{{ 'content.recipient_form_send_on_label' | t }}"
+          pattern="\d{4}-\d{2}-\d{2}"
+          value="{{ form.send_on }}"
+          {% if form.errors contains 'send_on' %}
+            aria-invalid="true"
+            aria-describedby="RecipientForm-send_on-error-{{ block.id }}"
+          {% endif %}
+        >
+      </div>
+      <div
+        ref="sendOnError"
+        class="recipient-form__message{% unless form.errors contains 'send_on' %} hidden{% endunless %}"
+      >
+        {{- 'icon-error.svg' | inline_asset_content -}}
+        <span>
+          {%- if form.errors contains 'send_on' -%}
+            {{ form.errors.messages.send_on }}.
+          {%- endif -%}
+        </span>
+      </div>
+    </div>
+  </div>
+  <input
+    ref="timezoneOffset"
+    type="hidden"
+    name="properties[__shopify_offset]"
+    value=""
+    id="Recipient-timezone-offset-{{ block.id }}"
+    disabled
+  >
+  <div
+    ref="liveRegion"
+    role="status"
+    aria-atomic="true"
+    aria-live="assertive"
+    class="visually-hidden"
+  ></div>
+</gift-card-recipient-form>
+
+{% stylesheet %}
+  .recipient-form {
+    --options-border-radius: var(--variant-picker-button-radius);
+    --options-border-width: var(--variant-picker-button-border-width);
+
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--padding-2xl);
+  }
+
+  .recipient-form__send-to {
+    padding: 0;
+    margin-block-end: var(--margin-xs);
+  }
+
+  .gift-card-form-option {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap-sm);
+    padding: 0;
+    border: none;
+  }
+
+  .gift-card-form-option__button-label {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-block: var(--padding-sm);
+    padding-inline: var(--padding-lg);
+    border: var(--style-border-width) solid var(--color-variant-border);
+    border-radius: var(--options-border-radius);
+    border-width: var(--options-border-width);
+    overflow: clip;
+    justify-content: center;
+    min-width: auto;
+    background-color: var(--color-variant-background);
+    color: var(--color-variant-text);
+    transition: background-color var(--animation-speed) var(--animation-easing),
+      border-color var(--animation-speed) var(--animation-easing);
+
+    &:hover {
+      background-color: var(--color-variant-hover-background);
+      border-color: var(--color-variant-hover-border);
+      color: var(--color-variant-hover-text);
+    }
+  }
+
+  .gift-card-form-option__button-label:has(:focus-visible) {
+    --variant-picker-stroke-color: var(--color-foreground);
+
+    border-color: var(--color-foreground);
+    outline: var(--focus-outline-width) solid var(--color-foreground);
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  .gift-card-form-option__button-label:has(:checked) {
+    color: var(--color-selected-variant-text);
+    background-color: var(--color-selected-variant-background);
+    border-color: var(--color-selected-variant-border);
+    transition: background-color var(--animation-speed) var(--animation-easing),
+      border-color var(--animation-speed) var(--animation-easing);
+
+    &:hover {
+      background-color: var(--color-selected-variant-hover-background);
+      border-color: var(--color-selected-variant-hover-border);
+      color: var(--color-selected-variant-hover-text);
+    }
+  }
+
+  .gift-card-form-option__button-label input {
+    /* remove the checkbox from the page flow */
+    position: absolute;
+
+    /* set the dimensions to match those of the label */
+    inset: 0;
+
+    /* hide it */
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .recipient-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    transition: opacity 0.3s var(--animation-easing);
+    padding-block-start: var(--padding-xl);
+  }
+
+  .recipient-fields[hidden] {
+    display: none;
+  }
+
+  .field--send-on {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .recipient-form__message {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--gap-sm);
+    margin-top: var(--margin-sm);
+  }
+
+  .recipient-form-field-label {
+    position: absolute;
+    left: var(--padding-sm);
+    bottom: var(--padding-sm);
+    font-style: italic;
+    color: var(--color-input-text);
+  }
+
+  .recipient-fields__textarea {
+    min-height: 5.5rem;
+    overflow-y: auto;
+
+    /* Space for the character count */
+    padding-bottom: calc(var(--padding-sm) * 3);
+    scroll-padding-bottom: calc(var(--padding-sm) * 3);
+  }
+
+  .recipient-fields__input {
+    flex-grow: 1;
+    transition: background-color var(--animation-speed) ease, border-color var(--animation-speed) ease;
+    padding: var(--input-padding);
+    background-color: var(--color-input-background);
+    color: var(--color-input-text);
+    text-align: left;
+    font-size: var(--font-paragraph--size);
+    border: var(--style-border-width-inputs) solid var(--color-input-border);
+    border-radius: var(--style-border-radius-inputs);
+
+    &:autofill {
+      background-color: var(--color-input-background);
+      color: var(--color-input-text);
+    }
+
+    &:is(:focus, :hover) {
+      background-color: var(--color-input-hover-background);
+    }
+
+    &:is(:focus) {
+      outline-color: var(--color-input-background);
+    }
+  }
+
+  /* Date picker calendar icon
+   * Safari doesn't show the icon and Firefox correctly applies the color from the input field.
+   * Webkit browsers need the mask-image trick to use the correct icon color.
+   */
+  .field--send-on .recipient-fields__input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 24 24' %3E%3Cg%3E%3Cpath d='M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-image: none;
+    background-color: currentColor;
+    mask-type: match-source;
+  }
+
+  /* For Webkit browsers - text cursor for input area */
+  .field--send-on .recipient-fields__input::-webkit-datetime-edit {
+    cursor: text;
+  }
+
+  .field--send-on .recipient-fields__input::-webkit-datetime-edit-year-field,
+  .field--send-on .recipient-fields__input::-webkit-datetime-edit-month-field,
+  .field--send-on .recipient-fields__input::-webkit-datetime-edit-day-field {
+    /* Override the disabled color */
+    color: var(--color-input-text);
+  }
+
+  /* Fallback for other browsers */
+  .field--send-on .recipient-fields__input {
+    cursor: text;
+  }
+
+  /* For Firefox - entire field is clickable, so show pointer */
+  @supports (-moz-appearance: none) {
+    .field--send-on .recipient-fields__input {
+      cursor: pointer;
+    }
+  }
+{% endstylesheet %}

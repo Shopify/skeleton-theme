@@ -1,0 +1,87 @@
+{% assign block_settings = block.settings %}
+<div
+  class="
+    footer-utilities__group-copyright
+    custom-typography
+    {% if block_settings.font_size != "" %}custom-font-size{% endif %}
+  "
+  style="{% render 'typography-style', preset: 'custom', settings: block_settings %}"
+  {{ block.shopify_attributes }}
+>
+  <span class="footer-utilities__text">
+    &copy; {{ 'now' | date: '%Y' }}
+    {{ shop.name | link_to: routes.root_url -}}
+    {%- if block_settings.show_powered_by -%}
+      , {{ powered_by_link }}
+    {%- endif -%}
+  </span>
+</div>
+
+{% schema %}
+{
+  "name": "t:names.copyright",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_powered_by",
+      "label": "t:settings.show_powered_by_shopify",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "t:content.manage_store_name"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "label": "t:settings.size",
+      "options": [
+        {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
+          "value": "0.75rem",
+          "label": "12px"
+        },
+        {
+          "value": "0.875rem",
+          "label": "14px"
+        },
+        {
+          "value": "1rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.125rem",
+          "label": "18px"
+        }
+      ],
+      "default": "0.75rem"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "t:settings.case",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "none"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.copyright",
+      "category": "t:categories.footer"
+    }
+  ]
+}
+{% endschema %}

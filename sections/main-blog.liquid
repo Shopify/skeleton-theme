@@ -1,0 +1,224 @@
+<script
+  src="{{ 'blog-posts-list.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+<blog-posts-list section-id="{{ section.id }}">
+  <div class="section-background color-{{ section.settings.color_scheme }}"></div>
+  <div
+    class="
+      section
+      color-{{ section.settings.color_scheme }}
+      blog-posts
+      spacing-style
+      size-style
+    "
+    data-testid="blog-posts"
+    style="{% render 'spacing-style', settings: section.settings %}"
+  >
+    {% content_for 'blocks' %}
+
+    <div
+      ref="grid"
+      class="blog-posts-container"
+    >
+      {% liquid
+        assign items_on_page = blog.articles.size
+      %}
+      {% for article in blog.articles %}
+        {% liquid
+          # Defaults for compact layout
+          assign col_span = 2
+          assign scale = 0.6
+          assign is_horizontal = false
+
+          case items_on_page
+            when 1
+              # Single post: full width hero
+              assign col_span = 6
+              assign scale = 1
+              assign is_horizontal = true
+            when 2
+              # Two posts: both standard side by side
+              assign col_span = 3
+              assign scale = 0.8
+            when 3
+              # Three posts: hero + 2 standard
+              if forloop.index == 1
+                assign col_span = 6
+                assign scale = 1
+                assign is_horizontal = true
+              else
+                assign col_span = 3
+                assign scale = 0.8
+              endif
+            when 4
+              # Four posts: all standard in 2x2 grid
+              assign col_span = 3
+              assign scale = 0.8
+            when 5
+              # Five posts: hero + 4 standard
+              if forloop.index == 1
+                assign col_span = 6
+                assign scale = 1
+                assign is_horizontal = true
+              else
+                assign col_span = 3
+                assign scale = 0.8
+              endif
+            else
+              # 6+ posts: hero, 2 standard, rest compact
+              if forloop.index == 1
+                assign col_span = 6
+                assign scale = 1
+                assign is_horizontal = true
+              elsif forloop.index <= 3
+                assign col_span = 3
+                assign scale = 0.8
+              else
+                assign col_span = 2
+                assign scale = 0.6
+              endif
+          endcase
+        %}
+        {% style %}
+          [data-blog-index="{{ section.id }}-{{ forloop.index }}"] {
+            --col-span: {{ col_span }};
+            --blog-post-card-scale: {{ scale }};
+          }
+
+          @media screen and (max-width: 749px) {
+            [data-blog-index="{{ section.id }}-{{ forloop.index }}"] {
+              --col-span: 6;
+              --blog-post-card-scale: 0.5;
+            }
+          }
+        {% endstyle %}
+        <div
+          class="blog-post-item{% if is_horizontal %} blog-post-item--horizontal{% endif %}"
+          data-testid="blog-post-item"
+          data-blog-index="{{ section.id }}-{{ forloop.index }}"
+        >
+          {% content_for 'block', id: 'static-blog-post-card', type: '_blog-post-card', article: article %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</blog-posts-list>
+
+{% stylesheet %}
+  /**
+   * Blog posts page layout
+   */
+  .blog-posts {
+    --page-content-width: var(--narrow-page-width);
+    --page-width: calc(var(--page-content-width) + (var(--page-margin) * 2));
+    --columns-gap: 36px;
+    --rows-gap: 36px;
+  }
+
+  .blog-posts-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+    width: 100%;
+    column-gap: var(--columns-gap);
+    row-gap: var(--rows-gap);
+  }
+
+  /**
+   * Blog post item grid positioning and scaling.
+   * Layout is calculated in Liquid based on total article count.
+   * Mobile overrides are applied per-item in inline styles for proper specificity.
+   */
+  .blog-post-item {
+    grid-column: span var(--col-span);
+  }
+
+  /**
+   * When there's no image, the blog post item has a border.
+   */
+  .blog-post-item {
+    border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+    padding: 0 1rem 1rem;
+  }
+
+  .blog-post-item:has(.blog-post-card__image-container) {
+    border: none;
+    padding: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.blog_posts",
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    },
+    {
+      "type": "text"
+    },
+    {
+      "type": "icon"
+    },
+    {
+      "type": "image"
+    },
+    {
+      "type": "button"
+    },
+    {
+      "type": "video"
+    },
+    {
+      "type": "group"
+    },
+    {
+      "type": "spacer"
+    },
+    {
+      "type": "_divider"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

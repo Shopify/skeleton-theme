@@ -1,0 +1,302 @@
+{% doc %}
+  Renders volume pricing information with quantity rules in a popover.
+  Only renders if variant has quantity rules or volume pricing.
+
+  @param {variant} variant - The variant object to display pricing for
+  @param {string} [unique_id] - Optional unique identifier to append to popover ID (e.g., cart line index)
+  @param {number} [quantity] - The current quantity (for highlighting active tier)
+  @param {boolean} [show_label] - Shows label "Volume Pricing Available"
+
+  @example
+  {% render 'volume-pricing-info',
+    variant: item.variant,
+    unique_id: item.index,
+    quantity: item.quantity
+  %}
+{% enddoc %}
+
+{%- liquid
+  assign has_quantity_rules = false
+  if variant.quantity_rule.min > 1 or variant.quantity_rule.increment > 1 or variant.quantity_rule.max != null
+    assign has_quantity_rules = true
+  endif
+
+  assign has_volume_pricing = false
+  if variant.quantity_price_breaks.size > 0
+    assign has_volume_pricing = true
+  endif
+
+  assign current_quantity = quantity | default: variant.quantity_rule.min | default: 1
+-%}
+
+{%- if has_quantity_rules or has_volume_pricing -%}
+  {%- liquid
+    assign popover_id = 'VolumePricingInfo-' | append: variant.id
+    assign anchor_name = '--volume-pricing-trigger-' | append: variant.id
+
+    assign use_currency = false
+    if unique_id != blank
+      assign popover_id = popover_id | append: '-' | append: unique_id
+      assign anchor_name = anchor_name | append: '-' | append: unique_id
+      if settings.currency_code_enabled_cart_items
+        assign use_currency = true
+      endif
+    else
+      if settings.currency_code_enabled_product_pages
+        assign use_currency = true
+      endif
+    endif
+  -%}
+  <anchored-popover-component
+    data-hover-triggered="true"
+    class="volume-pricing-info"
+    id="volume-pricing-anchor-{{ popover_id }}"
+  >
+    <button
+      type="button"
+      class="volume-pricing-info__button button-unstyled{% if show_label %} volume-pricing-info__button--with-label{% endif %}"
+      aria-label="{{ 'accessibility.view_pricing_info' | t }}"
+      ref="trigger"
+      popovertarget="{{ popover_id }}"
+      style="anchor-name: {{ anchor_name }};"
+    >
+      <span class="svg-wrapper">{{- 'icon-info.svg' | inline_asset_content -}}</span>
+      {% if show_label %}
+        {{ 'content.volume_pricing_available' | t }}
+      {% endif %}
+    </button>
+
+    <div
+      id="{{ popover_id }}"
+      class="volume-pricing-info__popover"
+      ref="popover"
+      popover="auto"
+      style="position-anchor: {{ anchor_name }};"
+    >
+      <volume-pricing-info>
+        {%- if has_quantity_rules -%}
+          <div class="volume-pricing-info__rules">
+            {%- if variant.quantity_rule.increment > 1 -%}
+              <span>{{ 'products.product.quantity_increments' | t: increment: variant.quantity_rule.increment }}</span>
+            {%- endif -%}
+            {%- if variant.quantity_rule.min > 1 or variant.quantity_rule.max != null -%}
+              <span>
+                {{- 'products.product.quantity_minimum' | t: minimum: variant.quantity_rule.min | default: 1 -}}
+                {%- if variant.quantity_rule.max != null %}
+                  • {{ 'products.product.quantity_maximum' | t: maximum: variant.quantity_rule.max -}}
+                {%- endif -%}
+              </span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if has_volume_pricing -%}
+          <div class="volume-pricing-info__table">
+            {%- assign min_qty = variant.quantity_rule.min | default: 1 -%}
+            {%- assign first_break = variant.quantity_price_breaks.first.minimum_quantity -%}
+
+            <div
+              class="volume-pricing-info__row{% if current_quantity >= min_qty and current_quantity < first_break %} volume-pricing-info__row--active{% endif %}"
+              data-quantity="{{ min_qty }}"
+            >
+              <span class="volume-pricing-info__quantity">{{ min_qty }}+</span>
+              {%- capture price_text -%}{%- if use_currency -%}{{ variant.price | money_with_currency | strip }}/{{ 'content.each_abbreviation' | t }}{%- else -%}{{ variant.price | money | strip }}/{{ 'content.each_abbreviation' | t }}{%- endif -%}{%- endcapture -%}
+              <span class="volume-pricing-info__price"
+                ><span class="volume-pricing-info__checkmark">{{- 'icon-checkmark.svg' | inline_asset_content -}}</span>
+                {{- price_text | strip -}}
+              </span>
+            </div>
+
+            {%- for price_break in variant.quantity_price_breaks -%}
+              {%- assign next_tier = variant.quantity_price_breaks[forloop.index].minimum_quantity -%}
+              {%- assign is_last = forloop.last -%}
+              {%- assign is_active = false -%}
+              {%- if is_last -%}
+                {%- if current_quantity >= price_break.minimum_quantity -%}
+                  {%- assign is_active = true -%}
+                {%- endif -%}
+              {%- elsif current_quantity >= price_break.minimum_quantity and current_quantity < next_tier -%}
+                {%- assign is_active = true -%}
+              {%- endif -%}
+
+              <div
+                class="volume-pricing-info__row{% if is_active %} volume-pricing-info__row--active{% endif %}"
+                data-quantity="{{ price_break.minimum_quantity }}"
+              >
+                <span class="volume-pricing-info__quantity">{{ price_break.minimum_quantity }}+</span>
+                {%- capture price_text -%}{%- if use_currency -%}{{ price_break.price | money_with_currency | strip }}/{{ 'content.each_abbreviation' | t }}{%- else -%}{{ price_break.price | money | strip }}/{{ 'content.each_abbreviation' | t }}{%- endif -%}{%- endcapture -%}
+                <span class="volume-pricing-info__price"
+                  ><span class="volume-pricing-info__checkmark">
+                    {{- 'icon-checkmark.svg' | inline_asset_content -}}
+                  </span>
+                  {{- price_text | strip -}}
+                </span>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </volume-pricing-info>
+    </div>
+  </anchored-popover-component>
+{%- endif -%}
+
+{% stylesheet %}
+  .volume-pricing-info {
+    display: inline-flex;
+  }
+
+  .volume-pricing-info__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
+    color: var(--color-foreground-secondary);
+    cursor: pointer;
+    transition: color var(--animation-speed) var(--animation-easing);
+    flex-shrink: 0;
+  }
+
+  .volume-pricing-info__button:hover {
+    color: var(--color-foreground);
+  }
+
+  .volume-pricing-info__button .svg-wrapper {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+  }
+
+  .volume-pricing-info__button--with-label {
+    width: auto;
+    gap: var(--gap-sm);
+  }
+
+  .volume-pricing-info__popover {
+    --volume-pricing-popover-max-width: 320px;
+    --volume-pricing-popover-spacing: 8px;
+    --volume-pricing-popover-viewport-margin: 16px;
+
+    min-inline-size: 280px;
+    max-inline-size: var(--volume-pricing-popover-max-width);
+    background: var(--color-background);
+    border: var(--style-border-popover);
+    border-radius: var(--style-border-radius-popover, 0);
+    box-shadow: var(--shadow-popover);
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    transition-property: display, opacity, translate;
+    transition-duration: 0.3s;
+    transition-timing-function: var(--ease-out-quad);
+    transition-behavior: allow-discrete;
+    translate: 0 20px;
+    opacity: 0;
+  }
+
+  /* Native anchor positioning for supported browsers */
+  .volume-pricing-info__popover {
+    inset: unset;
+    top: calc(anchor(bottom) + var(--volume-pricing-popover-spacing));
+    left: anchor(left);
+  }
+
+  @supports (position-try-fallbacks: --top-left) {
+    .volume-pricing-info__popover {
+      position-try-fallbacks: --top-left;
+    }
+
+    @position-try --top-left {
+      top: calc(anchor(top) - var(--volume-pricing-popover-spacing));
+      bottom: auto;
+      transform: translateY(-100%);
+    }
+  }
+
+  /* Fallback positioning using custom properties */
+  @supports not (position-anchor: --volume-pricing-trigger) {
+    .volume-pricing-info__popover {
+      position: fixed;
+      top: calc(var(--anchor-bottom) * 1px + var(--volume-pricing-popover-spacing));
+      left: max(
+        var(--volume-pricing-popover-viewport-margin),
+        min(
+          var(--anchor-left) * 1px,
+          100vw - var(--volume-pricing-popover-max-width) - var(--volume-pricing-popover-viewport-margin)
+        )
+      );
+    }
+  }
+
+  .volume-pricing-info__popover:popover-open {
+    translate: 0 0;
+    opacity: 1;
+  }
+
+  @starting-style {
+    .volume-pricing-info__popover:popover-open {
+      translate: 0 20px;
+      opacity: 0;
+    }
+  }
+
+  .volume-pricing-info__rules {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xs);
+    padding: var(--padding-md);
+    font-size: var(--font-size--xs);
+  }
+
+  .volume-pricing-info__rules,
+  .volume-pricing-info__rules > span {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+  }
+
+  .volume-pricing-info__table {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .volume-pricing-info__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--padding-sm) var(--padding-md);
+    font-size: var(--font-size--sm);
+    background: var(--color-background);
+    border-inline-start: 3px solid transparent;
+    transition: border-color var(--animation-speed) var(--animation-easing);
+  }
+
+  .volume-pricing-info__row:nth-child(odd) {
+    background: rgb(var(--color-foreground-rgb) / var(--opacity-5));
+  }
+
+  .volume-pricing-info__row--active {
+    border-inline-start-color: var(--color-foreground);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .volume-pricing-info__quantity {
+    color: var(--color-foreground);
+  }
+
+  .volume-pricing-info__price {
+    display: flex;
+    align-items: center;
+    color: var(--color-foreground);
+  }
+
+  .volume-pricing-info__checkmark {
+    display: none;
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    color: var(--color-primary);
+  }
+
+  .volume-pricing-info__row--active .volume-pricing-info__checkmark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+{% endstylesheet %}

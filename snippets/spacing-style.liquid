@@ -1,0 +1,36 @@
+{%- doc -%}
+  Renders CSS variables for spacing (padding and margin) styles with responsive scaling.
+  Intended for blocks and sections that provide values for all the referenced settings.
+
+  @param {object} settings - The block or section settings object containing spacing values
+
+  @example
+  <div class="spacing-style" style="{% render 'spacing-style', settings: section.settings %}">
+{%- enddoc -%}
+{%- liquid
+  assign scale_min = 20
+  assign keys = 'padding-block-start,padding-block-end,padding-inline-start,padding-inline-end' | split: ','
+
+  for key in keys
+    assign value = settings[key]
+
+    if value != blank
+      echo '--'
+      echo key
+      echo ': '
+
+      if value > scale_min
+        echo 'max('
+        echo scale_min
+        echo 'px, calc(var(--spacing-scale) * '
+        echo value
+        echo 'px))'
+      else
+        echo value
+        echo 'px'
+      endif
+
+      echo ';'
+    endif
+  endfor
+-%}

@@ -1,0 +1,176 @@
+{%- doc -%}
+  Renders text that stretches to fit the full width of its container.
+
+  @param {string} [text] - The text to be rendered.
+  @param {object} [block_settings] - The block settings object, defaults to block.settings
+
+  @example
+  {% render 'jumbo-text', text: block.settings.text %}
+{%- enddoc -%}
+
+{% liquid
+  assign block_settings = block_settings | default: block.settings
+  assign shown_text = text | default: block_settings.text
+  assign descenders = 'alphabetic'
+  assign trim = 'trim-both'
+  assign cap_text = false
+
+  unless block_settings.case == 'uppercase'
+    assign has_descender = false
+    assign descender_chars = 'g,j,p,q,y,ç,ý,ÿ,ş,ţ,ģ,ą,ę,į,ų' | split: ','
+    for descender_char in descender_chars
+      if shown_text contains descender_char
+        assign has_descender = true
+        break
+      endif
+    endfor
+
+    if has_descender
+      assign descenders = 'text'
+      assign cap_text = true
+    endif
+  endunless
+
+  assign text_trim = trim | append: ' cap ' | append: descenders
+  assign shown_text_with_line_breaks = shown_text | newline_to_br | strip_newlines
+  assign text_with_lines = shown_text_with_line_breaks | split: '<br />'
+  assign nudge = '-0.04em'
+%}
+
+{% capture attributes %}
+  style="
+    --font-family: var(--font-{{ block_settings.font | default: 'accent'}}--family);
+    --font-weight: var(--font-{{ block_settings.font | default: 'accent'}}--weight);
+    {% if block_settings.font == 'body' %}
+      --color: var(--color-foreground);
+    {% else %}
+      --color: var(--color-foreground-heading);
+    {% endif %}
+    --text-align: {{ block_settings.alignment | default: 'left' }};
+    {% if block_settings.alignment == "left" %}
+      --margin-left-nudge: {{nudge}};
+    {% elsif block_settings.alignment == "right" %}
+      --margin-right-nudge: {{nudge}};
+    {% endif %}
+    --line-height: {{ block_settings.line_height | default: '1' }};
+    --letter-spacing: {{ block_settings.letter_spacing | default: '-0.03em' }};
+    --text-transform: {{ block_settings.case | default: 'none' }};
+    --text-trim: {{text_trim}};
+  "
+  data-cap-text="{{ cap_text }}"
+  {{ block.shopify_attributes }}
+{% endcapture %}
+
+{% if text != blank %}
+  <jumbo-text {{ attributes }}
+    ><span class="jumbo-text-line">{{ text }}</span></jumbo-text
+  >
+{% else %}
+  <span class="visually-hidden">{{ shown_text }}</span>
+  <jumbo-text
+    {{ attributes }}
+    data-text-effect="{{ block_settings.text_effect }}"
+    data-animation-repeat="{{ block_settings.animation_repeat }}"
+  >
+    {%- for line in text_with_lines -%}
+      {%- if forloop.index > 1 -%}
+        <br>
+      {%- endif -%}
+      <span
+        class="jumbo-text-line"
+        style="--line-index: {{ forloop.index }};"
+        data-testid="jumbo-text-line"
+        aria-hidden="true"
+      >
+        {{- line -}}
+      </span>
+    {%- endfor -%}
+  </jumbo-text>
+{% endif %}
+
+<script
+  src="{{ 'jumbo-text.js' | asset_url }}"
+  type="module"
+  async
+></script>
+
+{% stylesheet %}
+  .jumbo-text__container {
+    width: 100%;
+  }
+
+  footer .jumbo-text__container {
+    pointer-events: none;
+  }
+
+  jumbo-text {
+    display: block;
+    font-family: var(--font-family, inherit);
+    font-style: var(--font-style, normal);
+    color: var(--color, inherit);
+    font-weight: var(--font-weight, inherit);
+    letter-spacing: var(--letter-spacing, -0.02em);
+    line-height: var(--line-height, 1);
+    opacity: 0;
+    visibility: hidden;
+    text-align: var(--text-align);
+    text-box: var(--text-trim, trim-end cap text);
+    text-transform: var(--text-transform, none);
+    transition: opacity 0.3s ease;
+    width: 100%;
+    margin-left: var(--margin-left-nudge, 0);
+    margin-right: var(--margin-right-nudge, 0);
+    overflow: visible;
+  }
+
+  jumbo-text.ready {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  jumbo-text[data-cap-text='true'] {
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+    text-box-edge: cap text;
+  }
+
+  .jumbo-text-line {
+    display: inline-flex;
+    white-space: pre;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Blur effect */
+    .ready[data-text-effect='blur'] {
+      filter: blur(20px);
+      opacity: 0.5;
+      scale: 1.05;
+      transition: filter 1.6s var(--animation-timing-fade-in), opacity 1.3s var(--animation-timing-fade-in),
+        scale 1.6s var(--animation-timing-fade-in);
+    }
+
+    .jumbo-text-visible[data-text-effect='blur'] {
+      filter: blur(0);
+      opacity: 1;
+      scale: 1;
+    }
+
+    /* Reveal effect */
+    .ready[data-text-effect='reveal'] {
+      overflow: hidden;
+    }
+
+    .ready[data-text-effect='reveal'] .jumbo-text-line {
+      transform: translateY(100%);
+    }
+
+    .jumbo-text-visible[data-text-effect='reveal'] .jumbo-text-line {
+      transition: transform 0.5s var(--animation-timing-fade-in) calc(var(--line-index) * 0.05s);
+      transform: translateY(0);
+    }
+
+    .jumbo-text-visible[data-text-effect='reveal'] {
+      overflow: visible;
+      transition: overflow 0s linear 0.75s;
+    }
+  }
+{% endstylesheet %}

@@ -1,0 +1,214 @@
+{%- doc -%}
+  Unified Resource Image Component
+
+  Renders responsive images for resource list contexts (featured-blog, collection-card, etc).
+  Consolidates common image rendering logic across resource components.
+
+  @param {string} content_type - Type of content: 'articles' | 'collections'
+  @param {object} [image_source] - Image object for articles (auto-determined for collections)
+  @param {string} parent_block_id - Parent block ID for CSS targeting
+  @param {object} block_settings - Block settings object
+  @param {object} [section_settings] - Section settings for layout-aware sizing
+  @param {string} [block_attributes] - Block shopify attributes for theme editor
+
+  @example
+  {% render 'resource-image',
+      content_type: 'articles',
+      image_source: article.image,
+      parent_block_id: block.id,
+      block_settings: block.settings,
+      section_settings: section.settings,
+      block_attributes: block.shopify_attributes
+    %}
+  @example
+  {% render 'resource-image',
+      content_type: 'collections',
+      image_source: blank,
+      parent_block_id: block.id,
+      block_settings: block.settings,
+      section_settings: section.settings,
+      block_attributes: block.shopify_attributes
+    %}
+{%- enddoc -%}
+
+{% liquid
+  # Parameter validation and defaults
+  assign content_type = content_type | default: 'collections'
+  assign parent_block_id = parent_block_id | default: ''
+  assign block_settings = block_settings | default: empty
+  assign section_settings = section_settings | default: empty
+  assign block_attributes = block_attributes | default: ''
+
+  # Early return if required parameters missing
+  unless parent_block_id != blank and block_settings != empty
+    echo '<!-- Error: parent_block_id and block_settings parameters required for resource-image snippet -->'
+    break
+  endunless
+
+  # Determine image source based on content type
+  if content_type == 'articles'
+    assign image_resource = image_source
+  elsif content_type == 'collections'
+    assign collection = closest.collection
+    assign image_resource = collection.image
+    if image_resource == blank
+      assign image_resource = collection.products.first.featured_image
+    endif
+  else
+    assign image_resource = image_source
+  endif
+
+  # Calculate aspect ratio
+  assign ratio = 1
+  case block_settings.image_ratio
+    when 'landscape'
+      assign ratio = '16 / 9'
+    when 'portrait'
+      assign ratio = '4 / 5'
+    when 'square'
+      assign ratio = '1 / 1'
+    when 'adapt'
+      assign ratio = image_resource.aspect_ratio
+  endcase
+
+  if ratio == 0 or ratio == null
+    assign ratio = 1
+  endif
+
+  # Generate responsive image attributes
+  assign sizes = '(min-width: 750px) 50vw, 100vw'
+  assign lazy_sizes = 'auto, ' | append: sizes
+  assign loading = 'eager'
+
+  # Layout-aware sizing for resource lists
+  if section_settings.layout_type
+    case section_settings.layout_type
+      when 'grid', 'carousel'
+        assign calculated_width = 100 | divided_by: section_settings.columns | append: 'vw'
+        assign sizes = '(min-width: 750px) [calc-width], 100vw' | replace: '[calc-width]', calculated_width
+      when 'editorial', 'bento'
+        assign loading = 'lazy'
+        assign sizes = lazy_sizes
+    endcase
+  endif
+
+  assign widths = '240, 352, 832, 1200, 1600, 1920, 2560, 3840'
+
+  # Generate placeholder info based on content type
+  if content_type == 'articles'
+    assign placeholder_prefix = 'blog-apparel-'
+    assign placeholder_variants = 3
+  elsif content_type == 'collections'
+    assign placeholder_prefix = 'collection-apparel-'
+    assign placeholder_variants = 4
+  else
+    assign placeholder_prefix = 'detailed-apparel-'
+    assign placeholder_variants = 3
+  endif
+
+  # Calculate placeholder variant from parent block ID
+  assign block_parts = parent_block_id | split: '-'
+  assign content_index = block_parts.last | default: 0
+  assign variant = content_index | modulo: placeholder_variants | plus: 1
+  assign placeholder_name = placeholder_prefix | append: variant
+%}
+
+{% comment %} Apply aspect ratio to parent component {% endcomment %}
+{% style %}
+  {% if content_type == 'articles' %}
+    .featured-blog-posts-card[data-block-id="{{ parent_block_id }}"] {
+      --ratio: {{ ratio }};
+    }
+  {% elsif content_type == 'collections' %}
+    .collection-card[data-block-id="{{ parent_block_id }}"] {
+      --ratio: {{ ratio }};
+    }
+  {% endif %}
+{% endstyle %}
+
+{% if image_resource != blank %}
+  <div
+    class="
+      image-block
+      resource-image
+      {% if content_type == 'articles' %}
+        featured-blog-posts-card__image
+      {% elsif content_type == 'collections' %}
+        collection-card__image
+      {% endif %}
+      spacing-style border-style
+      {% if block_settings.inherit_color_scheme == false %} color-{{ block_settings.color_scheme }}{% endif %}
+    "
+    style="
+      {%- render 'spacing-style', settings: block_settings -%}
+      {%- render 'border-override', settings: block_settings -%}
+    "
+    {{ block_attributes }}
+  >
+    {%- if block_settings.toggle_overlay -%}
+      {% render 'overlay', settings: block_settings %}
+    {%- endif -%}
+
+    {{
+      image_resource
+      | image_url: width: 3840
+      | image_tag: widths: widths, class: 'image-block__image', sizes: sizes, loading: loading
+    }}
+  </div>
+{% else %}
+  <div
+    class="
+      image-block
+      resource-image resource-image--placeholder
+      {% if content_type == 'articles' %}
+        featured-blog-posts-card__image featured-blog-posts-card__image--placeholder
+      {% elsif content_type == 'collections' %}
+        collection-card__image collection-card__image--placeholder
+      {% endif %}
+      spacing-style border-style
+      {% if block_settings.inherit_color_scheme == false %} color-{{ block_settings.color_scheme }}{% endif %}
+    "
+    style="
+      {%- render 'spacing-style', settings: block_settings -%}
+      {%- render 'border-override', settings: block_settings -%}
+    "
+    {{ block_attributes }}
+  >
+    {%- if block_settings.toggle_overlay -%}
+      {% render 'overlay', settings: block_settings %}
+    {%- endif -%}
+
+    <div class="image-block__image">
+      {% if content_type == 'articles' %}
+        {{ placeholder_name | placeholder_svg_tag: 'blog-placeholder-svg' }}
+      {% else %}
+        {{ placeholder_name | placeholder_svg_tag }}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .resource-image {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    z-index: var(--layer-base);
+    overflow: hidden;
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: var(--ratio);
+  }
+
+  .resource-image .image-block__image {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+
+  .resource-image--placeholder {
+    width: 100%;
+    height: 100%;
+  }
+{% endstylesheet %}

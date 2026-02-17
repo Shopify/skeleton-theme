@@ -1,0 +1,99 @@
+{% style %}
+  {% for scheme in settings.color_schemes -%}
+    {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
+    {% if forloop.index == 1 %}
+      :root,
+    {% endif %}
+    {% assign background_brightness = scheme.settings.background | color_brightness %}
+    {% if background_brightness < 64 %}
+      {% assign opacity_5_15 = 0.15 %}
+      {% assign opacity_10_25 = 0.25 %}
+      {% assign opacity_35_55 = 0.55 %}
+      {% assign opacity_40_60 = 0.60 %}
+      {% assign opacity_30_60 = 0.60 %}
+    {% else %}
+      {% assign opacity_5_15 = 0.05 %}
+      {% assign opacity_10_25 = 0.1 %}
+      {% assign opacity_35_55 = 0.35 %}
+      {% assign opacity_40_60 = 0.40 %}
+      {% assign opacity_30_60 = 0.30 %}
+    {% endif %}
+    .color-{{ scheme.id }} {
+        --color-background: rgb({{ scheme.settings.background.rgba }});
+        /* RGB values only to apply different opacities - Relative color values are not supported in iOS < 16.4 */
+        --color-background-rgb: {{ scheme.settings.background.rgb }};
+        --opacity-5-15: {{ opacity_5_15 }};
+        --opacity-10-25: {{ opacity_10_25 }};
+        --opacity-35-55: {{ opacity_35_55 }};
+        --opacity-40-60: {{ opacity_40_60 }};
+        --opacity-30-60: {{ opacity_30_60 }};
+        --color-foreground: rgb({{ scheme.settings.foreground.rgba }});
+        --color-foreground-rgb: {{ scheme.settings.foreground.rgb }};
+        --color-foreground-heading: rgb({{ scheme.settings.foreground_heading.rgba }});
+        --color-foreground-heading-rgb: {{ scheme.settings.foreground_heading.rgb }};
+        --color-primary: rgb({{ scheme.settings.primary.rgba }});
+        --color-primary-rgb: {{ scheme.settings.primary.rgb }};
+        --color-primary-hover: rgb({{ scheme.settings.primary_hover.rgba }});
+        --color-primary-hover-rgb: {{ scheme.settings.primary_hover.rgb }};
+        --color-border: rgb({{ scheme.settings.border.rgba }});
+        --color-border-rgb: {{ scheme.settings.border.rgb }};
+        --color-shadow: rgb({{ scheme.settings.shadow.rgba }});
+        --color-shadow-rgb: {{ scheme.settings.shadow.rgb }};
+        --color-primary-button-text: rgb({{ scheme.settings.primary_button_text.rgba }});
+        --color-primary-button-background: rgb({{ scheme.settings.primary_button_background.rgba }});
+        --color-primary-button-border: rgb({{ scheme.settings.primary_button_border.rgba }});
+        --color-primary-button-hover-text: rgb({{ scheme.settings.primary_button_hover_text.rgba }});
+        --color-primary-button-hover-background: rgb({{ scheme.settings.primary_button_hover_background.rgba }});
+        --color-primary-button-hover-border: rgb({{ scheme.settings.primary_button_hover_border.rgba }});
+        --color-secondary-button-text: rgb({{ scheme.settings.secondary_button_text.rgba }});
+        --color-secondary-button-background: rgb({{ scheme.settings.secondary_button_background.rgba }});
+        --color-secondary-button-border: rgb({{ scheme.settings.secondary_button_border.rgba }});
+        --color-secondary-button-hover-text: rgb({{ scheme.settings.secondary_button_hover_text.rgba }});
+        --color-secondary-button-hover-background: rgb({{ scheme.settings.secondary_button_hover_background.rgba }});
+        --color-secondary-button-hover-border: rgb({{ scheme.settings.secondary_button_hover_border.rgba }});
+        --color-input-background: rgb({{ scheme.settings.input_background.rgba }});
+        --color-input-text: rgb({{ scheme.settings.input_text_color.rgba }});
+        --color-input-text-rgb: {{ scheme.settings.input_text_color.rgb }};
+        --color-input-border: rgb({{ scheme.settings.input_border_color.rgba }});
+        --color-input-hover-background: rgb({{ scheme.settings.input_hover_background.rgba }});
+        --color-variant-background: rgb({{ scheme.settings.variant_background_color.rgba }});
+        --color-variant-border: rgb({{ scheme.settings.variant_border_color.rgba }});
+        --color-variant-text: rgb({{ scheme.settings.variant_text_color.rgba }});
+        --color-variant-text-rgb: {{ scheme.settings.variant_text_color.rgb }};
+        --color-variant-hover-background: rgb({{ scheme.settings.variant_hover_background_color.rgba }});
+        --color-variant-hover-text: rgb({{ scheme.settings.variant_hover_text_color.rgba }});
+        --color-variant-hover-border: rgb({{ scheme.settings.variant_hover_border_color.rgba }});
+        --color-selected-variant-background: rgb({{ scheme.settings.selected_variant_background_color.rgba }});
+        --color-selected-variant-border: rgb({{ scheme.settings.selected_variant_border_color.rgba }});
+        --color-selected-variant-text: rgb({{ scheme.settings.selected_variant_text_color.rgba }});
+        --color-selected-variant-hover-background: rgb({{ scheme.settings.selected_variant_hover_background_color.rgba }});
+        --color-selected-variant-hover-text: rgb({{ scheme.settings.selected_variant_hover_text_color.rgba }});
+        --color-selected-variant-hover-border: rgb({{ scheme.settings.selected_variant_hover_border_color.rgba }});
+
+        --input-disabled-background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+        --input-disabled-border-color: rgb(var(--color-foreground-rgb) / var(--opacity-5-15));
+        --input-disabled-text-color: rgb(var(--color-foreground-rgb) / var(--opacity-50));
+        --color-foreground-muted: rgb(var(--color-foreground-rgb) / var(--opacity-60));
+        --font-h1--color: var(--color-foreground-heading);
+        --font-h2--color: var(--color-foreground-heading);
+        --font-h3--color: var(--color-foreground-heading);
+        --font-h4--color: var(--color-foreground-heading);
+        --font-h5--color: var(--color-foreground-heading);
+        --font-h6--color: var(--color-foreground-heading);
+
+        /* Shadows */
+        {% if settings.drawer_drop_shadow %}
+          --shadow-drawer: 0px 4px 20px rgb(var(--color-shadow-rgb) / var(--opacity-15));
+        {% endif %}
+        {% if settings.popover_drop_shadow %}
+          --shadow-blur: 20px;
+          --shadow-popover: 0px 4px 20px rgb(var(--color-shadow-rgb) / var(--opacity-15));
+        {% endif %}
+      }
+  {% endfor %}
+
+  {{ scheme_classes | prepend: 'body' }} {
+    color: var(--color-foreground);
+    background-color: var(--color-background);
+  }
+{% endstyle %}

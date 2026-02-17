@@ -1,0 +1,204 @@
+{% if shop.policies.size > 0 %}
+  <anchored-popover-component
+    data-hover-triggered="true"
+  >
+    <button
+      class="policy-list-trigger button-unstyled"
+      popovertarget="terms-policies-popover"
+      popovertargetaction="toggle"
+      ref="trigger"
+      style="{% render 'typography-style', preset: 'custom', settings: block.settings %}"
+      {{ block.shopify_attributes }}
+    >
+      {{ 'content.terms_and_policies' | t }}
+    </button>
+    <div
+      class="terms-policies-popover color-{{ settings.popover_color_scheme }}"
+      id="terms-policies-popover"
+      popover="auto"
+      ref="popover"
+    >
+      <ul
+        class="
+          policy_list list-unstyled
+          custom-typography
+          {% if block.settings.font_size != "" %}custom-font-size{% endif %}
+        "
+      >
+        {%- for policy in shop.policies -%}
+          {%- if policy != blank -%}
+            <li>
+              <a
+                href="{{ policy.url }}"
+                class="footer-utilities__text"
+              >
+                {{- policy.title | escape -}}
+              </a>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </div>
+  </anchored-popover-component>
+{% endif %}
+
+{% stylesheet %}
+  .policy-list-trigger {
+    anchor-name: --terms-policies-trigger;
+    cursor: pointer;
+    font-size: var(--font-size, 0.75rem);
+    text-transform: var(--text-transform, none);
+  }
+
+  .policy_list {
+    li {
+      border-radius: calc(var(--style-border-radius-popover) - 8px);
+
+      a {
+        color: var(--color-foreground);
+        display: inline-block;
+        padding: 8px;
+        text-align: start;
+        width: 100%;
+        outline-color: #0000;
+        font-size: var(--font-size, 0.75rem);
+        text-transform: var(--text-transform, none);
+      }
+
+      &:is(:hover, :focus-within) {
+        background: rgb(var(--color-foreground-rgb) / 0.15);
+      }
+    }
+  }
+
+  .terms-policies-popover {
+    position-anchor: --terms-policies-trigger;
+    inset: unset;
+    bottom: calc(anchor(top) + 1rem);
+    left: anchor(left);
+    border-radius: var(--style-border-radius-popover);
+    background: linear-gradient(var(--color-background) 0 100%),
+      linear-gradient(rgb(var(--color-background-rgb) / 0.15) 0 100%);
+    background-clip: padding-box, border-box;
+    border: 1px solid #0000;
+    box-shadow: var(--shadow-popover);
+    padding: 8px;
+    margin: 0;
+    opacity: 0;
+    scale: 0.94;
+    translate: 0 6px;
+    transform-origin: 3.9em 100%;
+  }
+
+  .terms-policies-popover.\:popover-open,
+  .terms-policies-popover:popover-open {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+
+  @media screen and (max-width: 749px) {
+    .terms-policies-popover {
+      left: anchor(center);
+      transform: translate(-50%, 0);
+      transform-origin: 0% 100%;
+    }
+  }
+
+  @supports not (position-anchor: --account-button-trigger) {
+    .terms-policies-popover {
+      bottom: unset;
+      top: calc(var(--anchor-top) * 1px);
+      left: calc(var(--anchor-left) * 1px);
+      transform: translate(0, calc(-100% - 1.25rem));
+    }
+
+    @media screen and (max-width: 749px) {
+      .terms-policies-popover {
+        left: calc((var(--anchor-left) + (var(--anchor-width) / 2)) * 1px);
+        transform: translate(-50%, calc(-100% - 1.25rem));
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .terms-policies-popover {
+      transition-property: display, overlay, opacity, scale, translate;
+      transition-behavior: allow-discrete;
+      transition-duration: 0.3s;
+      transition-timing-function: var(--ease-out-quad);
+    }
+
+    @starting-style {
+      .terms-policies-popover.\:popover-open,
+      .terms-policies-popover:popover-open {
+        opacity: 0.7;
+        translate: 0 6px;
+        scale: 0.94;
+      }
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.policy_list",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:content.manage_policies"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "label": "t:settings.size",
+      "options": [
+        {
+          "value": "0.625rem",
+          "label": "10px"
+        },
+        {
+          "value": "0.75rem",
+          "label": "12px"
+        },
+        {
+          "value": "0.875rem",
+          "label": "14px"
+        },
+        {
+          "value": "1rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.125rem",
+          "label": "18px"
+        }
+      ],
+      "default": "0.75rem"
+    },
+    {
+      "type": "select",
+      "id": "case",
+      "label": "t:settings.case",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "none"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.policy_list",
+      "category": "t:categories.footer"
+    }
+  ]
+}
+{% endschema %}

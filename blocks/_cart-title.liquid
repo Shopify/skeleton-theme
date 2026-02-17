@@ -1,0 +1,185 @@
+{% doc %}
+  Cart Title
+
+  Renders the cart title or empty cart state.
+
+  @param {boolean} [force_empty] - Force render empty cart state
+
+  @example
+  {% render 'cart-title', force_empty: true %}
+{% enddoc %}
+
+{% liquid
+  assign block_settings = block.settings
+%}
+
+<div
+  class="cart-title spacing-style text-{{ block_settings.alignment }}"
+  style="{% render 'spacing-style', settings: block_settings %}"
+  {{ block.shopify_attributes }}
+>
+  <h1 class="{{ block_settings.type_preset | default: 'h2' }}">
+    {%- if cart.empty? or force_empty -%}
+      {{ 'content.your_cart_is_empty' | t }}
+    {%- else -%}
+      {{ block_settings.title }}
+      {%- if block_settings.show_count -%}{% render 'cart-bubble' %}{%- endif -%}
+    {%- endif -%}
+  </h1>
+</div>
+
+{% stylesheet %}
+  .cart-title h1 {
+    margin-block-end: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-sm);
+  }
+
+  .cart-title .cart-bubble {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--style-border-radius-buttons-primary);
+    aspect-ratio: auto;
+    padding: var(--cart-padding);
+  }
+
+  .cart-title .cart-bubble[data-maintain-ratio] {
+    width: min(1lh, 26px);
+    height: min(1lh, 26px);
+  }
+
+  .cart-title .cart-bubble__background {
+    background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
+  }
+
+  .cart-title .cart-bubble__text {
+    color: var(--color-foreground);
+    font-family: var(--font-paragraph--family);
+    font-weight: var(--font-paragraph--weight);
+    font-size: clamp(var(--font-size--3xs), 0.75em, var(--font-size--xs));
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.title",
+  "tag": null,
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:settings.cart_title",
+      "default": "t:text_defaults.cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "t:settings.cart_count",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:content.typography"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "t:settings.preset",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "paragraph",
+          "label": "t:options.paragraph"
+        },
+        {
+          "value": "h1",
+          "label": "t:options.h1"
+        },
+        {
+          "value": "h2",
+          "label": "t:options.h2"
+        },
+        {
+          "value": "h3",
+          "label": "t:options.h3"
+        },
+        {
+          "value": "h4",
+          "label": "t:options.h4"
+        },
+        {
+          "value": "h5",
+          "label": "t:options.h5"
+        },
+        {
+          "value": "h6",
+          "label": "t:options.h6"
+        }
+      ],
+      "default": "",
+      "info": "t:info.edit_presets_in_theme_settings"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.title"
+    }
+  ]
+}
+{% endschema %}

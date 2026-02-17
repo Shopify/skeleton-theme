@@ -1,0 +1,182 @@
+{%- doc -%}
+  This snippet is used to render the quantity selector for a product.
+  It is used in the product page, the cart page and the quick order list.
+
+  @param {object} product - the product to render the quantity selector for
+  @param {object} [variant] - the specific variant to use (for cart items), if not provided uses selected_or_first_available_variant
+  @param {number} [in_cart_quantity] - the quantity in the cart to set the input value
+  @param {number} [line_index] - the index of the forloop representing the line on which the quantity selector is rendered
+  @param {string} [class] - custom class for the quantity selector, optional
+  @param {boolean} [can_update_quantity] - whether the quantity can be updated, defaults to true
+  @param {number} [min] - override the minimum quantity (e.g., 0 for quick order list)
+{%- enddoc -%}
+
+{% liquid
+  if variant
+    assign variant = variant
+  else
+    assign variant = product.selected_or_first_available_variant
+  endif
+  assign component_name = 'quantity-selector-component'
+  if line_index != null
+    assign component_name = 'cart-quantity-selector-component'
+  endif
+
+  if min != null
+    assign min_quantity = min
+  else
+    assign min_quantity = variant.quantity_rule.min | default: 1
+  endif
+%}
+
+<div
+  class="quantity-selector-wrapper"
+  ref="quantitySelectorWrapper"
+>
+  <{{ component_name }}
+    class="quantity-selector{% if class %} {{ class }}{% endif %}"
+    data-variant-id="{{ variant.id }}"
+    {% if line_index == null %}
+      {{- block.shopify_attributes -}}
+      ref="quantitySelector"
+    {% else %}
+      ref="quantitySelectors[]"
+    {% endif %}
+  >
+    <button
+      class="button quantity-minus button-unstyled"
+      type="button"
+      name="minus"
+      on:click="/decreaseQuantity"
+      ref="minusButton"
+      {% if can_update_quantity == false %}
+        disabled
+      {% endif %}
+    >
+      <span class="visually-hidden">{{ 'accessibility.decrease_quantity' | t }}</span
+      ><span class="svg-wrapper icon-plus">
+        {{- 'icon-minus.svg' | inline_asset_content -}}
+      </span>
+    </button>
+    <input
+      type="number"
+      name="{% if line_index %}updates[]{% else %}quantity{% endif %}"
+      value="{{ in_cart_quantity | default: variant.quantity_rule.min | default: 1 }}"
+      data-cart-quantity="{{ cart | item_count_for_variant: variant.id }}"
+      min="{{ min_quantity }}"
+      data-min="{{ variant.quantity_rule.min | default: 1 }}"
+      on:blur="/setQuantity"
+      on:focus="/selectInputValue"
+      ref="quantityInput"
+      aria-label="{{ 'accessibility.quantity' | t }}"
+      {% if line_index %}
+        data-cart-line="{{ line_index | plus: 1 }}"
+      {% endif %}
+      {% if variant.quantity_rule.max %}
+        max="{{ variant.quantity_rule.max }}"
+      {% endif %}
+      step="{{ variant.quantity_rule.increment | default: 1 }}"
+      {% if can_update_quantity == false or variant.available == false %}
+        disabled
+      {% endif %}
+    >
+    <button
+      class="button quantity-plus button-unstyled"
+      type="button"
+      name="plus"
+      on:click="/increaseQuantity"
+      ref="plusButton"
+      {% if can_update_quantity == false %}
+        disabled
+      {% endif %}
+    >
+      <span class="visually-hidden">{{ 'accessibility.increase_quantity' | t }}</span
+      ><span class="svg-wrapper icon-plus">
+        {{- 'icon-plus.svg' | inline_asset_content -}}
+      </span>
+    </button>
+  </{{ component_name }}>
+
+  {%- if line_index == null -%}
+    {%- liquid
+      # Check if variant has volume pricing
+      assign has_volume_pricing = false
+      if product.quantity_price_breaks_configured? and variant.quantity_price_breaks.size > 0
+        assign has_volume_pricing = true
+      endif
+    -%}
+
+    {%- if has_volume_pricing -%}
+      {%- # Case: Volume pricing exists - show "at price / ea" -%}
+      {%- liquid
+        # Determine if currency code should be shown on product pages
+        assign use_currency = settings.currency_code_enabled_product_pages
+      -%}
+      {%- capture price_breaks_json -%}
+        [{%- for price_break in variant.quantity_price_breaks -%}{%- unless forloop.first -%},{%- endunless -%}{%- if use_currency -%}{"quantity":{{ price_break.minimum_quantity }},"price":{{ price_break.price | money_with_currency | json }}}{%- else -%}{"quantity":{{ price_break.minimum_quantity }},"price":{{ price_break.price | money | json }}}{%- endif -%}{%- endfor -%}]
+      {%- endcapture -%}
+
+      {%- liquid
+        # Calculate initial display price
+        assign cart_qty = cart | item_count_for_variant: variant.id
+        assign current_qty = cart_qty | plus: variant.quantity_rule.min
+        if cart_qty > 0
+          assign current_qty = cart_qty | plus: variant.quantity_rule.increment
+        endif
+
+        assign display_price = variant.price
+        for price_break in variant.quantity_price_breaks
+          if current_qty >= price_break.minimum_quantity
+            assign display_price = price_break.price
+            break
+          endif
+        endfor
+      -%}
+
+      <price-per-item
+        class="price-per-item"
+        data-variant-id="{{ variant.id }}"
+        data-variant-price="{%- if use_currency -%}{{ variant.price | money_with_currency | escape }}{%- else -%}{{ variant.price | money | escape }}{%- endif -%}"
+        data-min-quantity="{{ variant.quantity_rule.min | default: 1 }}"
+        data-price-breaks="{{ price_breaks_json | strip | escape }}"
+        data-at-text="{{ 'content.price_at' | t | escape }}"
+        data-each-text="{{ 'content.each_abbreviation' | t | escape }}"
+        ref="pricePerItem"
+      >
+        <span
+          class="price-per-item__text"
+          ref="pricePerItemText"
+        >
+          {{- 'content.price_at' | t }}
+          {%- if use_currency -%}
+            {{- display_price | money_with_currency -}}
+          {%- else -%}
+            {{- display_price | money -}}
+          {%- endif -%}
+          /
+          {{- 'content.each_abbreviation' | t }}
+        </span>
+      </price-per-item>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .quantity-selector-wrapper {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: calc(var(--gap-sm) / 2);
+
+    @media screen and (min-width: 750px) {
+      gap: var(--gap-sm);
+    }
+  }
+
+  .price-per-item {
+    display: block;
+    color: var(--color-foreground);
+    font-size: var(--font-size--sm);
+    font-weight: normal;
+  }
+{% endstylesheet %}

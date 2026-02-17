@@ -1,0 +1,511 @@
+<script
+  src="{{ 'dialog.js' | asset_url }}"
+  type="module"
+></script>
+
+<script
+  src="{{ 'predictive-search.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+<dialog-component
+  id="search-modal"
+  class="search-modal"
+  {{ block.shopify_attributes }}
+>
+  <dialog
+    ref="dialog"
+    on:click="/closeDialogOnClickOutside"
+    on:keydown="/closeDialogOnEscapePress"
+    class="search-modal__content dialog-modal"
+    scroll-lock
+    aria-labelledby="search-modal-heading"
+  >
+    <h2
+      id="search-modal-heading"
+      class="visually-hidden"
+    >
+      {{ 'content.search' | t }}
+    </h2>
+    <predictive-search-component
+      class="predictive-search color-{{ settings.popover_color_scheme }}{% if class != blank %} {{ class | strip }}{% endif %}"
+      style="--product-corner-radius: {{ settings.product_corner_radius | default: 8 | append: 'px' }}; --card-corner-radius: {{ settings.card_corner_radius | default: 8 | append: 'px' }};{% if settings.card_title_case == 'uppercase' %} --title-case: uppercase;{% endif %}"
+      data-section-id="predictive-search"
+      data-testid="{{ 'search-component--modal' }}"
+      role="search"
+      aria-label="{{ 'content.search_input_label' | t }}"
+    >
+      <form
+        action="{{ routes.search_url }}"
+        method="get"
+        role="search"
+        class="predictive-search-form"
+        ref="form"
+        on:keydown="/onSearchKeyDown"
+      >
+        <div
+          class="predictive-search-form__header"
+        >
+          <div class="predictive-search-form__header-inner">
+            <label
+              for="{{ 'cmdk-input' | default: 'Search' }}"
+              class="visually-hidden"
+            >
+              {{- 'content.search_input_label' | t -}}
+            </label>
+            <input
+              class="search-input"
+              id="{{ 'cmdk-input' | default: 'Search' }}"
+              type="search"
+              name="q"
+              role="combobox"
+              aria-expanded="false"
+              aria-owns="predictive-search-results"
+              aria-controls="predictive-search-results"
+              aria-haspopup="listbox"
+              aria-autocomplete="list"
+              autocomplete="off"
+              placeholder="{{ 'content.search_input_placeholder' | t }}"
+              ref="searchInput"
+              on:input="/search"
+              on:keydown="/onSearchKeyDown"
+            >
+            <input
+              name="options[prefix]"
+              type="hidden"
+              value="last"
+            >
+            <span class="svg-wrapper predictive-search__icon">
+              {{ 'icon-search.svg' | inline_asset_content }}
+            </span>
+            <button
+              type="button"
+              class="button-unstyled predictive-search__reset-button"
+              ref="resetButton"
+              hidden
+              on:click="/resetSearch"
+            >
+              {{ 'actions.clear' | t }}
+            </button>
+          </div>
+          <button
+            type="button"
+            class="button predictive-search__close-modal-button"
+            aria-label="{{ 'accessibility.close_dialog' | t }}"
+            on:click="dialog-component/closeDialog"
+            ref="closeModalButton"
+          >
+            <span class="svg-wrapper">
+              {{ 'icon-close.svg' | inline_asset_content }}
+            </span>
+          </button>
+        </div>
+
+        <div class="predictive-search-form__content-wrapper">
+          <div
+            class="predictive-search-form__content"
+            tabindex="-1"
+            ref="predictiveSearchResults"
+            on:click="/handleModalClick"
+          >
+            {% render 'predictive-search-empty-state',
+              load_empty_state: true,
+              shadow_opacity: 0.1,
+              products_test_id: 'products-list-default--modal'
+            %}
+          </div>
+
+          <div class="predictive-search-form__footer">
+            <button
+              class="button predictive-search__search-button"
+              ref="viewAllButton"
+            >
+              {{ 'content.search_results_view_all' | t }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </predictive-search-component>
+  </dialog>
+</dialog-component>
+
+{% stylesheet %}
+  /* Search modal style */
+  .search-modal {
+    --search-border-radius: var(--style-border-radius-popover);
+    --search-border-width: var(--style-border-width);
+  }
+
+  .search-modal__content {
+    /* Approx set the top so when the content is at max height, the modal is centered */
+    --modal-top-margin: calc(50dvh - var(--modal-max-height) / 2 - 2rem);
+    --modal-width: 66dvw;
+
+    padding: 0;
+    border: var(--style-border-popover);
+
+    @media screen and (min-width: 750px) {
+      width: var(--modal-width);
+      margin-block-start: var(--modal-top-margin);
+      overflow: hidden;
+    }
+  }
+
+  /* Hide the default dialog backdrop on small screens */
+  @media screen and (max-width: 749px) {
+    .search-modal__content::backdrop {
+      display: none;
+    }
+  }
+
+  .dialog-modal[open].search-modal__content {
+    transform-origin: bottom center;
+    animation: search-element-slide-in-bottom 300ms var(--ease-out-quad) forwards;
+    border-radius: var(--search-border-radius);
+    box-shadow: var(--shadow-popover);
+
+    @media screen and (max-width: 749px) {
+      border-radius: 0;
+    }
+  }
+
+  .dialog-modal.search-modal__content.dialog-closing {
+    animation: search-element-slide-out-bottom 200ms var(--ease-out-quad) forwards;
+  }
+
+  .search-modal__content[open] {
+    display: flex;
+  }
+
+  .search-modal__content :is(.predictive-search-dropdown, .predictive-search-form__content-wrapper) {
+    position: relative;
+  }
+
+  .dialog-modal
+    .predictive-search-form__header:has(
+      .predictive-search__reset-button:not(.predictive-search__reset-button[hidden])
+    )::before {
+    content: '';
+    position: absolute;
+    right: calc(var(--padding-sm) + var(--minimum-touch-target));
+    top: 0;
+    bottom: 0;
+    width: var(--border-width-sm);
+    background-color: var(--color-border);
+  }
+
+  .dialog-modal
+    .predictive-search-form__header:has(.predictive-search__reset-button:not(.predictive-search__reset-button[hidden]))
+    > .predictive-search__close-modal-button {
+    &::before {
+      content: none;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .dialog-modal
+      .predictive-search-form__header:has(
+        .predictive-search__reset-button:not(.predictive-search__reset-button[hidden])
+      )::before {
+      right: calc(var(--padding-2xl) * 2);
+    }
+  }
+
+  predictive-search-component {
+    --resource-card-corner-radius: var(--product-corner-radius);
+
+    display: flex;
+    width: 100%;
+    position: relative;
+    margin-inline: auto;
+    align-items: center;
+    background-color: var(--color-background);
+    z-index: var(--layer-heightened);
+  }
+
+  .predictive-search-form__footer {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    @media screen and (min-width: 750px) {
+      --to-top-gradient-background: linear-gradient(
+        to top,
+        rgb(var(--color-background-rgb) / var(--opacity-90)),
+        rgb(var(--color-background-rgb) / var(--opacity-80)),
+        rgb(var(--color-background-rgb) / var(--opacity-40)),
+        transparent
+      );
+
+      padding-block: var(--padding-xs) var(--padding-lg);
+      background-image: var(--to-top-gradient-background);
+    }
+  }
+
+  predictive-search-component:has([data-search-results]):not(:has(.predictive-search-results__no-results))
+    .predictive-search-form__footer {
+    display: block;
+  }
+
+  .predictive-search-form {
+    position: relative;
+    width: 100%;
+    align-self: flex-start;
+  }
+
+  .predictive-search-form__content {
+    max-height: 50dvh;
+    overflow-y: auto;
+    background-color: var(--color-background);
+
+    /* Firefox */
+    scrollbar-width: none;
+
+    /* Webkit browsers */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .predictive-search-form__content-wrapper {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    left: 0;
+    z-index: var(--layer-raised);
+    display: flex;
+    flex-direction: column;
+    border-radius: 0 0 var(--search-border-radius) var(--search-border-radius);
+    transition: box-shadow var(--animation-speed) var(--animation-easing);
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    overflow: hidden;
+
+    @media screen and (max-width: 749px) {
+      border-radius: 0;
+    }
+
+    @media screen and (min-width: 750px) {
+      max-height: var(--modal-max-height);
+    }
+  }
+
+  /* Add new rule to apply bottom padding only when search button exists */
+  .predictive-search-form__content-wrapper:has([data-search-results]):not(:has(.predictive-search-results__no-results))
+    > .predictive-search-form__content {
+    padding-block-end: var(--padding-6xl);
+  }
+
+  .predictive-search-form__header-inner {
+    background: var(--color-background);
+    border: var(--search-border-width) solid var(--color-border);
+    color: var(--color-foreground);
+    border-radius: var(--style-border-radius-popover);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    @media screen and (max-width: 749px) {
+      border-radius: var(--style-border-radius-inputs);
+      border: none;
+    }
+  }
+
+  .predictive-search-form__header-inner:focus-within {
+    outline-offset: var(--focus-outline-offset);
+
+    @media screen and (min-width: 750px) {
+      outline: var(--focus-outline-width) solid var(--color-primary);
+    }
+  }
+
+  .predictive-search-form__header {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: var(--layer-heightened);
+    width: 100%;
+    align-items: center;
+    background-color: var(--color-input-background);
+    border: var(--search-border-width) solid var(--color-border);
+    border-radius: var(--style-border-radius-inputs);
+
+    @media screen and (max-width: 749px) {
+      padding: var(--padding-2xs) var(--padding-sm);
+    }
+  }
+
+  .predictive-search-form__header:focus-within,
+  .predictive-search-form__header-inner:focus-within,
+  .predictive-search-form__header-inner:has(.search-input:is(:focus, :focus-visible)) {
+    outline: none;
+    box-shadow: none;
+    /* stylelint-disable-next-line declaration-no-important */
+    border-color: var(--color-border) !important;
+  }
+
+  input.search-input {
+    border-radius: var(--style-border-radius-inputs);
+    padding-block: var(--padding-sm);
+    font-size: var(--font-size--md);
+    width: 100%;
+    color: var(--color-foreground);
+    padding-inline: calc(var(--margin-lg) + var(--icon-size-lg)) 0;
+    background: transparent;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    outline: none;
+    border: 0;
+  }
+
+  .search-input::placeholder {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+  }
+
+  .search-input,
+  .search-input:is(:focus, :focus-visible, :focus-within),
+  .predictive-search-form__header *:is(:focus, :focus-visible) {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .search-input:hover {
+    background-color: transparent;
+  }
+
+  .predictive-search__icon {
+    position: absolute;
+    left: var(--margin-xl);
+    top: auto;
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-60));
+
+    @media screen and (min-width: 750px) {
+      left: var(--margin-md);
+    }
+  }
+
+  .predictive-search__icon > svg {
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
+  }
+
+  .predictive-search__reset-button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
+    padding: 0;
+    margin-inline-end: var(--margin-md);
+    background: transparent;
+    color: var(--color-foreground);
+    opacity: 0.68;
+    transition: opacity var(--animation-speed-medium) var(--animation-timing-fade-out),
+      visibility var(--animation-speed-medium) var(--animation-timing-fade-out);
+
+    &:hover {
+      color: var(--color-foreground);
+    }
+
+    &:active {
+      transform: scale(0.9);
+      transition: transform 100ms var(--animation-timing-active);
+    }
+
+    @media screen and (min-width: 750px) {
+      margin-inline-end: var(--margin-2xs);
+    }
+  }
+
+  .predictive-search__reset-button[hidden] {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .predictive-search__reset-button-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+    transition: background-color var(--animation-speed-medium) ease-in-out,
+      transform var(--animation-speed-medium) var(--animation-timing-bounce);
+    border-radius: 50%;
+
+    &:hover {
+      background-color: rgb(var(--color-primary-hover-rgb) / var(--opacity-8));
+    }
+  }
+
+  .predictive-search__reset-button:active .predictive-search__reset-button-icon {
+    transform: scale(0.85);
+    transition-timing-function: var(--animation-timing-active);
+    transition-duration: 100ms;
+  }
+
+  .predictive-search__reset-button svg {
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
+  }
+
+  .predictive-search__reset-button-text {
+    display: none;
+  }
+
+  .predictive-search__search-button {
+    margin: auto;
+    z-index: var(--layer-raised);
+    transition: transform var(--animation-speed-medium) var(--animation-timing-bounce),
+      box-shadow var(--animation-speed-medium) var(--animation-timing-hover);
+    transform-origin: center;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgb(0 0 0 / var(--opacity-5));
+    }
+
+    &:active {
+      transform: scale(0.97);
+      transition: transform 100ms var(--animation-timing-active);
+      box-shadow: none;
+    }
+  }
+
+  .predictive-search__close-modal-button {
+    --button-color: var(--color-foreground);
+    --button-background-color: transparent;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
+    margin-inline-start: var(--margin-sm);
+    padding: 0;
+    box-shadow: none;
+
+    &:active {
+      transform: scale(0.8);
+      transition: transform 100ms var(--animation-timing-active);
+    }
+
+    .svg-wrapper,
+    svg {
+      width: var(--icon-size-xs);
+      height: var(--icon-size-xs);
+    }
+  }
+
+  .predictive-search__close-modal-button:hover {
+    --button-color: var(--color-foreground);
+    --button-background-color: transparent;
+  }
+{% endstylesheet %}

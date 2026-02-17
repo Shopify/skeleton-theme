@@ -1,0 +1,345 @@
+{%- liquid
+  assign block_settings = block.settings
+  assign property_key = block_settings.property_key | default: block_settings.property_heading | default: block.id
+  assign property_name = 'properties[custom-property]' | replace: 'custom-property', property_key
+
+  assign product_id = closest.product.id
+  assign element_id = 'CustomProperty-product_id-block_id' | replace: 'product_id', product_id | replace: 'block_id', block.id
+  assign product_form_id = 'BuyButtons-ProductForm-section.id' | replace: 'section.id', section.id
+
+  # Determine input type based on max_length for text inputs
+  if block_settings.input_type == 'text'
+    if block_settings.max_length > 45
+      assign actual_input_type = 'textarea'
+    else
+      assign actual_input_type = 'text'
+    endif
+  else
+    assign actual_input_type = block_settings.input_type
+  endif
+-%}
+
+{% capture character_count_label %}
+  <label
+    for="{{ element_id }}"
+    class="__character-label"
+  >
+    <span
+      ref="characterCount"
+      class="__character-count"
+      data-template="{{ 'content.product_custom_property_character_count' | t: used_chars: '[current]', max_chars: '[max]' }}"
+      data-max="{{ block_settings.max_length }}"
+    >
+      {{
+        'content.product_custom_property_character_count'
+        | t: used_chars: 0, max_chars: block_settings.max_length
+      }}
+    </span>
+  </label>
+{% endcapture %}
+
+<div
+  class="spacing-style"
+  style="{% render 'spacing-style', settings: block_settings %}"
+  {{ block.shopify_attributes }}
+>
+  {% if block_settings.property_heading != blank %}
+    <p
+      class="__heading"
+    >
+      {{ block_settings.property_heading | escape }}
+    </p>
+  {% endif %}
+
+  {% if block_settings.property_description != blank %}
+    <p
+      class="__description"
+    >
+      {{ block_settings.property_description | escape }}
+    </p>
+  {% endif %}
+
+  <div class="__field">
+    {% if actual_input_type == 'textarea' %}
+      <div class="__input-wrapper">
+        <textarea
+          ref="textInput"
+          on:input="/handleInput"
+          id="{{ element_id }}"
+          name="{{ property_name }}"
+          class="field__input custom-property__input"
+          placeholder="{{ block_settings.placeholder_textarea | escape }}"
+          form="{{ product_form_id }}"
+          maxlength="{{ block_settings.max_length }}"
+          {% if block_settings.required %}
+            required aria-required="true"
+          {% endif %}
+          rows="3"
+        ></textarea>
+        {{ character_count_label }}
+      </div>
+    {% elsif actual_input_type == 'checkbox' %}
+      {% render 'checkbox',
+        name: property_name,
+        value: block_settings.checkbox_label,
+        label: block_settings.checkbox_label,
+        id: element_id,
+        checked: false,
+        events: '',
+        disabled: false,
+        required: block_settings.required,
+        formId: product_form_id
+      %}
+    {% else %}
+      <div class="__input-wrapper">
+        <input
+          ref="textInput"
+          on:input="/handleInput"
+          type="text"
+          id="{{ element_id }}"
+          name="{{ property_name }}"
+          class="field__input"
+          placeholder="{{ block_settings.placeholder | escape }}"
+          form="{{ product_form_id }}"
+          maxlength="{{ block_settings.max_length }}"
+          {% if block_settings.required %}
+            required aria-required="true"
+          {% endif %}
+        >
+        {{ character_count_label }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  product-custom-property-component {
+    display: block;
+    width: 100%;
+  }
+
+  product-custom-property-component .__heading {
+    margin-inline: 0;
+    margin-block: 0 var(--padding-sm);
+  }
+
+  product-custom-property-component .__heading:has(+ .__description) {
+    margin-block-end: var(--padding-2xs);
+  }
+
+  product-custom-property-component .__description {
+    font-size: min(0.85em, var(--font-paragraph--size));
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+    margin-inline: 0;
+    margin-block: 0 var(--padding-md);
+  }
+
+  product-custom-property-component .__field {
+    position: relative;
+  }
+
+  product-custom-property-component .__input-wrapper {
+    position: relative;
+  }
+
+  product-custom-property-component input,
+  product-custom-property-component textarea {
+    width: 100%;
+    /* stylelint-disable-next-line declaration-no-important */
+    color: var(--color-input-text) !important;
+  }
+
+  /* Add padding for inputs with counter inside */
+  product-custom-property-component .__input-wrapper input {
+    padding-bottom: calc(var(--padding-sm) * 3);
+  }
+
+  product-custom-property-component .__input-wrapper textarea {
+    padding-bottom: calc(var(--padding-sm) * 3);
+    scroll-padding-bottom: calc(var(--padding-sm) * 3);
+  }
+
+  product-custom-property-component textarea {
+    min-height: 80px;
+  }
+
+  @supports (resize: vertical) {
+    @media (hover: hover) and (pointer: fine) {
+      product-custom-property-component textarea {
+        resize: vertical; /* stylelint-disable-line */
+      }
+    }
+  }
+
+  product-custom-property-component .__character-label {
+    position: absolute;
+    left: var(--input-padding-x);
+    bottom: var(--padding-sm);
+    pointer-events: none;
+  }
+
+  product-custom-property-component .__character-count {
+    font-style: italic;
+    /* stylelint-disable-next-line declaration-no-important */
+    color: var(--color-input-text) !important;
+  }
+
+  /* We should consolidate input styles that share the same behavior */
+  .custom-property__input {
+    border: var(--style-border-width-inputs) solid var(--color-input-border);
+    border-radius: var(--style-border-radius-inputs);
+
+    /* this is needed to override the styles from field__input */
+    box-shadow: none;
+
+    &:is(:hover, :focus) {
+      /* this is needed to override the styles from field__input */
+      box-shadow: none;
+    }
+
+    &:focus {
+      /* this is needed to override the styles from field__input */
+      outline: var(--focus-outline-width) solid var(--color-input-background);
+    }
+  }
+{% endstylesheet %}
+
+<script
+  src="{{ 'product-custom-property.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+{% schema %}
+{
+  "name": "t:names.product_custom_property",
+  "tag": "product-custom-property-component",
+  "settings": [
+    {
+      "type": "text",
+      "id": "property_heading",
+      "label": "t:settings.product_custom_property.heading",
+      "default": "t:settings.product_custom_property.default_heading"
+    },
+    {
+      "type": "text",
+      "id": "property_description",
+      "label": "t:settings.product_custom_property.description"
+    },
+    {
+      "type": "text",
+      "id": "property_key",
+      "label": "t:settings.product_custom_property.key",
+      "default": "t:settings.product_custom_property.default_property_key",
+      "info": "t:settings.product_custom_property.key_info"
+    },
+    {
+      "type": "header",
+      "content": "t:settings.product_custom_property.buyers_input"
+    },
+    {
+      "type": "select",
+      "id": "input_type",
+      "label": "t:settings.product_custom_property.input_type",
+      "options": [
+        {
+          "value": "text",
+          "label": "t:settings.product_custom_property.input_type_text"
+        },
+        {
+          "value": "checkbox",
+          "label": "t:settings.product_custom_property.input_type_checkbox"
+        }
+      ],
+      "default": "text"
+    },
+    {
+      "type": "range",
+      "id": "max_length",
+      "label": "t:settings.product_custom_property.max_length",
+      "min": 25,
+      "max": 250,
+      "step": 5,
+      "default": 100,
+      "visible_if": "{{ block.settings.input_type == \"text\" }}"
+    },
+    {
+      "type": "text",
+      "id": "checkbox_label",
+      "label": "t:settings.product_custom_property.checkbox_label",
+      "default": "t:settings.product_custom_property.default_checkbox_label",
+      "visible_if": "{{ block.settings.input_type == \"checkbox\" }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "required",
+      "label": "t:settings.product_custom_property.required",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "t:settings.product_custom_property.placeholder_text",
+      "default": "t:settings.product_custom_property.default_placeholder",
+      "visible_if": "{{ block.settings.input_type == \"text\" and block.settings.max_length <= 45 }}"
+    },
+    {
+      "type": "textarea",
+      "id": "placeholder_textarea",
+      "label": "t:settings.product_custom_property.placeholder_text",
+      "default": "t:settings.product_custom_property.default_placeholder",
+      "visible_if": "{{ block.settings.input_type == \"text\" and block.settings.max_length > 45 }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.product_custom_property",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

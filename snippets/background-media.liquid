@@ -1,0 +1,127 @@
+{%- doc -%}
+  Renders a background media
+
+  @param {string} [background_media] - The background media
+  @param {object} [background_video] - The background video
+  @param {string} [background_video_position] - The background video position
+  @param {object} [background_image] - The background image
+  @param {string} [background_image_position] - The background image position
+  @param {string} [placeholder] - The placeholder
+  @param {object} [block] - The block object
+  @param {object} [section] - The section object
+
+  @example
+  {% render 'background-media', background_media: background_media, background_video: background_video, background_video_position: background_video_position, background_image: background_image, background_image_position: background_image_position, placeholder: placeholder %}
+{%- enddoc -%}
+
+{% if background_media == 'video' %}
+  {% liquid
+    assign video_classes = 'video-background video-background--' | append: background_video_position
+  %}
+  {%- if background_video != blank -%}
+    <video-background-component
+      class="{{ video_classes }}"
+    >
+      {% liquid
+        assign media_width_desktop = 100 | append: 'vw'
+        assign media_width_mobile = '100vw'
+        assign sizes = '(min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
+        assign widths = '240, 352, 832, 1200, 1600, 1920, 2560, 3840'
+      %}
+      {{
+        background_video.preview_image
+        | image_url: width: 3840
+        | image_tag: width: 1100, widths: widths, sizes: sizes
+      }}
+      <video
+        playsinline
+        muted
+        autoplay
+        loop
+        ref="videoElement"
+      >
+        {%- for sourceElement in background_video.sources -%}
+          <source
+            data-video-source="{{ sourceElement.url }}"
+            type="{{ sourceElement.mime_type }}"
+            ref="videoSources[]"
+          >
+        {%- endfor -%}
+      </video>
+    </video-background-component>
+  {%- else -%}
+    <div class="{{ video_classes }}">
+      {%- assign placeholder_name = placeholder | default: 'hero-apparel-2' -%}
+      {%- if placeholder_name == blank -%}
+        {%- assign placeholder_name = 'hero-apparel-2' -%}
+      {%- endif -%}
+      {{ placeholder_name | placeholder_svg_tag }}
+    </div>
+  {%- endif -%}
+{% elsif background_media == 'image' %}
+  <div
+    class="background-image-container{% if background_image_position == 'fit' %} background-image-fit{% endif %}"
+  >
+    {% liquid
+      # Define sizes based on page width setting whether this is called from a section or block
+
+      if block.settings
+        if section.settings.section_width == 'full-width'
+          assign sizes = '100vw'
+        else
+          case settings.page_width
+            when 'narrow'
+              # Narrow: max 90rem (1440px)
+              assign sizes = '(min-width: 1440px) 1440px, 100vw'
+            when 'normal'
+              # Normal: max 120rem (1920px)
+              assign sizes = '(min-width: 1920px) 1920px, 100vw'
+            when 'wide'
+              # Wide: max 150rem (2400px)
+              assign sizes = '(min-width: 2400px) 2400px, 100vw'
+            else
+              # Fallback to full width
+              assign sizes = '100vw'
+          endcase
+        endif
+      else
+        assign sizes = '100vw'
+      endif
+
+      assign widths = '832, 1200, 1600, 1920, 2560, 3840'
+    %}
+
+    {%- if background_image != blank -%}
+      {% liquid
+        assign fetch_priority = 'auto'
+        assign loading = 'lazy'
+        if section and section.index == 1
+          assign fetch_priority = 'high'
+        endif
+
+        if section and section.index <= 3
+          assign loading = 'eager'
+        endif
+      %}
+      {{
+        background_image
+        | image_url: width: 3840
+        | image_tag: sizes: sizes, widths: widths, loading: loading, fetchpriority: fetch_priority
+      }}
+    {%- else -%}
+      {%- assign placeholder_name = placeholder | default: 'hero-apparel-2' -%}
+      {%- if placeholder_name == blank -%}
+        {%- assign placeholder_name = 'hero-apparel-2' -%}
+      {%- endif -%}
+      {{ placeholder_name | placeholder_svg_tag }}
+    {%- endif -%}
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  @media (prefers-reduced-motion: reduce) {
+    video-background-component video {
+      display: none;
+    }
+  }
+{% endstylesheet %}

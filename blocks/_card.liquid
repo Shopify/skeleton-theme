@@ -1,0 +1,532 @@
+{% assign block_settings = block.settings %}
+
+{% capture children %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+
+<div
+  class="card{% if block_settings.inherit_color_scheme == false %} color-{{ block_settings.color_scheme }}{% endif %}"
+  ref="slides[]"
+  data-carousel-card
+  {{ block.shopify_attributes }}
+>
+  {%- if block_settings.link != blank and block_settings.background_media != 'video' -%}
+    <a
+      href="{{ block_settings.link }}"
+      class="card__link"
+      {% if block_settings.open_in_new_tab %}
+        target="_blank" rel="noopener"
+      {% endif %}
+    ></a>
+  {%- endif -%}
+
+  {%- liquid
+    assign preview_image = block_settings.background_image
+    if block_settings.background_media == 'video'
+      assign preview_image = block_settings.video.preview_image
+    endif
+
+    assign show_placeholder = false
+    if preview_image == blank and children == blank
+      assign show_placeholder = true
+    endif
+
+    assign card_ratio = 1
+    assign card_ratio_numeric = null
+    assign has_min_height = false
+
+    case block_settings.aspect_ratio
+      when 'landscape'
+        assign card_ratio = '16 / 9'
+        assign card_ratio_numeric = 1.777778
+      when 'portrait'
+        assign card_ratio = '2 / 3'
+        assign card_ratio_numeric = 0.666667
+      when 'square'
+        assign card_ratio = '1 / 1'
+        assign card_ratio_numeric = 1
+      when 'adapt'
+        if preview_image
+          assign card_ratio = preview_image.aspect_ratio
+          assign card_ratio_numeric = preview_image.aspect_ratio
+        endif
+    endcase
+
+    if card_ratio == 0 or card_ratio == null
+      assign card_ratio = 1
+      assign card_ratio_numeric = 1
+    endif
+
+    # When card has content, use auto aspect-ratio with min-height from ratio if there is media
+    if children != blank
+      assign card_ratio = 'auto'
+      if block_settings.background_media != 'none'
+        assign has_min_height = true
+      endif
+    endif
+  -%}
+
+  {%- if preview_image or block_settings.toggle_overlay or show_placeholder -%}
+    <div class="card__media-wrapper">
+      {% render 'background-media',
+        background_media: block_settings.background_media,
+        background_video: block_settings.video,
+        background_video_position: 'cover',
+        background_video_loop: true,
+        background_image: block_settings.background_image,
+        background_image_position: 'cover'
+      %}
+      {%- if block_settings.toggle_overlay -%}
+        {% render 'overlay', settings: block_settings %}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div
+    class="spacing-style card__content{% if has_min_height %} card__content--has-min-height{% endif %}{% if block_settings.inherit_color_scheme == false %} color-{{ block_settings.color_scheme }}{% endif %}{% if preview_image or block_settings.toggle_overlay or show_placeholder %} background-transparent{% endif %}{% if request.design_mode %} card__content--design-mode{% endif %}"
+    style="--card-ratio: {{ card_ratio }}; {% if has_min_height %}--card-ratio-numeric: {{ card_ratio_numeric }};{% endif %} {% render 'spacing-style', settings: block_settings %}"
+  >
+    <div
+      class="
+        card__inner
+        layout-panel-flex
+        layout-panel-flex--{{ block_settings.content_direction }}
+        {% if block_settings.vertical_on_mobile %}mobile-column{% endif %}
+      "
+      style="{% render 'layout-panel-style', settings: block_settings %}"
+    >
+      {% if children != blank %}
+        {{ children }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--border-radius, 0);
+    border-width: var(--border-width, 0);
+    border-style: var(--border-style, none);
+    border-color: var(--border-color);
+    container-type: inline-size;
+  }
+
+  .card__content {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: var(--layer-flat);
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: var(--card-ratio, 1);
+  }
+
+  .card__content.background-transparent {
+    background-color: transparent;
+  }
+
+  /* When card has both image and content, use min-height from container query */
+  .card__content--has-min-height {
+    min-height: calc(100cqw / var(--card-ratio-numeric));
+  }
+
+  .card__inner {
+    flex: 1;
+  }
+
+  .card__media-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .card__media-wrapper video {
+    z-index: var(--layer-raised);
+  }
+
+  .card__link {
+    position: absolute;
+    inset: 0;
+    z-index: var(--layer-raised);
+  }
+
+  .card__link ~ :is(.card__content, .card__media-wrapper) {
+    pointer-events: none;
+
+    :is(a, button, input, textarea, select) {
+      pointer-events: auto;
+    }
+  }
+
+  /* Needs the .card__link ~ to be specific enough to take effect. */
+  .card__link ~ .card__content--design-mode {
+    pointer-events: auto;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.card",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "text"
+    },
+    {
+      "type": "_heading"
+    },
+    {
+      "type": "image"
+    },
+    {
+      "type": "video"
+    },
+    {
+      "type": "product-card"
+    },
+    {
+      "type": "collection-card"
+    },
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "content_direction",
+      "label": "t:settings.direction",
+      "options": [
+        {
+          "value": "column",
+          "label": "t:options.vertical"
+        },
+        {
+          "value": "row",
+          "label": "t:options.horizontal"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "checkbox",
+      "id": "vertical_on_mobile",
+      "label": "t:settings.vertical_on_mobile",
+      "default": true,
+      "visible_if": "{{ block.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ block.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ block.settings.content_direction == 'row' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "align_baseline",
+      "label": "t:settings.align_baseline",
+      "default": false,
+      "visible_if": "{{ block.settings.vertical_alignment == 'flex-end' }}"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment_flex_direction_column",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start",
+      "visible_if": "{{ block.settings.content_direction != 'row' }}"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment_flex_direction_column",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.bottom"
+        },
+        {
+          "value": "space-between",
+          "label": "t:options.space_between"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ block.settings.content_direction == 'column' }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "select",
+      "id": "background_media",
+      "label": "t:settings.background_media",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "image",
+          "label": "t:options.image"
+        },
+        {
+          "value": "video",
+          "label": "t:options.video"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:settings.image",
+      "visible_if": "{{ block.settings.background_media == \"image\" }}"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:settings.video",
+      "visible_if": "{{ block.settings.background_media == \"video\" }}"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:options.auto"
+        },
+        {
+          "value": "portrait",
+          "label": "t:options.portrait"
+        },
+        {
+          "value": "square",
+          "label": "t:options.square"
+        },
+        {
+          "value": "landscape",
+          "label": "t:options.landscape"
+        }
+      ],
+      "default": "adapt",
+      "label": "t:settings.aspect_ratio",
+      "visible_if": "{{ block.settings.background_media == \"image\" or block.settings.background_media == \"video\" }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "toggle_overlay",
+      "label": "t:settings.media_overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:settings.overlay_color",
+      "alpha": true,
+      "default": "#00000026",
+      "visible_if": "{{ block.settings.toggle_overlay }}"
+    },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "t:settings.overlay_style",
+      "options": [
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        },
+        {
+          "value": "gradient",
+          "label": "t:options.gradient"
+        }
+      ],
+      "default": "solid",
+      "visible_if": "{{ block.settings.toggle_overlay }}"
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "t:settings.gradient_direction",
+      "options": [
+        {
+          "value": "to top",
+          "label": "t:options.up"
+        },
+        {
+          "value": "to bottom",
+          "label": "t:options.down"
+        }
+      ],
+      "default": "to top",
+      "visible_if": "{{ block.settings.toggle_overlay and block.settings.overlay_style == 'gradient' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.block_link"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.card",
+      "category": "t:categories.layout"
+    }
+  ]
+}
+{% endschema %}

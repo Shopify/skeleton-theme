@@ -1,0 +1,181 @@
+{%- doc -%}
+  Renders a swatches variant picker, used within the product-swatches block.
+  A swatch will rendered in a pre-selected state if the context allows it.
+  Allowed contexts are search and filtered collections.
+
+  @param {object} product_resource - The product object, which contains variants and options.
+  @param {boolean} [has_option_selected] - Whether to render the swatches in a pre-selected state.
+
+  @example
+  {% render 'variant-swatches', product_resource: product %}
+{%- enddoc -%}
+
+{% stylesheet %}
+  swatches-variant-picker-component {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: var(--product-swatches-alignment-mobile);
+
+    @media screen and (min-width: 750px) {
+      justify-content: var(--product-swatches-alignment);
+    }
+
+    --overflow-list-padding-block: calc(
+        var(--product-swatches-padding-block-start) + var(--focus-outline-offset) + var(--focus-outline-width)
+      )
+      calc(var(--product-swatches-padding-block-end) + var(--focus-outline-offset) + var(--focus-outline-width));
+    --overflow-list-padding-inline: calc(
+        var(--product-swatches-padding-inline-start) + var(--focus-outline-offset) + (1.5 * var(--focus-outline-width))
+      )
+      calc(var(--product-swatches-padding-inline-end) + var(--focus-outline-offset) + var(--focus-outline-width));
+
+    overflow-list::part(list) {
+      gap: var(--gap-sm);
+    }
+  }
+
+  .hidden-swatches__count {
+    display: flex;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-40-60));
+    background-color: transparent;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+
+    &::before {
+      /* This doesn't work in Safari without the counter-reset. https://stackoverflow.com/a/40179718 */
+      counter-reset: overflow-count var(--overflow-count);
+      content: '+' counter(overflow-count);
+      line-height: 1;
+      cursor: pointer;
+    }
+  }
+
+  .hidden-swatches__count:hover {
+    color: var(--color-foreground-rgb);
+  }
+{% endstylesheet %}
+
+{% liquid
+  # Allow pre-selection of a swatch if there is a selected variant
+  # product.selected_variant is automatically set in filtered collection, filtered search and some unfiltered search contexts based on result relevance.
+  # Applying a filter updates the displayed image, so a swatch can help communicate the change.
+  assign allow_preselection = false
+
+  if product_resource.selected_variant or has_option_selected
+    assign allow_preselection = true
+  endif
+%}
+
+<swatches-variant-picker-component
+  data-product-id="{{ product_resource.id }}"
+  data-product-url="{{ product_resource.url }}"
+  ref="swatchesVariantPicker"
+>
+  <form>
+    {% comment %}
+      Find the first product option that has swatches.
+      Then render individual swatches with information on the most relevant variant image to be used in:
+      - a data-media-id attribute to show relevant media in a card-gallery on hover/click.
+      - the swatch content, optionally based on theme settings.
+    {% endcomment %}
+    {%- for product_option in product_resource.options_with_values -%}
+      {%- liquid
+        assign swatch_count = product_option.values | map: 'swatch' | compact | size
+      -%}
+
+      {% if swatch_count == 0 %}
+        {% continue %}
+      {% endif %}
+
+      {%- liquid
+        # Identify which option position this swatch option is
+        # Use product_option.position which is the actual position among ALL options
+        assign swatch_option_position = product_option.position
+        assign swatch_option_key = 'option' | append: swatch_option_position
+      -%}
+
+      <fieldset class="variant-option variant-option--buttons variant-option--swatches">
+        {% capture children %}
+          {%- for product_option_value in product_option.values -%}
+            {% liquid
+              comment
+                Identify the most relevant variant image to show in a card-gallery, and optionally as the swatch content.
+                The `product_option_value.variant` can be nil when no valid variant is associated with the combination of the current option-value and the other option values.
+                e.g. a product option Color: "Red" does not exist for the product option Size: "Small".
+                In this case, we look for the first available variant in that option (e.g. Color) that has a featured media.
+              endcomment
+
+              assign featured_media = product_option_value.variant.featured_media
+
+              if featured_media == blank
+                if product_option_value.variant == blank
+                  for variant in product_resource.variants
+                    if variant.available and variant[swatch_option_key] == product_option_value.name and variant.featured_media
+                      assign featured_media = variant.featured_media
+                      assign first_available_variant = variant
+                      break
+                    endif
+                  endfor
+                elsif product_option_value.product_url
+                  # If the variant has no featured media, and we have a combined listing product (product_url exists),
+                  # then fall back to using the featured media of the child product that is linked to this option value.
+                  assign featured_media = product_option_value.variant.product.featured_media
+                endif
+              endif
+            %}
+
+            <li class="variant-option__swatch">
+              <label
+                data-media-id="{{ featured_media.id }}"
+                class="variant-option__button-label variant-option__button-label--has-swatch"
+                on:pointerenter="product-card/previewVariant/{{ featured_media.id }}"
+                on:pointerleave="product-card/resetVariant"
+              >
+                <input
+                  type="radio"
+                  name="{{ product_option.name | escape }}-{{ product_resource.id }}-swatch"
+                  value="{{ product_option_value | escape }}"
+                  aria-label="{{ product_option_value.name }}"
+                  data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+                  data-option-media-id="{{ featured_media.id }}"
+                  data-option-value-id="{{ product_option_value.id }}"
+                  data-option-available="{{ product_option_value.available }}"
+                  data-connected-product-url="{{ product_option_value.product_url }}"
+                  {% if allow_preselection and product_option_value.selected %}
+                    checked
+                  {% endif %}
+                  data-variant-id="{{ first_available_variant.id | default: product_option_value.variant.id }}"
+                  data-first-available-or-first-variant-id="{{ first_available_variant.id | default: product_option_value.variant.id }}"
+                >
+                {% render 'swatch',
+                  swatch: product_option_value.swatch,
+                  variant_image: featured_media,
+                %}
+                {% render 'strikethrough-variant', product_option: product_option_value %}
+              </label>
+            </li>
+          {%- endfor -%}
+          <li
+            slot="more"
+          >
+            <button
+              class="hidden-swatches__count"
+              aria-label="{{ 'actions.show_all_options' | t }}"
+              on:click="/showAllSwatches"
+            ></button>
+          </li>
+        {% endcapture %}
+
+        {% render 'overflow-list', children: children, ref: 'overflowList' %}
+      </fieldset>
+    {%- endfor -%}
+    <script type="application/json">
+      {{ product_resource.selected_or_first_available_variant | json }}
+    </script>
+  </form>
+</swatches-variant-picker-component>

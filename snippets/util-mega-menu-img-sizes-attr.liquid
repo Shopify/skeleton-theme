@@ -1,0 +1,87 @@
+{%- doc -%}
+  Calculate the sizes attribute for mega menu images based on menu type and grid configuration.
+
+  @param {string} menu_content_type - Type of menu: 'collection_images', 'featured_products', or 'featured_collections'
+  @param {object} settings - Theme settings object containing page width configuration
+  @param {number} [grid_columns] - Number of grid columns for the mega menu
+  @param {number} [grid_columns_tablet] - Number of grid columns for tablet view
+  @param {number} [grid_columns_collection_images] - Grid columns when menu_content_type is 'collection_images' with < 5 items
+  @param {number} [parent_links_size] - Number of parent links (for collection images special case)
+  @param {number} [columns_per_item] - Columns each item occupies (2 for collection images, 1 for products)
+
+  @example
+  {% capture image_sizes %}
+    {% render 'util-mega-menu-img-sizes-attr',
+      menu_content_type: 'collection_images',
+      settings: settings,
+      grid_columns: 8,
+      grid_columns_tablet: 4,
+      columns_per_item: 2
+    %}
+  {% endcapture %}
+
+  {{ image | image_url: width: 1024 | image_tag: sizes: image_sizes }}
+{%- enddoc -%}
+
+{% liquid
+  # Early exit for featured collections
+  if menu_content_type == 'featured_collections'
+    echo '300px'
+    break
+  endif
+
+  # Define breakpoints and max widths based on page width setting
+  case settings.page_width
+    when 'narrow'
+      assign page_max_width = '90rem'
+      assign breakpoint = '95rem'
+    when 'normal'
+      assign page_max_width = '120rem'
+      assign breakpoint = '125rem'
+    when 'wide'
+      assign page_max_width = '150rem'
+      assign breakpoint = '155rem'
+  endcase
+
+  # Common values
+  # Gap between items in pixels (numeric for calculations)
+  # Page margins (with unit for direct use in calc())
+  assign gap = 20
+  assign margins = '80px'
+  assign grid_tablet = grid_columns_tablet | default: 4
+
+  # Set up grid configuration based on menu type
+  case menu_content_type
+    when 'collection_images'
+      assign cols_per_item = columns_per_item | default: 2
+      assign grid_desktop = grid_columns | default: 8
+
+      # Special case: fewer than 5 collection images
+      if parent_links_size < 5
+        assign grid_desktop = grid_columns_collection_images | default: grid_desktop
+      endif
+
+    when 'featured_products'
+      assign cols_per_item = 1
+      assign grid_desktop = grid_columns | default: 6
+  endcase
+
+  # Calculate gaps for each breakpoint
+  assign items_desktop = grid_desktop | divided_by: cols_per_item
+  assign items_tablet = grid_tablet | divided_by: cols_per_item
+  assign gaps_desktop_px = items_desktop | minus: 1 | times: gap | append: 'px'
+  assign gaps_tablet_px = items_tablet | minus: 1 | times: gap | append: 'px'
+%}
+
+{%- capture sizes -%}
+  {%- comment -%} Large viewports with fixed page width {%- endcomment -%}
+  (min-width: {{ breakpoint }}) calc(({{ page_max_width }} - {{ margins }} - {{ gaps_desktop_px }}) * {{ cols_per_item }} / {{ grid_desktop }}),
+
+  {%- comment -%} Desktop viewports {%- endcomment -%}
+  (min-width: 990px) calc((100vw - {{ margins }} - {{ gaps_desktop_px }}) * {{ cols_per_item }} / {{ grid_desktop }}),
+
+  {%- comment -%} Tablet {%- endcomment -%}
+  calc((100vw - {{ margins }} - {{ gaps_tablet_px }}) / {{ grid_tablet }})
+{%- endcapture -%}
+
+{{ sizes | strip_newlines | strip }}

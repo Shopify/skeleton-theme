@@ -1,0 +1,130 @@
+{%- doc -%}
+  Renders a carousel of predictive search results cards.
+
+  @param {string} title - The title of the carousel.
+  @param {object} resources - The resources to display.
+  @param {string} resource_type - The type of resource to display.
+{%- enddoc -%}
+
+{% liquid
+  capture slides
+    for resource in resources
+      capture children
+        render 'resource-card', resource_type: resource_type, resource: resource, image_aspect_ratio: '4 / 5', collection_thumbnails: 'multiple'
+      endcapture
+      render 'slideshow-slide', index: forloop.index0, children: children, class: 'predictive-search-results__card'
+    endfor
+  endcapture
+%}
+
+{% capture header %}
+  <div class="predictive-search-results__resource-header">
+    <h4
+      id="predictive-search-{{ resource_type }}"
+      class="predictive-search-results__title"
+    >
+      {{ title }}
+    </h4>
+
+    {% if resources.size >= 4 %}
+      {%- render 'slideshow-controls',
+        show_arrows: true,
+        icon_style: 'chevron',
+        shape: 'none'
+      -%}
+    {% endif %}
+  </div>
+{% endcapture %}
+
+{% assign slideshow_class = 'predictive-search-results__list predictive-search-results__wrapper list-unstyled slideshow--single-media' %}
+{% if resources.size >= 4 %}
+  {% assign slideshow_class = 'predictive-search-results__list predictive-search-results__wrapper list-unstyled' %}
+{% endif %}
+
+{% render 'slideshow',
+  class: slideshow_class,
+  header: header,
+  infinite: false,
+  slides: slides,
+  slide_count: resources.size,
+  icon_style: 'chevron',
+  slideshow_gutters: 'start end'
+%}
+
+{% stylesheet %}
+  .predictive-search-results__wrapper {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block-end: var(--padding-sm);
+    padding-inline: 0;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--padding-xl);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .predictive-search-results__wrapper slideshow-slides {
+    --gutter-slide-width: var(--padding-xl);
+
+    /* Add padding to prevent hover animations from being clipped in slideshow
+       15px accommodates:
+       - Scale effect (9px on each side from 1.03 scale)
+       - Lift effect (4px upward movement)
+       - Shadow (15px spread with -5px offset)
+       Using 16px for better alignment with our spacing scale */
+    padding-block: var(--padding-xl);
+    margin-block: calc(-1 * var(--padding-xl));
+    gap: var(--gap-md);
+  }
+
+  .predictive-search-results__resource-header {
+    display: flex;
+    padding-inline: var(--padding-xl);
+    justify-content: space-between;
+    align-items: center;
+    height: 32px;
+  }
+
+  .predictive-search-results__resource-header .svg-wrapper {
+    width: var(--icon-size-xs);
+  }
+
+  .predictive-search-results__wrapper-products {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding-block-end: var(--padding-sm);
+    gap: var(--gap-md);
+    transition: height var(--animation-speed-medium) var(--animation-easing);
+
+    @container (min-width: 550px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .predictive-search-results__wrapper-products:last-child {
+    padding-block-end: var(--padding-lg);
+
+    @media screen and (min-width: 750px) {
+      padding-block-end: var(--padding-sm);
+    }
+  }
+
+  .predictive-search-results__resource-header .predictive-search-results__title {
+    margin-block-end: 0;
+  }
+
+  .predictive-search-results__resource-header:has(slideshow-controls) .predictive-search-results__title {
+    margin-block-end: 0;
+  }
+
+  .predictive-search-results__resource-header slideshow-controls {
+    @media screen and (max-width: 749px) {
+      display: none;
+    }
+  }
+{% endstylesheet %}

@@ -1,0 +1,114 @@
+{% liquid
+  assign block_settings = block.settings
+
+  if block_settings.link != blank
+    # Extract domain from URL
+    assign platform = block_settings.link | split: '//' | last | remove: 'www.' | split: '.' | first
+
+    # Check if URL has a profile path (more than just the domain)
+    assign url_parts = block_settings.link | split: '//' | last | split: '/'
+    assign has_profile = false
+
+    if url_parts.size > 1 and url_parts[1] != ''
+      assign has_profile = true
+    endif
+  endif
+%}
+
+{% comment %}
+  Only render the social icon if:
+  1. In editor mode (always show, but may be disabled)
+  2. On storefront AND has a valid profile link
+{% endcomment %}
+{% if request.design_mode or has_profile %}
+  <div
+    class="social-icons__icon-wrapper{% unless has_profile %} social-icons__icon-wrapper--disabled{% endunless %}"
+    {{ block.shopify_attributes }}
+  >
+    <a
+      href="{{ block_settings.link }}"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="{{ platform | capitalize }}"
+      {% unless has_profile %}
+        {% if request.design_mode %}
+          onclick="return false;"
+          aria-disabled="true"
+        {% endif %}
+      {% endunless %}
+    >
+      <span class="social-icons__icon-label">{{ platform | capitalize }}</span>
+      <svg
+        class="social-icons__icon icon-default"
+        aria-hidden="true"
+        focusable="false"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+      >
+        {%- render 'icon', icon: platform -%}
+      </svg>
+    </a>
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .social-icons__icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--icon-size-lg);
+  }
+
+  .social-icons__icon {
+    display: flex;
+    flex-shrink: 0;
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+  }
+
+  .social-icons__icon {
+    display: none;
+  }
+
+  .social-icons__icon-wrapper:has(.social-icons__icon path) {
+    width: var(--icon-size-lg);
+
+    .social-icons__icon {
+      display: block;
+    }
+
+    .social-icons__icon-label {
+      display: none;
+    }
+  }
+
+  /* Disabled state for editor */
+  .shopify-design-mode .social-icons__icon-wrapper--disabled {
+    opacity: var(--disabled-opacity, 0.5);
+    cursor: not-allowed;
+  }
+
+  .shopify-design-mode .social-icons__icon-wrapper--disabled a {
+    pointer-events: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.social_link",
+  "tag": null,
+  "settings": [
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings.link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.social_link",
+      "category": "t:categories.footer"
+    }
+  ]
+}
+{% endschema %}

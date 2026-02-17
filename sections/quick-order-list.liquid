@@ -1,0 +1,1180 @@
+{% liquid
+  assign items_in_cart = cart | line_items_for: product
+  assign quick_order_form_id = 'QuickOrder-ProductForm-' | append: product.id | append: '-' | append: section.id
+%}
+
+<script
+  src="{{ 'quick-order-list.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+
+<div
+  class="
+    section
+    section--{{ section.settings.section_width }}
+    color-{{ section.settings.color_scheme }}
+    section-resource-list
+    spacing-style
+    gap-style
+  "
+  style="
+    {%- render 'spacing-style', settings: section.settings -%}
+    {%- render 'gap-style', value: section.settings.gap -%}
+  "
+>
+  <quick-order-list-component
+    class="quick-order-list"
+    data-section-id="{{ section.id }}"
+    data-product-id="{{ product.id }}"
+    data-cart-variant-ids="{{ items_in_cart | map: 'variant_id' | json | escape }}"
+    data-url="{{ product.url }}"
+    on:submit="/handleSubmit"
+  >
+    {%- form 'product', product, id: quick_order_form_id, data-type: 'add-to-cart-form' -%}
+      {% paginate product.variants by section.settings.variants_per_page %}
+        <div
+          class="quick-order-list__container"
+        >
+          <div
+            class="quick-order-list__grid"
+            role="table"
+          >
+            <div
+              class="visually-hidden"
+              role="caption"
+            >
+              {{ 'content.your_cart' | t }}
+            </div>
+            <div
+              class="quick-order-list__grid-header"
+              role="row"
+            >
+              <div
+                class="quick-order-list__grid-cell quick-order-list__grid-cell--variant"
+                role="columnheader"
+              >
+                {{ 'content.variant' | t }}
+              </div>
+              <div
+                class="quick-order-list__grid-cell quick-order-list__grid-cell--quantity hidden--mobile"
+                role="columnheader"
+              >
+                {{ 'content.quantity' | t }}
+              </div>
+              <div
+                class="quick-order-list__grid-cell quick-order-list__grid-cell--price hidden--mobile"
+                role="columnheader"
+              >
+                {{ 'content.price' | t }}
+              </div>
+              <div
+                class="quick-order-list__grid-cell quick-order-list__grid-cell--total"
+                role="columnheader"
+              >
+                {{ 'content.variant_total' | t }}
+              </div>
+            </div>
+            <div
+              class="quick-order-list__grid-body"
+              role="rowgroup"
+            >
+              {%- for variant in product.variants -%}
+                {% liquid
+                  assign variant_line_items = cart | line_items_for: variant
+                  assign variant_cart_quantity = variant_line_items | sum: 'quantity' | default: 0
+                  assign variant_line_item = variant_line_items | first
+
+                  assign has_quantity_rules = false
+                  if variant.quantity_rule.min > 1 or variant.quantity_rule.increment > 1 or variant.quantity_rule.max != null
+                    assign has_quantity_rules = true
+                  endif
+
+                  assign has_volume_pricing = false
+                  if variant.quantity_price_breaks.size > 0
+                    assign has_volume_pricing = true
+                  endif
+
+                  assign display_price = variant.price
+                  if has_volume_pricing and variant_cart_quantity > 0
+                    for price_break in variant.quantity_price_breaks
+                      if variant_cart_quantity >= price_break.minimum_quantity
+                        assign display_price = price_break.price
+                      endif
+                    endfor
+                  endif
+
+                  assign has_discount = false
+                  if variant.compare_at_price > display_price
+                    assign has_discount = true
+                  endif
+
+                  capture display_price_formatted
+                    render 'format-price', price: display_price
+                  endcapture
+
+                  capture display_price_per_item_formatted
+                    render 'format-price', price: display_price, type: 'per_item'
+                  endcapture
+
+                  if has_discount
+                    capture compare_at_price_formatted
+                      render 'format-price', price: variant.compare_at_price, type: 'compare_at'
+                    endcapture
+                  endif
+
+                  assign variant_display_name = variant.title
+                  if product.variants_count == 1
+                    assign variant_display_name = product.title
+                  endif
+
+                  assign remove_button_aria_label = 'accessibility.remove_item' | t: title: variant.title | escape
+                  assign sold_out_message = 'products.product.sold_out' | t
+
+                  capture quantity_selector_markup
+                    render 'quantity-selector', product: product, variant: variant, in_cart_quantity: variant_cart_quantity, line_index: forloop.index, min: 0
+                  endcapture
+                %}
+                <div
+                  class="quick-order-list__grid-row variant-item"
+                  data-variant-id="{{ variant.id }}"
+                  ref="variantRows[]"
+                  role="row"
+                >
+                  <div
+                    class="quick-order-list__grid-cell quick-order-list__grid-cell--variant variant-item__inner"
+                    role="cell"
+                  >
+                    <div class="variant-item__inner-container">
+                      {% if section.settings.show_image %}
+                        <div class="variant-item__image-container">
+                          {% if variant.image %}
+                            {{
+                              variant.image
+                              | image_url: width: 86
+                              | image_tag:
+                                widths: '86',
+                                class: 'quick-order-list__table-image',
+                                sizes: '43px',
+                                loading: 'lazy'
+                            }}
+                          {% endif %}
+                        </div>
+                      {% endif %}
+                      <div class="variant-item__details">
+                        <span class="variant-item__name hidden--mobile">
+                          {{ variant_display_name }}
+                        </span>
+                        {% if section.settings.show_sku %}
+                          <span class="variant-item__sku hidden--mobile">{{ variant.sku }}</span>
+                        {% endif %}
+
+                        <div class="variant-item__mobile-info hidden--desktop">
+                          <div class="variant-item__title-container">
+                            <span class="variant-item__name">
+                              {{ variant_display_name }}
+                            </span>
+                            {% if section.settings.show_sku %}
+                              <span class="variant-item__sku">{{ variant.sku }}</span>
+                            {% endif %}
+                          </div>
+                          <div class="variant-item__mobile-price-container">
+                            {%- if has_discount -%}
+                              <dl class="variant-item__discounted-prices variant-item__discounted-prices--mobile">
+                                <dt class="visually-hidden">{{ 'content.price_regular' | t }}</dt>
+                                <dd>
+                                  <s class="compare-at-price">
+                                    {{ compare_at_price_formatted }}
+                                  </s>
+                                </dd>
+                                <dt class="visually-hidden">{{ 'content.price_sale' | t }}</dt>
+                                <dd>
+                                  <span class="variant-item__mobile-price">
+                                    {{ display_price_per_item_formatted }}
+                                  </span>
+                                </dd>
+                              </dl>
+                            {%- else -%}
+                              <span class="variant-item__mobile-price">
+                                {{ display_price_per_item_formatted }}
+                              </span>
+                            {%- endif -%}
+                          </div>
+                          <div class="variant-item__mobile-quantity">
+                            {% if variant.available %}
+                              {{ quantity_selector_markup }}
+                              <button
+                                class="button variant-item__remove variant-item__remove--mobile hidden--desktop{% if variant_cart_quantity == 0 %} variant-item__remove--hidden{% endif %}"
+                                type="button"
+                                {% if variant_cart_quantity == 0 %}
+                                  tabindex="-1"
+                                  aria-hidden="true"
+                                {% endif %}
+                                aria-label="{{ remove_button_aria_label }}"
+                                on:click="/onLineItemRemove/{{ variant.id | json }}"
+                                {% assign can_remove = variant.instructions.can_remove
+                                  | default: true, allow_false: true
+                                %}
+                                {% if can_remove == false %}
+                                  hidden
+                                {% endif %}
+                                data-variant-id="{{ variant.id }}"
+                              >
+                                {{- 'icon-delete.svg' | inline_asset_content -}}
+                                <span class="visually-hidden">{{ 'actions.remove' | t }}</span>
+                              </button>
+                            {% else %}
+                              <span>{{ sold_out_message }}</span>
+                            {% endif %}
+                          </div>
+                          {% if variant.available %}
+                            {% if has_volume_pricing or has_quantity_rules %}
+                              {% render 'volume-pricing-info',
+                                variant: variant,
+                                unique_id: variant.id,
+                                quantity: variant_cart_quantity,
+                                show_label: true
+                              %}
+                            {% endif %}
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    class="quick-order-list__grid-cell quick-order-list__grid-cell--quantity variant-item__quantity hidden--mobile"
+                    role="cell"
+                  >
+                    <div class="variant-item__inner-container">
+                      {% if variant.available %}
+                        {% if has_volume_pricing or has_quantity_rules %}
+                          {% render 'volume-pricing-info',
+                            variant: variant,
+                            unique_id: variant.id,
+                            quantity: variant_cart_quantity
+                          %}
+                        {% else %}
+                          <div class="volume-pricing-info-placeholder"></div>
+                        {% endif %}
+                        {{ quantity_selector_markup }}
+                      {% else %}
+                        <div class="volume-pricing-info-placeholder"></div>
+                        <span>{{ sold_out_message }}</span>
+                      {% endif %}
+                      <button
+                        class="button variant-item__remove hidden--mobile {% if variant_cart_quantity == 0 %}variant-item__remove--hidden{% endif %}"
+                        type="button"
+                        {% if variant_cart_quantity == 0 %}
+                          tabindex="-1"
+                          aria-hidden="true"
+                        {% endif %}
+                        aria-label="{{ remove_button_aria_label }}"
+                        on:click="/onLineItemRemove/{{ variant.id | json }}"
+                        {% assign can_remove = variant.instructions.can_remove | default: true, allow_false: true %}
+                        {% if can_remove == false %}
+                          hidden
+                        {% endif %}
+                        data-variant-id="{{ variant.id }}"
+                      >
+                        {{- 'icon-delete.svg' | inline_asset_content -}}
+                        <span class="visually-hidden">{{ 'actions.remove' | t }}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    class="quick-order-list__grid-cell quick-order-list__grid-cell--price hidden--mobile"
+                    role="cell"
+                  >
+                    {%- if has_discount -%}
+                      <dl class="variant-item__discounted-prices">
+                        <dt class="visually-hidden">{{ 'content.price_regular' | t }}</dt>
+                        <dd>
+                          <s class="compare-at-price">
+                            {{ compare_at_price_formatted }}
+                          </s>
+                        </dd>
+                        <dt class="visually-hidden">{{ 'content.price_sale' | t }}</dt>
+                        <dd>
+                          <span class="price">
+                            {{ display_price_formatted }}
+                          </span>
+                        </dd>
+                      </dl>
+                    {%- else -%}
+                      <span class="price">
+                        {{ display_price_per_item_formatted }}
+                      </span>
+                    {%- endif -%}
+                  </div>
+
+                  <div
+                    class="quick-order-list__grid-cell quick-order-list__grid-cell--total variant-item__totals"
+                    role="cell"
+                  >
+                    {% liquid
+                      if variant_line_item
+                        assign total_price = variant_line_item.original_line_price
+                      else
+                        assign total_price = 0
+                      endif
+                    %}
+                    {% capture formatted_total_price %}{% render 'format-price', price: total_price %}{% endcapture %}
+                    <text-component
+                      class="price variant-item__total-price"
+                      data-variant-id="{{ variant.id }}"
+                      value="{{ formatted_total_price | strip_html }}"
+                    >
+                      {{- formatted_total_price -}}
+                    </text-component>
+                  </div>
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+        </div>
+        {% render 'pagination-controls',
+          paginate: paginate,
+          on_click_handler: '/onPaginationControlClick',
+          ref: 'paginationNav'
+        %}
+      {% endpaginate %}
+    {%- endform -%}
+    {% liquid
+      assign total_items_count = items_in_cart | sum: 'quantity' | default: 0
+      assign total_price_value = cart | line_items_for: product | sum: 'original_line_price'
+    %}
+    {% capture total_price %}{% render 'format-price', price: total_price_value %}{% endcapture %}
+    <div class="quick-order-list-total">
+      <div
+        class="quick-order-list-total__info"
+        ref="totalInfo"
+      >
+        <div class="quick-order-list-total__column">
+          <div class="quick-order-list-total__actions">
+            <a
+              href="{{ routes.cart_url }}"
+              class="quick-order-list__button button-secondary"
+            >
+              <span class="quick-order-list__button-text">{{ 'content.view_cart' | t }}</span>
+            </a>
+            {% if total_items_count > 0 %}
+              <button
+                class="button button--unstyled quick-order-list__remove-all-button"
+                type="button"
+                data-action="confirm"
+                on:click="quick-order-list-component/showRemoveAllConfirmation"
+              >
+                {{- 'icon-delete.svg' | inline_asset_content -}}
+                <span>{{ 'content.remove_all' | t }}</span>
+              </button>
+            {% endif %}
+          </div>
+          <div
+            class="quick-order-list-total__messages"
+            data-skip-subtree-update
+          >
+            <span
+              class="quick-order-list-total__success hidden"
+              ref="successContainer"
+              aria-live="polite"
+            >
+              <span
+                class="svg-wrapper icon-success"
+              >
+                {{ 'icon-checkmark.svg' | inline_asset_content }}
+              </span>
+              <span ref="successText"></span>
+            </span>
+            <span
+              class="quick-order-list-total__error hidden"
+              ref="errorContainer"
+            >
+              <span class="svg-wrapper quick-order-list-total__icon--error">
+                {{- 'icon-error.svg' | inline_asset_content -}}
+              </span>
+              <span ref="errorText"></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="quick-order-list-total__summary">
+          <div class="quick-order-list-total__items">
+            <span>{{ total_items_count }}</span>
+            <p class="h5">{{ 'content.total_items' | t }}</p>
+          </div>
+
+          <div class="quick-order-list-total__price">
+            <div class="quick-order-list-total__product-total">
+              <text-component
+                class="quick-order-list-total__subtotal-value"
+                value="{{ total_price | strip_html }}"
+                ref="totalPrice"
+              >
+                {{- total_price -}}
+              </text-component>
+              <p class="quick-order-list-total__subtotal h5">{{ 'content.product_subtotal' | t }}</p>
+            </div>
+            <div class="quick-order-list-total__tax-note">
+              {% render 'tax-info', has_discounts_enabled: false %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="quick-order-list-total__confirmation hidden"
+        ref="confirmationPanel"
+      >
+        <span class="quick-order-list-total__confirmation-text">
+          {% if total_items_count > 1 %}
+            {{- 'content.remove_all_items_confirmation' | t: count: total_items_count -}}
+          {% else %}
+            {{- 'content.remove_one_item_confirmation' | t -}}
+          {% endif %}
+        </span>
+        <div class="quick-order-list-total__confirmation-buttons">
+          <button
+            class="quick-order-list__button-confirm button-secondary"
+            type="button"
+            data-action="remove"
+            on:click="quick-order-list-component/onRemoveAll"
+          >
+            {{ 'content.remove_all' | t }}
+          </button>
+          <button
+            class="quick-order-list__button-cancel button button--unstyled"
+            type="button"
+            data-action="cancel"
+            on:click="quick-order-list-component/hideRemoveAllConfirmation"
+          >
+            {{ 'content.cancel' | t }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </quick-order-list-component>
+</div>
+
+{% stylesheet %}
+  .quick-order-list {
+    --quantity-selector-width: 124px;
+    --image-size: 43px;
+    --quantity-header-padding: calc(var(--minimum-touch-target) + var(--gap-sm));
+    --quick-order-quantity-column-width: calc(
+      var(--quantity-selector-width) + 2 * var(--gap-sm) + 2 * var(--minimum-touch-target)
+    );
+    --transform-offset-negative: calc(-1 * var(--icon-stroke-width));
+    --quick-order-first-column-width: 2fr; /* Takes 2 fractions of available space */
+    --quick-order-price-column-width: 1fr; /* Takes 1 fraction */
+    --quick-order-total-column-width: 1fr; /* Takes 1 fraction */
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+  }
+
+  .quick-order-list__container {
+    width: 100%;
+  }
+
+  /* Grid container setup */
+  .quick-order-list__grid {
+    width: 100%;
+    display: block; /* Container is block, children use grid */
+    contain: layout; /* Isolate layout calculations for performance */
+  }
+
+  .quick-order-list__grid-body {
+    contain: layout; /* Isolate layout calculations for performance */
+  }
+
+  .quick-order-list__grid-header,
+  .quick-order-list__grid-row {
+    display: grid;
+    grid-template-columns:
+      var(--quick-order-first-column-width) /* Variant column - takes 2 parts of available space */
+      var(--quick-order-quantity-column-width) /* Fixed pixel width for quantity */
+      var(--quick-order-price-column-width) /* Price column - takes 1 part */
+      var(--quick-order-total-column-width); /* Total column - takes 1 part */
+    gap: var(--gap-md);
+    align-items: center;
+  }
+
+  .quick-order-list__grid-header {
+    border-block-end: var(--style-border-width) solid var(--color-border);
+    padding-block-end: var(--padding-xl);
+    margin-block-end: var(--padding-sm);
+    opacity: var(--opacity-85);
+    font-weight: normal;
+    font-size: var(--font-size--xs);
+    letter-spacing: var(--letter-spacing--body-loose);
+  }
+
+  /* Add padding to quantity column header to align with content */
+  .quick-order-list__grid-header .quick-order-list__grid-cell--quantity {
+    padding-inline-start: var(--quantity-header-padding);
+  }
+
+  .quick-order-list__grid-row {
+    padding-block-start: var(--padding-sm);
+    padding-block-end: var(--padding-sm);
+    content-visibility: auto;
+    contain-intrinsic-size: auto
+      calc(2 * var(--padding-sm) + var(--image-size) + var(--minimum-touch-target) + var(--padding-2xl));
+  }
+
+  @media screen and (min-width: 750px) {
+    .quick-order-list__grid-row {
+      contain-intrinsic-size: auto calc(2 * var(--padding-sm) + var(--image-size));
+    }
+  }
+
+  .quick-order-list__grid-cell--variant {
+    text-align: start;
+    justify-self: stretch;
+  }
+
+  .quick-order-list__grid-cell--quantity {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    justify-self: stretch;
+  }
+
+  .quick-order-list__grid-cell--quantity .variant-item__inner-container {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .quick-order-list__grid-cell--price {
+    text-align: end;
+    justify-self: stretch;
+  }
+
+  .quick-order-list__grid-cell--total {
+    text-align: end;
+    justify-self: stretch;
+  }
+
+  .variant-item__image-container,
+  .quick-order-list__table-image {
+    width: var(--image-size);
+    height: auto;
+  }
+
+  .quick-order-list .pagination {
+    margin-block-start: 0;
+    padding-block-start: var(--padding-xl);
+    padding-block-end: 0;
+  }
+
+  .variant-item__inner-container {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+  }
+
+  .volume-pricing-info-placeholder {
+    width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
+  }
+
+  .variant-item__quantity .quantity-selector {
+    display: flex;
+    flex: 0 0 var(--quantity-selector-width);
+    min-width: var(--quantity-selector-width);
+    font-size: var(--font-size--xs);
+    height: auto;
+  }
+
+  .variant-item__remove {
+    background-color: transparent;
+    color: var(--color-foreground);
+    width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
+    justify-content: center;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .remove-icon-bottom,
+  .remove-icon-top {
+    transition: transform var(--animation-speed) var(--animation-easing);
+  }
+
+  .variant-item__remove:not(.variant-item__remove--hidden):hover .remove-icon-top {
+    transform: translate(var(--transform-offset-negative), var(--icon-stroke-width)) rotate(-15deg);
+  }
+
+  .variant-item__remove:not(.variant-item__remove--hidden):is(:hover, :active) .remove-icon-bottom {
+    transform: translateY(var(--icon-stroke-width));
+  }
+
+  /* Hide remove button with opacity to prevent layout shift */
+  .variant-item__remove--hidden {
+    opacity: 0;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .variant-item__name {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .variant-item__sku {
+    font-size: var(--font-size--3xs);
+    opacity: var(--opacity-85);
+  }
+
+  .variant-item__details {
+    display: inline-flex;
+    flex-direction: column;
+  }
+
+  .variant-item__totals {
+    flex: 0 0 auto;
+    padding-block-start: var(--padding-2xs);
+  }
+
+  /* Compare at price styles */
+  .variant-item__discounted-prices {
+    display: flex;
+    gap: var(--gap-2xs);
+    justify-content: flex-end;
+  }
+
+  .variant-item__discounted-prices dd {
+    margin: 0;
+  }
+
+  /* Mobile layout */
+  @media screen and (max-width: 749px) {
+    .quick-order-list__grid-header,
+    .quick-order-list__grid-row {
+      grid-template-columns: 1fr auto; /* Variant column and total column on mobile */
+      gap: var(--gap-sm);
+      max-width: 100%;
+      overflow: hidden;
+      align-items: flex-start;
+    }
+
+    .quick-order-list__grid-header .quick-order-list__grid-cell--total {
+      text-align: end;
+    }
+
+    .quick-order-list__grid-row {
+      margin-block-end: var(--margin-2xl);
+      padding-block-end: var(--padding-2xl);
+      border-block-end: var(--style-border-width) solid var(--color-border);
+    }
+
+    .quick-order-list__grid-row:last-child {
+      margin-block-end: 0;
+      border-block-end: none;
+    }
+
+    .variant-item__inner {
+      flex: 1 1 auto;
+      padding-inline-end: var(--padding-lg);
+    }
+
+    .variant-item__inner-container {
+      display: flex;
+      gap: var(--gap-md);
+      align-items: flex-start;
+    }
+
+    .variant-item__details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0; /* Allow text to shrink */
+    }
+
+    .variant-item__totals {
+      flex: 0 0 auto;
+      text-align: end;
+      padding-block-start: var(--padding-2xs);
+    }
+
+    .variant-item__totals .variant-item__total-price {
+      font-size: var(--font-size--sm);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .variant-item__title-container .variant-item__name {
+      display: block;
+      font-size: var(--font-size--sm);
+      line-height: var(--line-height-tight);
+      margin: 0;
+    }
+
+    .variant-item__mobile-price-container {
+      margin-block-end: var(--margin-xs);
+    }
+
+    .variant-item__mobile-price {
+      font-size: var(--font-size--sm);
+      opacity: var(--opacity-85);
+      white-space: nowrap;
+    }
+
+    /* Mobile compare at price styles */
+    .variant-item__discounted-prices--mobile {
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: flex-start;
+      gap: var(--gap-xs);
+      margin-block-start: var(--margin-2xs);
+      margin-block-end: 0;
+    }
+
+    .variant-item__discounted-prices--mobile dd {
+      display: inline;
+    }
+
+    .variant-item__mobile-quantity {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* Mobile-only content styles */
+    .variant-item__mobile-info {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .variant-item__image-container {
+      flex: 0 0 var(--image-size);
+      width: var(--image-size);
+      height: var(--image-size);
+    }
+
+    .quick-order-list__table-image {
+      width: 100%;
+      height: 100%;
+    }
+
+    .variant-item__mobile-quantity .quantity-selector {
+      display: flex;
+      flex: 0 0 var(--quantity-selector-width);
+      min-width: var(--quantity-selector-width);
+      font-size: var(--font-size--xs);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Mobile remove button styling */
+    .variant-item__remove--mobile {
+      background-color: transparent;
+      color: var(--color-foreground);
+      width: var(--minimum-touch-target);
+      height: var(--minimum-touch-target);
+      min-width: var(--minimum-touch-target);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      flex-shrink: 0;
+      border: none;
+      cursor: pointer;
+    }
+
+    .variant-item__remove--mobile svg {
+      width: var(--icon-size-sm);
+      height: var(--icon-size-sm);
+    }
+
+    .variant-item__remove--mobile:not(.variant-item__remove--hidden):hover {
+      opacity: var(--opacity-70);
+    }
+
+    .quick-order-list .pagination {
+      padding-block-start: var(--padding-2xl);
+    }
+  }
+
+  .quick-order-list-disabled {
+    pointer-events: none;
+  }
+
+  .quick-order-list-total {
+    background: var(--color-background);
+    border-block-start: var(--style-border-width) solid var(--color-border);
+  }
+
+  /* Tablet and Desktop styles - sticky footer */
+  @media screen and (min-width: 750px) {
+    .quick-order-list-total {
+      position: sticky;
+      inset-block-end: 0;
+      z-index: var(--layer-raised);
+    }
+  }
+
+  .quick-order-list-total__info,
+  .quick-order-list-total__confirmation {
+    min-height: 8rem;
+    padding-block-start: var(--padding-4xl);
+  }
+
+  .quick-order-list-total__info {
+    align-items: flex-start;
+    gap: var(--gap-md);
+  }
+
+  .quick-order-list-total__confirmation {
+    display: flex;
+    gap: var(--gap-2xl);
+    align-items: center;
+    justify-content: center;
+    padding: var(--padding-2xl) var(--padding-xl);
+  }
+
+  .quick-order-list-total__column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .quick-order-list-total__actions {
+    display: flex;
+  }
+
+  /* Desktop layout - Use CSS Grid to match main table alignment */
+  @media screen and (min-width: 750px) {
+    .quick-order-list-total__info {
+      display: grid;
+      grid-template-columns:
+        var(--quick-order-first-column-width) /* Variant column - takes 2 parts of available space */
+        var(--quick-order-quantity-column-width) /* Fixed pixel width for quantity */
+        var(--quick-order-price-column-width) /* Price column - takes 1 part */
+        var(--quick-order-total-column-width); /* Total column - takes 1 part */
+    }
+
+    .quick-order-list-total__column {
+      grid-column: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-md);
+    }
+
+    .quick-order-list-total__summary {
+      grid-column: 2 / 5;
+      display: grid;
+      grid-template-columns: var(--quick-order-quantity-column-width, 234px) auto;
+    }
+
+    .quick-order-list-total__items {
+      grid-column: 1;
+      justify-self: center;
+      text-align: center;
+    }
+
+    .quick-order-list-total__price {
+      grid-column: 3;
+      justify-self: end;
+      text-align: end;
+    }
+  }
+
+  /* Tablet-specific overrides - 750px to 989px */
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .quick-order-list-total__actions {
+      flex-direction: column;
+    }
+
+    .quick-order-list-total__messages {
+      align-items: stretch;
+    }
+
+    .quick-order-list__remove-all-button {
+      padding-inline: 0;
+    }
+  }
+
+  .quick-order-list__button.button--full-width {
+    width: 100%;
+  }
+
+  .quick-order-list__button.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quick-order-list-total .button--unstyled {
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    color: var(--color-foreground);
+    cursor: pointer;
+  }
+
+  .quick-order-list__remove-all-button svg {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    flex-shrink: 0;
+  }
+
+  .quick-order-list-total__items span {
+    display: block;
+    margin-block-end: var(--margin-xs);
+  }
+
+  .quick-order-list-total__items .h5 {
+    margin: 0;
+    letter-spacing: var(--letter-spacing--body-loose);
+    opacity: var(--opacity-85);
+  }
+
+  .quick-order-list-total__subtotal-value {
+    display: block;
+    margin-block-end: var(--margin-xs);
+    line-height: var(--font-paragraph--line-height);
+  }
+
+  /* Ensure text-component displays properly */
+  .quick-order-list-total__subtotal-value text-component {
+    display: block;
+  }
+
+  .quick-order-list-total__subtotal {
+    margin: 0;
+    letter-spacing: var(--letter-spacing--body-loose);
+    opacity: var(--opacity-85);
+  }
+
+  .quick-order-list-total__tax-note {
+    opacity: var(--opacity-subdued-text);
+  }
+
+  .quick-order-list-total__messages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+  }
+
+  .quick-order-list-total__success,
+  .quick-order-list-total__error {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+  }
+
+  .quick-order-list-total__success .icon-success,
+  .quick-order-list-total__error .quick-order-list-total__icon--error {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+    color: inherit;
+  }
+
+  .quick-order-list-total__success .icon-success svg,
+  .quick-order-list-total__error .quick-order-list-total__icon--error svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .quick-order-list-total__error:empty,
+  .quick-order-list-total__success:empty {
+    display: none;
+  }
+
+  .quick-order-list-total__info.confirmation-visible {
+    display: none;
+  }
+
+  .quick-order-list-total__confirmation-text {
+    white-space: nowrap;
+  }
+
+  .quick-order-list-total__confirmation-buttons {
+    display: flex;
+    gap: var(--gap-md);
+    align-items: center;
+  }
+
+  .quick-order-list-total__confirmation button {
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .quick-order-list__remove-all-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-sm);
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 749px) {
+    .quick-order-list-total__info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .quick-order-list-total__column {
+      order: 3; /* Move column to the end on mobile */
+      width: 100%;
+      flex: 1 1 auto;
+    }
+
+    .quick-order-list-total__actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .quick-order-list-total__messages {
+      width: 100%;
+      align-items: center;
+      margin-block-start: var(--margin-xs);
+    }
+
+    .quick-order-list-total__summary {
+      order: 1; /* First on mobile */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: var(--gap-md);
+    }
+
+    .quick-order-list-total__items {
+      text-align: center;
+      width: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--gap-xs);
+    }
+
+    .quick-order-list-total__items span {
+      display: inline;
+      margin-block-end: 0;
+    }
+
+    .quick-order-list-total__items .h5 {
+      display: inline;
+    }
+
+    .quick-order-list-total__price {
+      text-align: center;
+      width: 100%;
+    }
+
+    .quick-order-list-total__product-total {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--gap-xs);
+    }
+
+    .quick-order-list-total__product-total .quick-order-list-total__subtotal-value {
+      display: inline-block;
+      margin-block-end: 0;
+    }
+
+    .quick-order-list-total__product-total .quick-order-list-total__subtotal {
+      display: inline;
+    }
+
+    .quick-order-list__button,
+    .quick-order-list__remove-all-button {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .quick-order-list-total__confirmation {
+      flex-direction: column;
+    }
+
+    .quick-order-list-total__tax-note {
+      margin-block-start: var(--margin-xs);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.quick_order_list",
+  "tag": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "blocks": [],
+  "settings": [
+    {
+      "type": "range",
+      "id": "variants_per_page",
+      "label": "t:settings.variant_per_page",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "default": 50
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "t:settings.image",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sku",
+      "label": "t:settings.skus",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.quick_order_list",
+      "category": "t:categories.products",
+      "settings": {
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    }
+  ]
+}
+{% endschema %}

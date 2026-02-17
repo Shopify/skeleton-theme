@@ -1,0 +1,176 @@
+{%- doc -%}
+  Resource List Component
+
+  Renders a complete resource list with automatic layout switching.
+  Supports grid, bento, carousel, and editorial layouts with mobile fallbacks.
+
+  @param {string} list_items - Raw HTML string of list items for grid layout
+  @param {object} list_items_array - Array of list item HTML strings for complex layouts
+  @param {object} settings - Section settings object containing layout configuration
+  @param {string} [carousel_ref] - Base reference name for carousel components (default: 'resourceListCarousel')
+  @param {number} slide_count - Number of slides for carousel layouts
+  @param {string} content_type - Type of content: 'products' | 'collections' | 'articles'
+  @param {string} [test_id] - Data test ID for the main resource list
+
+  @example
+  {% render 'resource-list',
+      list_items: list_items,
+      list_items_array: list_items_array,
+      settings: section.settings,
+      carousel_ref: 'featuredBlog',
+      slide_count: max_items,
+      content_type: 'articles',
+      test_id: 'collections-list-grid'
+    %}
+
+  Expected `settings` object properties:
+  - layout_type: 'grid' | 'bento' | 'carousel' | 'editorial'
+  - columns: Number of columns for grid/carousel
+  - mobile_columns: Number of columns on mobile
+  - columns_gap: Gap between columns in pixels
+  - rows_gap: Gap between rows in pixels (grid only)
+  - bento_gap: Gap for bento layout in pixels
+  - mobile_card_size: Mobile card size for carousel
+  - carousel_on_mobile: Boolean for mobile carousel fallback
+{%- enddoc -%}
+
+{% liquid
+  assign list_items = list_items | default: ''
+  assign list_items_array = list_items_array | default: empty
+  assign settings = settings | default: empty
+  assign carousel_ref = carousel_ref | default: 'resourceListCarousel'
+  assign slide_count = slide_count | default: 0
+  assign content_type = content_type | default: 'collections'
+  assign test_id = test_id | default: ''
+
+  unless settings != empty
+    echo '<!-- Error: settings parameter required for resource-list snippet -->'
+    break
+  endunless
+
+  assign layout_type = settings.layout_type | default: 'grid'
+  assign columns = settings.columns | default: 3
+  assign mobile_columns = settings.mobile_columns | default: 2
+  assign columns_gap = settings.columns_gap | default: 16
+  assign rows_gap = settings.rows_gap | default: 16
+  assign bento_gap = settings.bento_gap | default: 16
+  assign mobile_card_size = settings.mobile_card_size | default: '60cqw'
+  assign slide_width_max = '450px'
+
+  case layout_type
+    when 'grid'
+      assign resource_list_classes = 'resource-list--grid'
+      capture resource_list_styles
+        echo '--resource-list-column-gap-desktop: ' | append: columns_gap | append: 'px;'
+        echo '--resource-list-row-gap-desktop: ' | append: rows_gap | append: 'px;'
+        echo '--resource-list-columns: repeat(' | append: columns | append: ', 1fr);'
+        echo '--resource-list-columns-mobile: repeat(' | append: mobile_columns | append: ', 1fr);'
+        echo '--column-count-mobile: ' | append: mobile_columns | append: ';'
+      endcapture
+
+    when 'bento'
+      assign resource_list_classes = 'resource-list--bento'
+      capture resource_list_styles
+        echo '--resource-list-column-gap-desktop: ' | append: bento_gap | append: 'px;'
+        echo '--bento-gap: var(--resource-list-column-gap);'
+      endcapture
+
+    when 'carousel'
+      assign resource_list_classes = 'resource-list__carousel'
+      capture resource_list_styles
+        echo '--resource-list-column-gap-desktop: ' | append: columns_gap | append: 'px;'
+        echo '--column-count: ' | append: columns | append: ';'
+        echo '--column-count-mobile: 1;'
+        echo '--mobile-card-size: ' | append: mobile_card_size | append: ';'
+      endcapture
+
+    when 'editorial'
+      assign resource_list_classes = 'resource-list--editorial'
+      capture resource_list_styles
+        echo '--resource-list-column-gap-desktop: ' | append: columns_gap | append: 'px;'
+      endcapture
+  endcase
+
+  # Trim whitespace from styles
+  assign resource_list_styles = resource_list_styles | strip
+%}
+
+<div
+  class="
+    resource-list
+    {% if settings.layout_type == 'carousel' %}
+      force-full-width
+    {% endif %}
+    {% if settings.carousel_on_mobile and settings.layout_type != 'carousel' %}
+      hidden--mobile
+    {% endif %}
+    {{ resource_list_classes }}
+  "
+  style="{{ resource_list_styles }}"
+  {% if test_id %}
+    data-testid="{{ test_id }}"
+  {% endif %}
+>
+  {% case settings.layout_type %}
+    {% when 'grid' %}
+      {{ list_items }}
+
+    {% when 'bento' %}
+      {% render 'bento-grid', items: list_items_array %}
+
+    {% when 'carousel' %}
+      {% render 'resource-list-carousel',
+        ref: carousel_ref,
+        slides: list_items_array,
+        slide_count: slide_count,
+        settings: settings,
+        slide_width_max: slide_width_max
+      %}
+
+    {% when 'editorial' %}
+      {% case content_type %}
+        {% when 'products' %}
+          {% render 'editorial-product-grid', items: list_items_array %}
+        {% when 'articles' %}
+          {% render 'editorial-blog-grid', items: list_items_array %}
+        {% else %}
+          {% render 'editorial-collection-grid', items: list_items_array %}
+      {% endcase %}
+  {% endcase %}
+</div>
+
+{% comment %} Mobile carousel for non-carousel layouts {% endcomment %}
+{% if settings.layout_type != 'carousel' and settings.carousel_on_mobile %}
+  {% liquid
+    assign mobile_carousel_gap = settings.columns_gap | default: 16
+    if settings.layout_type == 'bento'
+      assign mobile_carousel_gap = settings.bento_gap | default: 16
+    endif
+  %}
+
+  <div
+    class="
+      resource-list
+      hidden--desktop
+      resource-list__carousel
+      force-full-width
+    "
+    style="
+      --resource-list-column-gap-desktop: {{ mobile_carousel_gap }}px;
+      --column-count: {{ settings.columns | default: 3 }};
+      --column-count-mobile: 1;
+      --mobile-card-size: {{ settings.mobile_card_size | default: '60cqw' }};
+    "
+  >
+    {% liquid
+      assign carousel_ref_mobile = carousel_ref | append: 'Mobile'
+    %}
+    {% render 'resource-list-carousel',
+      ref: carousel_ref_mobile,
+      slides: list_items_array,
+      slide_count: slide_count,
+      settings: settings,
+      slide_width_max: slide_width_max
+    %}
+  </div>
+{% endif %}

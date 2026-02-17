@@ -1,52 +1,359 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
-  "404": {
-    "title": "404",
-    "not_found": "Page not found.",
-    "back_to_shopping": "Back to shopping"
+  "accessibility": {
+    "account": "Account",
+    "cart": "Cart",
+    "cart_count": "Total items in cart",
+    "close_dialog": "Close dialog",
+    "country_region": "Country/Region",
+    "country_results_count": "{{ count }} results",
+    "decrease_quantity": "Decrease quantity",
+    "discount": "Apply a discount code",
+    "discount_menu": "Discount Codes",
+    "discount_applied": "Applied discount code: {{ code }}",
+    "filters": "Filters",
+    "filter_count": {
+      "one": "{{ count }} filter applied",
+      "other": "{{ count }} filters applied"
+    },
+    "increase_quantity": "Increase quantity",
+    "inventory_status": "Inventory status",
+    "localization_region_and_language": "Region and language selector",
+    "menu": "Menu",
+    "nested_product": "{{ product_title }} for {{ parent_title }}",
+    "new_window": "Opens in a new window.",
+    "open_hotspot": "Open hotspot",
+    "quantity": "Quantity",
+    "pause_video": "Pause video",
+    "play_model": "Play 3D model",
+    "play_video": "Play video",
+    "loading_product_recommendations": "Loading product recommendations",
+    "rating": "Rating of this product is {{ rating }} out of 5",
+    "remove_item": "Remove {{ title}}",
+    "remove": "Remove",
+    "reset_search": "Reset search",
+    "scroll_to": "Scroll to {{ title }}",
+    "search_results_count": "{{ count }} search results found for \"{{ query }}\"",
+    "search_results_no_results": "No results found for \"{{ query }}\"",
+    "skip_to_product_info": "Skip to product information",
+    "skip_to_results_list": "Skip to results list",
+    "skip_to_text": "Skip to content",
+    "slide_status": "Slide {{ index }} of {{ length }}",
+    "slideshow": "Slideshow",
+    "slideshow_next": "Next slide",
+    "slideshow_pause": "Pause slideshow",
+    "slideshow_play": "Play slideshow",
+    "slideshow_previous": "Previous slide",
+    "unit_price": "Unit price",
+    "find_country": "Find country",
+    "view_pricing_info": "View pricing information"
   },
-  "blog": {
-    "article_comments": "Comments",
-    "article_metadata_html": "{{ date }} by {{ author }}",
-    "comment_form_body": "Comment",
-    "comment_form_email": "Email",
-    "comment_form_name": "Name",
-    "comment_form_submit": "Post",
-    "comment_form_title": "Add a comment"
+  "actions": {
+    // Quick add button on product cards, shortened version of add to cart
+    "add": "Add",
+    "add_to_cart": "Add to cart",
+    // Success message shown after adding item to cart
+    "added": "Added",
+    // Button to apply discount code to cart
+    "apply": "Apply",
+    "back": "Back",
+    "choose": "Choose",
+    // Button to reset current selection or input
+    "clear": "Clear",
+    // Button to remove all applied product filters
+    "clear_all": "Clear all",
+    "close": "Close",
+    "open": "Open",
+    // Continue shopping link on the cart page which takes the user back to a collection page
+    "continue_shopping": "Continue shopping",
+    "enter_password": "Enter password",
+    "log_in_html": "Have an account? <a href=\"{{ link }}\">Log in</a> to check out faster.",
+    "log_in": "Sign in",
+    "log_out": "Log out",
+    "open_image_in_full_screen": "Open image in full screen",
+    // Button to remove applied filters from search/collection results
+    "remove": "Remove",
+    "remove_discount": "Remove discount {{ code }}",
+    // Button to expand hidden product variant options
+    "show_all_options": "Show all options",
+    "see_items": {
+      "one": "See {{ count }} item",
+      // Button to view filtered product results and close filter dialog
+      "other": "See {{ count }} items"
+    },
+    "show_filters": "Filter",
+    "show_less": "Show less",
+    "show_more": "Show more",
+    "sign_in_options": "Other sign in options",
+    // AR button to view 3D product model in physical space
+    "view_in_your_space": "View in your space",
+    // Button to view complete collection/product list
+    "view_all": "View all",
+    "more": "More",
+    "zoom": "Zoom",
+    "close_dialog": "Close dialog",
+    // Button to clear search filter and restore default view
+    "reset": "Reset",
+    "enter_using_password": "Enter using password",
+    "sign_up": "Sign up",
+    "submit": "Submit",
+    "view_store_information": "View store information",
+    "sort": "Sort"
   },
-  "cart": {
-    "checkout": "Checkout",
-    "title": "Cart",
-    "update": "Update",
-    "remove": "Remove"
-  },
-  "customers": {
-    "login": {
+  "blocks": {
+    "contact_form": {
+      "name": "Name",
       "email": "Email",
-      "password": "Password",
-      "submit": "Sign in",
-      "title": "Login"
+      "phone": "Phone",
+      "comment": "Comment",
+      "post_success": "Thanks for contacting us. We'll get back to you as soon as possible.",
+      "error_heading": "Please adjust the following:"
+    },
+    "email_signup": {
+      "label": "Email",
+      "placeholder": "Email address",
+      "success": "Thanks for subscribing!"
+    },
+    "filter": "Filter",
+    "load_video": "Load video: {{ description }}",
+    "sold_out": "Sold out",
+    "payment_methods": "Payment methods",
+    "slider_label": "Slider"
+  },
+  "blogs": {
+    "article": {
+      "comments_heading": {
+        "one": "{{ count }} comment",
+        "other": "{{ count }} comments"
+      },
+      "comment_author_separator": "•"
+    },
+    "comment_form": {
+      "email": "Email",
+      "error": "Comment failed to post, please address the following:",
+      "heading": "Leave a comment",
+      "message": "Message",
+      "moderated": "Please note, comments need to be approved before they are published.",
+      "name": "Name",
+      "post": "Post comment",
+      "success_moderated": "Comment posted, awaiting moderation",
+      "success": "Comment posted"
     }
   },
-  "collections": {
-    "title": "Collections"
+  "content": {
+    "cancel": "Cancel",
+    "discount": "Discount",
+    "account_title": "Account",
+    "terms_and_policies": "Terms and Policies",
+    "account_title_personalized": "Hi {{ first_name }}",
+    "account_orders": "Orders",
+    "account_profile": "Profile",
+    "blog_details_separator": "|",
+    "cart_estimated_total": "Estimated total",
+    "cart_title": "Cart",
+    "cart_subtotal": "Subtotal",
+    "cart_total": "Cart total",
+    "checkout": "Check out",
+    "collection_placeholder": "Collection title",
+    "discount_code": "Discount code",
+    "shipping_discount_error": "Shipping discounts are shown at checkout after adding an address",
+    "discount_code_error": "Discount code cannot be applied to your cart",
+    "discounts": "Discounts",
+    "duties_and_taxes_included": "Duties and taxes included.",
+    "duties_and_taxes_included_shipping_at_checkout_with_policy_html": "Duties and taxes included. Discounts and <a href=\"{{ link }}\">shipping</a> calculated at checkout.",
+    "duties_and_taxes_included_shipping_at_checkout_with_policy_without_discounts_html": "Duties and taxes included. Shipping is calculated at checkout.",
+    "duties_and_taxes_included_shipping_at_checkout_without_policy": "Duties and taxes included. Discounts and shipping calculated at checkout.",
+    "duties_and_taxes_included_shipping_at_checkout_without_policy_without_discounts": "Duties and taxes included. Shipping is calculated at checkout.",
+    "duties_included": "Duties included.",
+    "duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_html": "Duties included. Taxes, discounts and <a href=\"{{ link }}\">shipping</a> calculated at checkout.",
+    "duties_included_taxes_at_checkout_shipping_at_checkout_with_policy_without_discounts_html": "Duties included. Shipping is calculated at checkout.",
+    "duties_included_taxes_at_checkout_shipping_at_checkout_without_policy": "Duties included. Taxes, discounts and shipping calculated at checkout.",
+    "duties_included_taxes_at_checkout_shipping_at_checkout_without_policy_without_discounts": "Duties included. Shipping is calculated at checkout.",
+    "featured_products": "Featured products",
+    "filters": "Filters",
+    "grid_view": {
+      "default_view": "Default",
+      "grid_fieldset": "Column grid",
+      "single_item": "Single",
+      "zoom_out": "Zoom out"
+    },
+    "inventory_low_stock_show_count": {
+      "one": "{{ count }} left",
+      "other": "{{ count }} left"
+    },
+    "inventory_low_stock": "Low stock",
+    "inventory_in_stock": "In stock",
+    "inventory_out_of_stock": "Out of stock",
+    "item_count": {
+      "one": "{{ count }} item",
+      "other": "{{ count }} items"
+    },
+    "item_count_cutoff": "More than {{ count }} items",
+    "language": "Language",
+    "localization_region_and_language": "Region and language",
+    "no_products_found": "No products found.",
+    "no_results_found": "No results found",
+    "page_placeholder_title": "Page title",
+    "page_placeholder_content": "Select a page to display its content.",
+    "pagination": {
+      "nav_label": "Pagination navigation",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{ page }}"
+    },
+    "pickup_available_at_html": "Pickup available at <b>{{ location }}</b>",
+    "pickup_available_in": "Pickup available, {{ pickup_time }}",
+    "pickup_not_available": "Pickup currently not available",
+    "pickup_ready_in": "{{ pickup_time }}",
+    "powered_by": "This shop will be powered by",
+    "price": "Price",
+    "price_compare_at": "Compare at price",
+    "price_from": "From {{ price }}",
+    "price_regular": "Regular price",
+    "price_sale": "Sale price",
+    "price_filter_html": "The highest price is {{ price }}",
+    "product_image": "Product image",
+    "product_information": "Product information",
+    "product_subtotal": "Product subtotal",
+    "product_total": "Product total",
+    "product_badge_sold_out": "Sold out",
+    "product_badge_sale": "Sale",
+    "product_card_placeholder": "Product title",
+    "placeholder_image": "Placeholder image",
+    "quantity": "Quantity",
+    "quantity_per_item": "/ea",
+    "recently_viewed_products": "Recently viewed",
+    "remove_all": "Remove all",
+    "remove_all_items_confirmation": "Remove all {{ count }} items from your cart?",
+    "remove_one_item_confirmation": "Remove 1 item from your cart?",
+    "reviews": "reviews",
+    "read_more": "Read more...",
+    "search_input_label": "Search",
+    "search_input_placeholder": "Search",
+    "search": "Search",
+    "search_results": "Search results",
+    "search_results_label": "Search results",
+    "search_results_no_results": "No results found for \"{{ terms }}\". Try another search.",
+    "search_results_no_results_check_spelling": "No results found for \"{{ terms }}\". Check the spelling or use a different word or phrase.",
+    "search_results_resource_articles": "Blog posts",
+    "search_results_resource_collections": "Collections",
+    // Section heading for Shopify store pages in search results
+    "search_results_resource_pages": "Pages",
+    "search_results_resource_products": "Products",
+    "search_results_resource_products_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "search_results_resource_queries": "Search suggestions",
+    "total_items": "Total items",
+    "variant": "Variant",
+    "variant_total": "Variant total",
+    "view_cart": "View cart",
+    "your_cart": "Your cart",
+    "items_added_to_cart": {
+      "one": "1 item added to cart",
+      "other": "{{ count }} items added to cart"
+    },
+    // Button to go from search preview to full search results page
+    "search_results_view_all": "View all",
+    "search_results_view_all_button": "View all",
+    // Label for customer's note to seller during checkout
+    "seller_note": "Special instructions",
+    "shipping_policy": "Shipping calculated at checkout.",
+    "shipping_policy_html": "<a href=\"{{ link }}\">Shipping</a> calculated at checkout.",
+    "store_owner_link_html": "Are you the store owner? <a href=\"{{ link }}\">Log in here</a>",
+    "taxes_at_checkout_shipping_at_checkout_with_policy_html": "Taxes, discounts and <a href=\"{{ link }}\">shipping</a> calculated at checkout.",
+    "taxes_at_checkout_shipping_at_checkout_with_policy_without_discounts_html": "Taxes and <a href=\"{{ link }}\">shipping</a> calculated at checkout.",
+    "taxes_at_checkout_shipping_at_checkout_without_policy": "Taxes, discounts and shipping calculated at checkout.",
+    "taxes_at_checkout_shipping_at_checkout_without_policy_without_discounts": "Taxes and shipping calculated at checkout.",
+    "taxes_included": "Taxes included.",
+    "taxes_included_shipping_at_checkout_with_policy_html": "Taxes included. Discounts and <a href=\"{{ link }}\">shipping</a> calculated at checkout.",
+    "taxes_included_shipping_at_checkout_with_policy_without_discounts_html": "Taxes included. Shipping is calculated at checkout.",
+    "taxes_included_shipping_at_checkout_without_policy": "Taxes included. Discounts and shipping calculated at checkout.",
+    "taxes_included_shipping_at_checkout_without_policy_without_discounts": "Taxes included. Shipping is calculated at checkout.",
+    "unavailable": "Unavailable",
+    "use_fewer_filters_html": "Try using fewer filters, or <a class=\"{{ class }}\" href=\"{{ link }}\">clear all filters</a>.",
+    // Link or button to expand additional information
+    "view_more_details": "View more details",
+    "volume_pricing_available": "Volume pricing available",
+    "volume_pricing": "Volume pricing",
+    "at_price_each": "at {{ price }}/ea",
+    "each": "{{ price }}/ea",
+    "each_abbreviation": "ea",
+    "price_at": "at",
+    "price_range": "Price range",
+    "your_cart_is_empty": "Your cart is empty",
+    "product_count": "Product count",
+    "errors": "Errors",
+    "wrong_password": "Wrong password",
+    // Legend text for gift card delivery options
+    "recipient_form_send_to": "Send to",
+    "recipient_form_email_label": "Recipient’s email",
+    "recipient_form_email_label_my_email": "My email",
+    "recipient_form_email_address": "Recipient email address",
+    "recipient_form_name_label": "Recipient name (optional)",
+    "recipient_form_message": "Message (optional)",
+    "recipient_form_characters_used": "{{ used_chars }}/{{ max_chars }} characters used",
+    "recipient_form_send_on": "YYYY-MM-DD",
+    "recipient_form_send_on_label": "Send on (optional)",
+    "recipient_form_fields_visible": "Recipient form fields are now visible",
+    "recipient_form_fields_hidden": "Recipient form fields are now hidden",
+    "recipient_form_error": "There was an error with the form submission",
+    "product_custom_property_character_count": "{{ used_chars }}/{{ max_chars }} characters used"
   },
-  "gift_card": {
-    "add_to_apple_wallet": "Add to Apple Wallet",
-    "card": "Gift card",
-    "expired": "This gift card has expired",
-    "expires_on": "Expires on {{ expires_on }}",
-    "use_at_checkout": "Use this gift card at checkout"
+  "fields": {
+    // Separates min and max values in price range filter
+    "separator": "to"
   },
-  "password": {
-    "title": "This shop is private",
+  "gift_cards": {
+    "issued": {
+      "how_to_use_gift_card": "Use the gift card code online or QR code in-store",
+      "title": "Here's your {{ value }} gift card balance for {{ shop }}!",
+      "subtext": "Your gift card",
+      "shop_link": "Visit online store",
+      "add_to_apple_wallet": "Add to Apple Wallet",
+      "qr_image_alt": "QR code — scan to redeem gift card",
+      "copy_code": "Copy gift card code",
+      "expiration_date": "Expires {{ expires_on }}",
+      "copy_code_success": "Code copied successfully",
+      "expired": "Expired"
+    }
+  },
+  "placeholders": {
     "password": "Password",
-    "enter": "Enter"
+    "search": "Search",
+    "product_title": "Product title",
+    "collection_title": "Collection title",
+    "blog_posts": "Blog posts",
+    "blog_post_title": "Title",
+    "blog_post_author": "Author",
+    "blog_post_date": "Date",
+    "blog_post_description": "An excerpt of your blog post's content"
   },
-  "search": {
-    "title": "Search",
-    "placeholder": "Search articles, pages, or products",
-    "submit": "Search",
-    "no_results_html": "No results found for {{ terms }}",
-    "results_for_html": "{{ count }} results found for {{ terms }}"
+  "products": {
+    "product": {
+      "add_to_cart": "Add to cart",
+      "adding_to_cart": "Adding...",
+      "added_to_cart": "Added to cart",
+      "add_to_cart_error": "Error adding to cart",
+      "quantity_error_max": "This item has a maximum of {{ maximum }}",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "quantity": "Quantity",
+      "quantity_increments": "Increments of {{ increment }}",
+      "quantity_minimum": "Minimum of {{ minimum }}",
+      "quantity_maximum": "Maximum of {{ maximum }}",
+      "in_cart": "in cart",
+      "default_title": "Default Title",
+      "sticky_add_to_cart": "Quick add to cart bar"
+    }
   }
 }

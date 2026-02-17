@@ -1,0 +1,539 @@
+{%- doc -%}
+  Renders controls for a slider component
+
+  @param {string} [style] - { 'dots' | 'counter' | 'thumbnails' | 'none' } The display style of the controls
+  @param {boolean} [autoplay] - Whether the controls will display an autoplay option
+  @param {number} [item_count] - The total number of slides
+  @param {boolean} [show_arrows] - Whether the controls will display arrows
+  @param {boolean} [arrows_on_media] - Whether the controls will display as floating icons on the media
+  @param {boolean} [controls_on_media] - Whether the controls will display as floating controls on the media
+  @param {media[]} [thumbnails] - Array of media to be displayed as thumbnails, sorted.
+  @param {string} [pagination_position] - { 'left' | 'center' | 'right' } Sets the pagination position, defaults to 'center' if none passed
+  @param {string} [icon_style] - The style of the icon, defaults to 'arrow'
+  @param {string} [shape] - The shape of the control, defaults to 'square'
+  @param {string} [aspect_ratio] - The aspect ratio of thumbnails, if applicable. defaults to 'adapt'
+  @param {number} [thumbnail_radius] - The border radius for thumbnails in pixels
+  @param {string} [class] - Additional classes to apply to the controls
+  @param {boolean} [secondary] - Whether the controls are secondary
+
+  @example
+  {%- render 'slideshow-controls', style: 'dots', item_count: 10 -%}
+{%- enddoc -%}
+
+{%- liquid
+  if aspect_ratio == null
+    assign aspect_ratio = 'adapt'
+  endif
+
+  if pagination_position == null
+    assign pagination_position = 'center'
+  endif
+
+  assign show_arrows_separately = false
+  if style == 'thumbnails' and arrows_on_media == false
+    assign show_arrows_separately = true
+    # Specific case - we want to show the arrows with the thumbnails if everything is off media and centered.
+    if controls_on_media == false and pagination_position == 'center'
+      assign show_arrows_separately = false
+    endif
+  elsif controls_on_media == true and arrows_on_media == false
+    assign show_arrows_separately = true
+  endif
+
+  if pagination_position == 'left' or pagination_position == 'right'
+    assign scroll_mode = 'vertical'
+  else
+    assign scroll_mode = 'horizontal'
+  endif
+-%}
+
+{% unless style == 'none' %}
+  <slideshow-controls
+    {% unless secondary %}
+      ref="slideshowControls"
+    {% endunless %}
+    pagination-position="{{ pagination_position }}"
+    scroll-mode="{{ scroll_mode }}"
+    {% if controls_on_media %}
+      controls-on-media
+    {% endif %}
+    {% if arrows_on_media or icon_style == 'none' %}
+      icons-on-media
+    {% endif %}
+    {% if style == 'thumbnails' %}
+      thumbnails
+    {% endif %}
+    {% if class %}
+      class="{{ class }}"
+    {% endif %}
+    {% if thumbnail_radius %}
+      style="--thumbnail-radius: {{ thumbnail_radius }}px;"
+    {% endif %}
+  >
+    {% if show_arrows_separately == false and show_arrows and pagination_position != 'left' %}
+      <div class="slideshow-controls__arrows">
+        {%- render 'slideshow-arrow', action: 'previous', icon_style: icon_style, icon_shape: shape -%}
+
+        {% if pagination_position == 'right' %}
+          {%- render 'slideshow-arrow', action: 'next', icon_style: icon_style, icon_shape: shape -%}
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if autoplay %}
+      <button
+        type="button"
+        class="slideshow-control button-secondary button-unstyled icon-pause"
+        aria-label="{{ 'accessibility.slideshow_pause' | t }}"
+        on:click="/pause"
+      >
+        {{- 'icon-pause.svg' | inline_asset_content -}}
+      </button>
+      <button
+        type="button"
+        class="slideshow-control button-secondary button-unstyled icon-play"
+        aria-label="{{ 'accessibility.slideshow_play' | t }}"
+        on:click="/play"
+      >
+        {{- 'icon-play.svg' | inline_asset_content -}}
+      </button>
+    {% endif %}
+
+    {% case style %}
+      {% when 'thumbnails' %}
+        <scroll-hint
+          ref="thumbnailsContainer"
+          class="slideshow-controls__thumbnails-container"
+        >
+          <div class="slideshow-controls__thumbnails">
+            {% for media in thumbnails %}
+              <button
+                class="slideshow-control button button-unstyled slideshow-controls__thumbnail"
+                aria-label="{{ 'accessibility.slide_status' | t: index: forloop.index, length: forloop.length }}"
+                on:click="/select/{{ forloop.index0 }}"
+                style="--aspect-ratio: {% if aspect_ratio == 'adapt' %}{{ media.preview_image.aspect_ratio | default: 1.0 }}{% else %}{{ aspect_ratio }}{% endif %};"
+                ref="thumbnails[]"
+                {% if forloop.first %}
+                  aria-selected="true"
+                {% endif %}
+              >
+                {% liquid
+                  assign focal_point_style = ''
+                  if media.presentation.focal_point != blank
+                    assign focal_point_style = 'object-position: ' | append: media.presentation.focal_point | append: ';'
+                  endif
+                %}
+                {{
+                  media.preview_image
+                  | image_url: width: 144
+                  | image_tag: loading: 'lazy', alt: media.alt, style: focal_point_style
+                  | escape
+                }}
+
+                {% if media.media_type == 'video' or media.media_type == 'external_video' %}
+                  <span class="slideshow-controls__thumbnail-badge">
+                    {{ 'icon-play.svg' | inline_asset_content }}
+                  </span>
+                {% elsif media.media_type == 'model' %}
+                  <span class="slideshow-controls__thumbnail-badge">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                      focusable="false"
+                      class="icon"
+                      fill="none"
+                      viewBox="0 0 18 21"
+                    >
+                      {% render 'icon', icon: '3d-model' %}
+                    </svg>
+                  </span>
+                {% endif %}
+              </button>
+            {% endfor %}
+          </div>
+        </scroll-hint>
+      {% when 'counter' %}
+        <div class="slideshow-controls__counter">
+          <span ref="current">1</span><span class="slash">/</span>{{ item_count -}}
+        </div>
+      {% when 'dots' %}
+        <ol class="slideshow-controls__{{ style }}">
+          {% for i in (1..item_count) %}
+            <li>
+              <button
+                class="slideshow-control button button-unstyled"
+                style="animation-timeline: --slide-{{ forloop.index0 }}"
+                aria-label="{{ 'accessibility.slide_status' | t: index: forloop.index, length: forloop.length }}"
+                on:click="/select/{{ forloop.index0 }}"
+                ref="dots[]"
+                {% if forloop.first %}
+                  aria-selected="true"
+                {% endif %}
+              >
+                {{ forloop.index }}
+              </button>
+            </li>
+          {% endfor %}
+        </ol>
+    {% endcase %}
+
+    {% if show_arrows_separately == false and show_arrows and pagination_position != 'right' %}
+      <div class="slideshow-controls__arrows">
+        {% if pagination_position == 'left' %}
+          {%- render 'slideshow-arrow', action: 'previous', icon_style: icon_style, icon_shape: shape -%}
+        {% endif %}
+
+        {%- render 'slideshow-arrow', action: 'next', icon_style: icon_style, icon_shape: shape -%}
+      </div>
+    {% endif %}
+  </slideshow-controls>
+
+  {% if show_arrows_separately and show_arrows %}
+    <div class="slideshow-controls__arrows">
+      {%- render 'slideshow-arrow', action: 'previous', icon_style: icon_style, icon_shape: shape -%}
+      {%- render 'slideshow-arrow', action: 'next', icon_style: icon_style, icon_shape: shape -%}
+    </div>
+  {% endif %}
+{% endunless %}
+
+{% stylesheet %}
+  slideshow-controls {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    scrollbar-width: none;
+    min-height: var(--minimum-touch-target);
+    grid-area: controls;
+
+    &[controls-on-media] {
+      position: absolute;
+      bottom: 0;
+    }
+  }
+
+  slideshow-controls::-webkit-scrollbar {
+    display: none;
+  }
+
+  slideshow-controls button {
+    --color: rgb(var(--color-foreground-rgb) / var(--opacity-30));
+    --color-active: var(--color-foreground);
+    --color-hover: rgb(var(--color-foreground-rgb) / var(--opacity-50));
+
+    display: inline-block;
+    height: var(--minimum-touch-target);
+    width: var(--minimum-touch-target);
+    cursor: pointer;
+  }
+
+  slideshow-controls .icon {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-xs);
+  }
+
+  slideshow-controls[pagination-position='center'] {
+    align-items: center;
+    justify-content: center;
+  }
+
+  slideshow-controls[pagination-position='center'][thumbnails] {
+    width: 100%;
+  }
+
+  slideshow-controls[pagination-position='center']:not([controls-on-media], [thumbnails], [icons-on-media]) {
+    justify-content: space-between;
+  }
+
+  @media screen and (min-width: 750px) {
+    slideshow-controls[thumbnails]:is([pagination-position='right'], [pagination-position='left']) {
+      display: flex;
+      flex-direction: column;
+      height: 0;
+      min-height: 100%;
+
+      .slideshow-controls__thumbnails-container {
+        overflow: hidden auto;
+      }
+
+      &:not([controls-on-media]) {
+        .slideshow-controls__thumbnails-container {
+          position: sticky;
+          top: var(--sticky-header-offset, 0);
+        }
+
+        .slideshow-controls__thumbnails {
+          padding-block-start: var(--focus-outline-offset);
+        }
+      }
+    }
+
+    slideshow-controls:is([pagination-position='right'], [pagination-position='left']) .slideshow-controls__thumbnails {
+      flex-direction: column;
+    }
+
+    slideshow-controls:not([controls-on-media]) {
+      &:is([pagination-position='left'], [pagination-position='right']) .slideshow-controls__thumbnails {
+        padding-block: var(--padding-2xs);
+      }
+
+      &[pagination-position='right'] .slideshow-controls__thumbnails {
+        padding-inline-end: var(--slideshow-thumbnails-padding-inline, var(--focus-outline-offset));
+      }
+
+      &[pagination-position='left'] .slideshow-controls__thumbnails {
+        padding-inline-start: var(--slideshow-thumbnails-padding-inline, var(--focus-outline-offset));
+      }
+    }
+  }
+
+  slideshow-controls:not([controls-on-media])[icons-on-media] {
+    &[pagination-position='right'] {
+      justify-content: flex-end;
+    }
+
+    &[pagination-position='left'] {
+      justify-content: flex-start;
+    }
+  }
+
+  slideshow-controls[controls-on-media] {
+    z-index: var(--layer-raised);
+
+    &:has(.slideshow-controls__dots, .slideshow-controls__counter) {
+      --color-foreground: #fff;
+      --color-foreground-rgb: var(--color-white-rgb);
+    }
+
+    &[pagination-position='right'] {
+      right: 0;
+    }
+
+    &[pagination-position='left'] {
+      left: 0;
+    }
+
+    &[pagination-position='center'] {
+      width: 100%;
+    }
+
+    &:not([thumbnails])[pagination-position='left'] {
+      width: fit-content;
+      align-self: flex-start;
+    }
+
+    &:not([thumbnails])[pagination-position='right'] {
+      width: fit-content;
+      align-self: flex-end;
+    }
+  }
+
+  .slideshow-controls__arrows {
+    display: flex;
+    justify-content: space-between;
+    height: var(--minimum-touch-target);
+    grid-area: arrows;
+
+    button {
+      padding: 0 var(--padding-xs);
+    }
+  }
+
+  .slideshow-controls__dots,
+  .slideshow-controls__counter {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    list-style: none;
+
+    button {
+      --color: rgb(var(--color-foreground-rgb) / var(--opacity-30));
+      --color-active: var(--color-foreground);
+      --color-hover: rgb(var(--color-foreground-rgb) / var(--opacity-50));
+    }
+  }
+
+  slideshow-controls:has(.slideshow-controls__dots),
+  slideshow-component[autoplay] slideshow-controls {
+    mix-blend-mode: difference;
+  }
+
+  .slideshow-controls__dots {
+    gap: 0.6rem;
+    padding: var(--padding-sm) var(--padding-lg);
+    border-radius: 3rem;
+    overflow: hidden;
+
+    button {
+      --size: 0.56rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: calc(var(--size) * 2);
+      height: calc(var(--size) * 2);
+      margin: calc(var(--size) / -2);
+      font-size: 0;
+      border-radius: calc(var(--size));
+
+      &::after {
+        content: '';
+        display: block;
+        background-color: var(--color);
+        height: var(--size);
+        width: var(--size);
+        border-radius: calc(var(--size) / 2);
+        box-shadow: inset 0 0 0 1.5px hsl(0 0% 0% / 0.15);
+
+        @supports not (view-timeline-axis: inline) {
+          &[aria-selected='true'] {
+            --color: var(--color-active);
+          }
+        }
+
+        &:hover {
+          --color: var(--color-hover);
+        }
+      }
+
+      &[aria-selected='true'] {
+        --color: var(--color-active);
+
+        &::after {
+          box-shadow: inset 0 0 0 1.5px hsl(0 0% 0% / 0.4);
+        }
+      }
+    }
+  }
+
+  .slideshow-controls__dots,
+  .slideshow-controls__counter {
+    &:only-child {
+      margin-inline: auto;
+    }
+  }
+
+  .slideshow-controls__counter {
+    color: var(--color-foreground);
+    background-color: rgb(0 0 0 / 40%);
+    width: auto;
+    border-radius: 2rem;
+    padding: 0.3rem var(--padding-sm);
+    margin-inline: var(--margin-sm);
+    backdrop-filter: blur(10px);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--font-size--xs);
+
+    .slash {
+      color: rgb(var(--color-foreground-rgb) / var(--opacity-40));
+      padding-inline: var(--padding-2xs);
+      margin-block-start: -0.1rem;
+    }
+  }
+
+  .slideshow-control[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .slideshow-control--large {
+    .icon-caret {
+      --icon-stroke-width: 1px;
+    }
+
+    .icon-caret {
+      --icon-stroke-width: 1px;
+    }
+
+    .svg-wrapper,
+    svg {
+      width: var(--slideshow-controls-icon);
+      height: var(--slideshow-controls-icon);
+    }
+  }
+
+  /* Slideshow control shape styles */
+  .slideshow-control.slideshow-control--shape-square,
+  .slideshow-control.slideshow-control--shape-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    background-color: var(--color-primary-button-background);
+    color: var(--color-primary-button-text);
+  }
+
+  .slideshow-control.slideshow-control--shape-circle {
+    border-radius: 50%;
+  }
+
+  .slideshow-control.slideshow-control--shape-square {
+    border-radius: 0;
+  }
+
+  .slideshow-control .icon-caret {
+    rotate: -90deg;
+  }
+
+  /* Slideshow Thumbnails */
+  .slideshow-controls__thumbnails-container {
+    display: flex;
+    width: 100%;
+    max-height: 100%;
+    overflow-x: scroll;
+    scrollbar-width: none;
+  }
+
+  .slideshow-controls__thumbnails {
+    display: inline-flex;
+    padding-inline: var(--slideshow-thumbnails-padding-inline, var(--padding-sm));
+    padding-block: var(--slideshow-thumbnails-padding-block, var(--padding-sm));
+    gap: var(--gap-xs);
+    margin-inline: auto;
+    height: fit-content;
+
+    .slideshow-control {
+      border-radius: var(--thumbnail-radius, var(--media-radius));
+      width: clamp(44px, 7vw, var(--thumbnail-width));
+      height: auto;
+      aspect-ratio: var(--aspect-ratio);
+
+      img {
+        height: 100%;
+        object-fit: cover;
+        border-radius: var(--thumbnail-radius, var(--media-radius));
+      }
+
+      &:is([aria-selected='true']) {
+        outline: var(--focus-outline-width) solid currentcolor;
+        outline-offset: calc(var(--focus-outline-offset) / 2);
+        border: var(--style-border-width) solid rgb(var(--color-border-rgb) / var(--media-border-opacity));
+      }
+    }
+  }
+
+  .slideshow-controls__thumbnail {
+    position: relative;
+  }
+
+  .slideshow-controls__thumbnail-badge {
+    position: absolute;
+    top: var(--padding-2xs);
+    right: var(--padding-2xs);
+    width: clamp(16px, 10%, 20px);
+    height: clamp(16px, 10%, 20px);
+    background-color: var(--color-background);
+    border-radius: var(--style-border-radius-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 1px rgb(var(--color-foreground-rgb) / var(--opacity-5));
+  }
+
+  .slideshow-controls__thumbnail-badge svg {
+    width: 60%;
+    height: 60%;
+    fill: var(--color-foreground);
+    opacity: 0.6;
+  }
+{% endstylesheet %}

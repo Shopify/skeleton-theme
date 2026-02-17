@@ -1,0 +1,44 @@
+{% doc %}
+  Renders the predictive search empty state
+
+  @param {number} shadow_opacity - shadow opacity for the empty state container shadow
+  @param {string} products_test_id - a playwright test id, used to differentiate empty state from 'real' search results
+  @param {boolean} [load_empty_state] - Load the empty state or not
+
+  @example
+  {% render 'predictive-search-empty-state', shadow_opacity: 0.1, products_test_id: 'empty-state' %}
+{% enddoc %}
+
+<div
+  id="predictive-search-results"
+  class="predictive-search-dropdown"
+  role="listbox"
+  aria-expanded="true"
+  style="--color-shadow: rgb(var(--color-foreground-rgb) / {{ shadow_opacity }});"
+>
+  {% if load_empty_state %}
+    <div class="predictive-search-results__inner">
+      {% liquid
+        assign collection = settings.empty_state_collection | default: collections.all
+        assign default_title = 'content.search_results_resource_products' | t
+        assign title = settings.empty_state_collection.title | default: default_title
+      %}
+      {% paginate collection.products by 4 %}
+        {% assign products = collection.products %}
+        {% comment %} Only show products section if there are products to display {% endcomment %}
+        {% if products.size > 0 %}
+          {% render 'predictive-search-products-list',
+            products_test_id: products_test_id,
+            title: title,
+            products: products,
+            limit: 4
+          %}
+        {% else %}
+          <div class="predictive-search-results__no-results">
+            <p>{{ 'content.no_products_found' | t }}</p>
+          </div>
+        {% endif %}
+      {% endpaginate %}
+    </div>
+  {% endif %}
+</div>

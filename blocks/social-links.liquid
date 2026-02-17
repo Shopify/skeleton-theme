@@ -1,0 +1,240 @@
+<div
+  class="social-icons__wrapper"
+  {{ block.shopify_attributes }}
+>
+  {% liquid
+    assign social_links = 'facebook_url,instagram_url,youtube_url,tiktok_url,twitter_url,threads_url,linkedin_url,bluesky_url,snapchat_url,pinterest_url,tumblr_url,vimeo_url,custom_url' | split: ','
+  %}
+
+  {% for link_key in social_links %}
+    {% liquid
+      assign link_url = block.settings[link_key]
+      assign render_icon = true
+
+      if link_url != blank
+        # Map setting names to platform names for display and icon purposes
+        case link_key
+          when 'facebook_url'
+            assign platform = 'facebook'
+          when 'instagram_url'
+            assign platform = 'instagram'
+          when 'youtube_url'
+            assign platform = 'youtube'
+          when 'tiktok_url'
+            assign platform = 'tiktok'
+          when 'twitter_url'
+            assign platform = 'twitter'
+          when 'threads_url'
+            assign platform = 'threads'
+          when 'linkedin_url'
+            assign platform = 'linkedin'
+          when 'bluesky_url'
+            assign platform = 'bluesky'
+          when 'snapchat_url'
+            assign platform = 'snapchat'
+          when 'pinterest_url'
+            assign platform = 'pinterest'
+          when 'tumblr_url'
+            assign platform = 'tumblr'
+          when 'vimeo_url'
+            assign platform = 'vimeo'
+          when 'custom_url'
+            # For custom URLs, extract domain from URL for platform identification
+            assign platform = link_url | split: '//' | last | remove: 'www.' | split: '.' | first
+            # Special handling for specific platforms
+            case platform
+              when 'x'
+                assign platform = 'twitter'
+              else
+                assign render_icon = false
+            endcase
+        endcase
+
+        # Check if URL has a profile path (more than just the domain)
+        assign url_parts = link_url | split: '//' | last | split: '/'
+        assign has_profile = false
+
+        if url_parts.size > 1 and url_parts[1] != ''
+          assign has_profile = true
+        endif
+
+        unless render_icon
+          assign has_profile = true
+        endunless
+      endif
+    %}
+
+    {% comment %}
+      Only render the social icon if:
+      1. In editor mode (always show, but may be disabled)
+      2. On storefront AND has a valid profile link
+    {% endcomment %}
+    {% if link_url != blank %}
+      {% if request.design_mode or has_profile %}
+        <div
+          class="social-icons__icon-wrapper{% unless has_profile %} social-icons__icon-wrapper--disabled{% endunless %}"
+        >
+          <a
+            href="{{ link_url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="{{ platform | capitalize }}"
+            {% unless has_profile %}
+              {% if request.design_mode %}
+                onclick="return false;"
+                aria-disabled="true"
+              {% endif %}
+            {% endunless %}
+          >
+            <span class="social-icons__icon-label">{{ platform | capitalize }}</span>
+            {% if render_icon %}
+              <svg
+                class="social-icons__icon icon-default"
+                aria-hidden="true"
+                focusable="false"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                {%- render 'icon', icon: platform -%}
+              </svg>
+            {% endif %}
+          </a>
+        </div>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</div>
+
+{% stylesheet %}
+  .social-icons__wrapper {
+    display: flex;
+    gap: var(--gap-sm);
+    flex-wrap: wrap;
+    justify-content: center;
+
+    @media screen and (min-width: 750px) {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+    }
+  }
+
+  .social-icons__icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--icon-size-lg);
+  }
+
+  .social-icons__icon {
+    display: flex;
+    flex-shrink: 0;
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+  }
+
+  .social-icons__icon {
+    display: none;
+  }
+
+  .social-icons__icon-wrapper:has(.social-icons__icon path) {
+    width: var(--icon-size-lg);
+
+    .social-icons__icon {
+      display: block;
+    }
+
+    .social-icons__icon-label {
+      display: none;
+    }
+  }
+
+  /* Disabled state for editor */
+  .shopify-design-mode .social-icons__icon-wrapper--disabled {
+    opacity: var(--disabled-opacity, 0.5);
+    cursor: not-allowed;
+  }
+
+  .shopify-design-mode .social-icons__icon-wrapper--disabled a {
+    pointer-events: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.social_media_links",
+  "tag": null,
+  "settings": [
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "t:options.facebook"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "t:options.instagram"
+    },
+    {
+      "type": "url",
+      "id": "youtube_url",
+      "label": "t:options.youtube"
+    },
+    {
+      "type": "url",
+      "id": "tiktok_url",
+      "label": "t:options.tiktok"
+    },
+    {
+      "type": "url",
+      "id": "twitter_url",
+      "label": "t:options.twitter"
+    },
+    {
+      "type": "url",
+      "id": "threads_url",
+      "label": "t:options.threads"
+    },
+    {
+      "type": "url",
+      "id": "linkedin_url",
+      "label": "t:options.linkedin"
+    },
+    {
+      "type": "url",
+      "id": "bluesky_url",
+      "label": "t:options.bluesky"
+    },
+    {
+      "type": "url",
+      "id": "snapchat_url",
+      "label": "t:options.snapchat"
+    },
+    {
+      "type": "url",
+      "id": "pinterest_url",
+      "label": "t:options.pinterest"
+    },
+    {
+      "type": "url",
+      "id": "tumblr_url",
+      "label": "t:options.tumblr"
+    },
+    {
+      "type": "url",
+      "id": "vimeo_url",
+      "label": "t:options.vimeo"
+    },
+    {
+      "type": "url",
+      "id": "custom_url",
+      "label": "t:settings.custom_link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.social_media_links",
+      "category": "t:categories.footer"
+    }
+  ]
+}
+{% endschema %}

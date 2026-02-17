@@ -1,0 +1,31 @@
+{%- doc -%}
+  Formats a price value with or without currency code based on settings
+
+  @param {number} price - The price to format (defaults to 0 if not provided)
+  @param {string} [type] - Type of price formatting (defaults to 'regular', only 'per_item' has special behavior)
+
+  @example
+  {% render 'format-price', price: variant.price %}
+  {% render 'format-price', price: variant.price, type: 'per_item' %}
+  {% render 'format-price', price: variant.compare_at_price %}
+{%- enddoc -%}
+
+{% liquid
+  assign price_value = price | default: 0
+  assign price_type = type | default: 'regular'
+
+  assign show_currency = settings.currency_code_enabled_product_pages
+
+  if show_currency
+    assign formatted_price = price_value | money_with_currency
+  else
+    assign formatted_price = price_value | money
+  endif
+
+  if price_type == 'per_item'
+    assign per_item_text = 'content.quantity_per_item' | t
+    assign formatted_price = formatted_price | append: per_item_text
+  endif
+%}
+
+{{- formatted_price -}}

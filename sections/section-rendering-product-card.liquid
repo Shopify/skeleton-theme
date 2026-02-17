@@ -1,0 +1,81 @@
+{% comment %}
+  This section is only to be called by the Section Rendering API. Faster to render a single card than the entire product grid.
+
+  HTML updated based on client-side interactions needs to be rendered here.  It is not important to have the exact
+  same HTML structure as the final rendered product card. The variant-picker.js script will morph specific elements as needed.
+{% endcomment %}
+
+{% liquid
+  if product == blank
+    assign product = closest.product
+  endif
+
+  if settings.transition_to_main_product
+    assign featured_media_url = product.selected_or_first_available_variant.featured_image | image_url: width: 500
+    if featured_media_url == blank
+      assign featured_media_url = product.featured_media.preview_image | image_url: width: 500
+    endif
+  endif
+
+  assign url = product.selected_or_first_available_variant.url
+  unless url
+    assign url = product.first_available_variant.url
+  endunless
+  unless url
+    assign url = product.url
+  endunless
+
+  assign sku = product.selected_or_first_available_variant.sku
+%}
+
+{%- if settings.transition_to_main_product -%}
+  <product-card-link
+    data-product-id="{{ product.id }}"
+    data-featured-media-url="{{ featured_media_url }}"
+    data-product-transition="{{ settings.transition_to_main_product }}"
+  >
+{%- endif -%}
+
+<product-card>
+  <a
+    href="{{ url }}"
+    ref="productCardLink"
+  >
+    <variant-picker>
+      <script type="application/json">
+        {{ product.selected_or_first_available_variant | json }}
+      </script>
+    </variant-picker>
+    {% render 'variant-swatches', product_resource: product, has_option_selected: true %}
+
+    <product-price>
+      {% render 'price', product_resource: product, show_unit_price: true %}
+    </product-price>
+
+    <product-sku-component
+      data-product-id="{{ product.id }}"
+      style="{% if sku == blank %}display: none;{% else %}display: block;{% endif %}"
+    >
+      {% render 'sku', product_resource: product %}
+    </product-sku-component>
+  </a>
+</product-card>
+{%- if settings.transition_to_main_product -%}
+  </product-card-link>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:names.product_card_rendering",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
+    }
+  ]
+}
+{% endschema %}

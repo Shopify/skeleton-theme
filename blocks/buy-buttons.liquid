@@ -1,0 +1,770 @@
+{% liquid
+  assign block_settings = block.settings
+  assign product = closest.product
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+
+  assign variant = closest.product.selected_or_first_available_variant
+  assign inventory_quantity = variant.inventory_quantity
+  assign inventory_policy = variant.inventory_policy
+
+  if variant.inventory_management == 'shopify'
+    assign inventory_managed = true
+  endif
+
+  assign can_add_to_cart = false
+  assign add_to_cart_text = 'products.product.unavailable' | t
+
+  if variant
+    if variant.quantity_rule.min > variant.inventory_quantity and inventory_managed and inventory_policy == 'deny'
+      assign quantity_rule_soldout = true
+    endif
+
+    if variant.available
+      assign can_add_to_cart = true
+      assign add_to_cart_text = 'products.product.add_to_cart' | t
+    elsif inventory_managed and inventory_quantity <= 0 and inventory_policy == 'deny' or quantity_rule_soldout
+      assign can_add_to_cart = false
+      assign add_to_cart_text = 'products.product.sold_out' | t
+    else
+      assign can_add_to_cart = false
+      assign add_to_cart_text = 'products.product.unavailable' | t
+    endif
+  endif
+%}
+
+<span
+  class="buy-buttons-block buy-buttons-block--{{ block.id }}"
+  {{ block.shopify_attributes }}
+>
+  {%- if product != blank -%}
+    {%- assign product_form_id = 'BuyButtons-ProductForm-' | append: section.id -%}
+    <product-form-component
+      data-section-id="{{ section.id }}"
+      data-product-id="{{ product.id }}"
+      data-product-url="{{ product.url }}"
+      on:submit="/handleSubmit"
+      data-quantity-default="{% if product.selected_or_first_available_variant.quantity_rule.min %}{{ product.selected_or_first_available_variant.quantity_rule.min }}{% else %}1{% endif %}"
+      data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
+    >
+      <div
+        class="visually-hidden"
+        aria-live="assertive"
+        role="status"
+        aria-atomic="true"
+        ref="liveRegion"
+      ></div>
+      {%- form 'product', product, id: product_form_id, data-type: 'add-to-cart-form' -%}
+        <input
+          type="hidden"
+          name="id"
+          ref="variantId"
+          value="{{ product.selected_or_first_available_variant.id }}"
+        >
+        {%- if block_settings.gift_card_form and product.gift_card? -%}
+          {%- render 'gift-card-recipient-form', product: product, form: form, section: section, block: block -%}
+        {%- endif -%}
+        <div
+          class="product-form-buttons spacing-style{% if block_settings.stacking %} product-form-buttons--stacked{% endif %}"
+          style="{% render 'spacing-style', settings: block_settings %}"
+          ref="productFormButtons"
+        >
+          {%- liquid
+            assign has_quantity_rules = false
+            if variant.quantity_rule.min > 1 or variant.quantity_rule.increment > 1 or variant.quantity_rule.max != null
+              assign has_quantity_rules = true
+            endif
+          -%}
+
+          {%- if has_quantity_rules -%}
+            {%- assign cart_quantity = cart | item_count_for_variant: variant.id -%}
+            <div
+              class="quantity-label"
+              ref="quantityLabel"
+            >
+              {{ 'products.product.quantity' | t }}
+              <span
+                class="quantity-label__cart-count{% if cart_quantity == 0 %} hidden{% endif %}"
+                ref="quantityLabelCartCount"
+                >({{ cart_quantity }}
+                {{ 'products.product.in_cart' | t }})</span
+              >
+            </div>
+          {%- endif -%}
+
+          {% content_for 'block', type: 'quantity', id: 'quantity' %}
+
+          {%- if has_quantity_rules -%}
+            <div
+              class="quantity-rules"
+              ref="quantityRules"
+            >
+              {%- if variant.quantity_rule.increment > 1 -%}
+                <span class="quantity-rules__item">
+                  {{ 'products.product.quantity_increments' | t: increment: variant.quantity_rule.increment }}
+                </span>
+              {%- endif -%}
+              {%- if variant.quantity_rule.min > 1 -%}
+                <span class="quantity-rules__item">
+                  {{ 'products.product.quantity_minimum' | t: minimum: variant.quantity_rule.min }}
+                </span>
+              {%- endif -%}
+              {%- if variant.quantity_rule.max != null -%}
+                <span class="quantity-rules__item">
+                  {{ 'products.product.quantity_maximum' | t: maximum: variant.quantity_rule.max }}
+                </span>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          {%- if product.quantity_price_breaks_configured? and variant.quantity_price_breaks.size > 0 -%}
+            {%- liquid
+              assign use_currency = settings.currency_code_enabled_product_pages
+            -%}
+            <volume-pricing
+              class="volume-pricing"
+              data-section-id="{{ section.id }}"
+              ref="volumePricing"
+            >
+              <span class="volume-pricing__title">{{ 'content.volume_pricing' | t }}</span>
+              <div class="volume-pricing__table">
+                <div class="volume-pricing__row volume-pricing__row--even">
+                  <span>{{ variant.quantity_rule.min }}+</span>
+                  <span>
+                    {%- if use_currency -%}
+                      {{- variant.price | money_with_currency | strip -}}
+                    {%- else -%}
+                      {{- variant.price | money | strip -}}
+                    {%- endif -%}
+                    /{{ 'content.each_abbreviation' | t -}}
+                  </span>
+                </div>
+                {%- for price_break in variant.quantity_price_breaks limit: 2 -%}
+                  {%- liquid
+                    assign row_index = forloop.index
+                    if row_index == 1
+                      assign row_class = 'volume-pricing__row volume-pricing__row--odd'
+                    else
+                      assign row_class = 'volume-pricing__row volume-pricing__row--even'
+                    endif
+                  -%}
+                  <div class="{{ row_class }}">
+                    <span>{{ price_break.minimum_quantity }}+</span>
+                    <span>
+                      {%- if use_currency -%}
+                        {{- price_break.price | money_with_currency | strip -}}
+                      {%- else -%}
+                        {{- price_break.price | money | strip -}}
+                      {%- endif -%}
+                      /{{ 'content.each_abbreviation' | t -}}
+                    </span>
+                  </div>
+                {%- endfor -%}
+
+                {%- if variant.quantity_price_breaks.size > 2 -%}
+                  <div class="volume-pricing__collapsible-wrapper">
+                    {%- for price_break in variant.quantity_price_breaks offset: 2 -%}
+                      {%- liquid
+                        assign collapsed_index = forloop.index
+                        assign total_index = collapsed_index | plus: 2
+                        assign modulo_result = total_index | modulo: 2
+                        if modulo_result == 1
+                          assign row_class = 'volume-pricing__row volume-pricing__row--odd'
+                        else
+                          assign row_class = 'volume-pricing__row volume-pricing__row--even'
+                        endif
+                      -%}
+                      <div class="{{ row_class }}">
+                        <span>{{ price_break.minimum_quantity }}+</span>
+                        <span>
+                          {%- if use_currency -%}
+                            {{- price_break.price | money_with_currency | strip -}}
+                          {%- else -%}
+                            {{- price_break.price | money | strip -}}
+                          {%- endif -%}
+                          /{{ 'content.each_abbreviation' | t -}}
+                        </span>
+                      </div>
+                    {%- endfor -%}
+                  </div>
+
+                  <button
+                    type="button"
+                    class="volume-pricing__toggle button-unstyled"
+                    ref="volumePricingToggle"
+                    on:click="/toggleExpanded"
+                  >
+                    <span class="volume-pricing__toggle-text">
+                      <span class="volume-pricing__show-more">+ {{ 'actions.show_more' | t }}</span>
+                      <span class="volume-pricing__show-less">- {{ 'actions.show_less' | t }}</span>
+                    </span>
+                  </button>
+                {%- endif -%}
+              </div>
+            </volume-pricing>
+          {%- endif -%}
+          {%- unless block_settings.gift_card_form and product.gift_card? -%}
+            <span
+              class="product-form-text__error hidden"
+              ref="addToCartTextError"
+            >
+              <span class="svg-wrapper">
+                {{- 'icon-error.svg' | inline_asset_content -}}
+              </span>
+            </span>
+          {%- endunless -%}
+
+          {% content_for 'block',
+            type: 'add-to-cart',
+            id: 'add-to-cart',
+            can_add_to_cart: can_add_to_cart,
+            add_to_cart_text: add_to_cart_text
+          %}
+
+          {% content_for 'block',
+            type: 'accelerated-checkout',
+            id: 'accelerated-checkout',
+            can_add_to_cart: can_add_to_cart,
+            form_obj: form
+          %}
+        </div>
+      {%- endform -%}
+    </product-form-component>
+  {%- else -%}
+    <div class="product-form-buttons">
+      <button
+        type="submit"
+        name="add"
+        class="button"
+        disabled
+      >
+        {{ 'blocks.sold_out' | t }}
+      </button>
+    </div>
+  {%- endif -%}
+</span>
+
+{% if block_settings.show_pickup_availability %}
+  <script
+    src="{{ 'local-pickup.js' | asset_url }}"
+    type="module"
+  ></script>
+
+  {%- assign pick_up_availabilities = closest.product.selected_or_first_available_variant.store_availabilities
+    | where: 'pick_up_enabled', true
+  -%}
+
+  <local-pickup
+    class="spacing-style product__pickup-availabilities"
+    {% if pick_up_availabilities.size == 0 %}
+      hidden
+    {% endif %}
+    data-section-id="{{ section.id }}"
+    data-product-url="{{ closest.product.url }}"
+    data-variant-id="{{ closest.product.selected_or_first_available_variant.id }}"
+    style="{% render 'spacing-style', settings: block_settings %}"
+    ref="localPickupButton"
+  >
+    {% if can_add_to_cart %}
+      <dialog-component>
+        <div class="pickup-availability__row">
+          <div class="pickup-availability__column">
+            <span class="svg-wrapper">
+              {% if pick_up_availabilities.first.available %}
+                {{- 'icon-available.svg' | inline_asset_content -}}
+              {% else %}
+                {{- 'icon-unavailable.svg' | inline_asset_content -}}
+              {% endif %}
+            </span>
+          </div>
+          <div class="pickup-availability__column">
+            {% if pick_up_availabilities.first.available %}
+              <p class="pickup-location__text-sm">
+                {{ 'content.pickup_available_at_html' | t: location: pick_up_availabilities.first.location.name }}
+              </p>
+              <p class="pickup-location__text-xs">
+                {{ 'content.pickup_ready_in' | t: pickup_time: pick_up_availabilities.first.pick_up_time }}
+              </p>
+            {% else %}
+              <p class="pickup-location__text-sm">
+                {{ 'content.pickup_not_available' | t }}
+              </p>
+            {% endif %}
+            <button
+              on:click="/showDialog"
+              class="button-unstyled pickup-location__button"
+            >
+              {{ 'actions.view_store_information' | t }}
+            </button>
+          </div>
+        </div>
+        <dialog
+          ref="dialog"
+          class="dialog-modal dialog-drawer pickup-location__dialog color-{{ settings.drawer_color_scheme }}"
+          scroll-lock
+          aria-labelledby="pickup-dialog-heading"
+          data-testid="pickup-location-dialog"
+        >
+          <h2
+            id="pickup-dialog-heading"
+            class="visually-hidden"
+          >
+            {{ 'actions.view_store_information' | t }}
+          </h2>
+          <div class="pickup-availability__dialog-row pickup-availability__header-container">
+            <div class="pickup-availability__column">
+              <h4 class="pickup-location__h4">{{ closest.product.title }}</h4>
+              {% unless closest.product.has_only_default_variant %}
+                <p class="pickup-location__text-sm">
+                  {{ closest.product.selected_or_first_available_variant.title }}
+                </p>
+              {% endunless %}
+            </div>
+            <button
+              ref="closeButton"
+              on:click="/closeDialog"
+              class="button button-unstyled close-button pickup-location__close-button"
+              aria-label="{{ 'actions.close_dialog' | t }}"
+            >
+              <span class="svg-wrapper">
+                {{- 'icon-close.svg' | inline_asset_content -}}
+              </span>
+            </button>
+          </div>
+          {% for pick_up_availability in pick_up_availabilities %}
+            <div class="pickup-location__wrapper">
+              <p class="pickup-location__text-bold">{{ pick_up_availability.location.name }}</p>
+              <div class="pickup-location__address-wrapper">
+                <span class="pickup-location__availability-wrapper">
+                  {% if pick_up_availability.available %}
+                    {{- 'icon-available.svg' | inline_asset_content -}}
+                    {% assign pickup_time = pick_up_availability.pick_up_time | downcase %}
+                    {{ 'content.pickup_available_in' | t: pickup_time: pickup_time }}
+                  {% else %}
+                    {{- 'icon-unavailable.svg' | inline_asset_content -}}
+                    {{ 'content.pickup_not_available' | t }}
+                  {% endif %}
+                </span>
+                <address class="pickup-location__address">
+                  {{ pick_up_availability.location.address | format_address }}
+                  {{ pick_up_availability.location.address.phone }}
+                </address>
+              </div>
+            </div>
+          {% endfor %}
+        </dialog>
+      </dialog-component>
+    {% endif %}
+  </local-pickup>
+{% endif %}
+
+{% stylesheet %}
+  .buy-buttons-block {
+    --buy-button-preferred-width: 185px;
+
+    width: 100%;
+  }
+
+  .product-form-buttons {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .product-form-buttons:not(:has(.quantity-rules)) {
+    gap: calc(var(--gap-sm) / 2);
+
+    @media screen and (min-width: 750px) {
+      gap: var(--gap-sm);
+    }
+  }
+
+  .product-form-buttons > *:not(.quantity-selector-wrapper, .quantity-rules, .quantity-label, .volume-pricing) {
+    flex: 1 1 var(--buy-button-preferred-width, 0);
+    min-width: fit-content;
+  }
+
+  .product-form-buttons--stacked
+    > *:not(.quantity-selector-wrapper, .quantity-rules, .quantity-label, .volume-pricing) {
+    flex-basis: 51%;
+  }
+
+  .product-form-buttons button {
+    width: 100%;
+    padding-block: var(--padding-lg);
+  }
+
+  .quantity-selector {
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: var(--height-buy-buttons);
+  }
+
+  .quantity-label {
+    flex: 1 0 100%;
+    width: 100%;
+    font-size: var(--font-size--sm);
+    margin-block-end: var(--gap-xs);
+  }
+
+  .quantity-label__cart-count {
+    color: var(--color-foreground-secondary);
+  }
+
+  .quantity-rules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    row-gap: calc(var(--gap-xs) / 2);
+    flex: 1 0 100%;
+    width: 100%;
+    font-size: var(--font-size--xs);
+    color: var(--color-foreground-secondary);
+    margin-block-start: var(--gap-xs);
+    margin-block-end: var(--gap);
+  }
+
+  .product-form-buttons:has(~ .volume-pricing .volume-pricing__title) .quantity-rules {
+    margin-block-end: var(--gap-md);
+  }
+
+  .quantity-rules__item {
+    position: relative;
+    display: inline-block;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+  }
+
+  .quantity-rules__item:not(:last-child) {
+    padding-right: var(--padding-xl);
+    margin-right: var(--margin-2xs);
+  }
+
+  .quantity-rules__item:not(:last-child)::after {
+    content: '•';
+    position: absolute;
+    inset-inline-end: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.5em;
+    line-height: 0;
+  }
+
+  .add-to-cart-button {
+    height: var(--height-buy-buttons);
+    text-transform: var(--button-text-case-primary);
+  }
+
+  .add-to-cart-button.button-secondary {
+    text-transform: var(--button-text-case-secondary);
+  }
+
+  .product-form-text__error {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gap-xs);
+    margin-block-end: var(--gap-xs);
+  }
+
+  .product__pickup-availabilities {
+    width: 100%;
+  }
+
+  .pickup-availability__column {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .pickup-availability__row {
+    display: flex;
+    gap: var(--padding-xs);
+  }
+
+  .pickup-availability__dialog-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .pickup-availability__header-container {
+    padding-block-end: var(--padding-2xl);
+  }
+
+  .pickup-location__wrapper {
+    display: flex;
+    flex-direction: column;
+    padding-block: var(--padding-2xl);
+    border-top: 1px solid var(--color-border);
+    gap: var(--padding-xs);
+  }
+
+  .pickup-location__address-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-md);
+  }
+
+  .pickup-location__dialog {
+    padding: var(--padding-2xl);
+    position: fixed;
+    border-radius: 0;
+    width: var(--sidebar-width);
+    max-width: 95vw;
+    height: 100%;
+    margin: 0 0 0 auto;
+    border: var(--style-border-drawer);
+    box-shadow: var(--shadow-drawer);
+    background-color: var(--color-background);
+  }
+
+  .pickup-location__dialog:modal {
+    max-height: 100dvh;
+  }
+
+  .pickup-location__text-sm {
+    font-size: var(--font-size--sm);
+    margin: 0;
+  }
+
+  .pickup-location__text-xs {
+    font-size: var(--font-size--xs);
+    margin: 0;
+  }
+
+  .pickup-location__button {
+    width: fit-content;
+    color: var(--color-primary);
+    font-size: var(--font-size--xs);
+    font-family: var(--font-body--family);
+    padding: 0;
+    cursor: pointer;
+    margin-block: var(--margin-xs);
+  }
+
+  .pickup-location__button:hover {
+    color: var(--color-primary-hover);
+  }
+
+  .pickup-location__h4 {
+    margin: 0;
+  }
+
+  .pickup-location__text-bold {
+    font-size: var(--font-size--md);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .pickup-location__availability-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    font-family: var(--font-paragraph--family);
+  }
+
+  .pickup-location__address {
+    font-style: normal;
+  }
+
+  .pickup-location__close-button {
+    top: calc(var(--padding-2xl) - (var(--icon-size-xs) / 2));
+    right: calc(var(--padding-2xl) - var(--icon-size-xs));
+  }
+
+  .volume-pricing {
+    display: block;
+    width: 100%;
+    margin-bottom: var(--gap);
+  }
+
+  .volume-pricing:not(:has(.volume-pricing__title)) {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .volume-pricing__title {
+    display: block;
+    margin-block-end: var(--gap-sm);
+    font-size: var(--font-size--sm);
+    font-weight: var(--font-body--weight);
+    color: var(--color-foreground);
+  }
+
+  .volume-pricing__table {
+    width: 100%;
+  }
+
+  .volume-pricing__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: var(--padding-sm);
+    padding-inline: var(--padding-md);
+    font-size: var(--font-size--sm);
+  }
+
+  .volume-pricing__row--even {
+    background: rgb(var(--color-foreground-rgb) / var(--opacity-5));
+  }
+
+  .volume-pricing__row--odd {
+    background: var(--color-background);
+  }
+
+  .volume-pricing__collapsible-wrapper {
+    block-size: 0;
+    overflow-y: clip;
+    opacity: 0;
+    interpolate-size: allow-keywords;
+    transition: opacity var(--animation-speed-slow) var(--animation-easing),
+      block-size var(--animation-speed-slow) var(--animation-easing);
+  }
+
+  .volume-pricing__toggle {
+    width: 100%;
+    padding-bottom: 0;
+    padding-inline: 0;
+    text-align: left;
+    color: var(--color-foreground-secondary);
+    font-size: var(--font-size--xs);
+    cursor: default;
+    margin-block-start: 0;
+    pointer-events: none;
+  }
+
+  button.volume-pricing__toggle {
+    /* Need the extra specificity to override .product-form-buttons button */
+    padding-block: var(--padding-sm);
+  }
+
+  .volume-pricing__toggle-text {
+    cursor: pointer;
+    display: inline-block;
+    pointer-events: auto;
+  }
+
+  .volume-pricing__show-less {
+    display: none;
+  }
+
+  .volume-pricing--expanded .volume-pricing__collapsible-wrapper {
+    opacity: 1;
+    block-size: auto;
+
+    @starting-style {
+      block-size: 0;
+      opacity: 0;
+      overflow-y: clip;
+    }
+  }
+
+  .volume-pricing--expanded .volume-pricing__show-more {
+    display: none;
+  }
+
+  .volume-pricing--expanded .volume-pricing__show-less {
+    display: inline;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.product_buy_buttons",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:content.resource_reference_product"
+    },
+    {
+      "type": "checkbox",
+      "id": "stacking",
+      "label": "t:settings.always_stack_buttons",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pickup_availability",
+      "label": "t:settings.show_pickup_availability",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "gift_card_form",
+      "label": "t:settings.gift_card_form",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "t:content.gift_card_form_description"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.product_buy_buttons",
+      "category": "t:categories.product",
+      "blocks": {
+        "quantity": {
+          "type": "quantity",
+          "static": true
+        },
+        "add-to-cart": {
+          "type": "add-to-cart",
+          "static": true,
+          "settings": {
+            "style_class": "button-secondary"
+          }
+        },
+        "accelerated-checkout": {
+          "type": "accelerated-checkout",
+          "static": true
+        }
+      }
+    }
+  ]
+}
+{% endschema %}

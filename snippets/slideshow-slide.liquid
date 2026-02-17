@@ -1,0 +1,62 @@
+{%- doc -%}
+  Renders a slideshow slide component.
+
+  @param {number} index - the zero-based index of the slide
+  @param {string} [children] - The content of the slideshow slide
+  @param {string} [class] - HTML class attribute of the slideshow slide
+  @param {string} [style] - HTML style attribute of the slideshow slide
+  @param {string} [attributes] - Additional HTML attributes to add to the slideshow slide
+  @param {boolean} [hidden] - Hidden slides will not be shown in the slideshow
+  @param {string} [slide_size] - The size of the slide (small, medium, large)
+  @param {string} [slide_id] - The unique id assigned to the slide amongst all slides in the slideshow
+  @param {string} [media_fit] - { 'cover', 'contain' } - CSS property for how the media should be fit in the slide
+  @param {boolean} [navigate_to_slide] - Whether the user can click to navigate to the slide
+
+  @example
+  {% render 'slideshow-slide', index: 0, children: imageElement, slide_id: 'slide-1', hidden: false, media_fit: 'cover' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign class = class | strip | strip_newlines
+  assign style = style | strip | strip_newlines
+
+  assign grid_template_rows = '--grid-template-rows: 50dvh 1fr;'
+  assign grid_template_rows_desktop = '--grid-template-rows-desktop: 70dvh 1fr;'
+
+  case slide_size
+    when 'small'
+      assign grid_template_rows = grid_template_rows | replace: '50dvh', '30dvh'
+      assign grid_template_rows_desktop = grid_template_rows_desktop | replace: '70dvh', '40dvh'
+    when 'medium'
+      assign grid_template_rows = grid_template_rows | replace: '50dvh', '35dvh'
+      assign grid_template_rows_desktop = grid_template_rows_desktop | replace: '70dvh', '50dvh'
+    when 'large'
+      assign grid_template_rows = grid_template_rows | replace: '50dvh', '40dvh'
+      assign grid_template_rows_desktop = grid_template_rows_desktop | replace: '70dvh', '60dvh'
+  endcase
+-%}
+
+<slideshow-slide
+  ref="slides[]"
+  aria-hidden="{% if index == 0 %}false{% else %}true{% endif %}"
+  style="--slideshow-timeline: --slide-{{ index }}; --product-media-fit: {{ media_fit | default: 'cover' }}; {{ grid_template_rows }} {{ grid_template_rows_desktop }}"
+  {% if class != blank %}
+    class="{{ class }}"
+  {% endif %}
+  {{ attributes }}
+  {% if style != blank %}
+    style="{{ style }}"
+  {% endif %}
+  {% if slide_id != blank %}
+    slide-id="{{ slide_id }}"
+  {% endif %}
+  {% if hidden == true %}
+    hidden
+  {% endif %}
+  {% if navigate_to_slide %}
+    on:click="/select/{{ index }}"
+  {% endif %}
+  {{ attributes }}
+>
+  {{ children }}
+</slideshow-slide>

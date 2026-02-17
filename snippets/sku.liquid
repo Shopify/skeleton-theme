@@ -1,0 +1,20 @@
+{%- doc -%}
+  This snippet is used to render a product SKU.
+  It is used in the sku block.
+
+  @param {product} product_resource - The product to render
+{%- enddoc -%}
+
+{%- liquid
+  assign sku = product_resource.selected_or_first_available_variant.sku
+-%}
+
+<div ref="skuContainer">
+  <span
+    class="sku"
+    ref="sku"
+    data-testid="product-sku"
+  >
+    {{- sku -}}
+  </span>
+</div>

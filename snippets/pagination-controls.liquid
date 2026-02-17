@@ -1,0 +1,365 @@
+{%- doc -%}
+  Renders pagination controls with previous/next navigation and page numbers.
+
+  @param {object} paginate - The paginate object
+  @param {string} [ref] - Component reference attribute for the pagination nav element
+  @param {string} [on_click_handler] - Component function to handle pagination clicks.
+
+  When provided the handler will receive URL search params as data. It extracts URL parameters from each pagination link
+  and passes them through the onclick attribute in the format: "on:click='handler?params'". This allows components to
+  intercept pagination and update content via section-renderer. The handler receives an object containing the URL search
+  parameters (e.g., {page: "2"})
+
+  @example
+  {%- paginate collection.products by 24 -%}
+    {%- render 'pagination-controls', paginate: paginate -%}
+  {%- endpaginate -%}
+{%- enddoc -%}
+
+{%- if paginate.pages > 1 -%}
+  <nav
+    class="pagination"
+    aria-label="{{ 'content.pagination.nav_label' | t }}"
+    data-current_page="{{ paginate.current_page }}"
+    {% if ref != blank %}
+      ref="{{ ref }}"
+    {% endif %}
+  >
+    <ul
+      class="pagination__list"
+      role="list"
+    >
+      <li class="pagination__item">
+        {%- if paginate.previous -%}
+          {%- assign prev_params = paginate.previous.url | split: '?' | last -%}
+          <a
+            href="{{ paginate.previous.url }}"
+            aria-label="{{ 'content.pagination.previous' | t }}"
+            class="pagination__link pagination__link--arrow"
+            {% if on_click_handler != blank %}
+              on:click="{{ on_click_handler }}?{{ prev_params }}"
+            {% endif %}
+          >
+            {{ 'icon-chevron-left.svg' | inline_asset_content }}
+          </a>
+        {%- else -%}
+          <span
+            aria-label="{{ 'content.pagination.previous' | t }}"
+            class="pagination__link pagination__link--arrow pagination__link--disabled"
+            aria-disabled="true"
+          >
+            {{ 'icon-chevron-left.svg' | inline_asset_content }}
+          </span>
+        {%- endif -%}
+      </li>
+
+      {%- assign current_page = paginate.current_page -%}
+      {%- assign last_visible_page = 0 -%}
+      {%- assign just_saw_ellipsis = false -%}
+
+      {%- for part in paginate.parts -%}
+        {% liquid
+          assign should_hide_on_mobile = false
+          assign is_page_number = false
+          assign page_number = 0
+
+          if part.is_link
+            assign page_number = part.title | plus: 0
+            if page_number > 0
+              assign is_page_number = true
+              assign distance_from_current = page_number | minus: current_page | abs
+              if page_number != 1 and page_number != paginate.pages and distance_from_current > 1
+                assign should_hide_on_mobile = true
+              endif
+            endif
+          elsif part.is_link == false and part.title != '&hellip;'
+            assign is_page_number = true
+            assign page_number = current_page
+          endif
+
+          if part.title == '&hellip;'
+            assign just_saw_ellipsis = true
+          else
+            if is_page_number and should_hide_on_mobile == false
+              assign last_visible_plus_one = last_visible_page | plus: 1
+              if last_visible_page > 0 and page_number > last_visible_plus_one and just_saw_ellipsis == false
+                echo '<li class="pagination__item pagination__item--mobile-only pagination__item--gap">'
+                echo '<span class="pagination__link pagination__link--gap" aria-hidden="true">&hellip;</span>'
+                echo '</li>'
+              endif
+              assign last_visible_page = page_number
+              assign just_saw_ellipsis = false
+            endif
+          endif
+        %}
+
+        {% liquid
+          assign li_classes = 'pagination__item'
+          if should_hide_on_mobile
+            assign li_classes = li_classes | append: ' pagination__item--mobile-hide'
+          endif
+          if part.title == '&hellip;'
+            assign li_classes = li_classes | append: ' pagination__item--gap'
+          endif
+        %}
+        <li class="{{ li_classes }}">
+          {%- if part.is_link -%}
+            {%- assign part_params = part.url | split: '?' | last -%}
+            <a
+              href="{{ part.url }}"
+              aria-label="{{ 'content.pagination.page' | t: page: part.title }}"
+              class="pagination__link pagination__link--page"
+              {% if on_click_handler != blank %}
+                on:click="{{ on_click_handler }}?{{ part_params }}"
+              {% endif %}
+            >
+              {{ part.title }}
+            </a>
+          {%- else -%}
+            {%- if part.title == '&hellip;' -%}
+              <span
+                class="pagination__link pagination__link--gap"
+                aria-hidden="true"
+                >&hellip;</span
+              >
+            {%- else -%}
+              <span
+                class="pagination__link pagination__link--page pagination__link--current"
+                aria-current="page"
+              >
+                {{- part.title -}}
+              </span>
+            {%- endif -%}
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+
+      <li class="pagination__item">
+        {%- if paginate.next -%}
+          {%- assign next_params = paginate.next.url | split: '?' | last -%}
+          <a
+            href="{{ paginate.next.url }}"
+            aria-label="{{ 'content.pagination.next' | t }}"
+            class="pagination__link pagination__link--arrow"
+            {% if on_click_handler != blank %}
+              on:click="{{ on_click_handler }}?{{ next_params }}"
+            {% endif %}
+          >
+            {{ 'icon-chevron-right.svg' | inline_asset_content }}
+          </a>
+        {%- else -%}
+          <span
+            aria-label="{{ 'content.pagination.next' | t }}"
+            class="pagination__link pagination__link--arrow pagination__link--disabled"
+            aria-disabled="true"
+          >
+            {{ 'icon-chevron-right.svg' | inline_asset_content }}
+          </span>
+        {%- endif -%}
+      </li>
+    </ul>
+  </nav>
+{%- endif -%}
+
+{% stylesheet %}
+  .pagination {
+    --pagination-size: 36px;
+    --pagination-inset: 2px;
+    --pagination-radius: 6;
+
+    display: flex;
+    justify-content: center;
+    padding: var(--padding-xl) var(--padding-sm);
+    margin-top: var(--padding-xl);
+    position: relative;
+  }
+
+  .pagination__list {
+    display: flex;
+    gap: 0;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+
+  .pagination__item {
+    width: var(--pagination-size);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+  }
+
+  .pagination__link {
+    display: grid;
+    place-items: center;
+    color: var(--color-foreground);
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    position: relative;
+    outline-color: var(--color-foreground);
+    -webkit-tap-highlight-color: transparent;
+    font-size: var(--font-size--md);
+    font-weight: var(--font-weight-normal);
+    border-radius: calc(var(--pagination-radius) * 1px);
+    transition: color var(--hover-transition-duration) var(--hover-transition-timing),
+      opacity var(--hover-transition-duration) var(--hover-transition-timing);
+  }
+
+  .pagination__link:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .pagination__link--current {
+    color: var(--color-background);
+    font-weight: var(--font-weight-medium);
+    cursor: default;
+  }
+
+  .pagination__link--gap {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .pagination__link--arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pagination__link--disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .pagination__link svg {
+    width: 0.5rem;
+    height: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .pagination__item--mobile-only {
+    display: none;
+  }
+
+  /* Fallback for browsers without anchor positioning support */
+  @supports not (anchor-name: --pagination-active) {
+    .pagination__link:not(.pagination__link--gap)::before {
+      content: '';
+      position: absolute;
+      inset: var(--pagination-inset);
+      border-radius: calc(var(--pagination-radius) * 1px);
+      background: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+      z-index: -1;
+      opacity: 0;
+      transition: background var(--hover-transition-duration) var(--hover-transition-timing),
+        opacity var(--hover-transition-duration) var(--hover-transition-timing);
+    }
+
+    .pagination__link[aria-current='page']::before {
+      background: var(--color-foreground);
+      opacity: 1;
+    }
+
+    .pagination__link:hover:not([aria-current='page'], .pagination__link--gap, .pagination__link--disabled)::before {
+      opacity: 1;
+    }
+  }
+
+  /* Modern approach with anchor positioning */
+  @supports (anchor-name: --pagination-active) {
+    .pagination__list::before {
+      content: '';
+      z-index: -1;
+      position: absolute;
+      width: calc(var(--pagination-size) - (2 * var(--pagination-inset)));
+      aspect-ratio: 1;
+      pointer-events: none;
+      opacity: 0;
+      border-radius: calc(var(--pagination-radius) * 1px);
+      background: rgb(var(--color-foreground-rgb) / var(--opacity-10));
+      transition: left var(--hover-transition-duration) var(--hover-transition-timing),
+        top var(--hover-transition-duration) var(--hover-transition-timing);
+    }
+
+    /* Hide hover indicator on touch devices */
+    @media (hover: none) and (pointer: coarse) {
+      .pagination__list::before {
+        content: unset;
+      }
+    }
+
+    .pagination__list:has(
+        .pagination__link:is(:hover, :focus-visible):not(.pagination__link--gap, .pagination__link--disabled))::before {
+      opacity: 1;
+    }
+
+    /* Style current page directly */
+    .pagination__link[aria-current='page']::before {
+      content: '';
+      position: absolute;
+      inset: var(--pagination-inset);
+      border-radius: calc(var(--pagination-radius) * 1px);
+      background: var(--color-foreground);
+      z-index: -1;
+    }
+
+    .pagination__list
+      .pagination__item:has(
+        .pagination__link:is(:hover, :focus-visible):not(.pagination__link--gap, .pagination__link--disabled)) {
+      anchor-name: --pagination-hover;
+    }
+
+    /* Position hover indicator using anchor */
+    .pagination__list::before {
+      position-anchor: --pagination-hover;
+      left: calc(anchor(left) + var(--pagination-inset));
+      top: calc(anchor(top) + var(--pagination-inset));
+    }
+
+    .pagination__item:has(+ .pagination__item--gap) .pagination__link::after,
+    .pagination__item--gap + .pagination__item .pagination__link::after {
+      position: absolute;
+      content: '';
+      pointer-events: auto;
+    }
+
+    .pagination__item:has(+ .pagination__item--gap) .pagination__link::after {
+      inset: 0 -50% 0 100%;
+    }
+
+    .pagination__item--gap + .pagination__item .pagination__link::after {
+      inset: 0 100% 0 -50%;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .pagination {
+      --pagination-size: 44px;
+      --pagination-inset: 5px;
+
+      padding: var(--padding-lg) var(--padding-sm);
+    }
+
+    .pagination__link {
+      font-size: var(--font-size--sm);
+    }
+
+    .pagination__item--mobile-hide {
+      display: none;
+    }
+
+    .pagination__item--mobile-only {
+      display: grid;
+    }
+
+    .pagination__item:has(.pagination__link--gap) {
+      width: calc(var(--pagination-size) * 0.5);
+    }
+  }
+{% endstylesheet %}

@@ -1,0 +1,48 @@
+{%- liquid
+  assign product_has_swatches = false
+  for product_option in closest.product.options_with_values
+    assign swatch_count = product_option.values | map: 'swatch' | compact | size
+    if swatch_count > 0
+      assign product_has_swatches = true
+      break
+    endif
+  endfor
+-%}
+
+{% capture product_card_children %}
+  <div class="featured-product-content-top">
+    {% content_for 'block', type: 'product-title', id: 'featured-product-title' %}
+
+    {% content_for 'block', type: '_featured-product-price', id: 'featured-product-price' %}
+  </div>
+  {% content_for 'block', type: '_featured-product-gallery', id: 'featured-product-gallery' %}
+  {% if product_has_swatches %}
+    <div class="featured-product-content-bottom">
+      {%- content_for 'block', type: 'swatches', id: 'featured-product-swatches' -%}
+    </div>
+  {% endif %}
+{% endcapture %}
+
+{% render 'product-card', children: product_card_children, product: closest.product, product_card_gap: 8 %}
+
+{% stylesheet %}
+  .featured-product-content-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--gap-sm);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.product",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:content.resource_reference_product_card"
+    }
+  ]
+}
+{% endschema %}

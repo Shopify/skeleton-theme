@@ -1,0 +1,262 @@
+{% liquid
+  assign slide_count = block.blocks.size
+  assign icons_style = section.settings.icons_style
+
+  assign color_scheme_class = ''
+  if block.settings.inherit_color_scheme == false
+    assign color_scheme_class = 'color-' | append: block.settings.color_scheme
+  endif
+
+  if section.settings.section_width == 'page-width'
+    assign slideshow_gutters = 'start end'
+    assign gutter_style = '--gutter-slide-width: var(--util-page-margin-offset);'
+  else
+    assign slideshow_gutters = null
+    assign gutter_style = '--gutter-slide-width: 0px;'
+  endif
+
+  assign show_arrows = false
+  if icons_style != 'none'
+    assign show_arrows = true
+  endif
+
+  assign slide_position = block.settings.position
+  if block.settings.height == 'fill'
+    assign slide_position = 'stretch'
+  endif
+-%}
+
+{% capture blocks_content %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+
+{% capture slideshow_style %}
+  --carousel-columns: {{ section.settings.columns }};
+  --carousel-mobile-columns: {{ section.settings.mobile_columns }};
+  {% render 'gap-style', value: section.settings.columns_gap, name: 'carousel-gap' %}
+  {% render 'spacing-style', settings: block.settings %}
+  {% render 'border-override', settings: block.settings %}
+{% endcapture %}
+
+{% assign slideshow_class = 'carousel-content spacing-style ' | append: color_scheme_class %}
+<div
+  class="force-full-width"
+  style="{{ gutter_style }}"
+>
+  {% render 'slideshow',
+    class: slideshow_class,
+    style: slideshow_style,
+    slides: blocks_content,
+    show_arrows: show_arrows,
+    icon_style: icons_style,
+    icon_shape: section.settings.icons_shape,
+    auto_hide_controls: false,
+    infinite: false,
+    initial_slide: 0,
+    slide_count: slide_count,
+    slide_position: slide_position,
+    slideshow_gutters: slideshow_gutters,
+    attributes: block.shopify_attributes
+  %}
+</div>
+
+{% stylesheet %}
+  .carousel-content slideshow-slides {
+    --slideshow-gap: var(--carousel-gap);
+  }
+
+  .carousel-content slideshow-slides > .card {
+    flex: 0 0 auto;
+    width: calc(
+      (100% - (var(--carousel-gap, 8px) * (var(--carousel-mobile-columns, 2) - 1)) - var(--peek-next-slide-size, 0px)) /
+        var(--carousel-mobile-columns, 2)
+    );
+  }
+
+  @media screen and (min-width: 750px) {
+    .carousel-content slideshow-slides > .card {
+      width: calc(
+        (100% - (var(--carousel-gap, 8px) * (var(--carousel-columns, 4) - 1)) - var(--peek-next-slide-size, 0px)) /
+          var(--carousel-columns, 4)
+      );
+    }
+  }
+
+  .carousel-content .slideshow-control[disabled] {
+    display: none;
+  }
+
+  .carousel-content slideshow-arrows {
+    padding-inline: var(--util-page-margin-offset);
+  }
+
+  .carousel-content .slideshow-control--next {
+    margin-inline-start: auto;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.carousel_content",
+  "blocks": [
+    {
+      "type": "_card"
+    }
+  ],
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:settings.card_height",
+      "options": [
+        {
+          "value": "fit",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "t:settings.position",
+      "options": [
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        }
+      ],
+      "visible_if": "{{ block.settings.height == \"fit\" }}",
+      "default": "top"
+    },
+    {
+      "type": "header",
+      "content": "t:content.borders"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "solid",
+          "label": "t:options.solid"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.thickness",
+      "default": 1,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "t:settings.opacity",
+      "default": 100,
+      "visible_if": "{{ block.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:settings.border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.carousel_content",
+      "category": "t:categories.layout"
+    }
+  ]
+}
+{% endschema %}

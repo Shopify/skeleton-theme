@@ -1,0 +1,309 @@
+{%- doc -%}
+  Renders a quick add component.
+
+  @param {object} product - The product object
+  @param {string} section_id - The section ID
+  @param {object} [block] - The block object
+  @param {string} [color_scheme] - The color scheme to use
+{%- enddoc -%}
+
+{% liquid
+  assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: block.id
+  assign add_to_cart_text = 'actions.add' | t
+  assign choose_options_text = 'actions.choose' | t
+  assign color_scheme = color_scheme | default: settings.quick_add_color_scheme
+
+  # Logic to determine which variant to use (matching swatch selection logic from product-card)
+  assign variant = product.selected_or_first_available_variant
+
+  if variant.available
+    assign can_add_to_cart = true
+  else
+    assign can_add_to_cart = false
+  endif
+
+  assign quick_add_button = 'choose'
+  if product.variants_count == 1 or product.options.size == 1 and product.selected_variant
+    assign quick_add_button = 'add'
+  endif
+%}
+
+<quick-add-component
+  class="quick-add color-{{ color_scheme }} "
+  ref="quickAdd"
+  data-product-title="{{ product.title }}"
+  data-quick-add-button="{{ quick_add_button }}"
+  data-product-options-count="{{ product.options.size }}"
+>
+  <product-form-component
+    data-section-id="{{ section_id }}"
+    data-product-id="{{ product.id }}"
+    on:submit="/handleSubmit"
+    class="quick-add__product-form-component"
+  >
+    <div
+      class="visually-hidden"
+      aria-live="assertive"
+      role="status"
+      aria-atomic="true"
+      ref="liveRegion"
+    ></div>
+    {%- form 'product', product, id: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+      <input
+        type="hidden"
+        name="id"
+        ref="variantId"
+        value="{{ variant.id }}"
+        {% if variant.available == false %}
+          disabled
+        {% endif %}
+      >
+      <input
+        type="hidden"
+        name="quantity"
+        value="{% if variant.quantity_rule.min %}{{ variant.quantity_rule.min }}{% else %}1{% endif %}"
+      >
+      {% comment %}
+        Both Add and Choose buttons are rendered in the DOM, but only one is shown based on the data-quick-add-button attribute.
+
+        Logic for Add vs. Choose buttons:
+          Display "Add" button and add directly to cart if:
+            - There is only one variant on the product
+            - There is only one product option, and it is displayed as swatches on the product card, and a swatch is selected
+          Display "Choose" button and show the quick-add modal if:
+            - There is only one product option, and it is displayed as swatches on the product card, and no swatch is selected
+            - There is more than one product option
+      {% endcomment %}
+      {% render 'add-to-cart-button',
+        add_to_cart_text: add_to_cart_text,
+        class: 'button quick-add__button quick-add__button--add add-to-cart-button',
+        can_add_to_cart: can_add_to_cart,
+        icon_only_on_mobile: true,
+        product: product
+      %}
+
+      <button
+        class="button quick-add__button quick-add__button--choose add-to-cart-button"
+        {% comment %} type="submit" is the default, so we explicitly set it to "button" to prevent the ProductFormComponent.handleSubmit from being triggered {% endcomment %}
+        type="button"
+        name="add"
+        on:click="quick-add-component/handleClick"
+      >
+        <span
+          class="add-to-cart-text"
+        >
+          {% comment %} split the icon and the text with a grid transition {% endcomment %}
+          <span
+            aria-hidden="true"
+            class="svg-wrapper add-to-cart-icon"
+          >
+            {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+          </span>
+          <span class="add-to-cart-text__content is-visually-hidden-mobile">
+            <span>
+              {% comment %} use a double-nested span to bake the padding into the text {% endcomment %}
+              <span>
+                {{ choose_options_text }}
+              </span>
+            </span>
+          </span>
+        </span>
+      </button>
+    {%- endform -%}
+  </product-form-component>
+</quick-add-component>
+
+{% stylesheet %}
+  /* Quick Add */
+  .quick-add {
+    --quick-add-offset: var(--padding-sm);
+    --quick-add-right: calc(var(--quick-add-offset) + var(--padding-inline-end));
+    --quick-add-bottom: calc(var(--quick-add-offset) + var(--padding-block-end));
+
+    position: absolute;
+    inset: 0;
+    z-index: var(--layer-raised);
+    pointer-events: none;
+
+    @media screen and (min-width: 750px) {
+      --quick-add-offset: var(--padding-md);
+    }
+  }
+
+  .quick-add .variant-option__button-label input[data-option-available='false'] {
+    cursor: not-allowed;
+  }
+
+  .quick-add[class*='color-scheme-'] {
+    background-color: #0000;
+  }
+
+  product-card:is(:hover, :focus-within) .quick-add__button {
+    opacity: 1;
+  }
+
+  .quick-add__button {
+    display: var(--quick-add-mobile-display, none);
+    align-items: center;
+    background: linear-gradient(var(--color-background) 0 100%) padding-box;
+    padding: 0;
+    border-radius: 50px;
+    border: 2px solid hsl(0 0% 0% / 0.15);
+    height: var(--button-size-md);
+    cursor: pointer;
+    opacity: var(--quick-add-mobile-opacity, 0);
+    overflow: hidden;
+    color: var(--color-foreground);
+    pointer-events: all;
+    position: absolute;
+    right: max(var(--quick-add-right), calc((var(--border-radius) + var(--quick-add-right)) * (1 - cos(45deg))));
+    bottom: max(var(--quick-add-bottom), calc((var(--border-radius) + var(--quick-add-bottom)) * (1 - cos(45deg))));
+    backdrop-filter: blur(20px) saturate(180%);
+
+    &:hover {
+      scale: 1.03;
+
+      /* Hover stabilizer: extends hit area to maintain hover state */
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -10px;
+        z-index: -1;
+      }
+    }
+
+    &:active {
+      scale: 0.99;
+    }
+
+    .quick-add[stay-visible] & {
+      display: grid;
+    }
+
+    @media screen and (min-width: 750px) {
+      display: var(--quick-add-display, flex);
+      opacity: 0;
+    }
+  }
+
+  .quick-add__button .add-to-cart-text {
+    background: var(--color-background);
+    overflow: hidden;
+    border-radius: 50px;
+    height: 100%;
+    gap: 0;
+  }
+
+  .quick-add__button .svg-wrapper .checkmark-burst {
+    width: 22px;
+    height: 22px;
+  }
+
+  .quick-add__button .add-to-cart-icon {
+    /* account for border width */
+    height: 100%;
+    width: calc(var(--button-size-md) - 4px);
+  }
+
+  .quick-add__button .add-to-cart-text__content {
+    display: grid;
+    grid-template-columns: 0fr;
+
+    & > span {
+      min-width: 0;
+
+      span {
+        padding-right: var(--padding-sm);
+        opacity: 0;
+        display: inline-block;
+        filter: blur(2px);
+        translate: 0.5ch 0;
+      }
+    }
+  }
+
+  .quick-add__button[data-added='true'] .add-to-cart-text {
+    animation-name: atc-fade-out;
+  }
+
+  .quick-add__button[data-added='true'] .add-to-cart-text--added {
+    translate: 0 0;
+    animation-name: atc-fade-in;
+  }
+
+  .quick-add__product-form-component {
+    height: 100%;
+  }
+
+  .quick-add__product-form-component .shopify-product-form {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    container-type: inline-size;
+    height: 100%;
+  }
+
+  .quick-add-modal .product-media {
+    width: 100%;
+    height: 100%;
+  }
+
+  .quick-add-modal deferred-media {
+    display: none;
+  }
+
+  .quick-add-modal .media-gallery--carousel slideshow-component {
+    --cursor: default;
+  }
+
+  .quick-add__button:is(:hover, :focus-visible) {
+    .add-to-cart-text__content {
+      grid-template-columns: 1fr;
+
+      span span {
+        opacity: 1;
+        translate: 0 0;
+        filter: blur(0);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quick-add__button .add-to-cart-text__content {
+      grid-template-columns: 1fr;
+
+      span span {
+        opacity: 1;
+        translate: 0 0;
+        filter: blur(0);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .quick-add__button {
+      transition-property: scale, translate, opacity;
+      transition-duration: var(--animation-speed);
+      transition-timing-function: var(--ease-out-cubic);
+    }
+
+    .quick-add__button:is(:hover, :focus-visible) {
+      .add-to-cart-text__content,
+      .add-to-cart-text__content span span {
+        transition-delay: var(--animation-speed);
+      }
+    }
+
+    .quick-add__button .add-to-cart-text__content {
+      transition-property: grid-template-columns;
+      transition-duration: var(--animation-speed);
+      transition-timing-function: var(--ease-out-cubic);
+
+      span span {
+        transition-property: opacity, filter, translate;
+        transition-duration: var(--animation-speed-slow);
+        transition-timing-function: var(--ease-out-quad);
+      }
+    }
+  }
+{% endstylesheet %}

@@ -1,0 +1,114 @@
+{% liquid
+  assign hotspot_product = closest.product
+
+  assign placeholder_product_title = 'placeholders.product_title' | t
+  assign hotspot_product_title = hotspot_product.title | default: placeholder_product_title
+%}
+
+<product-hotspot-component
+  class="hotspot{% if hotspot_product == blank and request.design_mode == false %} hotspot--hidden-touch hidden--mobile{% endif %}"
+  style="
+    left: calc({{ block.settings.x-position }}% - var(--button-size) / 2);
+    top: calc({{ block.settings.y-position }}% - var(--button-size) / 2);
+    --hotspot-bg: {{ section.settings.hotspot_color }};
+    --hotspot-bullseye: {{ section.settings.bullseye_color }};
+  "
+  data-product-url="{{ block.settings.product.url }}"
+  data-product-title="{{ block.settings.product.title | escape }}"
+  data-id="{{ block.id }}"
+  {{ block.shopify_attributes }}
+>
+  <button
+    class="hotspot-trigger"
+    aria-label="{{ 'accessibility.open_hotspot' | t }}"
+    ref="trigger"
+    on:click="/handleHotspotClick"
+    style="anchor-name: --hotspot-trigger-{{ block.id }};"
+  ></button>
+  <dialog
+    class="hotspot-dialog"
+    ref="dialog"
+  >
+    {% if hotspot_product != blank %}
+      <a
+        href="{{ hotspot_product.url }}"
+        class="hotspot-dialog__link"
+        aria-label="{{ hotspot_product.title | escape }}"
+        ref="productLink"
+      >
+      </a>
+    {% endif %}
+    <div class="hotspot-dialog__product">
+      {% if hotspot_product.featured_image != blank %}
+        {% render 'image', image: hotspot_product.featured_image, class: 'hotspot-dialog__product-image' %}
+      {% else %}
+        {{ 'product-apparel-1' | placeholder_svg_tag: 'hotspot-dialog__placeholder-product-image' }}
+      {% endif %}
+      <div class="hotspot-dialog__product-content">
+        <div class="hotspot-dialog__product-info">
+          <h2
+            class="hotspot-dialog__product-title {{ section.settings.product_title_preset | default: 'h5' }}"
+          >
+            {{ hotspot_product_title }}
+          </h2>
+          <div
+            class="hotspot-dialog__product-price {{ section.settings.product_price_preset | default: 'h6' }}"
+          >
+            {% render 'price', product_resource: hotspot_product, block: block %}
+          </div>
+        </div>
+        {% if hotspot_product != blank %}
+          {% if hotspot_product.available %}
+            {% render 'quick-add',
+              product: hotspot_product,
+              section_id: section.id,
+              block: block,
+              color_scheme: section.settings.color_scheme
+            %}
+          {% else %}
+            <div class="hotspot-dialog__sold-out-badge">
+              {{ 'content.product_badge_sold_out' | t }}
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </dialog>
+</product-hotspot-component>
+
+{% schema %}
+{
+  "name": "t:names.hotspot_product",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
+    },
+    {
+      "type": "range",
+      "id": "x-position",
+      "label": "t:settings.x_position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "y-position",
+      "label": "t:settings.y_position",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.hotspot_product"
+    }
+  ]
+}
+{% endschema %}
