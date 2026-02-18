@@ -1,160 +1,92 @@
-<h1 align="center" style="position: relative;">
-  <br>
-    <img src="./assets/shoppy-x-ray.svg" alt="logo" width="200">
-  <br>
-  Shopify Skeleton Theme
-</h1>
+# @acadaca-shopify/acadaca-core-theme
 
-A minimal, carefully structured Shopify theme designed to help you quickly get started. Designed with modularity, maintainability, and Shopify's best practices in mind.
+Acadaca's core Shopify theme, published as a private npm package. Built on Shopify's [Skeleton](https://github.com/Shopify/skeleton-theme) theme (structure) with all [Horizon](https://github.com/Shopify/horizon) features copied in.
 
-<p align="center">
-  <a href="./LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
-  <a href="./actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Shopify/skeleton-theme/actions/workflows/ci.yml/badge.svg"></a>
-</p>
+## Architecture
 
-## Getting started
+Client repos install this package as a dependency, then use install/update scripts to copy theme files to the repo root (required for Shopify's GitHub integration).
 
-### Prerequisites
-
-Before starting, ensure you have the latest Shopify CLI installed:
-
-- [Shopify CLI](https://shopify.dev/docs/api/shopify-cli) – helps you download, upload, preview themes, and streamline your workflows
-
-If you use VS Code:
-
-- [Shopify Liquid VS Code Extension](https://shopify.dev/docs/storefronts/themes/tools/shopify-liquid-vscode) – provides syntax highlighting, linting, inline documentation, and auto-completion specifically designed for Liquid templates
-
-### Clone
-
-Clone this repository using Git or Shopify CLI:
-
-```bash
-git clone git@github.com:Shopify/skeleton-theme.git
-# or
-shopify theme init
+```
+Client repo root (Shopify reads from here)
+├── assets/          ← copied from core + client additions
+├── blocks/          ← copied from core + client additions
+├── sections/        ← copied from core + client additions
+├── ...
+├── node_modules/
+│   └── @acadaca-shopify/acadaca-core-theme/   ← source
+├── scripts/
+│   ├── install-core.js   ← initial copy
+│   └── update-core.js    ← version updates
+└── .core-version         ← tracks installed version
 ```
 
-### Preview
+## For Client Repos
 
-Preview this theme using Shopify CLI:
-
-```bash
-shopify theme dev
-```
-
-## Theme architecture
+### Installation
 
 ```bash
-.
-├── assets          # Stores static assets (CSS, JS, images, fonts, etc.)
-├── blocks          # Reusable, nestable, customizable UI components
-├── config          # Global theme settings and customization options
-├── layout          # Top-level wrappers for pages (layout templates)
-├── locales         # Translation files for theme internationalization
-├── sections        # Modular full-width page components
-├── snippets        # Reusable Liquid code or HTML fragments
-└── templates       # Templates combining sections to define page structures
+npm install @acadaca-shopify/acadaca-core-theme
+npm run install-core
 ```
 
-To learn more, refer to the [theme architecture documentation](https://shopify.dev/docs/storefronts/themes/architecture).
+### Updating
 
-### Templates
+```bash
+npm update @acadaca-shopify/acadaca-core-theme
+npm run update-core
+git status  # review changes
+```
 
-[Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) control what's rendered on each type of page in a theme.
+The update script overwrites all core files. Git merge preserves client customizations.
 
-The Skeleton Theme scaffolds [JSON templates](https://shopify.dev/docs/storefronts/themes/architecture/templates/json-templates) to make it easy for merchants to customize their store.
+## What's Included
 
-None of the template types are required, and not all of them are included in the Skeleton Theme. Refer to the [template types reference](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) for a full list.
+| Directory | Count | Source |
+|-----------|-------|--------|
+| blocks/ | 94 | Horizon |
+| sections/ | 39 | Horizon |
+| assets/ | 116 | Horizon |
+| snippets/ | 95 | Horizon |
+| templates/ | 13 | Horizon |
+| locales/ | 51 | Horizon |
+| config/ | 2 | Horizon |
+| layout/ | 1 | Horizon |
 
-### Sections
+## For Core Developers
 
-[Sections](https://shopify.dev/docs/storefronts/themes/architecture/sections) are Liquid files that allow you to create reusable modules of content that can be customized by merchants. They can also include blocks which allow merchants to add, remove, and reorder content within a section.
+### Local Development
 
-Sections are made customizable by including a `{% schema %}` in the body. For more information, refer to the [section schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/sections/section-schema).
+```bash
+shopify theme dev --store=your-dev-store.myshopify.com
+```
 
-### Blocks
+### Validation
 
-[Blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks) let developers create flexible layouts by breaking down sections into smaller, reusable pieces of Liquid. Each block has its own set of settings, and can be added, removed, and reordered within a section.
+```bash
+shopify theme check
+```
 
-Blocks are made customizable by including a `{% schema %}` in the body. For more information, refer to the [block schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/schema).
+### Publishing
 
-## Schemas
+Handled by GitHub Actions on tag push (see CORE-8). Manual process:
 
-When developing components defined by schema settings, we recommend these guidelines to simplify your code:
+```bash
+npm version patch|minor|major
+git push && git push --tags
+# GitHub Actions publishes to GitHub Packages
+```
 
-- **Single property settings**: For settings that correspond to a single CSS property, use CSS variables:
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for full development workflow.
 
-  ```liquid
-  <div class="collection" style="--gap: {{ block.settings.gap }}px">
-    ...
-  </div>
+## Documentation
 
-  {% stylesheet %}
-    .collection {
-      gap: var(--gap);
-    }
-  {% endstylesheet %}
-
-  {% schema %}
-  {
-    "settings": [{
-      "type": "range",
-      "label": "gap",
-      "id": "gap",
-      "min": 0,
-      "max": 100,
-      "unit": "px",
-      "default": 0,
-    }]
-  }
-  {% endschema %}
-  ```
-
-- **Multiple property settings**: For settings that control multiple CSS properties, use CSS classes:
-
-  ```liquid
-  <div class="collection {{ block.settings.layout }}">
-    ...
-  </div>
-
-  {% stylesheet %}
-    .collection--full-width {
-      /* multiple styles */
-    }
-    .collection--narrow {
-      /* multiple styles */
-    }
-  {% endstylesheet %}
-
-  {% schema %}
-  {
-    "settings": [{
-      "type": "select",
-      "id": "layout",
-      "label": "layout",
-      "values": [
-        { "value": "collection--full-width", "label": "t:options.full" },
-        { "value": "collection--narrow", "label": "t:options.narrow" }
-      ]
-    }]
-  }
-  {% endschema %}
-  ```
-
-## CSS & JavaScript
-
-For CSS and JavaScript, we recommend using the [`{% stylesheet %}`](https://shopify.dev/docs/api/liquid/tags#stylesheet) and [`{% javascript %}`](https://shopify.dev/docs/api/liquid/tags/javascript) tags. They can be included multiple times, but the code will only appear once.
-
-### `critical.css`
-
-The Skeleton Theme explicitly separates essential CSS necessary for every page into a dedicated `critical.css` file.
-
-## Contributing
-
-We're excited for your contributions to the Skeleton Theme! This repository aims to remain as lean, lightweight, and fundamental as possible, and we kindly ask your contributions to align with this intention.
-
-Visit our [CONTRIBUTING.md](./CONTRIBUTING.md) for a detailed overview of our process, guidelines, and recommendations.
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Development and contribution guidelines
+- [CHANGELOG.md](./CHANGELOG.md) - Version history
+- [HORIZON_VERSION.md](./HORIZON_VERSION.md) - Source provenance (Skeleton + Horizon SHAs)
+- [PRUNING_STRATEGY.md](./PRUNING_STRATEGY.md) - Block usage tracking and removal process
+- [.planning/ARCHITECTURE.md](./.planning/ARCHITECTURE.md) - Full system architecture
 
 ## License
 
-Skeleton Theme is open-sourced under the [MIT](./LICENSE.md) License.
+Based on Shopify's Skeleton theme and Horizon theme, both MIT licensed.
+See [LICENSE-SKELETON.md](./LICENSE-SKELETON.md) and [LICENSE-HORIZON.md](./LICENSE-HORIZON.md).
