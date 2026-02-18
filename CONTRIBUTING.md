@@ -1,24 +1,108 @@
-# Contributing to Skeleton Theme
+# Contributing to acadaca-core-theme
 
-## How to contribute
+## What Belongs in Core
 
-We ❤️ pull requests. If you'd like to fix a bug, contribute a feature, or just correct a typo, feel free to do so, as long as you follow our [Code of Conduct](./CODE_OF_CONDUCT.md).
+- Universal features used across multiple client stores
+- Shopify best practices and performance optimizations
+- Reusable blocks, sections, and snippets
+- Base styling and layout (CSS variables, typography, color schemes)
+- Bug fixes and accessibility improvements
 
-If you're thinking of adding a new feature or proposing a new pattern across the theme, please consider opening an issue first. This will allow us to discuss your idea, ensure it aligns with the project's direction, and potentially save you some time.
+## What Stays in Client Repos
 
-For your contribution to be accepted, you'll need to sign the [Shopify Contributor License Agreement (CLA)](https://cla.shopify.com/).
+- Client-specific branding (custom colors, fonts, logos)
+- Client-specific sections (e.g., `hanro-hero.liquid`)
+- Third-party integrations (Klaviyo, Intelligems, etc.)
+- Store-specific templates and configuration
+- Custom CSS overrides (`assets/client-custom.css`)
 
-## Standards
+## Development Workflow
 
-* This codebase must be minimalist, not a fully featured theme.
-* This theme must provide a common foundational starting point for most developers.
-* Do not include or reference legacy or non-recommended features.
-* All changes must preserve the principles defined in the README.
+### Setup
 
-## Steps to contribute
+```bash
+git clone git@github.com:acadaca-shopify/acadaca-core-theme.git
+cd acadaca-core-theme
+```
 
-1. Fork the repository: [https://github.com/Shopify/skeleton-theme/fork](https://github.com/Shopify/skeleton-theme/fork)
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to your branch: `git push origin my-new-feature`
-5. Create a new Pull Request
+### Local Development
+
+```bash
+# Preview with Shopify CLI
+shopify theme dev --store=your-dev-store.myshopify.com
+```
+
+### Making Changes
+
+```bash
+# Create feature branch
+git checkout -b feature/description
+
+# Make changes, then validate
+shopify theme check
+
+# Commit (conventional commits)
+git commit -m "feat: add testimonials block"
+git commit -m "fix: cart drawer scroll lock on mobile"
+git commit -m "chore: update dependencies"
+
+# Push and create PR to main
+git push origin feature/description
+```
+
+### Commit Message Format
+
+Use [conventional commits](https://www.conventionalcommits.org/):
+
+- `feat:` - New feature (bumps minor version)
+- `fix:` - Bug fix (bumps patch version)
+- `chore:` - Maintenance (no version bump)
+- `docs:` - Documentation only
+- `BREAKING CHANGE:` in body - Breaking change (bumps major version)
+
+### PR Process
+
+1. Create feature branch from `main`
+2. Make changes and validate with `shopify theme check`
+3. Push branch and open PR
+4. Get code review approval
+5. Merge to `main`
+
+## Versioning
+
+This package follows [Semantic Versioning](https://semver.org/):
+
+- **Major** (2.0.0): Breaking changes, removed features. Clients must manually upgrade.
+- **Minor** (1.1.0): New features, backward compatible. Clients auto-update with `^`.
+- **Patch** (1.0.1): Bug fixes, performance improvements. Clients auto-update with `^`.
+
+## Publishing
+
+Publishing is automated via GitHub Actions (triggers on `v*` tags):
+
+```bash
+# After merging PR to main:
+npm version patch   # 1.0.0 -> 1.0.1 (bug fix)
+npm version minor   # 1.0.0 -> 1.1.0 (new feature)
+npm version major   # 1.0.0 -> 2.0.0 (breaking change)
+
+git push && git push --tags
+# GitHub Actions publishes to GitHub Packages automatically
+```
+
+## Developer npm Authentication
+
+One-time setup to install/publish packages:
+
+```bash
+# Add to ~/.npmrc (never commit this file)
+@acadaca-shopify:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_PAT
+
+# Test
+npm whoami --registry=https://npm.pkg.github.com
+```
+
+PAT scopes needed:
+- All developers: `read:packages`, `repo`
+- Release managers (1-2 seniors): additionally `write:packages`

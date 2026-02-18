@@ -1,0 +1,39 @@
+{
+  "name": "@acadaca-shopify/acadaca-core-theme",
+  "version": "1.0.0",
+  "description": "Acadaca agency core Shopify theme based on Skeleton + Horizon",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/acadaca-shopify/acadaca-core-theme.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "files": [
+    "assets/**",
+    "blocks/**",
+    "sections/**",
+    "snippets/**",
+    "templates/**",
+    "config/**",
+    "layout/**",
+    "locales/**",
+    "HORIZON_VERSION.md",
+    "LICENSE-SKELETON.md",
+    "LICENSE-HORIZON.md",
+    "PRUNING_STRATEGY.md",
+    "CHANGELOG.md",
+    "!**/.DS_Store",
+    "!**/node_modules"
+  ],
+  "keywords": [
+    "shopify",
+    "theme",
+    "horizon",
+    "skeleton"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
