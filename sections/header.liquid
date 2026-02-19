@@ -11,7 +11,9 @@
 
   <div class="header__icons">
     {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
+      <shopify-account menu="{{ section.settings.customer_account_menu }}">
+        {{ 'icon-account.svg' | inline_asset_content }}
+      </shopify-account>
     {% endif %}
 
     <a href="{{ routes.cart_url }}">
@@ -35,6 +37,9 @@
     position: relative;
     text-decoration: none;
     color: var(--color-foreground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   header a sup {
     position: absolute;
@@ -60,6 +65,12 @@
       "type": "link_list",
       "id": "menu",
       "label": "t:labels.menu"
+    },
+    {
+      "type": "link_list",
+      "id": "customer_account_menu",
+      "label": "t:labels.customer_account_menu",
+      "default": "customer-account-main-menu"
     }
   ]
 }
