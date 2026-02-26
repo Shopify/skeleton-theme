@@ -13,17 +13,40 @@
   @param {number} [width] - The highest resolution width of the image to be rendered
   @param {number} [height] - The highest resolution height of the image to be rendered
   @param {string} [crop] - The crop position of the image
+  @param {string} [alt] - Alternative text for the image (important for accessibility)
+  @param {string} [widths] - Comma-separated widths for srcset (e.g., '300, 600, 900'). If not provided, defaults to base width and 2x version
+  @param {string} [sizes] - Sizes attribute for responsive display hints (e.g., '(min-width: 800px) 600px, 100vw')
+  @param {string} [loading] - Loading strategy: 'eager' for LCP images, 'lazy' for below-fold images (default: 'lazy')
+  @param {string} [fetchpriority] - Fetch priority: 'high' for LCP images, 'low', or 'auto' (optional)
+  @param {boolean} [use_picture] - Enable picture tag for mobile DPR capping at 2x (default: false)
+  @param {number} [mobile_breakpoint] - Breakpoint in pixels for picture tag mobile source (default: 800)
 
   @example
+  {% comment %} Basic usage (backward compatible) {% endcomment %}
   {% render 'image', image: product.featured_image %}
-  {% render 'image', image: product.featured_image, url: product.url %}
+
+  {% comment %} With responsive srcset {% endcomment %}
   {% render 'image',
-    class: 'product__image',
     image: product.featured_image,
-    url: product.url,
-    width: 1200,
-    height: 800,
-    crop: 'center',
+    widths: '300, 600, 900',
+    sizes: '(min-width: 800px) 600px, 100vw',
+    alt: product.featured_image.alt
+  %}
+
+  {% comment %} LCP image with high priority {% endcomment %}
+  {% render 'image',
+    image: product.featured_image,
+    loading: 'eager',
+    fetchpriority: 'high',
+    widths: '600, 1200'
+  %}
+
+  {% comment %} With picture tag for mobile DPR capping {% endcomment %}
+  {% render 'image',
+    image: collection.featured_image,
+    use_picture: true,
+    widths: '300, 600, 1200',
+    sizes: '(min-width: 800px) 600px, 100vw'
   %}
 {% enddoc %}
 
@@ -37,6 +60,22 @@
   else
     assign wrapper = 'div'
   endif
+
+  # Set default loading to lazy if not provided
+  assign loading = loading | default: 'lazy'
+
+  # Set default mobile breakpoint for picture tag
+  assign mobile_breakpoint = mobile_breakpoint | default: 800
+
+  # Calculate default widths if not provided (base width and 2x)
+  unless widths
+    assign width_num = width | plus: 0
+    assign width_2x = width_num | times: 2
+    assign widths = width | append: ', ' | append: width_2x
+  endunless
+
+  # Prepare image URL for reuse
+  assign image_url_base = image | image_url: width: width, height: height, crop: crop
 %}
 
 <{{ wrapper }}
@@ -45,7 +84,31 @@
     href="{{ url }}"
   {% endif %}
 >
-  {{ image | image_url: width: width, height: height, crop: crop | image_tag }}
+  {% comment %} Build image tag with all parameters - Shopify handles nil/empty gracefully {% endcomment %}
+  {% capture image_tag_output %}
+    {{ image_url_base | image_tag: widths: widths, loading: loading, sizes: sizes, fetchpriority: fetchpriority, alt: alt }}
+  {% endcapture %}
+
+  {% if use_picture %}
+    {% comment %} Use picture tag for mobile DPR capping {% endcomment %}
+    {% liquid
+      assign width_num = width | plus: 0
+      assign width_2x = width_num | times: 2
+    %}
+    <picture>
+      <source
+        media="(max-width: {{ mobile_breakpoint }}px)"
+        srcset="
+          {{ image | image_url: width: width }} 1x,
+          {{ image | image_url: width: width_2x }} 2x
+        "
+      >
+      {{ image_tag_output }}
+    </picture>
+  {% else %}
+    {% comment %} Standard img tag with srcset {% endcomment %}
+    {{ image_tag_output }}
+  {% endif %}
 </{{ wrapper }}>
 
 {% stylesheet %}
@@ -57,8 +120,14 @@
     height: auto;
   }
 
-  .image > img {
+  .image > img,
+  .image picture,
+  .image picture img {
     width: 100%;
     height: auto;
+  }
+
+  .image picture {
+    display: block;
   }
 {% endstylesheet %}
