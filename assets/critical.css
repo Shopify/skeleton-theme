@@ -74,8 +74,168 @@ p:empty {
 /** Theme styles below */
 body {
   font-family: var(--font-primary--family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
   background-color: var(--color-background);
   color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/** Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary--family);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+}
+
+/** Section headings (e.g. SHOP BY CATEGORY) */
+.section-heading {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-widest);
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+}
+
+/** Links */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-text-secondary);
+}
+
+/** Buttons – base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-primary--family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wider);
+  text-transform: uppercase;
+  border: var(--style-border-width) solid transparent;
+  border-radius: var(--style-border-radius-buttons);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base),
+    border-color var(--transition-base);
+  white-space: nowrap;
+}
+
+/** Buttons – primary (filled / SHOP NOW style) */
+.btn--primary {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  border-color: var(--color-btn-primary-bg);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-btn-primary-bg-hover);
+  border-color: var(--color-btn-primary-bg-hover);
+  color: var(--color-btn-primary-text);
+}
+
+/** Buttons – secondary (outline / READ MORE style) */
+.btn--secondary {
+  background-color: var(--color-btn-secondary-bg);
+  color: var(--color-btn-secondary-text);
+  border-color: var(--color-btn-secondary-border);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-btn-secondary-bg-hover);
+  color: var(--color-btn-secondary-text-hover);
+  border-color: var(--color-btn-secondary-bg-hover);
+}
+
+/** Inputs & form fields */
+input[type="text"],
+input[type="email"],
+input[type="search"],
+input[type="password"],
+input[type="tel"],
+textarea {
+  border: var(--style-border-width) solid var(--color-border);
+  border-radius: var(--style-border-radius-inputs);
+  padding: 0.625rem 0.875rem;
+  background-color: var(--color-surface-primary);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="search"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-text-primary);
+}
+
+/** Cards */
+.card {
+  background-color: var(--color-surface-primary);
+  border: var(--style-border-width) solid var(--color-border);
+  border-radius: var(--style-border-radius-cards);
+}
+
+/** Badges */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  border-radius: 0;
+}
+
+.badge--new {
+  background-color: var(--color-badge-new);
+  color: var(--color-text-inverted);
+}
+
+.badge--sale {
+  background-color: var(--color-badge-sale);
+  color: var(--color-text-inverted);
+}
+
+/** Pricing */
+.price {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.price--sale {
+  color: var(--color-price-sale);
+}
+
+.price--compare {
+  color: var(--color-price-compare);
+  text-decoration: line-through;
+  font-weight: var(--font-weight-normal);
+}
+
+/** Star ratings */
+.star-rating {
+  color: var(--color-star-rating);
+}
+
+/** Dividers */
+hr {
+  border: none;
+  border-top: var(--style-border-width) solid var(--color-border);
 }
 
 /** Section layout utilities */

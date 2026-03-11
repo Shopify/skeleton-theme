@@ -6,13 +6,124 @@
   {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
 
   :root {
+    /* ── Typography ────────────────────────────────────────────── */
     --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
     --font-primary--style: {{ settings.type_primary_font.style }};
     --font-primary--weight: {{ settings.type_primary_font.weight }};
+
+    /* ── Layout ────────────────────────────────────────────────── */
     --page-width: {{ settings.max_page_width }};
     --page-margin: {{ settings.min_page_margin }}px;
+
+    /* ── Base colors (from theme settings) ─────────────────────── */
     --color-background: {{ settings.background_color }};
     --color-foreground: {{ settings.foreground_color }};
+
+    /* ── Extended color palette (VTB brand) ─────────────────────── */
+
+    /* Surfaces */
+    --color-surface-primary: #ffffff;
+    --color-surface-secondary: #f9fafb;
+    --color-surface-tertiary: #f3f4f6;
+
+    /* Header / announcement bar */
+    --color-header-bg: #1a2332;
+    --color-header-text: #ffffff;
+    --color-nav-bg: #ffffff;
+    --color-nav-text: #2d2d2d;
+
+    /* Buttons – primary (filled) */
+    --color-btn-primary-bg: #2d2d2d;
+    --color-btn-primary-text: #ffffff;
+    --color-btn-primary-bg-hover: #1a1a1a;
+
+    /* Buttons – secondary (outline) */
+    --color-btn-secondary-bg: transparent;
+    --color-btn-secondary-text: #2d2d2d;
+    --color-btn-secondary-border: #2d2d2d;
+    --color-btn-secondary-bg-hover: #2d2d2d;
+    --color-btn-secondary-text-hover: #ffffff;
+
+    /* Text hierarchy */
+    --color-text-primary: #2d2d2d;
+    --color-text-secondary: #6b7280;
+    --color-text-muted: #9ca3af;
+    --color-text-inverted: #ffffff;
+
+    /* Borders & dividers */
+    --color-border: #e5e7eb;
+    --color-border-strong: #d1d5db;
+
+    /* Feedback / accents */
+    --color-price-sale: #c0392b;
+    --color-price-compare: #9ca3af;
+    --color-star-rating: #f5a623;
+    --color-badge-new: #1a2332;
+    --color-badge-sale: #c0392b;
+
+    /* Footer */
+    --color-footer-bg: #2c3748;
+    --color-footer-text: #e5e7eb;
+    --color-footer-border: #3d4f63;
+    --color-footer-heading: #ffffff;
+    --color-footer-link: #d1d5db;
+    --color-footer-link-hover: #ffffff;
+
+    /* Promotional/announcement strip */
+    --color-promo-bg: #f9fafb;
+    --color-promo-text: #2d2d2d;
+
+    /* ── Borders & shape ────────────────────────────────────────── */
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+    --style-border-radius-buttons: 0px;
+    --style-border-radius-cards: 0px;
+    --style-border-width: 1px;
+
+    /* ── Spacing scale ──────────────────────────────────────────── */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+
+    /* ── Typography scale ───────────────────────────────────────── */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    --letter-spacing-tight: -0.01em;
+    --letter-spacing-normal: 0em;
+    --letter-spacing-wide: 0.08em;
+    --letter-spacing-wider: 0.12em;
+    --letter-spacing-widest: 0.18em;
+
+    --line-height-tight: 1.2;
+    --line-height-snug: 1.375;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+
+    /* ── Shadows ────────────────────────────────────────────────── */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+
+    /* ── Transitions ────────────────────────────────────────────── */
+    --transition-fast: 150ms ease;
+    --transition-base: 200ms ease;
+    --transition-slow: 300ms ease;
   }
 {% endstyle %}
