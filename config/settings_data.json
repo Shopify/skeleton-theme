@@ -8,5 +8,12 @@
  * ------------------------------------------------------------
  */
 {
-  "current": {}
+  "current": {
+    "type_primary_font": "work_sans_n4",
+    "max_page_width": "110rem",
+    "min_page_margin": 20,
+    "background_color": "#ffffff",
+    "foreground_color": "#2d2d2d",
+    "input_corner_radius": 0
+  }
 }
