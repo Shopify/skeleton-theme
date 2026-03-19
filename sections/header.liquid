@@ -16,10 +16,8 @@
             </shopify-account>
         {% endif %}
 
-        <a href="{{ routes.cart_url }}">
-            {% if cart.item_count > 0 %}
-                <sup>{{ cart.item_count }}</sup>
-            {% endif %}
+        <a href="{{ routes.cart_url }}" data-js="cart-open" aria-haspopup="dialog" aria-controls="cart-drawer">
+            <sup data-js="cart-count" {% if cart.item_count < 1 %}hidden{% endif %}>{{ cart.item_count }}</sup>
 
             {{ 'cart.title' | t }}
         </a>

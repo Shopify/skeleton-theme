@@ -66,6 +66,13 @@ because that template uses `{% layout none %}`.
 - **Template-specific logic**: the matching entrypoint (e.g. `frontend/entrypoints/ts/product.ts`)
 - **Never create a new entrypoint** without also updating the router in `layout/theme.liquid`
 
+Current interaction ownership:
+- `ts/theme.ts`: global cart drawer bootstrap
+- `ts/product.ts`: PDP variants/media/add-to-cart states
+- `ts/collection.ts`: PLP sort/filter progressive interactions
+- `ts/cart.ts`: cart page quantity/remove interactions
+- `ts/search.ts`: predictive search interactions
+
 ## Theme preview
 
 ### Prerequisites
@@ -160,6 +167,11 @@ Before merging to `staging` or `main`, ensure:
 - `bun run build` passes
 - `theme-check` passes
 - Smoke test the templates touched by the PR
+- `bun run smoke` passes locally when available
+
+CI enforces branch flow:
+- PR to `staging` must come from `feat/*`
+- PR to `main` must come from `staging`
 
 ## Troubleshooting
 
@@ -185,6 +197,14 @@ Before merging to `staging` or `main`, ensure:
 1. Target file (`sections/collection.liquid`)
 2. Goal (what it should do)
 3. Approve the plan before execution
+
+### Start feature branch
+
+```bash
+git checkout staging
+git pull
+git checkout -b feat/<feature-name>
+```
 
 ### Naming conventions
 

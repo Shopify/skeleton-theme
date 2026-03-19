@@ -1,0 +1,31 @@
+{% doc %}
+  Renders the variant picker for a product form.
+  Outputs a hidden input for the selected variant ID and one button group
+  per product option. Must be rendered inside a {% form 'product' %} block.
+
+  @param {product} product - The product object
+  @param {variant} current_variant - The currently selected variant (used for server-side aria-pressed)
+{% enddoc %}
+
+<input type="hidden" name="id" data-js="variant-id" value="{{ current_variant.id }}">
+
+{% for option in product.options_with_values %}
+  <div class="product-option" data-option-group="{{ option.position }}">
+    <p>
+      {{ option.name }}:
+      <span data-js="option-label" data-option-label="{{ option.position }}">{{- option.selected_value -}}</span>
+    </p>
+    {% for value in option.values %}
+      <button
+        type="button"
+        data-js="option-value"
+        data-option-position="{{ option.position }}"
+        data-option-value="{{ value }}"
+        aria-pressed="{% if option.selected_value == value %}true{% else %}false{% endif %}"
+        class="border"
+      >
+        {{ value }}
+      </button>
+    {% endfor %}
+  </div>
+{% endfor %}

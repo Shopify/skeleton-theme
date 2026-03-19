@@ -25,6 +25,13 @@
   - Shared utilities in `frontend/entrypoints/ts/utils/`
   - `typecheck` gate with `tsc --noEmit`
 
+- Core storefront interactions
+  - PDP variant/media/price synchronization + add-to-cart status handling
+  - Cart drawer with keyboard accessibility, quantity/remove async flows, and fallback to `/cart`
+  - Cart page async quantity/remove flows with empty/error states
+  - Collection sorting, filtering, and progressive load-more behavior
+  - Search predictive suggestions with graceful fallback to full search
+
 - Branch-linked deploy workflow
   - Built assets are committed to branch for Shopify Git-connected themes
   - CI validates quality gates (`typecheck`, `vite:build`, `theme-check`)
@@ -40,6 +47,7 @@
 - `vite:dev`: Start Vite dev server only
 - `vite:build`: Build Vite assets only
 - `shopify:dev`: Start Shopify theme dev server (`development` environment)
+- `smoke`: Run local smoke checklist (`typecheck`, `build`, optional theme-check, generated assets diff)
 
 ---
 
@@ -164,6 +172,48 @@ Flow:
 2. PR to `staging`
 3. QA on staging theme
 4. Merge `staging` into `main`
+
+Enforcement in CI:
+- PRs to `staging` must come from `feat/*`
+- PRs to `main` must come from `staging`
+
+## Start a Feature Branch
+
+```bash
+git checkout staging
+git pull
+git checkout -b feat/<short-feature-name>
+```
+
+Before opening a PR:
+
+```bash
+bun run smoke
+```
+
+If the branch is Shopify Git-connected, commit generated build artifacts:
+- `assets/*`
+- `assets/.vite/manifest.json`
+- `snippets/vite-tag.liquid`
+
+---
+
+## Alias Examples
+
+Use path aliases from `vite.config.js` for cleaner imports:
+
+```ts
+import { addToCart } from '@ts/utils/cart';
+import '@css/main.css';
+```
+
+---
+
+## Linting Strategy
+
+- TypeScript quality gate: `bun run typecheck`
+- Liquid quality gate: Theme Check in CI (`Theme Check` job)
+- Local smoke: `bun run smoke` (runs typecheck, build, optional local theme-check, generated assets diff)
 
 ---
 

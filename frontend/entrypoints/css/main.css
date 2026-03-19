@@ -1,1 +1,10 @@
-@import "tailwindcss" source("../..");
+@import "tailwindcss";
+
+/* Register sources */
+@source "../../../snippets"
+@source "../../../blocks";
+@source "../../../section";
+@source "../../../templates";
+
+@theme {
+}

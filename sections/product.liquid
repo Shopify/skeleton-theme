@@ -1,52 +1,132 @@
 {% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+    This section is used in the product template to render product page with
+    media, content, and add-to-cart form.
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
+    https://shopify.dev/docs/storefronts/themes/architecture/templates/product
 {% endcomment %}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+
+<div class="mx-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
+    <aside>
+        <div class="flex flex-col gap-3 lg:flex-row-reverse">
+
+            {{- '<!-- Main viewer -->' }}
+            <div class="flex-1" data-product-media>
+                {% for media in product.media %}
+                    {%- assign media_variant_id = nil -%}
+                    {%- for variant in product.variants -%}
+                        {%- if variant.featured_media.id == media.id -%}
+                            {%- assign media_variant_id = variant.id -%}
+                            {%- break -%}
+                        {%- endif -%}
+                    {%- endfor -%}
+                    <div
+                        data-js="media-item"
+                        data-media-id="{{ media.id }}"
+                        {% if media_variant_id %}data-variant-media="{{ media_variant_id }}"{% endif %}
+                        {% unless forloop.first %}hidden{% endunless %}
+                    >
+                        {% case media.media_type %}
+                            {% when 'image' %}
+                                {% render 'product-media-image', media: media, class: 'w-full aspect-square object-cover' %}
+                            {% when 'video', 'external_video' %}
+                                {% render 'product-media-video', media: media, class: 'w-full aspect-square' %}
+                            {% else %}
+                                {% render 'image', image: media.preview_image, class: 'w-full aspect-square object-cover' %}
+                        {% endcase %}
+                    </div>
+                {% else %}
+                    {% render 'product-media-image', class: 'w-full aspect-square object-cover' %}
+                {% endfor %}
+            </div>
+
+            {{- '<!-- Thumbnail strip -->' }}
+            {% if product.media.size > 1 %}
+                <div class="flex gap-2 overflow-x-auto lg:flex-col lg:w-16" data-product-thumbnails>
+                    {% for media in product.media %}
+                        {%- assign media_variant_id = nil -%}
+                        {%- for variant in product.variants -%}
+                            {%- if variant.featured_media.id == media.id -%}
+                                {%- assign media_variant_id = variant.id -%}
+                                {%- break -%}
+                            {%- endif -%}
+                        {%- endfor -%}
+                        <button
+                            type="button"
+                            data-js="thumbnail"
+                            data-thumbnail="{{ media.id }}"
+                            {% if media_variant_id %}data-variant-media="{{ media_variant_id }}"{% endif %}
+                            aria-pressed="{{ forloop.first }}"
+                            class="w-16 h-16 shrink-0 overflow-hidden border"
+                        >
+                            {% render 'image', image: media.preview_image, widths: '64,128', class: 'w-full h-full object-cover' %}
+                        </button>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        </div>
+    </aside>
+
+    <main>
+        <div class="product-info">
+            <h1>{{ product.title }}</h1>
+            <p data-js="product-price">{{ current_variant.price | money }}</p>
+            <p data-js="product-availability">
+                {%- unless current_variant.available -%}Sold out{%- endunless -%}
+            </p>
+            <p>{{ product.description }}</p>
+        </div>
+
+        <div class="product-form">
+            {% form 'product', product, id: 'product-form', data-js: 'product-form' %}
+                {% render 'variant-picker', product: product, current_variant: current_variant %}
+
+                <input type="number" name="quantity" min="1" value="1">
+
+                <button
+                    type="submit"
+                    data-js="add-to-cart"
+                    {% unless current_variant.available %}
+                        disabled
+                    {% endunless %}
+                >
+                    {%- if current_variant.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
+                </button>
+
+                <p data-js="cart-status" role="status" aria-live="polite" class="mt-2 text-sm"></p>
+
+                {{ form | payment_button }}
+            {% endform %}
+        </div>
+    </main>
 </div>
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+<div
+  data-js="recommendations"
+  data-product-id="{{ product.id }}"
+  data-section-id="product-recommendations"
+></div>
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+<script id="product-data" data-js="product-data" type="application/json">
+    {{ product | json }}
+</script>
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
-
-    <input type="text" name="quantity" min="1" value="1">
-
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+<script id="variant-prices" data-js="variant-prices" type="application/json">
+    {
+        {% for variant in product.variants %}
+            "{{ variant.id }}": "{{ variant.price | money }}"{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+    }
+</script>
 
 {% schema %}
 {
-  "name": "t:general.product",
-  "settings": [],
-  "disabled_on": {
-    "groups": ["header", "footer"]
-  }
+    "name": "t:general.product",
+    "settings": [],
+    "disabled_on": {
+        "groups": ["header", "footer"]
+    }
 }
 {% endschema %}

@@ -7,27 +7,50 @@
 
 <h1>{{ 'cart.title' | t }}</h1>
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+<div data-js="cart-page" data-currency="{{ cart.currency.iso_code }}" class="space-y-4">
+  <p data-js="cart-page-status" role="status" aria-live="polite" class="text-sm"></p>
+  <p data-js="cart-page-error" role="alert" class="text-sm text-red-700"></p>
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+  <div data-js="cart-page-empty" {% if cart.item_count > 0 %}hidden{% endif %}>
+    <p>Your cart is empty.</p>
+    <a href="{{ routes.all_products_collection_url }}" class="underline">Continue shopping</a>
+  </div>
+
+  <ul data-js="cart-page-items" class="space-y-3" {% if cart.item_count == 0 %}hidden{% endif %}>
+    {% for item in cart.items %}
+      <li class="grid grid-cols-[80px_1fr] gap-3 border-b pb-3" data-line="{{ forloop.index }}">
+        {% if item.image %}
+          <a href="{{ item.url }}" class="block h-20 w-20 overflow-hidden border">
+            {% render 'image', image: item.image, width: 160, class: 'h-full w-full object-cover' %}
+          </a>
+        {% endif %}
+
+        <div class="space-y-2">
+          <a href="{{ item.url }}" class="font-medium">{{ item.product.title }}</a>
+          {% if item.variant.title != 'Default Title' %}
+            <p class="text-sm opacity-70">{{ item.variant.title }}</p>
+          {% endif %}
+
+          <div class="flex items-center gap-2">
+            <button type="button" data-js="cart-page-dec" data-line="{{ forloop.index }}" class="h-8 w-8 border" aria-label="Decrease quantity">-</button>
+            <span data-js="cart-page-qty" class="min-w-6 text-center">{{ item.quantity }}</span>
+            <button type="button" data-js="cart-page-inc" data-line="{{ forloop.index }}" class="h-8 w-8 border" aria-label="Increase quantity">+</button>
+            <button type="button" data-js="cart-page-remove" data-line="{{ forloop.index }}" class="ml-auto underline">{{ 'cart.remove' | t }}</button>
+          </div>
+
+          <p>{{ item.final_line_price | money }}</p>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <div data-js="cart-page-footer" class="space-y-3" {% if cart.item_count == 0 %}hidden{% endif %}>
+    <p class="text-sm">Subtotal: <strong data-js="cart-page-subtotal">{{ cart.total_price | money }}</strong></p>
+    <form action="{{ routes.cart_url }}" method="post">
+      <button type="submit" name="checkout" class="border px-3 py-2">{{ 'cart.checkout' | t }}</button>
+    </form>
+  </div>
+</div>
 
 {% schema %}
 {

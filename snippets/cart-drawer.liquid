@@ -1,0 +1,45 @@
+<div
+  id="cart-drawer"
+  data-js="cart-drawer"
+  data-cart-url="{{ routes.cart_url }}"
+  data-currency="{{ cart.currency.iso_code }}"
+  class="fixed inset-0 z-50"
+  hidden
+  aria-hidden="true"
+>
+  <div data-js="cart-drawer-overlay" class="absolute inset-0 bg-black/40" aria-hidden="true"></div>
+
+  <aside
+    data-js="cart-drawer-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="{{ 'cart.title' | t }}"
+    class="absolute right-0 top-0 h-full w-full max-w-md bg-white p-4 shadow-2xl"
+  >
+    <div class="flex items-center justify-between border-b pb-3">
+      <h2 class="text-lg font-semibold">{{ 'cart.title' | t }}</h2>
+      <button type="button" data-js="cart-close" class="h-9 w-9 border" aria-label="Close cart drawer">×</button>
+    </div>
+
+    <p data-js="cart-drawer-status" role="status" aria-live="polite" class="mt-3 text-sm"></p>
+    <p data-js="cart-drawer-error" role="alert" class="mt-1 text-sm text-red-700"></p>
+
+    <ul data-js="cart-items" class="mt-3 max-h-[calc(100vh-240px)] overflow-y-auto"></ul>
+
+    <div data-js="cart-empty" class="mt-4 text-sm" {% if cart.item_count > 0 %}hidden{% endif %}>
+      <p>Your cart is empty.</p>
+      <a href="{{ routes.all_products_collection_url }}" class="mt-2 inline-block underline">Continue shopping</a>
+    </div>
+
+    <div class="absolute bottom-0 left-0 right-0 border-t bg-white p-4">
+      <div class="mb-3 flex items-center justify-between">
+        <p class="text-sm">Subtotal</p>
+        <p data-js="cart-subtotal" class="text-sm font-semibold">{{ cart.total_price | money }}</p>
+      </div>
+      <a href="{{ routes.cart_url }}" class="block w-full border px-3 py-2 text-center">View cart</a>
+      <form action="{{ routes.cart_url }}" method="post" class="mt-2">
+        <button type="submit" name="checkout" class="w-full border px-3 py-2">{{ 'cart.checkout' | t }}</button>
+      </form>
+    </div>
+  </aside>
+</div>

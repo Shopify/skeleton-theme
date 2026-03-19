@@ -7,7 +7,7 @@
   assign path = entry | replace: '@ts/', 'ts/' | replace: '@css/', 'css/' | replace: '~/', '../' | replace: '@/', '../'
 %}
 {% if path == "/frontend/entrypoints/css/main.css" or path == "css/main.css" %}
-  {{ 'main-C4sk1vw8.css' | asset_url | split: '?' | first | stylesheet_tag: preload: preload_stylesheet }}
+  {{ 'main-CZyZ8laC.css' | asset_url | split: '?' | first | stylesheet_tag: preload: preload_stylesheet }}
 {% elsif path == "/frontend/entrypoints/ts/404.ts" or path == "ts/404.ts" %}
   <script src="{{ '404-l0sNRNKZ.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
 {% elsif path == "/frontend/entrypoints/ts/article.ts" or path == "ts/article.ts" %}
@@ -15,9 +15,17 @@
 {% elsif path == "/frontend/entrypoints/ts/blog.ts" or path == "ts/blog.ts" %}
   <script src="{{ 'blog-l0sNRNKZ.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
 {% elsif path == "/frontend/entrypoints/ts/cart.ts" or path == "ts/cart.ts" %}
-  <script src="{{ 'cart-l0sNRNKZ.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <script src="{{ 'cart-DAS8aBaw.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <link rel="modulepreload" href="{{ 'page-CWMiLRqk.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+  <link rel="modulepreload" href="{{ 'cart-CmG_L9o1.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+{% elsif path == "/frontend/entrypoints/ts/cart/drawer.ts" or path == "ts/cart/drawer.ts" %}
+  <script src="{{ 'drawer-HPI4d66D.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <link rel="modulepreload" href="{{ 'cart-CmG_L9o1.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+{% elsif path == "/frontend/entrypoints/ts/cart/page.ts" or path == "ts/cart/page.ts" %}
+  <script src="{{ 'page-CWMiLRqk.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <link rel="modulepreload" href="{{ 'cart-CmG_L9o1.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
 {% elsif path == "/frontend/entrypoints/ts/collection.ts" or path == "ts/collection.ts" %}
-  <script src="{{ 'collection-l0sNRNKZ.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <script src="{{ 'collection-BkAueZBQ.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
 {% elsif path == "/frontend/entrypoints/ts/gift-card.ts" or path == "ts/gift-card.ts" %}
   <script src="{{ 'gift-card-l0sNRNKZ.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
 {% elsif path == "/frontend/entrypoints/ts/index.ts" or path == "ts/index.ts" %}
@@ -29,9 +37,33 @@
 {% elsif path == "/frontend/entrypoints/ts/password.ts" or path == "ts/password.ts" %}
   <script src="{{ 'password-l0sNRNKZ.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
 {% elsif path == "/frontend/entrypoints/ts/product.ts" or path == "ts/product.ts" %}
-  <script src="{{ 'product-l0sNRNKZ.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <script src="{{ 'product-DPYfuql-.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <link rel="modulepreload" href="{{ 'state-Bj51Sk4P.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+  <link rel="modulepreload" href="{{ 'sync-DkV0cu7G.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+  <link rel="modulepreload" href="{{ 'handlers-D9xx4MJz.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+  <link rel="modulepreload" href="{{ 'recommendations-H0stnrna.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+  <link rel="modulepreload" href="{{ 'variant-picker-DRrQ71gT.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+  <link rel="modulepreload" href="{{ 'cart-CmG_L9o1.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+{% elsif path == "/frontend/entrypoints/ts/product/handlers.ts" or path == "ts/product/handlers.ts" %}
+  <script src="{{ 'handlers-D9xx4MJz.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <link rel="modulepreload" href="{{ 'variant-picker-DRrQ71gT.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+  <link rel="modulepreload" href="{{ 'cart-CmG_L9o1.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+  <link rel="modulepreload" href="{{ 'state-Bj51Sk4P.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+  <link rel="modulepreload" href="{{ 'sync-DkV0cu7G.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+{% elsif path == "/frontend/entrypoints/ts/product/recommendations.ts" or path == "ts/product/recommendations.ts" %}
+  <script src="{{ 'recommendations-H0stnrna.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+{% elsif path == "/frontend/entrypoints/ts/product/state.ts" or path == "ts/product/state.ts" %}
+  <script src="{{ 'state-Bj51Sk4P.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+{% elsif path == "/frontend/entrypoints/ts/product/sync.ts" or path == "ts/product/sync.ts" %}
+  <script src="{{ 'sync-DkV0cu7G.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <link rel="modulepreload" href="{{ 'variant-picker-DRrQ71gT.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
+  <link rel="modulepreload" href="{{ 'state-Bj51Sk4P.js' | asset_url | split: '?' | first }}" crossorigin="anonymous">
 {% elsif path == "/frontend/entrypoints/ts/search.ts" or path == "ts/search.ts" %}
-  <script src="{{ 'search-l0sNRNKZ.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <script src="{{ 'search-Dt-ufTnA.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
 {% elsif path == "/frontend/entrypoints/ts/theme.ts" or path == "ts/theme.ts" %}
-  <script src="{{ 'theme-B5Qt9EMX.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+  <script src="{{ 'theme-BHxQweo7.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+{% elsif path == "/frontend/entrypoints/ts/utils/cart.ts" or path == "ts/utils/cart.ts" %}
+  <script src="{{ 'cart-CmG_L9o1.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
+{% elsif path == "/frontend/entrypoints/ts/utils/variant-picker.ts" or path == "ts/utils/variant-picker.ts" %}
+  <script src="{{ 'variant-picker-DRrQ71gT.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
 {% endif %}

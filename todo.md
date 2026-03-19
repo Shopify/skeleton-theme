@@ -58,80 +58,80 @@ Acceptance:
 ## 4) Block 3 — Core Features Rollout
 
 ### Phase 1 — PDP (Product)
-- [ ] Audit current PDP markup and data attributes
-- [ ] Implement variant selection state logic in `ts/product.ts`
-- [ ] Sync selected variant with URL and form inputs
-- [ ] Update price/media state on variant change (if media mapping exists)
-- [ ] Add add-to-cart UX states (loading, success, error)
-- [ ] Handle unavailable / sold-out variants correctly
+- [x] Audit current PDP markup and data attributes
+- [x] Implement variant selection state logic in `ts/product.ts`
+- [x] Sync selected variant with URL and form inputs
+- [x] Update price/media state on variant change (if media mapping exists)
+- [x] Add add-to-cart UX states (loading, success, error)
+- [x] Handle unavailable / sold-out variants correctly
 
 Acceptance:
-- [ ] Variant change updates UI correctly
-- [ ] Add-to-cart works and shows clear status
-- [ ] No JS leakage outside PDP
+- [x] Variant change updates UI correctly
+- [x] Add-to-cart works and shows clear status
+- [x] No JS leakage outside PDP
 
-### Phase 2 — Collection (PLP)
-- [ ] Implement sort behavior
-- [ ] Implement filters (base behavior first)
-- [ ] Add optional progressive loading only if needed
-
-Acceptance:
-- [ ] Filters/sort stable and reversible
-- [ ] PLP JS isolated to collection templates
-
-### Phase 3 — Cart / Drawer
-- [ ] Implement drawer open/close and focus handling
-- [ ] Quantity update/remove flows with loading states
-- [ ] Empty cart state UX
-- [ ] Error handling and resilience
+### Phase 2 — Cart / Drawer
+- [x] Implement drawer open/close and focus handling
+- [x] Quantity update/remove flows with loading states
+- [x] Empty cart state UX
+- [x] Error handling and resilience
 
 Acceptance:
-- [ ] Keyboard accessible drawer behavior
-- [ ] Cart updates reliable with clear feedback
+- [x] Keyboard accessible drawer behavior
+- [x] Cart updates reliable with clear feedback
+
+### Phase 3 — Collection (PLP)
+- [x] Implement sort behavior
+- [x] Implement filters (base behavior first)
+- [x] Add optional progressive loading only if needed
+
+Acceptance:
+- [x] Filters/sort stable and reversible
+- [x] PLP JS isolated to collection templates
 
 ### Phase 4 — Search
-- [ ] Implement predictive search UI state
-- [ ] Implement results state handling
-- [ ] Graceful fallback when predictive endpoint unavailable
+- [x] Implement predictive search UI state
+- [x] Implement results state handling
+- [x] Graceful fallback when predictive endpoint unavailable
 
 Acceptance:
-- [ ] Search interactions stable
-- [ ] No cross-template JS side effects
+- [x] Search interactions stable
+- [x] No cross-template JS side effects
 
 ---
 
 ## 5) Performance & Loading Validation
-- [ ] Capture baseline metrics (Home, PDP, PLP): LCP, CLS, JS payload
-- [ ] Verify each template loads only `ts/theme.ts` + its own entrypoint
-- [ ] Add dynamic imports for heavy optional logic where useful
+- [x] Capture baseline metrics (Home, PDP, PLP): LCP, CLS, JS payload
+- [x] Verify each template loads only `ts/theme.ts` + its own entrypoint
+- [x] Add dynamic imports for heavy optional logic where useful
 
 Acceptance:
-- [ ] No regressions vs baseline
-- [ ] Template-specific payload discipline maintained
+- [x] No regressions vs baseline
+- [x] Template-specific payload discipline maintained
 
 ---
 
 ## 6) Documentation Finalization
-- [ ] Keep README aligned with actual scripts and branch-linked workflow
-- [ ] Keep CLAUDE.md aligned with architecture and conventions
-- [ ] Add short “how to start new feature branch” section (optional)
+- [x] Keep README aligned with actual scripts and branch-linked workflow
+- [x] Keep CLAUDE.md aligned with architecture and conventions
+- [x] Add short “how to start new feature branch” section (optional)
 
 Acceptance:
-- [ ] New team member can run project in <10 minutes
+- [x] New team member can run project in <10 minutes
 
 ---
 
 ## 7) Git/Release Workflow
-- [ ] Enforce branch model: `feat/* -> staging -> main`
-- [ ] Before merging to `staging`/`main`, always run `bun run build`
-- [ ] Commit generated artifacts for branch-linked Shopify themes
+- [x] Enforce branch model: `feat/* -> staging -> main`
+- [x] Before merging to `staging`/`main`, always run `bun run build`
+- [x] Commit generated artifacts for branch-linked Shopify themes
 
 Acceptance:
-- [ ] Shopify branch previews always reflect latest built assets
+- [x] Shopify branch previews always reflect latest built assets
 
 ---
 
 ## 8) Nice-to-have (after core)
-- [ ] Add import alias usage examples (`@ts`, `@css`) in code/docs
-- [ ] Add lightweight linting strategy for TS/Liquid (if needed)
-- [ ] Add automated smoke checklist script (optional)
+- [x] Add import alias usage examples (`@ts`, `@css`) in code/docs
+- [x] Add lightweight linting strategy for TS/Liquid (if needed)
+- [x] Add automated smoke checklist script (optional)

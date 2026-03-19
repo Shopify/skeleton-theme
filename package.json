@@ -17,6 +17,7 @@
     "shopify:push": "shopify theme push",
     "typecheck": "tsc --noEmit",
     "vite:dev": "vite",
-    "vite:build": "vite build"
+    "vite:build": "vite build",
+    "smoke": "./smoke-checklist.sh"
   }
 }
