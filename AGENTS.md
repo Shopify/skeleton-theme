@@ -36,7 +36,7 @@ This file is for any AI coding assistant (Claude, Codex, Cursor, etc.) working i
 - Cart drawer: `cart-drawer`, `cart-open`, `cart-close`, `cart-items`, `cart-empty`, `cart-subtotal`
 - Cart page: `cart-page`, `cart-page-items`, `cart-page-empty`, `cart-page-footer`, `cart-page-subtotal`
 - Product: `product-form`, `option-value`, `thumbnail`, `add-to-cart`, `cart-status`
-- Collection: `collection-root`, `collection-controls`, `collection-products`, `collection-load-more`
+- Collection: `collection-root`, `collection-controls`, `collection-products`, `collection-load-more`, `collection-quick-buy`
 - Search drawer: `search-drawer`, `search-open`, `search-close`, `search-drawer-input`, `search-drawer-groups`
 
 ## Local Validation

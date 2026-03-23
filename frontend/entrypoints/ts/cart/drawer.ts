@@ -1,4 +1,5 @@
 import { changeCartLine } from '../utils/cart';
+import { CART_OPEN_EVENT, CART_UPDATED_EVENT } from '../utils/cart-events';
 import {
   applySectionReplace,
   fetchSingleSectionHtml,
@@ -77,6 +78,12 @@ export function initCartDrawer(): void {
       node.textContent = String(count);
       node.hidden = count < 1;
     });
+  };
+
+  const getCurrentCount = (): number => {
+    const firstCount = countNodes[0];
+    if (!firstCount) return 0;
+    return Number(firstCount.textContent ?? '0') || 0;
   };
 
   const countItemsFromDrawerMarkup = (): number => {
@@ -271,6 +278,25 @@ export function initCartDrawer(): void {
 
   closeButton.addEventListener('click', closeDrawer);
   overlay.addEventListener('click', closeDrawer);
+
+  window.addEventListener(CART_OPEN_EVENT, () => {
+    openDrawer();
+  });
+
+  window.addEventListener(CART_UPDATED_EVENT, (event) => {
+    const customEvent = event as CustomEvent<{ itemCount?: number; itemCountDelta?: number; openDrawer?: boolean }>;
+    const detail = customEvent.detail;
+
+    if (typeof detail?.itemCount === 'number') {
+      updateCount(detail.itemCount);
+    } else if (typeof detail?.itemCountDelta === 'number') {
+      updateCount(Math.max(0, getCurrentCount() + detail.itemCountDelta));
+    }
+
+    if (detail?.openDrawer) {
+      openDrawer();
+    }
+  });
 
   drawer.addEventListener('click', (event) => {
     const target = event.target as HTMLElement;

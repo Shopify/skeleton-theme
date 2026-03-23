@@ -8,16 +8,16 @@
 
 @theme {
     /* Colors */
-    --color-*: initial;
+    /*--color-*: initial;*/
 
     /* Typo */
-    --text-*: initial;
-    /*--text-h1: var(--h1);
+    /*--text-*: initial;
+    --text-h1: var(--h1);
     --text-h1--line-height: var(--h1--line-height);
     --text-h1--font-weight: var(--h1--font-weight);*/
 
     /* Spacing */
-    --spacing-*: initial;
+    /*--spacing-*: initial;
     --spacing-0: 0;
     --spacing-col1: 8.33333333333%;
     --spacing-col2: 16.66666666667%;
@@ -30,16 +30,16 @@
     --spacing-col9: 75%;
     --spacing-col10: 83.33333333333%;
     --spacing-col11: 91.66666666667%;
-    --spacing-col12: 100%;
+    --spacing-col12: 100%;*/
 
     /* Gap */
-    --gap-*: initial;
+    /*--gap-*: initial;*/
 
     /* Margin */
-    --margin-*: initial;
+    /*--margin-*: initial;*/
 
     /* Flex */
-    --flex-col1: 8.33333333333%;
+    /*--flex-col1: 8.33333333333%;
     --flex-col2: 16.66666666667%;
     --flex-col3: 25%;
     --flex-col4: 33.33333333333%;
@@ -50,7 +50,7 @@
     --flex-col9: 75%;
     --flex-col10: 83.33333333333%;
     --flex-col11: 91.66666666667%;
-    --flex-col12: 100%;
+    --flex-col12: 100%;*/
 }
 
 html {

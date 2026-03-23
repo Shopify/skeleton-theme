@@ -5,14 +5,7 @@
       <ul class="grid grid-cols-2 gap-4 lg:grid-cols-4" role="list">
         {% for product in recommendations.products limit: section.settings.products_limit %}
           <li>
-            <a href="{{ product.url }}" class="group block">
-              {% if product.featured_media %}
-                {%- assign image = product.featured_media.preview_image -%}
-                {% render 'image', image: image, widths: '300,600', class: 'w-full aspect-square object-cover' %}
-              {% endif %}
-              <p class="mt-2 text-sm font-medium group-hover:underline">{{ product.title }}</p>
-              <p class="text-sm text-gray-600">{{ product.price | money }}</p>
-            </a>
+            {% render 'product-card', product: product %}
           </li>
         {% endfor %}
       </ul>

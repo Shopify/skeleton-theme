@@ -1,3 +1,6 @@
+import { addToCart } from './utils/cart';
+import { emitCartOpen, emitCartUpdated } from './utils/cart-events';
+
 const ROOT_SELECTOR = '[data-js="collection-root"]';
 
 interface CollectionView {
@@ -44,6 +47,46 @@ function setError(view: CollectionView, message: string): void {
 
 function setBusy(view: CollectionView, busy: boolean): void {
   view.root.setAttribute('aria-busy', String(busy));
+}
+
+async function runQuickBuy(button: HTMLButtonElement, fallbackUrl: string): Promise<void> {
+  const variantId = Number(button.dataset.variantId ?? '');
+  if (!variantId) {
+    if (fallbackUrl) {
+      window.location.assign(fallbackUrl);
+    }
+    return;
+  }
+
+  const idleLabel = button.dataset.labelIdle ?? 'Quick buy';
+  const loadingLabel = button.dataset.labelLoading ?? 'Adding...';
+  const successLabel = button.dataset.labelSuccess ?? 'Added';
+  const errorLabel = button.dataset.labelError ?? 'Try again';
+
+  button.disabled = true;
+  button.setAttribute('aria-busy', 'true');
+  button.textContent = loadingLabel;
+
+  try {
+    await addToCart(variantId, 1);
+    emitCartUpdated({ itemCountDelta: 1 });
+    emitCartOpen();
+
+    button.textContent = successLabel;
+    window.setTimeout(() => {
+      button.textContent = idleLabel;
+      button.disabled = false;
+      button.setAttribute('aria-busy', 'false');
+    }, 1200);
+  } catch {
+    button.textContent = errorLabel;
+
+    window.setTimeout(() => {
+      button.textContent = idleLabel;
+      button.disabled = false;
+      button.setAttribute('aria-busy', 'false');
+    }, 1500);
+  }
 }
 
 function toUrl(pathOrUrl: string): URL {
@@ -198,6 +241,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const onRootClick = (event: MouseEvent): void => {
     const target = event.target as HTMLElement;
+
+    const quickBuyButton = target.closest<HTMLButtonElement>('[data-js="collection-quick-buy"]');
+    if (quickBuyButton) {
+      event.preventDefault();
+      if (quickBuyButton.disabled) return;
+
+      const fallbackUrl = quickBuyButton.dataset.productUrl ?? '';
+      void runQuickBuy(quickBuyButton, fallbackUrl);
+      return;
+    }
 
     const loadMoreButton = target.closest<HTMLButtonElement>('[data-js="collection-load-more"]');
     if (loadMoreButton) {

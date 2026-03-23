@@ -1,5 +1,6 @@
 import { findVariantByOptions } from '../utils/variant-picker';
 import { addToCart } from '../utils/cart';
+import { emitCartOpen, emitCartUpdated } from '../utils/cart-events';
 import { state } from './state';
 import { syncDOM } from './sync';
 
@@ -79,6 +80,8 @@ export async function onAddToCart(e: Event): Promise<void> {
 
   try {
     await addToCart(state.currentVariant.id, quantity);
+    emitCartUpdated({ itemCountDelta: quantity });
+    emitCartOpen();
 
     state.cartState = 'success';
     syncDOM();

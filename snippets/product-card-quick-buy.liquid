@@ -1,0 +1,27 @@
+{% doc %}
+  Product-card quick-buy molecule.
+
+  Renders quick-buy CTA when possible, otherwise a product-page fallback link.
+
+  @param {product} product - Product object
+  @param {variant} [quick_buy_variant] - Variant used for quick buy
+  @param {boolean} [enable_quick_buy] - Enables quick-buy behavior
+{% enddoc %}
+
+{% if enable_quick_buy and quick_buy_variant %}
+  <button
+    type="button"
+    data-js="collection-quick-buy"
+    data-variant-id="{{ quick_buy_variant.id }}"
+    data-product-url="{{ product.url }}"
+    data-label-idle="{{ 'collections.quick_buy' | t | escape }}"
+    data-label-loading="{{ 'collections.quick_buy_loading' | t | escape }}"
+    data-label-success="{{ 'collections.quick_buy_success' | t | escape }}"
+    data-label-error="{{ 'collections.quick_buy_error' | t | escape }}"
+    class="border px-3 py-2"
+  >
+    {{ 'collections.quick_buy' | t }}
+  </button>
+{% else %}
+  <a href="{{ product.url }}" class="inline-flex border px-3 py-2">{{ 'collections.view_options' | t }}</a>
+{% endif %}

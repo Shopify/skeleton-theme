@@ -125,22 +125,7 @@
 
     <div class="collection-products" data-js="collection-products">
       {% for product in collection.products %}
-        <article class="collection-product" data-js="collection-product-card">
-          {% if product.featured_image %}
-            {% render 'image',
-              class: 'collection-product__image',
-              image: product.featured_image,
-              url: product.url,
-              width: 400,
-              height: 400,
-              crop: 'center'
-            %}
-          {% endif %}
-          <div class="collection-product__content">
-            <p>{{ product.title | escape | link_to: product.url }}</p>
-            <p>{{ product.price | money }}</p>
-          </div>
-        </article>
+        {% render 'product-card', product: product, enable_quick_buy: true %}
       {% else %}
         <p>No products found for current filters.</p>
       {% endfor %}
