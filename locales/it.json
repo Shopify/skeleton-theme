@@ -1,0 +1,59 @@
+{
+  "404": {
+    "title": "404",
+    "not_found": "Pagina non trovata.",
+    "back_to_shopping": "Torna agli acquisti"
+  },
+  "blog": {
+    "article_comments": "Commenti",
+    "article_metadata_html": "{{ date }} di {{ author }}",
+    "comment_form_body": "Commento",
+    "comment_form_email": "Email",
+    "comment_form_name": "Nome",
+    "comment_form_submit": "Pubblica",
+    "comment_form_title": "Aggiungi un commento"
+  },
+  "cart": {
+    "checkout": "Checkout",
+    "note": "Nota ordine",
+    "order_reference": "Riferimento ordine",
+    "title": "Carrello",
+    "update": "Aggiorna",
+    "remove": "Rimuovi"
+  },
+  "customers": {
+    "login": {
+      "email": "Email",
+      "password": "Password",
+      "submit": "Accedi",
+      "title": "Accesso"
+    }
+  },
+  "collections": {
+    "title": "Collezioni",
+    "quick_buy": "Acquista subito",
+    "quick_buy_loading": "Aggiunta...",
+    "quick_buy_success": "Aggiunto",
+    "quick_buy_error": "Riprova",
+    "view_options": "Vedi opzioni"
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Aggiungi ad Apple Wallet",
+    "card": "Carta regalo",
+    "expired": "Questa carta regalo e scaduta",
+    "expires_on": "Scade il {{ expires_on }}",
+    "use_at_checkout": "Usa questa carta regalo al checkout"
+  },
+  "password": {
+    "title": "Questo negozio e privato",
+    "password": "Password",
+    "enter": "Entra"
+  },
+  "search": {
+    "title": "Cerca",
+    "placeholder": "Cerca articoli, pagine o prodotti",
+    "submit": "Cerca",
+    "no_results_html": "Nessun risultato per {{ terms }}",
+    "results_for_html": "{{ count }} risultati per {{ terms }}"
+  }
+}

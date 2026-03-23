@@ -1,0 +1,58 @@
+<div
+  id="search-drawer"
+  data-js="search-drawer"
+  class="fixed inset-0 z-50"
+  hidden
+  aria-hidden="true"
+>
+  <div data-js="search-drawer-overlay" class="absolute inset-0 bg-black/40" aria-hidden="true"></div>
+
+  <aside
+    data-js="search-drawer-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="{{ 'search.title' | t }}"
+    class="absolute right-0 top-0 h-full w-full max-w-lg bg-white p-4 shadow-2xl"
+  >
+    <div class="flex items-center justify-between border-b pb-3">
+      <h2 class="text-lg font-semibold">{{ 'search.title' | t }}</h2>
+      <button type="button" data-js="search-close" class="h-9 w-9 border" aria-label="Close search drawer">x</button>
+    </div>
+
+    <form action="{{ routes.search_url }}" method="get" role="search" data-js="search-drawer-form" class="mt-3 space-y-2">
+      <label for="SearchDrawerInput" class="sr-only">{{ 'search.placeholder' | t }}</label>
+      <input
+        id="SearchDrawerInput"
+        data-js="search-drawer-input"
+        type="search"
+        name="q"
+        autocomplete="off"
+        aria-autocomplete="list"
+        aria-controls="SearchDrawerResults"
+        aria-expanded="false"
+        placeholder="{{ 'search.placeholder' | t }}"
+        class="w-full border px-3 py-2"
+      >
+      <button type="submit" class="border px-3 py-2">{{ 'search.submit' | t }}</button>
+    </form>
+
+    <p data-js="search-drawer-status" role="status" aria-live="polite" class="sr-only"></p>
+    <p data-js="search-drawer-error" role="alert" class="mt-1 min-h-5 text-sm text-red-700"></p>
+
+    <section id="SearchDrawerResults" data-js="search-drawer-results" role="region" class="mt-3 min-h-[240px] rounded border p-3">
+      <div data-js="search-drawer-loader" class="hidden items-center gap-2 text-sm opacity-70" aria-hidden="true">
+        <span class="h-4 w-4 rounded-full border-2 border-black/20 border-t-black animate-spin"></span>
+        <span>Searching...</span>
+      </div>
+      <p data-js="search-drawer-empty" class="text-sm opacity-70">Start typing to see quick results.</p>
+      <div data-js="search-drawer-groups" class="space-y-4"></div>
+    </section>
+  </aside>
+</div>
+
+{% schema %}
+{
+  "name": "Search drawer",
+  "settings": []
+}
+{% endschema %}

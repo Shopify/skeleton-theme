@@ -59,12 +59,28 @@ loading is handled exclusively by the layout.
 `ts/gift-card.ts` is the only exception: loaded directly in `templates/gift_card.liquid`
 because that template uses `{% layout none %}`.
 
+## TS/Liquid contract
+
+**TS logic only, Liquid markup only.**
+
+- Keep behavior and state orchestration in TypeScript modules under `frontend/entrypoints/ts/**`
+- Keep editable markup in Liquid sections/snippets under `sections/**` and `snippets/**`
+- Treat `data-js` attributes as the integration contract between TS and Liquid
+- Do not move markup generation into TS string templates for cart/minicart/search flows
+
 ## When to add JS
 
 - **Global bootstrap only**: `frontend/entrypoints/ts/theme.ts`
 - **Shared logic/utilities** (e.g. modal, DOM helpers): `frontend/entrypoints/ts/utils/*`
 - **Template-specific logic**: the matching entrypoint (e.g. `frontend/entrypoints/ts/product.ts`)
 - **Never create a new entrypoint** without also updating the router in `layout/theme.liquid`
+
+Current interaction ownership:
+- `ts/theme.ts`: global cart drawer bootstrap
+- `ts/product.ts`: PDP variants/media/add-to-cart states
+- `ts/collection.ts`: PLP sort/filter progressive interactions
+- `ts/cart.ts`: cart page quantity/remove interactions
+- `ts/search.ts`: predictive search interactions
 
 ## Theme preview
 
@@ -160,6 +176,11 @@ Before merging to `staging` or `main`, ensure:
 - `bun run build` passes
 - `theme-check` passes
 - Smoke test the templates touched by the PR
+- Verify manual QA on touched templates (PDP, PLP, cart page, minicart as relevant)
+
+CI enforces branch flow:
+- PR to `staging` must come from `feat/*`
+- PR to `main` must come from `staging`
 
 ## Troubleshooting
 
@@ -185,6 +206,14 @@ Before merging to `staging` or `main`, ensure:
 1. Target file (`sections/collection.liquid`)
 2. Goal (what it should do)
 3. Approve the plan before execution
+
+### Start feature branch
+
+```bash
+git checkout staging
+git pull
+git checkout -b feat/<feature-name>
+```
 
 ### Naming conventions
 

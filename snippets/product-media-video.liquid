@@ -1,0 +1,13 @@
+{% comment %}
+  Renders a product video media item using media_tag.
+  Accepts:
+    - media: {Object} Shopify media object (media_type: 'video' or 'external_video')
+    - class: {String} CSS classes applied to the wrapper div
+{% endcomment %}
+{% if media != blank %}
+  <div class="{{ class }}">
+    {{ media | media_tag: loop: false, muted: false }}
+  </div>
+{% else %}
+  <div class="{{ class }}">{{ 'product-1' | placeholder_svg_tag }}</div>
+{% endif %}

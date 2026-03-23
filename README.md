@@ -25,9 +25,20 @@
   - Shared utilities in `frontend/entrypoints/ts/utils/`
   - `typecheck` gate with `tsc --noEmit`
 
+- Core storefront interactions
+  - PDP variant/media/price synchronization + add-to-cart status handling
+  - Cart drawer with keyboard accessibility, quantity/remove async flows, and fallback to `/cart`
+  - Cart page async quantity/remove flows with empty/error states
+  - Collection sorting, filtering, and progressive load-more behavior
+  - Search predictive suggestions with graceful fallback to full search
+
 - Branch-linked deploy workflow
   - Built assets are committed to branch for Shopify Git-connected themes
   - CI validates quality gates (`typecheck`, `vite:build`, `theme-check`)
+
+- AI-ready contributor workflow
+  - Generic agent guide in `AGENTS.md`
+  - Architecture + conventions in `CLAUDE.md`
 
 ---
 
@@ -125,6 +136,29 @@
 
 ---
 
+## Customization Contract
+
+- Keep TS modules focused on behavior/state only.
+  - Put DOM events, async flows, and state sync in `frontend/entrypoints/ts/**`.
+- Keep Liquid focused on markup/content structure only.
+  - Put editable HTML structure in `sections/**` and `snippets/**`.
+- Treat `data-js="..."` attributes as a stable public contract between TS and Liquid.
+  - You can restyle or rearrange markup as long as required `data-js` hooks remain intact.
+
+- Search drawer safe customization points:
+  - Layout container and spacing in `sections/search-drawer.liquid`
+  - Result card markup inside `frontend/entrypoints/ts/search/drawer.ts` (`createResultItem`)
+  - Group ordering/labels inside `frontend/entrypoints/ts/search/drawer.ts` (`renderGroups`)
+
+- Stable `data-js` contracts by module:
+  - Cart drawer: `cart-drawer`, `cart-open`, `cart-close`, `cart-items`, `cart-empty`, `cart-subtotal`
+  - Cart page: `cart-page`, `cart-page-items`, `cart-page-empty`, `cart-page-footer`, `cart-page-subtotal`
+  - Product: `product-form`, `option-value`, `thumbnail`, `add-to-cart`, `cart-status`
+  - Collection: `collection-root`, `collection-controls`, `collection-products`, `collection-load-more`, `collection-quick-buy`
+  - Search drawer: `search-drawer`, `search-open`, `search-close`, `search-drawer-input`, `search-drawer-groups`
+
+---
+
 ## Environment Configuration
 
 - `.env` (local, gitignored)
@@ -164,6 +198,51 @@ Flow:
 2. PR to `staging`
 3. QA on staging theme
 4. Merge `staging` into `main`
+
+Enforcement in CI:
+- PRs to `staging` must come from `feat/*`
+- PRs to `main` must come from `staging`
+
+## Start a Feature Branch
+
+```bash
+git checkout staging
+git pull
+git checkout -b feat/<short-feature-name>
+```
+
+Before opening a PR, run local quality gates:
+
+```bash
+bun run typecheck
+bun run build
+# Optional when installed locally
+theme-check
+```
+
+If the branch is Shopify Git-connected, commit generated build artifacts:
+- `assets/*`
+- `assets/.vite/manifest.json`
+- `snippets/vite-tag.liquid`
+
+---
+
+## Alias Examples
+
+Use path aliases from `vite.config.js` for cleaner imports:
+
+```ts
+import { addToCart } from '@ts/utils/cart';
+import '@css/main.css';
+```
+
+---
+
+## Linting Strategy
+
+- TypeScript quality gate: `bun run typecheck`
+- Liquid quality gate: Theme Check in CI (`Theme Check` job)
+- Local checks: `bun run typecheck` and `bun run build` (plus optional `theme-check`)
 
 ---
 

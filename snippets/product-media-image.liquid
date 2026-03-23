@@ -1,0 +1,11 @@
+{% comment %}
+  Renders a product image media item using media_tag.
+  Accepts:
+    - media: {Object} Shopify media object (media_type: 'image')
+    - class: {String} CSS classes applied to the generated img element
+{% endcomment %}
+{% if media != blank %}
+  {{ media | media_tag: class: class, widths: '600,900,1200', sizes: '(min-width: 1024px) 50vw, 100vw' }}
+{% else %}
+  {{ 'product-1' | placeholder_svg_tag: class }}
+{% endif %}
