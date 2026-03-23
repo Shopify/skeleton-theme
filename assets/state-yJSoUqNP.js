@@ -1,0 +1,1 @@
+var e={productData:null,currentVariant:null,selectedOptions:[],variantPrices:{},cartState:`idle`,currentMediaId:null,mediaContextVariantId:null};export{e as state};

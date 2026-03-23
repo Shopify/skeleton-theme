@@ -1,0 +1,39 @@
+{% doc %}
+    Reusable product card for collection-like grids.
+
+  Shows image, title, price, and a quick-buy control when the product can be
+  added directly (single default variant available).
+
+    @param {product} product - Product object to render
+    @param {boolean} [enable_quick_buy] - Enables quick buy CTA when possible
+{% enddoc %}
+
+{%- liquid
+    assign quick_buy_variant = null
+    if product.available and product.has_only_default_variant
+        assign quick_buy_variant = product.selected_or_first_available_variant
+    endif
+-%}
+
+<article class="collection-product" data-js="collection-product-card">
+    {% if product.featured_image %}
+        {% render 'image',
+            class: 'collection-product__image',
+            image: product.featured_image,
+            url: product.url,
+            width: 400,
+            height: 400,
+            crop: 'center'
+        %}
+    {% endif %}
+
+    <div class="collection-product__content space-y-2">
+        <p>{{ product.title | escape | link_to: product.url }}</p>
+        <p>{{ product.price | money }}</p>
+        {% render 'product-card-quick-buy',
+            product: product,
+            quick_buy_variant: quick_buy_variant,
+            enable_quick_buy: enable_quick_buy
+        %}
+    </div>
+</article>

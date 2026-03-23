@@ -5,6 +5,28 @@ on:
   pull_request:
 
 jobs:
+  branch-strategy:
+    name: Branch Strategy Check
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR source and target branches
+        run: |
+          BASE="${{ github.base_ref }}"
+          HEAD="${{ github.head_ref }}"
+
+          if [ "$BASE" = "staging" ] && [[ ! "$HEAD" =~ ^feat/ ]]; then
+            echo "PRs to staging must come from feat/* branches. Got: $HEAD"
+            exit 1
+          fi
+
+          if [ "$BASE" = "main" ] && [ "$HEAD" != "staging" ]; then
+            echo "PRs to main must come from staging. Got: $HEAD"
+            exit 1
+          fi
+
+          echo "Branch strategy check passed for $HEAD -> $BASE"
+
   quality:
     name: Typecheck and Build
     runs-on: ubuntu-latest
@@ -19,6 +41,8 @@ jobs:
         run: bun run typecheck
       - name: Build assets
         run: bun run build
+      - name: Ensure generated assets are committed
+        run: git diff --exit-code -- assets snippets/vite-tag.liquid
 
   theme-check:
     name: Theme Check

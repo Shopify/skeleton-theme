@@ -7,35 +7,151 @@
 
 <h1>{{ collection.title }}</h1>
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
+{% paginate collection.products by 20 %}
+  <div data-js="collection-root" data-section-id="{{ section.id }}" class="space-y-5">
+    <p data-js="collection-status" role="status" aria-live="polite" class="text-sm"></p>
+    <p data-js="collection-error" role="alert" class="min-h-5 text-sm text-red-700"></p>
+
+    <form data-js="collection-controls" class="space-y-4 border-b pb-4" method="get" action="{{ collection.url }}">
+      <div class="flex flex-wrap items-end gap-4">
+        <div>
+          <label for="CollectionSort" class="block text-sm">Sort by</label>
+          <select id="CollectionSort" name="sort_by" data-js="collection-sort" class="mt-1 border px-3 py-2">
+            {% for option in collection.sort_options %}
+              <option value="{{ option.value | escape }}" {% if option.value == collection.sort_by %}selected{% endif %}>
+                {{ option.name }}
+              </option>
+            {% endfor %}
+          </select>
         </div>
+
+        <button type="submit" class="border px-3 py-2">Apply filters</button>
+        <a
+          href="{{ collection.url }}?sort_by={{ collection.sort_by | default: collection.default_sort_by | escape }}"
+          data-js="collection-clear"
+          class="underline"
+        >
+          Clear all
+        </a>
       </div>
+
+      {% if collection.filters.size > 0 %}
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-js="collection-filters">
+          {% for filter in collection.filters %}
+            <fieldset class="space-y-2 border p-3">
+              <legend class="text-sm font-medium">{{ filter.label }}</legend>
+
+              {% case filter.type %}
+                {% when 'list', 'boolean' %}
+                  {% for filter_value in filter.values %}
+                    <label class="flex items-center gap-2 text-sm" for="Filter-{{ filter.param_name }}-{{ forloop.index }}">
+                      <input
+                        id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                        type="checkbox"
+                        name="{{ filter_value.param_name }}"
+                        value="{{ filter_value.value }}"
+                        {% if filter_value.active %}checked{% endif %}
+                      >
+                      <span>{{ filter_value.label }}</span>
+                      <span class="opacity-60">({{ filter_value.count }})</span>
+                    </label>
+                  {% endfor %}
+                {% when 'price_range' %}
+                  <div class="grid grid-cols-2 gap-2">
+                    <label class="text-sm" for="Filter-{{ filter.min_value.param_name }}">
+                      Min
+                      <input
+                        id="Filter-{{ filter.min_value.param_name }}"
+                        type="number"
+                        name="{{ filter.min_value.param_name }}"
+                        min="0"
+                        value="{{ filter.min_value.value }}"
+                        placeholder="0"
+                        class="mt-1 w-full border px-2 py-1"
+                      >
+                    </label>
+                    <label class="text-sm" for="Filter-{{ filter.max_value.param_name }}">
+                      Max
+                      <input
+                        id="Filter-{{ filter.max_value.param_name }}"
+                        type="number"
+                        name="{{ filter.max_value.param_name }}"
+                        min="0"
+                        value="{{ filter.max_value.value }}"
+                        placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                        class="mt-1 w-full border px-2 py-1"
+                      >
+                    </label>
+                  </div>
+              {% endcase %}
+            </fieldset>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </form>
+
+    {% assign has_active_filters = false %}
+    {% for filter in collection.filters %}
+      {% if filter.active_values.size > 0 %}
+        {% assign has_active_filters = true %}
+      {% endif %}
+      {% if filter.type == 'price_range' %}
+        {% if filter.min_value.value or filter.max_value.value %}
+          {% assign has_active_filters = true %}
+        {% endif %}
+      {% endif %}
     {% endfor %}
 
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
-</div>
+    {% if has_active_filters %}
+      <div class="flex flex-wrap gap-2" data-js="collection-active-filters">
+        {% for filter in collection.filters %}
+          {% for filter_value in filter.active_values %}
+            <a href="{{ filter_value.url_to_remove }}" data-js="collection-filter-remove" class="inline-flex items-center gap-1 border px-2 py-1 text-sm">
+              {{ filter_value.label }} <span aria-hidden="true">×</span>
+            </a>
+          {% endfor %}
+
+          {% if filter.type == 'price_range' %}
+            {% if filter.min_value.value or filter.max_value.value %}
+              <a href="{{ filter.url_to_remove }}" data-js="collection-filter-remove" class="inline-flex items-center gap-1 border px-2 py-1 text-sm">
+                {{ filter.min_value.value | default: 0 | money_without_currency }} - {{ filter.max_value.value | default: filter.range_max | money_without_currency }}
+                <span aria-hidden="true">×</span>
+              </a>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="collection-products" data-js="collection-products">
+      {% for product in collection.products %}
+        {% render 'product-card', product: product, enable_quick_buy: true %}
+      {% else %}
+        <p>No products found for current filters.</p>
+      {% endfor %}
+    </div>
+
+    <div class="mt-4" data-js="collection-pagination-wrap">
+      {% if paginate.next %}
+        <button type="button" data-js="collection-load-more" data-next-url="{{ paginate.next.url }}" class="border px-4 py-2">
+          Load more
+        </button>
+      {% endif %}
+
+      <p data-js="collection-load-status" role="status" aria-live="polite" class="mt-2 text-sm"></p>
+
+      <div data-js="collection-default-pagination" class="mt-2">
+        {{ paginate | default_pagination }}
+      </div>
+    </div>
+  </div>
+{% endpaginate %}
 
 {% stylesheet %}
   .collection-products {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
 {% endstylesheet %}
 

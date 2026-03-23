@@ -1,0 +1,1 @@
+import{initCartPage as e}from"./page-CKX_Lx8T.js";document.addEventListener(`DOMContentLoaded`,()=>{e()});

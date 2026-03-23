@@ -1,3 +1,12 @@
+{% doc %}
+  Renders all essential HTML meta tags: charset, viewport, Open Graph, Twitter Card,
+  JSON-LD structured data, canonical URL, and page title.
+
+  Reads Shopify global objects directly (no parameters required):
+  - `page_title`, `page_description`, `canonical_url`, `page_image`
+  - `shop`, `product`, `cart`, `request`, `current_tags`, `current_page`
+{% enddoc %}
+
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width,initial-scale=1">

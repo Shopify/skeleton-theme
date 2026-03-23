@@ -1,0 +1,36 @@
+<div class="section-template--product-recommendations" data-js="product-recommendations-root">
+  {% if recommendations.performed and recommendations.products_count > 0 %}
+    <section class="py-8">
+      <h2 class="text-xl font-semibold mb-4">You may also like</h2>
+      <ul class="grid grid-cols-2 gap-4 lg:grid-cols-4" role="list">
+        {% for product in recommendations.products limit: section.settings.products_limit %}
+          <li>
+            {% render 'product-card', product: product %}
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Product recommendations",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Number of products",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product recommendations"
+    }
+  ]
+}
+{% endschema %}
