@@ -23,15 +23,6 @@ interface PredictivePayload {
   };
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
 function debounce<T extends (...args: never[]) => void>(fn: T, delay = 250): (...args: Parameters<T>) => void {
   let timeoutId: number | null = null;
 
@@ -77,31 +68,44 @@ document.addEventListener('DOMContentLoaded', () => {
     input.setAttribute('aria-expanded', 'true');
   };
 
+  const createResultNode = (item: PredictiveItem): HTMLLIElement => {
+    const listItem = document.createElement('li');
+
+    const link = document.createElement('a');
+    link.href = item.url;
+    link.className = 'flex items-center gap-3 rounded border px-2 py-2 hover:bg-gray-50';
+
+    if (item.image?.url) {
+      const image = document.createElement('img');
+      image.src = item.image.url;
+      image.alt = item.image.alt ?? item.title;
+      image.className = 'h-10 w-10 object-cover';
+      link.appendChild(image);
+    }
+
+    const title = document.createElement('span');
+    title.className = 'text-sm';
+    title.textContent = item.title;
+    link.appendChild(title);
+
+    listItem.appendChild(link);
+    return listItem;
+  };
+
   const renderResults = (results: PredictiveItem[]): void => {
+    list.replaceChildren();
+
     if (results.length === 0) {
-      list.innerHTML = '';
       setPredictiveStatus('No quick matches. Press Enter for full results.');
       openPanel();
       return;
     }
 
-    list.innerHTML = results
-      .map((item) => {
-        const title = escapeHtml(item.title);
-        const image = item.image?.url
-          ? `<img src="${item.image.url}" alt="${escapeHtml(item.image.alt ?? item.title)}" class="h-10 w-10 object-cover">`
-          : '';
-
-        return `
-          <li>
-            <a href="${item.url}" class="flex items-center gap-3 rounded border px-2 py-2 hover:bg-gray-50">
-              ${image}
-              <span class="text-sm">${title}</span>
-            </a>
-          </li>
-        `;
-      })
-      .join('');
+    const fragment = document.createDocumentFragment();
+    results.forEach((item) => {
+      fragment.appendChild(createResultNode(item));
+    });
+    list.appendChild(fragment);
 
     setPredictiveStatus(`${results.length} quick matches`);
     openPanel();

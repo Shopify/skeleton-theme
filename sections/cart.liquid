@@ -49,6 +49,28 @@
 
   <div data-js="cart-page-footer" class="space-y-3" {% if cart.item_count == 0 %}hidden{% endif %}>
     <p class="text-sm">Subtotal: <strong data-js="cart-page-subtotal">{{ cart.total_price | money }}</strong></p>
+
+    <form action="{{ routes.cart_url }}" method="post" class="space-y-3 border p-3">
+      <label for="CartNote" class="block text-sm font-medium">{{ 'cart.note' | t }}</label>
+      <textarea
+        id="CartNote"
+        name="note"
+        rows="3"
+        class="w-full border px-3 py-2"
+      >{{ cart.note }}</textarea>
+
+      <label for="CartOrderReference" class="block text-sm font-medium">{{ 'cart.order_reference' | t }}</label>
+      <input
+        id="CartOrderReference"
+        type="text"
+        name="attributes[order_reference]"
+        value="{{ cart.attributes.order_reference | escape }}"
+        class="w-full border px-3 py-2"
+      >
+
+      <button type="submit" name="update" class="border px-3 py-2">{{ 'cart.update' | t }}</button>
+    </form>
+
     <form action="{{ routes.cart_url }}" method="post">
       <button type="submit" name="checkout" class="border px-3 py-2">{{ 'cart.checkout' | t }}</button>
     </form>
