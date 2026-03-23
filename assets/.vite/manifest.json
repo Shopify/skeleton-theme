@@ -1,6 +1,6 @@
 {
   "frontend/entrypoints/css/main.css": {
-    "file": "main-BF2QWjU5.css",
+    "file": "main-BedzLXBi.css",
     "src": "frontend/entrypoints/css/main.css",
     "isEntry": true,
     "name": "main",
@@ -95,7 +95,7 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/product.ts": {
-    "file": "product-BxBL01GO.js",
+    "file": "product-CbP3NaeG.js",
     "name": "product",
     "src": "frontend/entrypoints/ts/product.ts",
     "isEntry": true,
@@ -109,7 +109,7 @@
     ]
   },
   "frontend/entrypoints/ts/product/handlers.ts": {
-    "file": "handlers-DnmO5tfH.js",
+    "file": "handlers-BekC_4hw.js",
     "name": "handlers",
     "src": "frontend/entrypoints/ts/product/handlers.ts",
     "isEntry": true,
@@ -133,7 +133,7 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/product/sync.ts": {
-    "file": "sync-YStD_kYI.js",
+    "file": "sync-BRYiu7LQ.js",
     "name": "sync",
     "src": "frontend/entrypoints/ts/product/sync.ts",
     "isEntry": true,

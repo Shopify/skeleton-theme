@@ -38,8 +38,8 @@ function isOptionClick(event: Event): boolean {
   return Boolean((event.target as HTMLElement).closest('[data-js="option-value"]'));
 }
 
-function isThumbnailClick(event: Event): boolean {
-  return Boolean((event.target as HTMLElement).closest('[data-js="thumbnail"]'));
+function isProductInteractionTarget(target: EventTarget | null): target is HTMLElement {
+  return target instanceof HTMLElement;
 }
 
 /**
@@ -66,11 +66,38 @@ function init(): void {
     loadRecommendations();
   };
 
+  const onFirstPointerDown = (event: PointerEvent): void => {
+    if (!isProductInteractionTarget(event.target)) return;
+
+    const isProductInteraction = Boolean(
+      event.target.closest('[data-js="product-form"], [data-product-media], [data-product-thumbnails]'),
+    );
+    if (!isProductInteraction) return;
+
+    loadRecommendationsOnce();
+    document.removeEventListener('pointerdown', onFirstPointerDown, true);
+    document.removeEventListener('keydown', onFirstKeyDown, true);
+  };
+
+  const onFirstKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    if (!isProductInteractionTarget(event.target)) return;
+
+    const isProductInteraction = Boolean(
+      event.target.closest('[data-js="product-form"], [data-product-media], [data-product-thumbnails]'),
+    );
+    if (!isProductInteraction) return;
+
+    loadRecommendationsOnce();
+    document.removeEventListener('pointerdown', onFirstPointerDown, true);
+    document.removeEventListener('keydown', onFirstKeyDown, true);
+  };
+
+  document.addEventListener('pointerdown', onFirstPointerDown, true);
+  document.addEventListener('keydown', onFirstKeyDown, true);
+
   const form = document.querySelector<HTMLFormElement>('[data-js="product-form"]');
   form?.addEventListener('click', (event) => {
-    if (isOptionClick(event)) {
-      loadRecommendationsOnce();
-    }
     onOptionClick(event);
   });
   form?.addEventListener('submit', (e) => {
@@ -79,9 +106,6 @@ function init(): void {
   });
 
   document.addEventListener('click', (event) => {
-    if (isThumbnailClick(event)) {
-      loadRecommendationsOnce();
-    }
     onThumbnailClick(event);
   });
   window.addEventListener('popstate', () => {
