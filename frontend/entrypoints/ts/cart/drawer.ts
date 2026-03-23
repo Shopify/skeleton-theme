@@ -1,39 +1,12 @@
-import { changeCartLine, getCart, type CartItem, type CartResponse } from '../utils/cart';
+import { changeCartLine } from '../utils/cart';
+import {
+  applySectionReplace,
+  fetchSingleSectionHtml,
+  normalizeSectionsUrl,
+} from '../utils/section-rendering';
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function formatMoney(cents: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency,
-    }).format(cents / 100);
-  } catch {
-    return `${(cents / 100).toFixed(2)} ${currency}`;
-  }
-}
-
-function getImageUrl(item: CartItem): string | null {
-  return item.image ?? item.featured_image?.url ?? null;
-}
-
-function getItemTitle(item: CartItem): string {
-  return item.product_title ?? item.title ?? 'Product';
-}
-
-function lineTotal(item: CartItem): number {
-  return item.final_line_price ?? item.line_price ?? 0;
-}
 
 export function initCartDrawer(): void {
   const drawerRoot = document.querySelector<HTMLElement>('[data-js="cart-drawer"]');
@@ -66,16 +39,19 @@ export function initCartDrawer(): void {
   const overlay = overlayRoot;
   const panel = panelRoot;
   const closeButton = closeButtonRoot;
-  const itemsContainer = itemsContainerRoot;
-  const emptyState = emptyStateRoot;
-  const subtotal = subtotalRoot;
   const status = statusRoot;
   const error = errorRoot;
+  const sectionContextUrl = normalizeSectionsUrl(window.location.pathname);
+  const triggers = document.querySelectorAll<HTMLAnchorElement>('[data-js="cart-open"]');
 
-  const fallbackUrl = drawer.dataset.cartUrl ?? '/cart';
+  let itemsContainer: HTMLElement = itemsContainerRoot;
+  let emptyState: HTMLElement = emptyStateRoot;
+  let subtotal: HTMLElement = subtotalRoot;
 
   let isOpen = false;
   let isUpdating = false;
+  let latestMutationId = 0;
+  let queuedUpdate: { line: number; quantity: number } | null = null;
   let lastFocused: HTMLElement | null = null;
 
   const setStatus = (message: string): void => {
@@ -96,87 +72,129 @@ export function initCartDrawer(): void {
     });
   };
 
-  const renderItems = (cart: CartResponse): void => {
-    const currency = cart.currency || drawer.dataset.currency || 'USD';
-    const isEmpty = cart.item_count === 0;
-
+  const updateCount = (count: number): void => {
     countNodes.forEach((node) => {
-      node.textContent = String(cart.item_count);
-      node.hidden = cart.item_count < 1;
+      node.textContent = String(count);
+      node.hidden = count < 1;
     });
+  };
 
-    subtotal.textContent = formatMoney(cart.total_price, currency);
+  const countItemsFromDrawerMarkup = (): number => {
+    const qtyNodes = itemsContainer.querySelectorAll<HTMLElement>('[data-js="cart-qty-value"]');
+    return Array.from(qtyNodes).reduce((sum, node) => {
+      const qty = Number(node.textContent ?? '0');
+      return sum + (Number.isFinite(qty) ? qty : 0);
+    }, 0);
+  };
 
-    if (isEmpty) {
-      itemsContainer.innerHTML = '';
-      emptyState.hidden = false;
-      setStatus('Your cart is empty.');
-      return;
+  const setLineLoading = (line: number, busy: boolean): void => {
+    const row = itemsContainer.querySelector<HTMLElement>(`[data-line="${line}"]`);
+    if (!row) return;
+
+    row.classList.toggle('animate-pulse', busy);
+
+    const lineOverlay = row.querySelector<HTMLElement>('[data-js="cart-drawer-line-overlay"]');
+    if (!lineOverlay) return;
+
+    if (busy) {
+      lineOverlay.classList.remove('hidden');
+      lineOverlay.classList.add('flex');
+    } else {
+      lineOverlay.classList.add('hidden');
+      lineOverlay.classList.remove('flex');
     }
+  };
 
-    emptyState.hidden = true;
-    itemsContainer.innerHTML = cart.items
-      .map((item, index) => {
-        const imageUrl = getImageUrl(item);
-        const itemTitle = escapeHtml(getItemTitle(item));
-        const variantTitle = item.variant_title ? escapeHtml(item.variant_title) : '';
+  const applyDrawerSectionMarkup = (sectionHtml: string | null | undefined): boolean => {
+    const result = applySectionReplace(sectionHtml, '[data-js="cart-drawer"]', [
+      { key: 'items', current: itemsContainer, selector: '[data-js="cart-items"]' },
+      { key: 'empty', current: emptyState, selector: '[data-js="cart-empty"]' },
+      { key: 'subtotal', current: subtotal, selector: '[data-js="cart-subtotal"]' },
+    ]);
 
-        return `
-          <li class="grid grid-cols-[64px_1fr] gap-3 border-b py-3" data-line="${index + 1}">
-            <a href="${item.url}" class="block h-16 w-16 overflow-hidden border">
-              ${
-                imageUrl
-                  ? `<img src="${imageUrl}" alt="${itemTitle}" class="h-full w-full object-cover">`
-                  : ''
-              }
-            </a>
-            <div class="space-y-2">
-              <a href="${item.url}" class="block text-sm font-medium">${itemTitle}</a>
-              ${variantTitle ? `<p class="text-xs opacity-70">${variantTitle}</p>` : ''}
-              <div class="flex items-center gap-2">
-                <button type="button" data-js="cart-qty-dec" data-line="${index + 1}" aria-label="Decrease quantity" class="h-8 w-8 border">-</button>
-                <span class="min-w-6 text-center text-sm" data-js="cart-qty-value">${item.quantity}</span>
-                <button type="button" data-js="cart-qty-inc" data-line="${index + 1}" aria-label="Increase quantity" class="h-8 w-8 border">+</button>
-                <button type="button" data-js="cart-remove" data-line="${index + 1}" class="ml-auto text-sm underline">Remove</button>
-              </div>
-              <p class="text-sm">${formatMoney(lineTotal(item), currency)}</p>
-            </div>
-          </li>
-        `;
-      })
-      .join('');
+    if (!result.ok) return false;
+
+    const nextItems = result.nodes.items;
+    const nextEmpty = result.nodes.empty;
+    const nextSubtotal = result.nodes.subtotal;
+    if (!nextItems || !nextEmpty || !nextSubtotal) return false;
+
+    itemsContainer = nextItems;
+    emptyState = nextEmpty;
+    subtotal = nextSubtotal;
+    updateCount(countItemsFromDrawerMarkup());
+
+    return true;
+  };
+
+  const updateFromSectionResponse = (sectionHtml: string | null | undefined): boolean => {
+    return applyDrawerSectionMarkup(sectionHtml);
   };
 
   const refresh = async (): Promise<void> => {
     setError('');
 
     try {
-      const cart = await getCart();
-      renderItems(cart);
+      const sectionHtml = await fetchSingleSectionHtml('cart-drawer', sectionContextUrl);
+      const sectionUpdated = applyDrawerSectionMarkup(sectionHtml);
+      if (!sectionUpdated) {
+        throw new Error('Drawer section rendering failed');
+      }
     } catch {
-      setError('Could not load your cart. Redirecting to cart page...');
-      window.location.assign(fallbackUrl);
+      setError('Could not load your cart right now. Please try again.');
+      setStatus('Cart load failed.');
     }
   };
 
   const updateLine = async (line: number, quantity: number): Promise<void> => {
-    if (isUpdating) return;
+    const mutationId = ++latestMutationId;
     isUpdating = true;
     setError('');
-    setStatus('Updating cart...');
     setBusyState(true);
+    setLineLoading(line, true);
 
     try {
-      const cart = await changeCartLine(line, quantity);
-      renderItems(cart);
+      const cart = await changeCartLine(line, quantity, {
+        sections: ['cart-drawer'],
+        sectionsUrl: sectionContextUrl,
+      });
+
+      const sectionUpdated = updateFromSectionResponse(cart.sections?.['cart-drawer']);
+
+      if (!sectionUpdated || mutationId !== latestMutationId) {
+        throw new Error('Drawer section rendering failed');
+      }
+
+      updateCount(cart.item_count);
       setStatus(quantity === 0 ? 'Item removed.' : 'Cart updated.');
     } catch {
-      setError('Could not update cart. Please try again.');
+      setError('Could not refresh cart UI. Please try again.');
       setStatus('Cart update failed.');
     } finally {
-      isUpdating = false;
-      setBusyState(false);
+      if (mutationId === latestMutationId) {
+        isUpdating = false;
+        setBusyState(false);
+        setLineLoading(line, false);
+        if (queuedUpdate) {
+          void flushQueuedUpdates();
+        }
+      }
     }
+  };
+
+  const flushQueuedUpdates = async (): Promise<void> => {
+    if (isUpdating) return;
+
+    while (queuedUpdate) {
+      const nextUpdate = queuedUpdate;
+      queuedUpdate = null;
+      await updateLine(nextUpdate.line, nextUpdate.quantity);
+    }
+  };
+
+  const queueLineUpdate = (line: number, quantity: number): void => {
+    queuedUpdate = { line, quantity };
+    void flushQueuedUpdates();
   };
 
   const focusables = (): HTMLElement[] =>
@@ -220,6 +238,7 @@ export function initCartDrawer(): void {
 
     drawer.hidden = false;
     drawer.setAttribute('aria-hidden', 'false');
+    triggers.forEach((button) => button.setAttribute('aria-expanded', 'true'));
     document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', onKeyDown);
 
@@ -233,6 +252,7 @@ export function initCartDrawer(): void {
 
     drawer.hidden = true;
     drawer.setAttribute('aria-hidden', 'true');
+    triggers.forEach((button) => button.setAttribute('aria-expanded', 'false'));
     document.body.style.overflow = '';
     document.removeEventListener('keydown', onKeyDown);
 
@@ -241,11 +261,12 @@ export function initCartDrawer(): void {
     }
   }
 
-  document.querySelectorAll<HTMLAnchorElement>('[data-js="cart-open"]').forEach((trigger) => {
+  triggers.forEach((trigger) => {
     trigger.addEventListener('click', (event) => {
       event.preventDefault();
       openDrawer(trigger);
     });
+    trigger.setAttribute('aria-expanded', 'false');
   });
 
   closeButton.addEventListener('click', closeDrawer);
@@ -267,19 +288,17 @@ export function initCartDrawer(): void {
     const currentQty = Number(quantityNode?.textContent ?? '1');
 
     if (actionButton.dataset.js === 'cart-remove') {
-      void updateLine(line, 0);
+      queueLineUpdate(line, 0);
       return;
     }
 
     if (actionButton.dataset.js === 'cart-qty-inc') {
-      void updateLine(line, currentQty + 1);
+      queueLineUpdate(line, currentQty + 1);
       return;
     }
 
     if (actionButton.dataset.js === 'cart-qty-dec') {
-      void updateLine(line, Math.max(0, currentQty - 1));
+      queueLineUpdate(line, Math.max(0, currentQty - 1));
     }
   });
-
-  void refresh();
 }

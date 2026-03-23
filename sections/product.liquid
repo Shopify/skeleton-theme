@@ -14,17 +14,20 @@
             {{- '<!-- Main viewer -->' }}
             <div class="flex-1" data-product-media>
                 {% for media in product.media %}
-                    {%- assign media_variant_id = nil -%}
+                    {%- assign media_variant_ids = '' -%}
                     {%- for variant in product.variants -%}
                         {%- if variant.featured_media.id == media.id -%}
-                            {%- assign media_variant_id = variant.id -%}
-                            {%- break -%}
+                            {%- if media_variant_ids == '' -%}
+                                {%- assign media_variant_ids = variant.id | append: '' -%}
+                            {%- else -%}
+                                {%- assign media_variant_ids = media_variant_ids | append: ',' | append: variant.id -%}
+                            {%- endif -%}
                         {%- endif -%}
                     {%- endfor -%}
                     <div
                         data-js="media-item"
                         data-media-id="{{ media.id }}"
-                        {% if media_variant_id %}data-variant-media="{{ media_variant_id }}"{% endif %}
+                        {% if media_variant_ids != '' %}data-variant-media="{{ media_variant_ids }}"{% endif %}
                         {% unless forloop.first %}hidden{% endunless %}
                     >
                         {% case media.media_type %}
@@ -45,18 +48,21 @@
             {% if product.media.size > 1 %}
                 <div class="flex gap-2 overflow-x-auto lg:flex-col lg:w-16" data-product-thumbnails>
                     {% for media in product.media %}
-                        {%- assign media_variant_id = nil -%}
+                        {%- assign media_variant_ids = '' -%}
                         {%- for variant in product.variants -%}
                             {%- if variant.featured_media.id == media.id -%}
-                                {%- assign media_variant_id = variant.id -%}
-                                {%- break -%}
+                                {%- if media_variant_ids == '' -%}
+                                    {%- assign media_variant_ids = variant.id | append: '' -%}
+                                {%- else -%}
+                                    {%- assign media_variant_ids = media_variant_ids | append: ',' | append: variant.id -%}
+                                {%- endif -%}
                             {%- endif -%}
                         {%- endfor -%}
                         <button
                             type="button"
                             data-js="thumbnail"
                             data-thumbnail="{{ media.id }}"
-                            {% if media_variant_id %}data-variant-media="{{ media_variant_id }}"{% endif %}
+                            {% if media_variant_ids != '' %}data-variant-media="{{ media_variant_ids }}"{% endif %}
                             aria-pressed="{{ forloop.first }}"
                             class="w-16 h-16 shrink-0 overflow-hidden border"
                         >

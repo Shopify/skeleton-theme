@@ -59,6 +59,15 @@ loading is handled exclusively by the layout.
 `ts/gift-card.ts` is the only exception: loaded directly in `templates/gift_card.liquid`
 because that template uses `{% layout none %}`.
 
+## TS/Liquid contract
+
+**TS logic only, Liquid markup only.**
+
+- Keep behavior and state orchestration in TypeScript modules under `frontend/entrypoints/ts/**`
+- Keep editable markup in Liquid sections/snippets under `sections/**` and `snippets/**`
+- Treat `data-js` attributes as the integration contract between TS and Liquid
+- Do not move markup generation into TS string templates for cart/minicart/search flows
+
 ## When to add JS
 
 - **Global bootstrap only**: `frontend/entrypoints/ts/theme.ts`
@@ -167,7 +176,7 @@ Before merging to `staging` or `main`, ensure:
 - `bun run build` passes
 - `theme-check` passes
 - Smoke test the templates touched by the PR
-- `bun run smoke` passes locally when available
+- Verify manual QA on touched templates (PDP, PLP, cart page, minicart as relevant)
 
 CI enforces branch flow:
 - PR to `staging` must come from `feat/*`

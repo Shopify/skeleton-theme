@@ -7,9 +7,9 @@
 
 <h1>{{ 'cart.title' | t }}</h1>
 
-<div data-js="cart-page" data-currency="{{ cart.currency.iso_code }}" class="space-y-4">
-  <p data-js="cart-page-status" role="status" aria-live="polite" class="text-sm"></p>
-  <p data-js="cart-page-error" role="alert" class="text-sm text-red-700"></p>
+<div data-js="cart-page" data-section-id="{{ section.id }}" data-currency="{{ cart.currency.iso_code }}" class="space-y-4">
+  <p data-js="cart-page-status" role="status" aria-live="polite" class="sr-only"></p>
+  <p data-js="cart-page-error" role="alert" class="min-h-5 text-sm text-red-700"></p>
 
   <div data-js="cart-page-empty" {% if cart.item_count > 0 %}hidden{% endif %}>
     <p>Your cart is empty.</p>
@@ -18,7 +18,10 @@
 
   <ul data-js="cart-page-items" class="space-y-3" {% if cart.item_count == 0 %}hidden{% endif %}>
     {% for item in cart.items %}
-      <li class="grid grid-cols-[80px_1fr] gap-3 border-b pb-3" data-line="{{ forloop.index }}">
+      <li class="relative grid grid-cols-[80px_1fr] gap-3 border-b pb-3" data-line="{{ forloop.index }}">
+        <div data-js="cart-page-line-overlay" class="pointer-events-none absolute inset-0 z-10 hidden items-center justify-center bg-white/60">
+          <span class="h-5 w-5 rounded-full border-2 border-black/20 border-t-black animate-spin" aria-hidden="true"></span>
+        </div>
         {% if item.image %}
           <a href="{{ item.url }}" class="block h-20 w-20 overflow-hidden border">
             {% render 'image', image: item.image, width: 160, class: 'h-full w-full object-cover' %}

@@ -36,6 +36,10 @@
   - Built assets are committed to branch for Shopify Git-connected themes
   - CI validates quality gates (`typecheck`, `vite:build`, `theme-check`)
 
+- AI-ready contributor workflow
+  - Generic agent guide in `AGENTS.md`
+  - Architecture + conventions in `CLAUDE.md`
+
 ---
 
 ## Scripts
@@ -47,7 +51,6 @@
 - `vite:dev`: Start Vite dev server only
 - `vite:build`: Build Vite assets only
 - `shopify:dev`: Start Shopify theme dev server (`development` environment)
-- `smoke`: Run local smoke checklist (`typecheck`, `build`, optional theme-check, generated assets diff)
 
 ---
 
@@ -133,6 +136,29 @@
 
 ---
 
+## Customization Contract
+
+- Keep TS modules focused on behavior/state only.
+  - Put DOM events, async flows, and state sync in `frontend/entrypoints/ts/**`.
+- Keep Liquid focused on markup/content structure only.
+  - Put editable HTML structure in `sections/**` and `snippets/**`.
+- Treat `data-js="..."` attributes as a stable public contract between TS and Liquid.
+  - You can restyle or rearrange markup as long as required `data-js` hooks remain intact.
+
+- Search drawer safe customization points:
+  - Layout container and spacing in `sections/search-drawer.liquid`
+  - Result card markup inside `frontend/entrypoints/ts/search/drawer.ts` (`createResultItem`)
+  - Group ordering/labels inside `frontend/entrypoints/ts/search/drawer.ts` (`renderGroups`)
+
+- Stable `data-js` contracts by module:
+  - Cart drawer: `cart-drawer`, `cart-open`, `cart-close`, `cart-items`, `cart-empty`, `cart-subtotal`
+  - Cart page: `cart-page`, `cart-page-items`, `cart-page-empty`, `cart-page-footer`, `cart-page-subtotal`
+  - Product: `product-form`, `option-value`, `thumbnail`, `add-to-cart`, `cart-status`
+  - Collection: `collection-root`, `collection-controls`, `collection-products`, `collection-load-more`
+  - Search drawer: `search-drawer`, `search-open`, `search-close`, `search-drawer-input`, `search-drawer-groups`
+
+---
+
 ## Environment Configuration
 
 - `.env` (local, gitignored)
@@ -185,10 +211,13 @@ git pull
 git checkout -b feat/<short-feature-name>
 ```
 
-Before opening a PR:
+Before opening a PR, run local quality gates:
 
 ```bash
-bun run smoke
+bun run typecheck
+bun run build
+# Optional when installed locally
+theme-check
 ```
 
 If the branch is Shopify Git-connected, commit generated build artifacts:
@@ -213,7 +242,7 @@ import '@css/main.css';
 
 - TypeScript quality gate: `bun run typecheck`
 - Liquid quality gate: Theme Check in CI (`Theme Check` job)
-- Local smoke: `bun run smoke` (runs typecheck, build, optional local theme-check, generated assets diff)
+- Local checks: `bun run typecheck` and `bun run build` (plus optional `theme-check`)
 
 ---
 

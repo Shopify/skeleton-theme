@@ -1,53 +1,33 @@
-import { changeCartLine, getCart, type CartItem, type CartResponse } from '../utils/cart';
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-function formatMoney(cents: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency,
-    }).format(cents / 100);
-  } catch {
-    return `${(cents / 100).toFixed(2)} ${currency}`;
-  }
-}
-
-function getImageUrl(item: CartItem): string | null {
-  return item.image ?? item.featured_image?.url ?? null;
-}
-
-function getItemTitle(item: CartItem): string {
-  return item.product_title ?? item.title ?? 'Product';
-}
-
-function lineTotal(item: CartItem): number {
-  return item.final_line_price ?? item.line_price ?? 0;
-}
+import { changeCartLine } from '../utils/cart';
+import {
+  applySectionReplace,
+  normalizeSectionsUrl,
+} from '../utils/section-rendering';
 
 export function initCartPage(): void {
   const root = document.querySelector<HTMLElement>('[data-js="cart-page"]');
   if (!root) return;
 
-  const items = root.querySelector<HTMLElement>('[data-js="cart-page-items"]');
-  const empty = root.querySelector<HTMLElement>('[data-js="cart-page-empty"]');
-  const footer = root.querySelector<HTMLElement>('[data-js="cart-page-footer"]');
-  const subtotal = root.querySelector<HTMLElement>('[data-js="cart-page-subtotal"]');
+  const sectionId = root.dataset.sectionId;
+  const sectionContextUrl = normalizeSectionsUrl(window.location.pathname);
+
+  const itemsNode = root.querySelector<HTMLElement>('[data-js="cart-page-items"]');
+  const emptyNode = root.querySelector<HTMLElement>('[data-js="cart-page-empty"]');
+  const footerNode = root.querySelector<HTMLElement>('[data-js="cart-page-footer"]');
+  const subtotalNode = root.querySelector<HTMLElement>('[data-js="cart-page-subtotal"]');
   const status = root.querySelector<HTMLElement>('[data-js="cart-page-status"]');
   const error = root.querySelector<HTMLElement>('[data-js="cart-page-error"]');
   const countNodes = document.querySelectorAll<HTMLElement>('[data-js="cart-count"]');
 
-  if (!items || !empty || !footer || !subtotal || !status || !error) return;
+  if (!itemsNode || !emptyNode || !footerNode || !subtotalNode || !status || !error || !sectionId) return;
 
-  const fallbackUrl = '/cart';
+  let items: HTMLElement = itemsNode;
+  let empty: HTMLElement = emptyNode;
+  let footer: HTMLElement = footerNode;
+
   let isUpdating = false;
+  let latestMutationId = 0;
+  let queuedUpdate: { line: number; quantity: number } | null = null;
 
   const setStatus = (message: string): void => {
     status.textContent = message;
@@ -66,83 +46,105 @@ export function initCartPage(): void {
     });
   };
 
-  const render = (cart: CartResponse): void => {
-    const currency = cart.currency || root.dataset.currency || 'USD';
-    const hasItems = cart.item_count > 0;
-
+  const updateCount = (count: number): void => {
     countNodes.forEach((node) => {
-      node.textContent = String(cart.item_count);
-      node.hidden = cart.item_count < 1;
+      node.textContent = String(count);
+      node.hidden = count < 1;
     });
-
-    empty.hidden = hasItems;
-    items.hidden = !hasItems;
-    footer.hidden = !hasItems;
-    subtotal.textContent = formatMoney(cart.total_price, currency);
-
-    if (!hasItems) {
-      items.innerHTML = '';
-      setStatus('Your cart is empty.');
-      return;
-    }
-
-    items.innerHTML = cart.items
-      .map((item, index) => {
-        const imageUrl = getImageUrl(item);
-        const title = escapeHtml(getItemTitle(item));
-        const variantTitle = item.variant_title ? escapeHtml(item.variant_title) : '';
-
-        return `
-          <li class="grid grid-cols-[80px_1fr] gap-3 border-b pb-3" data-line="${index + 1}">
-            <a href="${item.url}" class="block h-20 w-20 overflow-hidden border">
-              ${imageUrl ? `<img src="${imageUrl}" alt="${title}" class="h-full w-full object-cover">` : ''}
-            </a>
-            <div class="space-y-2">
-              <a href="${item.url}" class="font-medium">${title}</a>
-              ${variantTitle ? `<p class="text-sm opacity-70">${variantTitle}</p>` : ''}
-              <div class="flex items-center gap-2">
-                <button type="button" data-js="cart-page-dec" data-line="${index + 1}" class="h-8 w-8 border" aria-label="Decrease quantity">-</button>
-                <span data-js="cart-page-qty" class="min-w-6 text-center">${item.quantity}</span>
-                <button type="button" data-js="cart-page-inc" data-line="${index + 1}" class="h-8 w-8 border" aria-label="Increase quantity">+</button>
-                <button type="button" data-js="cart-page-remove" data-line="${index + 1}" class="ml-auto underline">Remove</button>
-              </div>
-              <p>${formatMoney(lineTotal(item), currency)}</p>
-            </div>
-          </li>
-        `;
-      })
-      .join('');
   };
 
-  const refresh = async (): Promise<void> => {
-    try {
-      const cart = await getCart();
-      render(cart);
-    } catch {
-      setError('Could not load cart data. Reloading...');
-      window.location.assign(fallbackUrl);
+  const setLineLoading = (line: number, busy: boolean): void => {
+    const row = items.querySelector<HTMLElement>(`[data-line="${line}"]`);
+    if (!row) return;
+
+    row.classList.toggle('animate-pulse', busy);
+
+    const overlay = row.querySelector<HTMLElement>('[data-js="cart-page-line-overlay"]');
+    if (!overlay) return;
+
+    if (busy) {
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+    } else {
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
     }
+  };
+
+  const applySectionMarkup = (sectionHtml: string | null | undefined): boolean => {
+    const result = applySectionReplace(sectionHtml, '[data-js="cart-page"]', [
+      { key: 'items', current: items, selector: '[data-js="cart-page-items"]' },
+      { key: 'empty', current: empty, selector: '[data-js="cart-page-empty"]' },
+      { key: 'footer', current: footer, selector: '[data-js="cart-page-footer"]' },
+    ]);
+
+    if (!result.ok) return false;
+
+    const nextItems = result.nodes.items;
+    const nextEmpty = result.nodes.empty;
+    const nextFooter = result.nodes.footer;
+    if (!nextItems || !nextEmpty || !nextFooter) return false;
+
+    items = nextItems;
+    empty = nextEmpty;
+    footer = nextFooter;
+
+    return Boolean(footer.querySelector<HTMLElement>('[data-js="cart-page-subtotal"]'));
+  };
+
+  const updateFromSectionResponse = (sectionHtml: string | null | undefined): boolean => {
+    return applySectionMarkup(sectionHtml);
   };
 
   const updateLine = async (line: number, quantity: number): Promise<void> => {
-    if (isUpdating) return;
-
+    const mutationId = ++latestMutationId;
     isUpdating = true;
     setBusy(true);
+    setLineLoading(line, true);
     setError('');
-    setStatus('Updating cart...');
 
     try {
-      const cart = await changeCartLine(line, quantity);
-      render(cart);
+      const cart = await changeCartLine(line, quantity, {
+        sections: [sectionId],
+        sectionsUrl: sectionContextUrl,
+      });
+
+      const sectionUpdated = updateFromSectionResponse(cart.sections?.[sectionId]);
+
+      if (!sectionUpdated || mutationId !== latestMutationId) {
+        throw new Error('Cart section rendering failed');
+      }
+
+      updateCount(cart.item_count);
       setStatus(quantity === 0 ? 'Item removed.' : 'Cart updated.');
     } catch {
-      setError('Could not update cart. Please try again.');
+      setError('Could not refresh cart UI. Please try again.');
       setStatus('Cart update failed.');
     } finally {
-      isUpdating = false;
-      setBusy(false);
+      if (mutationId === latestMutationId) {
+        isUpdating = false;
+        setBusy(false);
+        setLineLoading(line, false);
+        if (queuedUpdate) {
+          void flushQueuedUpdates();
+        }
+      }
     }
+  };
+
+  const flushQueuedUpdates = async (): Promise<void> => {
+    if (isUpdating) return;
+
+    while (queuedUpdate) {
+      const nextUpdate = queuedUpdate;
+      queuedUpdate = null;
+      await updateLine(nextUpdate.line, nextUpdate.quantity);
+    }
+  };
+
+  const queueLineUpdate = (line: number, quantity: number): void => {
+    queuedUpdate = { line, quantity };
+    void flushQueuedUpdates();
   };
 
   root.addEventListener('click', (event) => {
@@ -161,19 +163,17 @@ export function initCartPage(): void {
     const currentQty = Number(quantityNode?.textContent ?? '1');
 
     if (actionButton.dataset.js === 'cart-page-remove') {
-      void updateLine(line, 0);
+      queueLineUpdate(line, 0);
       return;
     }
 
     if (actionButton.dataset.js === 'cart-page-inc') {
-      void updateLine(line, currentQty + 1);
+      queueLineUpdate(line, currentQty + 1);
       return;
     }
 
     if (actionButton.dataset.js === 'cart-page-dec') {
-      void updateLine(line, Math.max(0, currentQty - 1));
+      queueLineUpdate(line, Math.max(0, currentQty - 1));
     }
   });
-
-  void refresh();
 }

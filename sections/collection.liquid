@@ -8,8 +8,11 @@
 <h1>{{ collection.title }}</h1>
 
 {% paginate collection.products by 20 %}
-  <div data-js="collection-root" class="space-y-5">
-    <form data-js="collection-controls" class="space-y-4 border-b pb-4" method="get">
+  <div data-js="collection-root" data-section-id="{{ section.id }}" class="space-y-5">
+    <p data-js="collection-status" role="status" aria-live="polite" class="text-sm"></p>
+    <p data-js="collection-error" role="alert" class="min-h-5 text-sm text-red-700"></p>
+
+    <form data-js="collection-controls" class="space-y-4 border-b pb-4" method="get" action="{{ collection.url }}">
       <div class="flex flex-wrap items-end gap-4">
         <div>
           <label for="CollectionSort" class="block text-sm">Sort by</label>
@@ -23,7 +26,13 @@
         </div>
 
         <button type="submit" class="border px-3 py-2">Apply filters</button>
-        <a href="{{ collection.url }}?sort_by={{ collection.sort_by | default: collection.default_sort_by | escape }}" class="underline">Clear all</a>
+        <a
+          href="{{ collection.url }}?sort_by={{ collection.sort_by | default: collection.default_sort_by | escape }}"
+          data-js="collection-clear"
+          class="underline"
+        >
+          Clear all
+        </a>
       </div>
 
       {% if collection.filters.size > 0 %}
@@ -97,14 +106,14 @@
       <div class="flex flex-wrap gap-2" data-js="collection-active-filters">
         {% for filter in collection.filters %}
           {% for filter_value in filter.active_values %}
-            <a href="{{ filter_value.url_to_remove }}" class="inline-flex items-center gap-1 border px-2 py-1 text-sm">
+            <a href="{{ filter_value.url_to_remove }}" data-js="collection-filter-remove" class="inline-flex items-center gap-1 border px-2 py-1 text-sm">
               {{ filter_value.label }} <span aria-hidden="true">×</span>
             </a>
           {% endfor %}
 
           {% if filter.type == 'price_range' %}
             {% if filter.min_value.value or filter.max_value.value %}
-              <a href="{{ filter.url_to_remove }}" class="inline-flex items-center gap-1 border px-2 py-1 text-sm">
+              <a href="{{ filter.url_to_remove }}" data-js="collection-filter-remove" class="inline-flex items-center gap-1 border px-2 py-1 text-sm">
                 {{ filter.min_value.value | default: 0 | money_without_currency }} - {{ filter.max_value.value | default: filter.range_max | money_without_currency }}
                 <span aria-hidden="true">×</span>
               </a>
@@ -137,16 +146,19 @@
       {% endfor %}
     </div>
 
-    {% if paginate.next %}
-      <div class="mt-4" data-js="collection-pagination">
+    <div class="mt-4" data-js="collection-pagination-wrap">
+      {% if paginate.next %}
         <button type="button" data-js="collection-load-more" data-next-url="{{ paginate.next.url }}" class="border px-4 py-2">
           Load more
         </button>
-        <p data-js="collection-load-status" role="status" aria-live="polite" class="mt-2 text-sm"></p>
-      </div>
-    {% endif %}
+      {% endif %}
 
-    {{ paginate | default_pagination }}
+      <p data-js="collection-load-status" role="status" aria-live="polite" class="mt-2 text-sm"></p>
+
+      <div data-js="collection-default-pagination" class="mt-2">
+        {{ paginate | default_pagination }}
+      </div>
+    </div>
   </div>
 {% endpaginate %}
 

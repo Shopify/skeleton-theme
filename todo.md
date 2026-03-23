@@ -1,137 +1,216 @@
-# TODO — Shopify Skeleton Theme + Vite (Post Pre-Core)
+# TODO - Shopify Skeleton Theme (Docs-First Optimization)
 
-## 0) Status
-- [x] Pre-core architecture baseline completed
-- [x] Vite + Shopify integration stabilized
-- [x] TS entrypoints structure finalized (`frontend/entrypoints/css` + `frontend/entrypoints/ts`)
-- [x] Branch-linked deploy workflow documented
-- [x] README and CLAUDE docs updated
+## North Star
+- [ ] Keep this starter aligned with Shopify documentation first
+- [ ] Use Section Rendering/Bundled Section Rendering as the default dynamic UI pattern
+- [ ] Keep customization easy for future themes (logic reusable, markup editable in Liquid)
 
 ---
 
-## 1) Repository Hygiene (final pass before core features)
-- [x] Review tracked/untracked files and confirm what must be committed
-- [x] Confirm `.claude/` policy (team-shared vs local-only)
-- [x] Confirm `.agents/` policy (likely local-only)
-- [x] Ensure `.env` and `shopify.theme.toml` are ignored
-- [x] Ensure only `.env.example` and `example.shopify.theme.toml` are committed
-
-Acceptance:
-- [x] Working tree clean and intentional
-- [x] No sensitive/local files tracked
+## Core Architecture Principles (Non-negotiable)
+- [x] No HTML template strings in TS for cart and minicart flows
+- [x] Cart and minicart UI updates driven by Section Rendering responses
+- [x] No API calls without user interaction
+- [x] Loading states without layout shift (pulse + overlay)
+- [x] Document the "TS logic only, Liquid markup only" rule in contributor docs
 
 ---
 
-## 2) Quality Gates & CI
-- [x] Verify CI runs: `typecheck`, `vite:build`, `theme-check`
-- [x] Confirm CI runs on `push` + `pull_request`
-- [x] Confirm no regressions in workflow after simplifications
+## 1) P0 - Section Rendering Foundation
 
-Step 2 closure checklist:
-- [x] Open a recent PR and confirm both checks are green:
-  - `Typecheck and Build`
-  - `Theme Check`
-- [x] Enable branch protection on `main` and `staging` with required checks:
-  - `Typecheck and Build`
-  - `Theme Check`
-- [x] Block merge when checks are pending/failing
-- [ ] (Optional) Disable direct push to `main`
+### Contract and utilities
+- [x] Create a shared utility for section parsing/replacement (avoid duplicated logic in cart/drawer)
+- [x] Standardize null-section fallback strategy (Shopify docs: sections can return `null`)
+- [x] Standardize bundled request payload (`sections`, `sections_url`) across all cart mutations
+
+### Robustness
+- [x] Add request sequencing guard for rapid quantity interactions (prevent out-of-order UI state)
+- [x] Ensure cart count, subtotal, and item list always remain synchronized after updates
+- [x] Validate graceful fallback when section fetch fails (recoverable error + safe redirect only when necessary)
 
 Acceptance:
-- [x] All checks green on PR
-- [x] Failing checks block merge
+- [x] Every cart UI update path uses section rendering response as source of truth
+- [x] Rapid interactions do not produce stale UI
+- [x] `null`/failed section responses are handled predictably
 
 ---
 
-## 3) Dev/Build Workflow Consistency
-- [x] Verify `bun run dev` (local) works consistently
-- [x] Verify `bun run dev:remote` works for Shopify-domain preview (tunnel)
-- [x] Verify `bun run build` generates all expected assets and `vite-tag` mappings
-- [x] Confirm team uses full domain in `.env` (`*.myshopify.com`)
+## 2) P0 - Shopify Docs Parity
+
+### Cart API parity
+- [x] Audit `cart/change.js` usage against Shopify Ajax Cart docs
+- [x] Confirm locale-aware URL handling for all fetches
+- [x] Confirm `sections_url` is always valid and starts with `/`
+
+### Section Rendering parity
+- [x] Validate `?section_id=` flow for single-section refresh where applicable
+- [x] Validate bundled sections behavior for cart mutations
+- [x] Add explicit handling for sections that return `null` while response status is `200`
 
 Acceptance:
-- [x] Local + remote preview both reliable
-- [x] No CORS/PNA blockers in normal flow
+- [x] Implementation matches documented Shopify patterns for cart and section rendering
+- [x] Edge cases from docs are covered in code paths
 
 ---
 
-## 4) Block 3 — Core Features Rollout
+## 3) P0 - PDP Media Reliability
 
-### Phase 1 — PDP (Product)
-- [x] Audit current PDP markup and data attributes
-- [x] Implement variant selection state logic in `ts/product.ts`
-- [x] Sync selected variant with URL and form inputs
-- [x] Update price/media state on variant change (if media mapping exists)
-- [x] Add add-to-cart UX states (loading, success, error)
-- [x] Handle unavailable / sold-out variants correctly
+### Variant/media behavior
+- [x] Fix regression: selected color + size change must not hide/remove first image
+- [x] Change media only when target variant has `featured_media`
+- [x] If variant has no dedicated media, keep current color media context
 
-Acceptance:
-- [x] Variant change updates UI correctly
-- [x] Add-to-cart works and shows clear status
-- [x] No JS leakage outside PDP
-
-### Phase 2 — Cart / Drawer
-- [x] Implement drawer open/close and focus handling
-- [x] Quantity update/remove flows with loading states
-- [x] Empty cart state UX
-- [x] Error handling and resilience
+### Validation
+- [x] Validate `data-variant-media` mapping for shared media across variants
+- [x] Stress test rapid option changes (no blank gallery, no wrong image jumps)
+- [x] Compare with Dawn behavior (`assets/product-info.js`, `snippets/product-media-gallery.liquid`)
 
 Acceptance:
-- [x] Keyboard accessible drawer behavior
-- [x] Cart updates reliable with clear feedback
-
-### Phase 3 — Collection (PLP)
-- [x] Implement sort behavior
-- [x] Implement filters (base behavior first)
-- [x] Add optional progressive loading only if needed
-
-Acceptance:
-- [x] Filters/sort stable and reversible
-- [x] PLP JS isolated to collection templates
-
-### Phase 4 — Search
-- [x] Implement predictive search UI state
-- [x] Implement results state handling
-- [x] Graceful fallback when predictive endpoint unavailable
-
-Acceptance:
-- [x] Search interactions stable
-- [x] No cross-template JS side effects
+- [x] No media disappearance on size-only changes
+- [x] Color/media transitions remain consistent and predictable
 
 ---
 
-## 5) Performance & Loading Validation
-- [x] Capture baseline metrics (Home, PDP, PLP): LCP, CLS, JS payload
-- [x] Verify each template loads only `ts/theme.ts` + its own entrypoint
-- [x] Add dynamic imports for heavy optional logic where useful
+## 4) P1 - PLP (Collection) with Same Mindset
+
+### State integrity
+- [x] Keep filters/sort fully reflected in URL params
+- [x] Keep browser history behavior stable and reversible
+- [x] Ensure clear/reset state is deterministic
+
+### UX and performance
+- [x] Keep loading/empty/error states explicit without CLS regressions
+- [x] Reduce unnecessary DOM work during filter/sort interactions
+- [x] Compare lifecycle behavior with Dawn (`assets/facets.js`)
 
 Acceptance:
-- [x] No regressions vs baseline
-- [x] Template-specific payload discipline maintained
+- [x] PLP interactions are stable across refresh/back/forward
+- [ ] Mobile filter UX has no regressions
 
 ---
 
-## 6) Documentation Finalization
-- [x] Keep README aligned with actual scripts and branch-linked workflow
-- [x] Keep CLAUDE.md aligned with architecture and conventions
-- [x] Add short “how to start new feature branch” section (optional)
+## 5) P1 - Predictive Search Drawer (Docs-First)
+
+### UX and interaction model
+- [x] Add search trigger in header (`data-js="search-open"`) with drawer behavior aligned to cart (open/close/overlay/ESC/focus trap)
+- [x] Open search as right-side aside with inline search field and predictive results panel
+- [x] Keep close behavior consistent across close button, overlay click, and Escape
+- [x] Restore focus to trigger on drawer close
+
+### Shopify docs parity (Ajax Predictive Search)
+- [x] Use `/search/suggest.json` with locale-aware base URL (`window.Shopify.routes.root`)
+- [x] Use documented resources params (`resources[type]`, `resources[limit]`, `resources[options][unavailable_products]`)
+- [x] Keep graceful fallback when predictive endpoint is unavailable (full search submit still works)
+- [x] Ensure no predictive API request before user interaction (drawer open + input length threshold)
+
+### Performance and resilience
+- [x] Debounce input and cancel stale requests (`AbortController`)
+- [x] Prevent out-of-order render on rapid typing
+- [x] Keep loading/error states without layout shift (reserved result area + subtle loader)
+- [x] Keep drawer fully functional on mobile and desktop
+
+### Starter customization surface
+- [x] Keep markup in Liquid and behavior in TS (same cart/minicart architecture rule)
+- [x] Define stable data attributes contract for search drawer elements
+- [x] Document safe customization points (layout, item card markup, result grouping)
 
 Acceptance:
-- [x] New team member can run project in <10 minutes
+- [x] Search drawer opens/closes accessibly and predictably
+- [x] Predictive results are fast, cancellable, and stable under rapid input
+- [x] Full search remains available as fallback path
+- [x] No API calls happen before user interaction
 
 ---
 
-## 7) Git/Release Workflow
-- [x] Enforce branch model: `feat/* -> staging -> main`
-- [x] Before merging to `staging`/`main`, always run `bun run build`
-- [x] Commit generated artifacts for branch-linked Shopify themes
+## 6) P1 - Accessibility and UX Hardening
+
+- [x] Verify keyboard-first flows for cart page, minicart dialog, and PDP ATC
+- [x] Verify live region messaging for success/error/cart updates
+- [x] Verify focus restore paths after dialog close and failed actions
+- [x] Keep loading communication visual + accessible without visible status text shifts
 
 Acceptance:
-- [x] Shopify branch previews always reflect latest built assets
+- [x] Core interactive flows are accessible with keyboard and screen readers
 
 ---
 
-## 8) Nice-to-have (after core)
-- [x] Add import alias usage examples (`@ts`, `@css`) in code/docs
-- [x] Add lightweight linting strategy for TS/Liquid (if needed)
-- [x] Add automated smoke checklist script (optional)
+## 7) P1 - Starter Customization Surface
+
+### Theme-extensible design
+- [x] Document stable data attributes used by TS modules (public contract)
+- [x] Document which Liquid blocks are safe to customize without breaking logic
+- [x] Keep behavior modules isolated so teams can swap markup/styles safely
+
+### Documentation updates
+- [x] Update `CLAUDE.md` with docs-first section-rendering conventions
+- [x] Add README section: "Customization without breaking core cart flows"
+- [x] Add `AGENTS.md` guide for generic AI contributors
+
+Acceptance:
+- [x] New theme implementations can customize markup/styles without changing core JS logic
+
+---
+
+## 8) Quality Gates (Continuous)
+
+- [x] `bun run typecheck`
+- [x] `bun run build`
+- [ ] `theme-check`
+- [ ] Manual smoke checks: PDP, PLP, cart page, minicart
+- [ ] Verify network: no cart/recommendation API call before first user interaction
+
+Acceptance:
+- [ ] Checks pass and behavior is validated after each milestone
+
+---
+
+## Priority Snapshot
+
+### P0 (now)
+- [x] Section Rendering foundation and null/failure hardening
+- [x] Full Shopify docs parity for cart + section rendering flows
+- [x] PDP variant-media reliability fix
+
+### P1 (next)
+- [ ] PLP state/performance stabilization
+- [x] Predictive search drawer (header trigger + aside + docs parity)
+- [x] Accessibility hardening across templates
+- [x] Starter customization contract + documentation
+
+### P2 (later)
+- [ ] UX polish and final cleanup
+
+---
+
+## P0 Definition of Done (Execution Checklist)
+
+### DoD - 1) Section Rendering Foundation
+- [x] All cart and drawer updates use section HTML returned by API (no custom HTML assembly in TS)
+- [x] Shared section replace helper is used in both cart page and drawer modules
+- [x] Request sequencing guard prevents stale UI on rapid `+/-/remove` clicks
+- [x] `cart-count`, totals, and line items stay synchronized after every mutation
+- [x] `null` section payload is handled with visible recoverable error and no broken UI
+
+Verify:
+- [x] Rapid click stress test on cart page keeps consistent quantities/totals
+- [x] Rapid click stress test in drawer keeps consistent quantities/totals
+
+### DoD - 2) Shopify Docs Parity
+- [x] `cart/change.js` payload includes `sections` and `sections_url` where UI re-render is required
+- [x] `sections_url` always starts with `/` and is locale-safe
+- [x] Single section refresh (`?section_id=`) is used only for user-triggered drawer hydration
+- [x] Section rendering null-response behavior matches docs and is covered in fallback flow
+
+Verify:
+- [x] Network payloads inspected and match Shopify docs fields
+- [x] Error simulation confirms graceful behavior on failed/invalid section response
+
+### DoD - 3) PDP Media Reliability
+- [x] Size change does not reset/remove first image when variant lacks `featured_media`
+- [x] Color change updates media only when dedicated media exists
+- [x] Thumbnail visibility remains coherent with active media context
+- [x] No blank gallery states during rapid option switching
+
+Verify:
+- [x] Manual QA matrix: color -> size -> color, including variants with and without media
+- [x] Behavior compared against Dawn expectations on equivalent scenarios

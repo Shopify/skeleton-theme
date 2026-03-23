@@ -24,8 +24,18 @@ export function onOptionClick(e: Event): void {
     return;
   }
 
+  const previousMediaId = state.currentMediaId;
+  const previousMediaContextVariantId = state.mediaContextVariantId;
+
   state.currentVariant = variant;
-  state.currentMediaId = variant.featured_media?.id ?? null;
+
+  if (variant.featured_media) {
+    state.currentMediaId = variant.featured_media.id;
+    state.mediaContextVariantId = variant.id;
+  } else {
+    state.currentMediaId = previousMediaId;
+    state.mediaContextVariantId = previousMediaContextVariantId;
+  }
 
   const url = new URL(window.location.href);
   url.searchParams.set('variant', String(variant.id));
@@ -43,6 +53,12 @@ export function onThumbnailClick(e: Event): void {
   const mediaId = Number(btn.dataset.thumbnail);
   if (!mediaId) return;
   state.currentMediaId = mediaId;
+
+  const mediaOwnerVariantId = Number((btn.dataset.variantMedia ?? '').split(',')[0]);
+  if (mediaOwnerVariantId) {
+    state.mediaContextVariantId = mediaOwnerVariantId;
+  }
+
   syncDOM();
 }
 

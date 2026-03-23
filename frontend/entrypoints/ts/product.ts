@@ -18,7 +18,28 @@ function resolveVariantFromURL(productData: ProductData): ProductData['variants'
 function applyVariantSelection(variant: ProductData['variants'][number]): void {
   state.currentVariant = variant;
   state.selectedOptions = [...variant.options];
-  state.currentMediaId = variant.featured_media?.id ?? null;
+
+  if (variant.featured_media) {
+    state.currentMediaId = variant.featured_media.id;
+    state.mediaContextVariantId = variant.id;
+    return;
+  }
+
+  if (state.currentMediaId === null) {
+    const firstMedia = document.querySelector<HTMLElement>('[data-js="media-item"]');
+    const firstMediaId = Number(firstMedia?.dataset.mediaId ?? '');
+    const firstMediaOwnerVariantId = Number((firstMedia?.dataset.variantMedia ?? '').split(',')[0]);
+    state.currentMediaId = firstMediaId || null;
+    state.mediaContextVariantId = firstMediaOwnerVariantId || state.mediaContextVariantId;
+  }
+}
+
+function isOptionClick(event: Event): boolean {
+  return Boolean((event.target as HTMLElement).closest('[data-js="option-value"]'));
+}
+
+function isThumbnailClick(event: Event): boolean {
+  return Boolean((event.target as HTMLElement).closest('[data-js="thumbnail"]'));
 }
 
 /**
@@ -38,11 +59,31 @@ function init(): void {
 
   applyVariantSelection(resolveVariantFromURL(state.productData));
 
-  const form = document.querySelector<HTMLFormElement>('[data-js="product-form"]');
-  form?.addEventListener('click', onOptionClick);
-  form?.addEventListener('submit', (e) => void onAddToCart(e));
+  let hasLoadedRecommendations = false;
+  const loadRecommendationsOnce = (): void => {
+    if (hasLoadedRecommendations) return;
+    hasLoadedRecommendations = true;
+    loadRecommendations();
+  };
 
-  document.addEventListener('click', onThumbnailClick);
+  const form = document.querySelector<HTMLFormElement>('[data-js="product-form"]');
+  form?.addEventListener('click', (event) => {
+    if (isOptionClick(event)) {
+      loadRecommendationsOnce();
+    }
+    onOptionClick(event);
+  });
+  form?.addEventListener('submit', (e) => {
+    loadRecommendationsOnce();
+    void onAddToCart(e);
+  });
+
+  document.addEventListener('click', (event) => {
+    if (isThumbnailClick(event)) {
+      loadRecommendationsOnce();
+    }
+    onThumbnailClick(event);
+  });
   window.addEventListener('popstate', () => {
     applyVariantSelection(resolveVariantFromURL(state.productData));
     state.cartState = 'idle';
@@ -50,7 +91,6 @@ function init(): void {
   });
 
   syncDOM();
-  loadRecommendations();
 }
 
 document.addEventListener('DOMContentLoaded', init);

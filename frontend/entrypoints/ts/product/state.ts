@@ -9,4 +9,5 @@ export const state = {
   variantPrices: {} as Record<string, string>,
   cartState: 'idle' as CartState,
   currentMediaId: null as number | null,
+  mediaContextVariantId: null as number | null,
 };

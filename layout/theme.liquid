@@ -39,7 +39,8 @@
 
         {{ content_for_layout }}
 
-        {% render 'cart-drawer' %}
+        {% section 'cart-drawer' %}
+        {% section 'search-drawer' %}
 
         {% sections 'footer-group' %}
     </body>

@@ -1,6 +1,11 @@
 import { getAvailableValues } from '../utils/variant-picker';
 import { state } from './state';
 
+function matchesVariantOwner(ownerVariantIds: string | undefined, variantId: string): boolean {
+  if (!ownerVariantIds) return false;
+  return ownerVariantIds.split(',').some((id) => id.trim() === variantId);
+}
+
 /** Calls all sync helpers in sequence after any state change. */
 export function syncDOM(): void {
   syncPrice();
@@ -30,7 +35,12 @@ function syncAvailability(): void {
 /** Shows the media item matching `currentMediaId` (or variant featured media), hides all others. */
 function syncMedia(): void {
   const items = document.querySelectorAll<HTMLElement>('[data-js="media-item"]');
-  const currentVariantId = String(state.currentVariant.id);
+  if (items.length === 0) return;
+
+  const activeMediaContextVariantId =
+    state.mediaContextVariantId !== null
+      ? String(state.mediaContextVariantId)
+      : String(state.currentVariant.id);
 
   const targetId =
     state.currentMediaId !== null
@@ -39,41 +49,62 @@ function syncMedia(): void {
         ? String(state.currentVariant.featured_media.id)
         : null;
 
+  const hasTargetMedia =
+    targetId !== null && Array.from(items).some((item) => item.dataset.mediaId === targetId);
+  const effectiveTargetId = hasTargetMedia ? targetId : null;
+  const fallbackVisibleMediaId = items[0]?.dataset.mediaId ?? null;
+
+  let hasVisibleMedia = false;
+
   items.forEach((item) => {
-    const ownerVariantId = item.dataset.variantMedia;
-    const isShared = !ownerVariantId;
-    const isCurrentVariantMedia = ownerVariantId === currentVariantId;
+    const ownerVariantIds = item.dataset.variantMedia;
+    const isShared = !ownerVariantIds;
+    const isActiveContextMedia = matchesVariantOwner(ownerVariantIds, activeMediaContextVariantId);
 
     let isVisible: boolean;
-    if (targetId !== null) {
-      isVisible = item.dataset.mediaId === targetId;
+    if (effectiveTargetId !== null) {
+      isVisible = item.dataset.mediaId === effectiveTargetId;
     } else {
-      // No targeted media: show shared + current variant media
+      // No targeted media: show shared + active media context
       // If no variant images exist at all (all isShared), this shows everything — unchanged behaviour
-      isVisible = isShared || isCurrentVariantMedia;
+      isVisible = isShared || isActiveContextMedia;
     }
 
     if (isVisible) {
       item.removeAttribute('hidden');
+      hasVisibleMedia = true;
     } else {
       item.setAttribute('hidden', '');
       item.querySelector<HTMLVideoElement>('video')?.pause();
     }
   });
 
+  if (!hasVisibleMedia && fallbackVisibleMediaId) {
+    items.forEach((item) => {
+      if (item.dataset.mediaId === fallbackVisibleMediaId) {
+        item.removeAttribute('hidden');
+      } else {
+        item.setAttribute('hidden', '');
+        item.querySelector<HTMLVideoElement>('video')?.pause();
+      }
+    });
+  }
+
+  const activeMediaId = hasVisibleMedia ? effectiveTargetId : fallbackVisibleMediaId;
+
   // Thumbnail visibility: shared always visible; variant thumbnails only when active
   document.querySelectorAll<HTMLButtonElement>('[data-js="thumbnail"]').forEach((btn) => {
-    const ownerVariantId = btn.dataset.variantMedia;
-    const isShared = !ownerVariantId;
-    const isCurrentVariantMedia = ownerVariantId === currentVariantId;
+    const ownerVariantIds = btn.dataset.variantMedia;
+    const isShared = !ownerVariantIds;
+    const isActiveContextMedia = matchesVariantOwner(ownerVariantIds, activeMediaContextVariantId);
 
-    if (isShared || isCurrentVariantMedia) {
+    if (isShared || isActiveContextMedia) {
       btn.removeAttribute('hidden');
     } else {
       btn.setAttribute('hidden', '');
     }
 
-    btn.setAttribute('aria-pressed', String(btn.dataset.thumbnail === targetId));
+    btn.setAttribute('aria-pressed', String(btn.dataset.thumbnail === activeMediaId));
   });
 }
 
@@ -106,7 +137,7 @@ function syncCartStatus(): void {
 
   const messages = {
     idle: state.currentVariant.available ? '' : 'This variant is sold out.',
-    loading: 'Adding item to cart...',
+    loading: '',
     success: 'Added to cart.',
     error: 'Could not add to cart. Please try again.',
   };

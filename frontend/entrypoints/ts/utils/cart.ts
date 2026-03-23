@@ -27,11 +27,22 @@ export interface CartResponse {
   total_price: number;
   currency: string;
   items: CartItem[];
+  sections?: Record<string, string | null>;
+}
+
+export interface CartChangeOptions {
+  sections?: string[] | string;
+  sectionsUrl?: string;
 }
 
 async function parseCartError(res: Response): Promise<Error> {
   const err = (await res.json().catch(() => ({}))) as Partial<CartError>;
   return new Error(err.description ?? 'Cart request failed');
+}
+
+function normalizeSectionsUrl(url: string): string {
+  if (!url) return '/';
+  return url.startsWith('/') ? url : `/${url}`;
 }
 
 export async function getCart(): Promise<CartResponse> {
@@ -49,7 +60,26 @@ export async function getCart(): Promise<CartResponse> {
   return (await res.json()) as CartResponse;
 }
 
-export async function changeCartLine(line: number, quantity: number): Promise<CartResponse> {
+export async function changeCartLine(
+  line: number,
+  quantity: number,
+  options: CartChangeOptions = {},
+): Promise<CartResponse> {
+  const payload: {
+    line: number;
+    quantity: number;
+    sections?: string[] | string;
+    sections_url?: string;
+  } = { line, quantity };
+
+  if (options.sections) {
+    payload.sections = options.sections;
+  }
+
+  if (options.sectionsUrl) {
+    payload.sections_url = normalizeSectionsUrl(options.sectionsUrl);
+  }
+
   const res = await fetch(`${window.Shopify.routes.root}cart/change.js`, {
     method: 'POST',
     headers: {
@@ -57,7 +87,7 @@ export async function changeCartLine(line: number, quantity: number): Promise<Ca
       Accept: 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
     },
-    body: JSON.stringify({ line, quantity }),
+    body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
