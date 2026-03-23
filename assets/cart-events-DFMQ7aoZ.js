@@ -1,0 +1,1 @@
+var e=`cart:updated`,t=`cart:open`;function n(t){window.dispatchEvent(new CustomEvent(e,{detail:t}))}function r(){window.dispatchEvent(new CustomEvent(t))}export{t as CART_OPEN_EVENT,e as CART_UPDATED_EVENT,r as emitCartOpen,n as emitCartUpdated};

@@ -1,1 +1,0 @@
-function o(t,a){return t.find(n=>n.options.every((e,i)=>e===a[i]))}function f(t,a,n){return new Set(t.filter(e=>e.options.every((i,r)=>r===n||i===a[r])).filter(e=>e.available).map(e=>e.options[n]))}export{o as f,f as g};
