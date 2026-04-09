@@ -1,36 +1,15 @@
 <!doctype html>
-<html lang="{{ request.locale.iso_code }}">
+<html lang="en">
   <head>
-    {% # Inlined CSS Variables %}
-    {% render 'css-variables' %}
+    <head>
+      {{ content_for_header }}
 
-    {% comment %}
-      Font preloading:
-      1. Preconnect to font CDN for faster connection
-      2. Preload only the critical font variant (base weight)
-      3. Additional variants load on-demand via @font-face
-    {% endcomment %}
-    {% unless settings.type_primary_font.system? %}
-      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
-
-      {% comment %} Preload the base font variant for initial page render {% endcomment %}
-      {{ settings.type_primary_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
-    {% endunless %}
-
-    {% # Load and preload the critical CSS %}
-    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
-
-    {% # Social, title, etc. %}
-    {% render 'meta-tags' %}
-
-    {{ content_for_header }}
+      <link rel="stylesheet" href="{{ 'base.css' | asset_url }}">
+      <script src="{{ 'theme.js' | asset_url }}" defer></script>
+      <link rel="preconnect" href="https://cdn.shopify.com">
+    </head>
   </head>
-
   <body>
-    {% sections 'header-group' %}
-
     {{ content_for_layout }}
-
-    {% sections 'footer-group' %}
   </body>
 </html>
