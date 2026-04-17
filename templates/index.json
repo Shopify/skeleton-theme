@@ -12,9 +12,24 @@
     "main": {
       "type": "hello-world",
       "settings": {}
+    },
+    "collections_WexXCA": {
+      "type": "collections",
+      "name": "t:general.collections_grid",
+      "settings": {
+        "grid_item_width": "collections--full",
+        "grid_gap": 10
+      }
+    },
+    "custom_section_WH8dte": {
+      "type": "custom-section",
+      "name": "t:general.custom_section",
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "collections_WexXCA",
+    "custom_section_WH8dte"
   ]
 }
