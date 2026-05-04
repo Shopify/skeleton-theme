@@ -19,7 +19,8 @@
 <h1>{{ article.title }}</h1>
 
 {% assign date = article.published_at | time_tag: format: 'date' %}
-<p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
+{% assign escaped_author = article.author | escape %}
+<p>{{ 'blog.article_metadata_html' | t: date: date, author: escaped_author }}</p>
 
 {{ article.content }}
 
