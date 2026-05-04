@@ -2694,7 +2694,12 @@ shopify-account {
 .pdp__qty-btn:focus-visible,
 .pdp__custom-field__radio-btn:focus-visible,
 .pdp__thumb:focus-visible,
-.ame-cart-item__qty-btn:focus-visible {
+.ame-cart-item__qty-btn:focus-visible,
+.ame-wishlist:focus-visible,
+.pdp__wishlist-btn:focus-visible,
+.ame-accordion__btn:focus-visible,
+.ame-header__icon-btn:focus-visible,
+.ame-search-page-form__btn:focus-visible {
   outline: 2px solid var(--color-primary, #5a4742);
   outline-offset: 2px;
 }
