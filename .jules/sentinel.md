@@ -16,3 +16,8 @@
 **Vulnerability:** Unsanitized user input (`form.author`, `form.email`, `form.body`) was being directly outputted back to the user in `sections/article.liquid`.
 **Learning:** If a form submission fails and the form is re-rendered to show validation errors to the user, directly rendering the previous inputs (`value="{{ form.author }}"`) opens the application up to a reflected XSS vulnerability.
 **Prevention:** Always use the `escape` filter when outputting user input dynamically back to the user inside HTML tags or attributes (e.g., `{{ form.author | escape }}`).
+
+## 2024-05-25 - [Reflected XSS in Article Author via Localized String]
+**Vulnerability:** Unsanitized variable `article.author` was passed to a Shopify translation string ending in `_html` in `sections/article.liquid` and `sections/blog.liquid`.
+**Learning:** Shopify localizations with keys ending in `_html` output raw HTML directly. If unescaped variables are passed as arguments to these translations, they become vulnerable to Reflected XSS.
+**Prevention:** Always use the `escape` filter on user input or dynamic properties like `article.author` before passing them as arguments to `_html` translation keys (e.g., `{% assign escaped_author = article.author | escape %}`).

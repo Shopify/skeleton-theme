@@ -23,3 +23,6 @@
 ## 2024-05-04 - Expanding Focus Rings and ARIA Label Coverage
 **Learning:** Adding a generic `:focus-visible` outline for a few custom interactive elements is often insufficient because a global reset might suppress it, or other less prominent elements might be missed. Several important buttons (like wishlist, accordions, header icons, and search submission) lacked keyboard focus states, hindering accessibility. Also, dynamically rendered option buttons and icon-only forms often lack proper ARIA labels.
 **Action:** Systematically audit and include all interactive elements (especially custom icon buttons and toggles) in the `:focus-visible` list in `critical.css` and explicitly assign `aria-label`s to purely decorative or dynamic input elements.
+## 2026-05-01 - ARIA hidden for Icon Ligatures
+**Learning:** Screen readers might inappropriately announce the text content of icon ligatures (e.g., "shopping_bag" or "close" inside a `<span class="material-symbols-outlined">`) when they are meant to be purely decorative. This can happen even if they are nested inside an interactive element with a proper `aria-label`.
+**Action:** Always add `aria-hidden="true"` to icon ligatures used within labeled buttons, links, or adjacent to descriptive text to ensure screen readers focus only on the intended semantic meaning.
