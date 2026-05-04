@@ -89,7 +89,11 @@
                 {{-
                   media
                   | image_url: width: 1200
-                  | image_tag: loading: img_loading, fetchpriority: img_fetchpriority, class: 'pdp__slide-img', alt: img_alt
+                  | image_tag:
+                    loading: img_loading,
+                    fetchpriority: img_fetchpriority,
+                    class: 'pdp__slide-img',
+                    alt: img_alt
                 -}}
               {%- elsif media.media_type == 'video' -%}
                 {{ media | video_tag: class: 'pdp__slide-img', autoplay: false, loop: true, muted: true }}
@@ -527,7 +531,12 @@
                   {%- assign cf_opts = cf_options | split: ',' -%}
                   {%- for cf_opt in cf_opts -%}
                     {%- assign opt_val = cf_opt | strip -%}
-                    <button type="button" class="pdp__custom-field__radio-btn" data-value="{{ opt_val | escape }}" aria-label="{{ opt_val | escape }}">
+                    <button
+                      type="button"
+                      class="pdp__custom-field__radio-btn"
+                      data-value="{{ opt_val | escape }}"
+                      aria-label="{{ opt_val | escape }}"
+                    >
                       {{- opt_val -}}
                     </button>
                   {%- endfor -%}
@@ -594,8 +603,11 @@
         </div>
 
         <button type="button" class="pdp__wishlist-btn" aria-label="Favoritar" id="pdp-wishlist" aria-pressed="false">
-          <span class="material-symbols-outlined" style="font-size:1.25rem;font-variation-settings:'FILL' 0;"
-            aria-hidden="true">favorite</span
+          <span
+            class="material-symbols-outlined"
+            style="font-size:1.25rem;font-variation-settings:'FILL' 0;"
+            aria-hidden="true"
+            >favorite</span
           >
         </button>
       </div>
@@ -610,7 +622,12 @@
   {%- for block in section.blocks -%}
     {%- if block.type == 'accordion' -%}
       <div class="ame-accordion" {{ block.shopify_attributes }}>
-        <button class="ame-accordion__btn" type="button" aria-expanded="false" aria-controls="pdp-accordion-content-{{ section.id }}-{{ forloop.index }}">
+        <button
+          class="ame-accordion__btn"
+          type="button"
+          aria-expanded="false"
+          aria-controls="pdp-accordion-content-{{ section.id }}-{{ forloop.index }}"
+        >
           <span>{{ block.settings.title }}</span>
           <span
             class="material-symbols-outlined ame-accordion__icon"
@@ -628,7 +645,12 @@
 
   {%- if section.blocks.size == 0 and product.description != blank -%}
     <div class="ame-accordion">
-      <button class="ame-accordion__btn" type="button" aria-expanded="false" aria-controls="pdp-accordion-content-{{ section.id }}-default">
+      <button
+        class="ame-accordion__btn"
+        type="button"
+        aria-expanded="false"
+        aria-controls="pdp-accordion-content-{{ section.id }}-default"
+      >
         <span>Detalhes do Produto</span>
         <span
           class="material-symbols-outlined ame-accordion__icon"
@@ -1069,11 +1091,13 @@
     position: absolute;
     bottom: 6%;
     left: 6%;
-    width: 15%;
+    width: 30%;
     aspect-ratio: 1 / 1;
     z-index: 3;
     pointer-events: none;
-    filter: drop-shadow(0 6px 14px rgba(32, 27, 20, 0.28));
+    border-radius: 50%;
+    overflow: hidden;
+    /* filter: drop-shadow(0 6px 14px rgba(32, 27, 20, 0.28)); */
     opacity: 0;
     transform: translateY(6px) scale(0.9);
     transition: opacity 0.25s ease, transform 0.25s var(--ease-luxury, cubic-bezier(0.22, 1, 0.36, 1));
@@ -1093,6 +1117,7 @@
     height: 100%;
     object-fit: contain;
     display: block;
+    transform: scale(1.3);
   }
 {% endstylesheet %}
 
@@ -1145,10 +1170,10 @@
       "id": "videos_position",
       "label": "Posição na página",
       "options": [
-        { "value": "above-title",  "label": "Acima do título" },
-        { "value": "below-title",  "label": "Abaixo do título" },
-        { "value": "below-price",  "label": "Abaixo do bloco de preços" },
-        { "value": "above-cta",    "label": "Acima do botão Adicionar ao Carrinho" }
+        { "value": "above-title", "label": "Acima do título" },
+        { "value": "below-title", "label": "Abaixo do título" },
+        { "value": "below-price", "label": "Abaixo do bloco de preços" },
+        { "value": "above-cta", "label": "Acima do botão Adicionar ao Carrinho" }
       ],
       "default": "below-title"
     },
@@ -1157,7 +1182,7 @@
       "id": "videos_format",
       "label": "Formato",
       "options": [
-        { "value": "stories",   "label": "Stories (círculos)" },
+        { "value": "stories", "label": "Stories (círculos)" },
         { "value": "carrossel", "label": "Carrossel (cards 9:16)" },
         { "value": "spotlight", "label": "Destaque (cards 16:9 grandes)" }
       ],
@@ -1194,7 +1219,7 @@
       "id": "videos_border_type",
       "label": "Tipo de borda",
       "options": [
-        { "value": "solida",  "label": "Sólida" },
+        { "value": "solida", "label": "Sólida" },
         { "value": "degrade", "label": "Degradê" }
       ],
       "default": "solida"

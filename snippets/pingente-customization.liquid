@@ -318,7 +318,7 @@
     }
     @media (max-width: 480px) {
       .ame-pingente__formato-grid {
-        grid-template-columns: repeat(2, 1fr);
+        gap: 0.375rem;
       }
     }
     .ame-pingente__formato-card {
@@ -365,27 +365,25 @@
     }
 
     .ame-pingente__formato-thumb {
-      width: clamp(40px, 55%, 56px);
+      width: clamp(36px, 50%, 52px);
       aspect-ratio: 1 / 1;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto;
-      color: var(--color-primary, #5a4742);
     }
-    .ame-pingente__formato-thumb .material-symbols-outlined {
-      font-size: 2rem !important;
-      font-variation-settings: 'FILL' 1, 'wght' 400;
-      color: inherit;
+    .ame-pingente__formato-emoji {
+      font-size: clamp(1.5rem, 6vw, 2rem);
+      line-height: 1;
+      font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Segoe UI Symbol', sans-serif;
     }
-    .ame-pingente__formato-thumb svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-      fill: currentColor;
-    }
-    .ame-pingente__formato-card:has(input:checked) .ame-pingente__formato-thumb {
-      color: var(--color-primary, #5a4742);
+    @media (max-width: 480px) {
+      .ame-pingente__formato-card {
+        padding: 0.5rem 0.25rem;
+      }
+      .ame-pingente__formato-emoji {
+        font-size: 1.5rem;
+      }
     }
     .ame-pingente__formato-name {
       font-family: var(--font-primary--family, 'Lexend', sans-serif);
@@ -502,12 +500,12 @@
       const SIZE_MAP = { XPP: 'P', 'XPP+': 'P', PP: 'P', P: 'P', M: 'G', G: 'G' };
       const FORMATOS = ['Círculo', 'Coração', 'Flor', 'Osso'];
 
-      /* Ícones por formato — Material Symbols + SVG inline para o "Osso" */
+      /* Ícones por formato — emojis */
       const FORMATO_ICON = {
-        'Círculo': '<span class="material-symbols-outlined" aria-hidden="true">circle</span>',
-        'Coração': '<span class="material-symbols-outlined" aria-hidden="true">favorite</span>',
-        'Flor':    '<span class="material-symbols-outlined" aria-hidden="true">local_florist</span>',
-        'Osso':    '<svg viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 3a3 3 0 0 1 2.83 4 1.5 1.5 0 0 0 1.42 2h2.5a1.5 1.5 0 0 0 1.42-2 3 3 0 1 1 4.6 3.36 1.5 1.5 0 0 0 0 3.28A3 3 0 1 1 14.67 17a1.5 1.5 0 0 0-1.42-1h-2.5a1.5 1.5 0 0 0-1.42 1A3 3 0 1 1 4.73 13.64a1.5 1.5 0 0 0 0-3.28A3 3 0 0 1 6.5 3z"/></svg>'
+        'Círculo': '<span class="ame-pingente__formato-emoji" aria-hidden="true">⭕</span>',
+        'Coração': '<span class="ame-pingente__formato-emoji" aria-hidden="true">❤️</span>',
+        'Flor':    '<span class="ame-pingente__formato-emoji" aria-hidden="true">🌸</span>',
+        'Osso':    '<span class="ame-pingente__formato-emoji" aria-hidden="true">🦴</span>'
       };
 
       /* ── Helpers ── */

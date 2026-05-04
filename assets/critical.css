@@ -1256,15 +1256,14 @@ body::after {
   bottom: 0;
   right: 0;
   width: 5rem;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    var(--color-announce-bg, var(--color-primary, #5a4742)) 60%,
-    var(--color-announce-bg, var(--color-primary, #5a4742)) 100%
-  );
+  background: linear-gradient(to right,
+      transparent 0%,
+      var(--color-announce-bg, var(--color-primary, #5a4742)) 60%,
+      var(--color-announce-bg, var(--color-primary, #5a4742)) 100%);
   pointer-events: none;
   z-index: 1;
 }
+
 .ame-announce__dots {
   z-index: 2;
 }
@@ -1791,6 +1790,7 @@ shopify-account {
   width: 100%;
   box-sizing: border-box;
 }
+
 .pdp__info {
   min-width: 0;
 }
@@ -2492,7 +2492,6 @@ shopify-account {
 .pdp__qty-input[type=number] {
   -moz-appearance: textfield;
 }
-
 
 /* ── CTAs ── */
 .pdp__ctas {
