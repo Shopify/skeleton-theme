@@ -7,7 +7,12 @@
 {% endcomment %}
 
 {%- if product.tags contains 'customizacao_pingente' -%}
-  <section class="ame-pingente" data-pingente>
+  <section
+    class="ame-pingente"
+    data-pingente
+    data-coleira-title="{{ product.title | escape }}"
+    data-optin-template="{{ settings.pingente_optin_message | default: '' | escape }}"
+  >
     <header class="ame-pingente__header">
       <p class="ame-pingente__eyebrow">Personalização</p>
       <h3 class="ame-pingente__title">Pingente de identificação</h3>
@@ -15,6 +20,11 @@
 
     <!-- Passo 1: Sim / Não -->
     <div class="ame-pingente__step" data-pingente-step="1">
+      {%- if settings.pingente_optin_message != blank -%}
+        <p class="ame-pingente__optin-msg" data-pingente-optin-msg>
+          {{- settings.pingente_optin_message -}}
+        </p>
+      {%- endif -%}
       <p class="ame-pingente__step-label">Deseja adicionar um pingente personalizado?</p>
       <div class="ame-pingente__opt-row">
         <label class="ame-pingente__opt">
@@ -135,6 +145,22 @@
       letter-spacing: -0.01em;
       color: var(--color-on-background, #201b14);
       margin: 0;
+    }
+
+    .ame-pingente__optin-msg {
+      font-family: var(--font-primary--family, 'Lexend', sans-serif);
+      font-size: 0.8125rem;
+      line-height: 1.45;
+      color: var(--color-on-surface-variant, #4f4442);
+      margin: 0 0 0.875rem;
+      padding: 0.625rem 0.75rem;
+      background: rgba(90, 71, 66, 0.05);
+      border-left: 2px solid var(--color-primary, #5a4742);
+      border-radius: 0 var(--radius-sm, 2px) var(--radius-sm, 2px) 0;
+    }
+    .ame-pingente__optin-msg strong {
+      color: var(--color-on-background, #201b14);
+      font-weight: 600;
     }
 
     .ame-pingente__step + .ame-pingente__step {
@@ -339,21 +365,27 @@
     }
 
     .ame-pingente__formato-thumb {
-      width: clamp(56px, 75%, 88px);
+      width: clamp(40px, 55%, 56px);
       aspect-ratio: 1 / 1;
-      border-radius: var(--radius-sm, 2px);
-      background: var(--color-surface-container-highest, #ece1d5);
-      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto;
+      color: var(--color-primary, #5a4742);
     }
-    .ame-pingente__formato-thumb img {
+    .ame-pingente__formato-thumb .material-symbols-outlined {
+      font-size: 2rem !important;
+      font-variation-settings: 'FILL' 1, 'wght' 400;
+      color: inherit;
+    }
+    .ame-pingente__formato-thumb svg {
       width: 100%;
       height: 100%;
-      object-fit: cover;
       display: block;
+      fill: currentColor;
+    }
+    .ame-pingente__formato-card:has(input:checked) .ame-pingente__formato-thumb {
+      color: var(--color-primary, #5a4742);
     }
     .ame-pingente__formato-name {
       font-family: var(--font-primary--family, 'Lexend', sans-serif);
@@ -470,6 +502,14 @@
       const SIZE_MAP = { XPP: 'P', 'XPP+': 'P', PP: 'P', P: 'P', M: 'G', G: 'G' };
       const FORMATOS = ['Círculo', 'Coração', 'Flor', 'Osso'];
 
+      /* Ícones por formato — Material Symbols + SVG inline para o "Osso" */
+      const FORMATO_ICON = {
+        'Círculo': '<span class="material-symbols-outlined" aria-hidden="true">circle</span>',
+        'Coração': '<span class="material-symbols-outlined" aria-hidden="true">favorite</span>',
+        'Flor':    '<span class="material-symbols-outlined" aria-hidden="true">local_florist</span>',
+        'Osso':    '<svg viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 3a3 3 0 0 1 2.83 4 1.5 1.5 0 0 0 1.42 2h2.5a1.5 1.5 0 0 0 1.42-2 3 3 0 1 1 4.6 3.36 1.5 1.5 0 0 0 0 3.28A3 3 0 1 1 14.67 17a1.5 1.5 0 0 0-1.42-1h-2.5a1.5 1.5 0 0 0-1.42 1A3 3 0 1 1 4.73 13.64a1.5 1.5 0 0 0 0-3.28A3 3 0 0 1 6.5 3z"/></svg>'
+      };
+
       /* ── Helpers ── */
       function slugify(str) {
         return String(str || '')
@@ -580,6 +620,29 @@
         );
       }
 
+      /* ── Calcula range de preço dos pingentes e injeta na mensagem de opt-in ── */
+      async function loadPriceRange() {
+        const tpl = root.dataset.optinTemplate || '';
+        const msgEl = root.querySelector('[data-pingente-optin-msg]');
+        if (!msgEl || !tpl) return;
+        if (!tpl.includes('{min}') && !tpl.includes('{max}')) return;
+
+        const coleira = readColeiraSelection();
+        const handles = ['metal', 'couro', 'metal-couro']
+          .map((tipo) => buildHandle(tipo, coleira.cor))
+          .filter(Boolean);
+        const products = await Promise.all(handles.map(fetchProduct));
+        const prices = products
+          .filter(Boolean)
+          .flatMap((p) => (p.variants || []).filter((v) => v.available).map((v) => v.price));
+        if (!prices.length) return;
+        const min = Math.min(...prices);
+        const max = Math.max(...prices);
+        msgEl.textContent = tpl
+          .replace(/\{min\}/g, moneyFmt(min))
+          .replace(/\{max\}/g, moneyFmt(max));
+      }
+
       /* ── DOM refs ── */
       const step2 = root.querySelector('[data-pingente-step="2"]');
       const step3 = root.querySelector('[data-pingente-step="3"]');
@@ -588,6 +651,27 @@
       const statusEl = root.querySelector('[data-pingente-status]');
       const phoneInput = root.querySelector('[data-pingente-tel]');
       const petInput = root.querySelector('[data-pingente-pet]');
+      const overlay = document.querySelector('[data-pingente-overlay]');
+      const overlayImg = overlay?.querySelector('[data-pingente-overlay-img]');
+
+      /* ── Overlay sobre a imagem principal ── */
+      function updateOverlay() {
+        if (!overlay || !overlayImg) return;
+        const variant = state.variant;
+        const src = variant?.featured_image?.src || state.product?.featured_image || '';
+        if (state.opted && variant && variant.available && src) {
+          overlayImg.src = src;
+          overlayImg.alt = `Pingente ${state.formato || ''}`.trim();
+          overlay.hidden = false;
+          // Force reflow to ensure transition runs after un-hiding
+          void overlay.offsetWidth;
+          overlay.classList.add('is-visible');
+        } else {
+          overlay.classList.remove('is-visible');
+          overlay.hidden = true;
+          overlayImg.removeAttribute('src');
+        }
+      }
 
       /* ── Coleira selection ── */
       function readColeiraSelection() {
@@ -630,6 +714,7 @@
             step3.hidden = true;
             step4.hidden = true;
             setStatus('');
+            updateOverlay();
           } else {
             loadTipoThumbs();
             if (state.tipo) handleTipoChange(state.tipo);
@@ -657,6 +742,7 @@
           state.variant = null;
           step3.hidden = true;
           step4.hidden = true;
+          updateOverlay();
           return;
         }
         setStatus('Carregando opções...', false);
@@ -671,6 +757,7 @@
           state.variant = null;
           step3.hidden = true;
           step4.hidden = true;
+          updateOverlay();
           return;
         }
         console.info('[pingente] produto carregado:', {
@@ -749,7 +836,7 @@
           const displayVariant = variant || anyVariantOfFormato;
           const available = !!variant && variant.available;
 
-          const img = displayVariant?.featured_image?.src || state.product.featured_image || '';
+          const icon = FORMATO_ICON[formato] || '';
 
           return `
           <label class="ame-pingente__formato-card ${
@@ -758,9 +845,7 @@
             <input type="radio" name="ame-pingente-formato" value="${escapeHTML(formato)}" data-pingente-formato ${
             available ? '' : 'disabled'
           }>
-            <div class="ame-pingente__formato-thumb">
-              ${img ? `<img src="${escapeHTML(img)}" alt="${escapeHTML(formato)}" loading="lazy">` : ''}
-            </div>
+            <div class="ame-pingente__formato-thumb">${icon}</div>
             <span class="ame-pingente__formato-name">${escapeHTML(formato)}</span>
           </label>
         `;
@@ -785,7 +870,9 @@
           }
           state.formato = null;
         }
+        state.variant = null;
         step4.hidden = true;
+        updateOverlay();
       }
 
       /* ── Resolve final variant ── */
@@ -793,6 +880,7 @@
         if (!state.product || !state.formato) {
           state.variant = null;
           step4.hidden = true;
+          updateOverlay();
           return;
         }
         const idx = getOptionIndexes(state.product);
@@ -811,12 +899,14 @@
           setStatus('Combinação de pingente indisponível (cor do metal ou tamanho).', true);
           state.variant = null;
           step4.hidden = true;
+          updateOverlay();
           return;
         }
 
         state.variant = variant;
         setStatus('', false);
         step4.hidden = false;
+        updateOverlay();
       }
 
       /* ── Máscara de telefone ── */
@@ -842,10 +932,19 @@
 
       /* ── Re-validar quando variante da coleira muda ── */
       document.addEventListener('pdp:variant-changed', () => {
+        loadPriceRange();
         if (!state.opted) return;
         loadTipoThumbs();
         if (state.tipo) handleTipoChange(state.tipo);
       });
+
+      /* ── Boot: carrega range de preço em idle (não atrasa LCP) ── */
+      const boot = () => loadPriceRange();
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(boot, { timeout: 2000 });
+      } else {
+        setTimeout(boot, 600);
+      }
 
       /* ── API pública pro submit do product form ── */
       window.amePingente = {
@@ -870,7 +969,19 @@
           const pet = petInput?.value.trim() || '';
           const tutor = root.querySelector('[data-pingente-tutor]')?.value.trim() || '';
           const tel = root.querySelector('[data-pingente-tel]')?.value.trim() || '';
-          const properties = { 'Nome do pet': pet };
+
+          // Identificação da coleira que originou este pingente — para o cliente
+          // saber a qual produto cada pingente pertence quando há mais de um.
+          const coleiraTitle = root.dataset.coleiraTitle || '';
+          const coleira = readColeiraSelection();
+          const opcoes = Object.entries(coleira.raw)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join(', ');
+          const coleiraLabel = [coleiraTitle, opcoes].filter(Boolean).join(' — ');
+
+          const properties = {};
+          if (coleiraLabel) properties['Coleira'] = coleiraLabel;
+          properties['Nome do pet'] = pet;
           if (tutor) properties['Nome do tutor'] = tutor;
           if (tel) properties['Telefone do tutor'] = tel;
           return { id: state.variant.id, quantity: 1, properties };

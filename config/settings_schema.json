@@ -385,6 +385,13 @@
         "id": "pingente_warning_text",
         "label": "Texto de aviso abaixo do seletor de formato",
         "default": "A cor do pingente corresponderá à cor do metal e dos detalhes da coleira escolhida."
+      },
+      {
+        "type": "textarea",
+        "id": "pingente_optin_message",
+        "label": "Mensagem de incentivo (acima do Sim/Não)",
+        "info": "Use {min} e {max} para inserir o preço mais barato e mais caro dos pingentes automaticamente.",
+        "default": "Inclua um pingente personalizado a partir de {min}."
       }
     ]
   },

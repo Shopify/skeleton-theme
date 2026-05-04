@@ -40,6 +40,17 @@
   {%- endif -%}
 {%- endcapture -%}
 
+{%- liquid
+  assign pdp_btn_bg = section.settings.pdp_btn_bg_color | default: '#000000'
+  assign pdp_btn_fg = section.settings.pdp_btn_fg_color | default: '#ffffff'
+-%}
+<style>
+  #shopify-section-{{ section.id }} .pdp {
+    --pdp-btn-bg: {{ pdp_btn_bg }};
+    --pdp-btn-fg: {{ pdp_btn_fg }};
+  }
+</style>
+
 <!-- Breadcrumb -->
 <nav class="pdp-breadcrumb full-width" aria-label="Navegação">
   <a href="{{ routes.root_url }}">Início</a>
@@ -122,6 +133,12 @@
           </span>
         {%- endif -%}
       </div>
+
+      {%- if product.tags contains 'customizacao_pingente' -%}
+        <div class="pdp__pingente-overlay" data-pingente-overlay hidden aria-hidden="true">
+          <img src="" alt="" data-pingente-overlay-img loading="lazy" width="800" height="800">
+        </div>
+      {%- endif -%}
     </div>
 
     <!-- Thumbnails em linha horizontal com scroll -->
@@ -1014,6 +1031,69 @@
   .pdp__custom-field--error .pdp__custom-field__radio-btn {
     border-color: #c0392b;
   }
+
+  /* ── Override: cor do botão selecionado e add-to-cart (configurável via painel) ── */
+  .pdp .pdp__size-btn--active {
+    background: var(--pdp-btn-bg, #000000);
+    color: var(--pdp-btn-fg, #ffffff);
+    border-color: var(--pdp-btn-bg, #000000);
+  }
+
+  .pdp .pdp__swatch--active {
+    outline-color: var(--pdp-btn-bg, #000000);
+  }
+
+  .pdp .pdp__add-btn {
+    background: var(--pdp-btn-bg, #000000);
+    color: var(--pdp-btn-fg, #ffffff);
+  }
+
+  /* ── Largura flexível dos botões de variação ── */
+  .pdp .pdp__sizes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .pdp .pdp__size-btn {
+    width: auto;
+    padding: 0.625rem 1.125rem;
+  }
+
+  .pdp .pdp__size-btn.pdp__size-btn--metal {
+    padding: 0.5rem 1rem;
+  }
+
+  /* ── Pingente overlay sobre a imagem principal ── */
+  .pdp__pingente-overlay {
+    position: absolute;
+    bottom: 6%;
+    left: 6%;
+    width: 15%;
+    aspect-ratio: 1 / 1;
+    z-index: 3;
+    pointer-events: none;
+    filter: drop-shadow(0 6px 14px rgba(32, 27, 20, 0.28));
+    opacity: 0;
+    transform: translateY(6px) scale(0.9);
+    transition: opacity 0.25s ease, transform 0.25s var(--ease-luxury, cubic-bezier(0.22, 1, 0.36, 1));
+  }
+
+  .pdp__pingente-overlay[hidden] {
+    display: none;
+  }
+
+  .pdp__pingente-overlay.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .pdp__pingente-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -1025,6 +1105,26 @@
       "id": "show_related",
       "label": "Exibir produtos relacionados",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Botões da PDP"
+    },
+    {
+      "type": "paragraph",
+      "content": "Define a cor do botão de variação selecionado (ex: tamanho/cor do metal) e do botão Adicionar ao Carrinho."
+    },
+    {
+      "type": "color",
+      "id": "pdp_btn_bg_color",
+      "label": "Cor de fundo do botão",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "pdp_btn_fg_color",
+      "label": "Cor do texto do botão",
+      "default": "#ffffff"
     },
     {
       "type": "header",

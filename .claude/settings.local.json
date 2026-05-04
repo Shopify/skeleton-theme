@@ -10,7 +10,9 @@
       "Bash(node -e \"const j=JSON.parse\\(require\\('fs'\\).readFileSync\\('/tmp/schema_head.json','utf8'\\)\\); console.log\\('grupos HEAD:', j.map\\(g=>g.name||'\\(sem nome\\)'\\).join\\(', '\\)\\)\")",
       "Bash(awk 'NR>=610 && NR<=705 { for\\(i=1;i<=length\\($0\\);i++\\){ c=substr\\($0,i,1\\); if\\(c!~/[\\\\x20-\\\\x7E\\\\t]/\\) print NR\":\"i\": [\"c\"] \\(\"sprintf\\(\"%02x\",ord\\(c\\)\\)\"\\)\" } }' sections/product.liquid)",
       "Bash(python -c ' *)",
-      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('config/settings_schema.json','utf8'\\)\\); console.log\\('OK — JSON válido'\\)\")"
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('config/settings_schema.json','utf8'\\)\\); console.log\\('OK — JSON válido'\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('c:/Users/pedid/OneDrive/Área de Trabalho/Arquivos Âme/Muriel/Projetos/shopify-theme/config/settings_schema.json','utf8'\\)\\); console.log\\('settings_schema.json OK'\\)\")"
     ]
   }
 }
