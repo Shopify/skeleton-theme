@@ -62,13 +62,13 @@
       {%- if section.settings.cta_primary_label != blank -%}
         <a href="{{ section.settings.cta_primary_url }}" class="ame-cta">
           {{ section.settings.cta_primary_label }}
-          <span class="material-symbols-outlined">arrow_forward</span>
+          <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
         </a>
       {%- endif -%}
       {%- if section.settings.cta_secondary_label != blank -%}
         <a href="{{ section.settings.cta_secondary_url }}" class="ame-btn-secondary">
           {{ section.settings.cta_secondary_label }}
-          <span class="material-symbols-outlined">arrow_forward</span>
+          <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
         </a>
       {%- endif -%}
     </div>

@@ -19,3 +19,6 @@
 ## 2024-04-26 - ARIA hidden for Icon Ligatures
 **Learning:** Screen readers might inappropriately announce the text content of icon ligatures (e.g., "shopping_bag" or "close" inside a `<span class="material-symbols-outlined">`) when they are meant to be purely decorative. This can happen even if they are nested inside an interactive element with a proper `aria-label`.
 **Action:** Always add `aria-hidden="true"` to icon ligatures used within labeled buttons, links, or adjacent to descriptive text to ensure screen readers focus only on the intended semantic meaning.
+## 2026-05-01 - ARIA hidden for Icon Ligatures
+**Learning:** Screen readers might inappropriately announce the text content of icon ligatures (e.g., "shopping_bag" or "close" inside a `<span class="material-symbols-outlined">`) when they are meant to be purely decorative. This can happen even if they are nested inside an interactive element with a proper `aria-label`.
+**Action:** Always add `aria-hidden="true"` to icon ligatures used within labeled buttons, links, or adjacent to descriptive text to ensure screen readers focus only on the intended semantic meaning.

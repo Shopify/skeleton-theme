@@ -90,10 +90,10 @@
         <div class="pdp__counter" aria-live="polite"><span id="pdp-current">1</span> / {{ media_size }}</div>
         <!-- botões de navegação -->
         <button class="pdp__nav pdp__nav--prev" id="pdp-prev" aria-label="Anterior">
-          <span class="material-symbols-outlined">arrow_back_ios</span>
+          <span class="material-symbols-outlined" aria-hidden="true">arrow_back_ios</span>
         </button>
         <button class="pdp__nav pdp__nav--next" id="pdp-next" aria-label="Próximo">
-          <span class="material-symbols-outlined">arrow_forward_ios</span>
+          <span class="material-symbols-outlined" aria-hidden="true">arrow_forward_ios</span>
         </button>
       {%- else -%}
         <div class="pdp__track" id="pdp-track">
@@ -567,7 +567,7 @@
           >
             {%- if cv.available -%}
               Adicionar ao Carrinho
-              <span class="material-symbols-outlined" style="font-size:1rem;">shopping_bag</span>
+              <span class="material-symbols-outlined" style="font-size:1rem;" aria-hidden="true">shopping_bag</span>
             {%- else -%}
               Esgotado
             {%- endif -%}
@@ -576,7 +576,7 @@
 
         <button type="button" class="pdp__wishlist-btn" aria-label="Favoritar" id="pdp-wishlist" aria-pressed="false">
           <span class="material-symbols-outlined" style="font-size:1.25rem;font-variation-settings:'FILL' 0;"
-            >favorite</span
+            aria-hidden="true">favorite</span
           >
         </button>
       </div>
@@ -833,7 +833,7 @@
       const btn  = document.getElementById('pdp-add-btn');
       const orig = btn.innerHTML;
 
-      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:1rem;animation:pdp-spin 0.6s linear infinite;">refresh</span>';
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:1rem;animation:pdp-spin 0.6s linear infinite;" aria-hidden="true">refresh</span>';
       btn.disabled  = true;
       btn.setAttribute('aria-busy', 'true');
 
