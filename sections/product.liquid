@@ -379,6 +379,7 @@
                     class="pdp__size-btn pdp__size-btn--metal{% if option_value.selected %} pdp__size-btn--active{% endif %}{% unless option_value.available %} pdp__size-btn--disabled{% endunless %}"
                     data-value="{{ option_value | escape }}"
                     data-option-value-id="{{ option_value.id }}"
+                    aria-label="{{ option_value | escape }}"
                     {% unless option_value.available %}
                       aria-disabled="true"
                     {% endunless %}
@@ -401,6 +402,7 @@
                     class="pdp__size-btn{% if option_value.selected %} pdp__size-btn--active{% endif %}{% unless option_value.available %} pdp__size-btn--disabled{% endunless %}"
                     data-value="{{ option_value | escape }}"
                     data-option-value-id="{{ option_value.id }}"
+                    aria-label="{{ option_value | escape }}"
                     {% unless option_value.available %}
                       aria-disabled="true"
                     {% endunless %}
@@ -508,7 +510,7 @@
                   {%- assign cf_opts = cf_options | split: ',' -%}
                   {%- for cf_opt in cf_opts -%}
                     {%- assign opt_val = cf_opt | strip -%}
-                    <button type="button" class="pdp__custom-field__radio-btn" data-value="{{ opt_val | escape }}">
+                    <button type="button" class="pdp__custom-field__radio-btn" data-value="{{ opt_val | escape }}" aria-label="{{ opt_val | escape }}">
                       {{- opt_val -}}
                     </button>
                   {%- endfor -%}
