@@ -238,7 +238,7 @@
       gap: 0.375rem;
       padding: 0.75rem 0.5rem;
       border: 1px solid var(--color-outline-variant, #d2c3c0);
-      border-radius: var(--radius-md, 4px);
+      border-radius: var(--radius-lg, 4px);
       cursor: pointer;
       background: rgba(255, 255, 255, 0.4);
       transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
@@ -326,10 +326,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.375rem;
       padding: 0.5rem 0.375rem;
       border: 1px solid var(--color-outline-variant, #d2c3c0);
-      border-radius: var(--radius-md, 4px);
+      border-radius: var(--radius-lg, 4px);
       cursor: pointer;
       background: rgba(255, 255, 255, 0.4);
       transition: border-color 0.2s ease, background 0.2s ease;
@@ -365,7 +364,6 @@
     }
 
     .ame-pingente__formato-thumb {
-      width: clamp(36px, 50%, 52px);
       aspect-ratio: 1 / 1;
       display: flex;
       align-items: center;
@@ -373,7 +371,7 @@
       margin: 0 auto;
     }
     .ame-pingente__formato-emoji {
-      font-size: clamp(1.5rem, 6vw, 2rem);
+      font-size: clamp(10px, 1.35rem, 1.6rem)
       line-height: 1;
       font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Segoe UI Symbol', sans-serif;
     }
@@ -502,10 +500,10 @@
 
       /* Ícones por formato — emojis */
       const FORMATO_ICON = {
-        'Círculo': '<span class="ame-pingente__formato-emoji" aria-hidden="true">⭕</span>',
-        'Coração': '<span class="ame-pingente__formato-emoji" aria-hidden="true">❤️</span>',
-        'Flor':    '<span class="ame-pingente__formato-emoji" aria-hidden="true">🌸</span>',
-        'Osso':    '<span class="ame-pingente__formato-emoji" aria-hidden="true">🦴</span>'
+        Círculo: '<span class="ame-pingente__formato-emoji" aria-hidden="true">⭕</span>',
+        Coração: '<span class="ame-pingente__formato-emoji" aria-hidden="true">❤️</span>',
+        Flor: '<span class="ame-pingente__formato-emoji" aria-hidden="true">🌸</span>',
+        Osso: '<span class="ame-pingente__formato-emoji" aria-hidden="true">🦴</span>',
       };
 
       /* ── Helpers ── */
@@ -626,9 +624,7 @@
         if (!tpl.includes('{min}') && !tpl.includes('{max}')) return;
 
         const coleira = readColeiraSelection();
-        const handles = ['metal', 'couro', 'metal-couro']
-          .map((tipo) => buildHandle(tipo, coleira.cor))
-          .filter(Boolean);
+        const handles = ['metal', 'couro', 'metal-couro'].map((tipo) => buildHandle(tipo, coleira.cor)).filter(Boolean);
         const products = await Promise.all(handles.map(fetchProduct));
         const prices = products
           .filter(Boolean)
@@ -636,9 +632,7 @@
         if (!prices.length) return;
         const min = Math.min(...prices);
         const max = Math.max(...prices);
-        msgEl.textContent = tpl
-          .replace(/\{min\}/g, moneyFmt(min))
-          .replace(/\{max\}/g, moneyFmt(max));
+        msgEl.textContent = tpl.replace(/\{min\}/g, moneyFmt(min)).replace(/\{max\}/g, moneyFmt(max));
       }
 
       /* ── DOM refs ── */
