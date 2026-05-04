@@ -11,7 +11,20 @@
   {% for article in blog.articles %}
     <div>
       {% if article.image %}
-        {{ article.image | image_url: width: 1000 | image_tag }}
+        {%- liquid
+          assign img_loading = 'lazy'
+          assign img_fetchpriority = 'auto'
+
+          # ⚡ Bolt: Eager load the LCP (Largest Contentful Paint) image.
+          # 💡 What: Apply `loading: 'eager'` and `fetchpriority: 'high'` to the first image in the blog article list.
+          # 🎯 Why: Hardcoding `loading: 'lazy'` for all images delays the LCP. Eager loading the first image improves perceived load time.
+          # 📊 Impact: Improves LCP Web Vital metric significantly.
+          if forloop.first
+            assign img_loading = 'eager'
+            assign img_fetchpriority = 'high'
+          endif
+        -%}
+        {{ article.image | image_url: width: 1000 | image_tag: widths: '500, 1000', loading: img_loading, fetchpriority: img_fetchpriority }}
       {% endif %}
       <h2>
         {{ article.title | link_to: article.url }}

@@ -7,7 +7,13 @@
 {% endcomment %}
 
 {% if article.image %}
-  {{ article.image | image_url: width: 1000 | image_tag }}
+  {%- liquid
+    # ⚡ Bolt: Eager load the LCP (Largest Contentful Paint) image.
+    # 💡 What: Apply `loading: 'eager'` and `fetchpriority: 'high'` to the main article image.
+    # 🎯 Why: Hardcoding `loading: 'lazy'` for LCP images delays rendering. Eager loading improves perceived load time.
+    # 📊 Impact: Improves LCP Web Vital metric significantly.
+  -%}
+  {{ article.image | image_url: width: 1000 | image_tag: widths: '500, 1000', loading: 'eager', fetchpriority: 'high' }}
 {% endif %}
 
 <h1>{{ article.title }}</h1>
