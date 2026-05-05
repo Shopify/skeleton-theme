@@ -1016,7 +1016,7 @@ body::after {
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--success-400);
+  color: var(--color-on-background);
   padding: 0.375rem 0.625rem;
   border-radius: var(--radius-md, 0.25rem);
   transition: background 0.2s ease;
@@ -1029,7 +1029,7 @@ body::after {
 .ame-cart-discount__btn:disabled {
   opacity: 0.6;
   cursor: default;
-  color: var(--color-primary, #5a4742);
+  color: var(--success-400);
   background: none;
 }
 

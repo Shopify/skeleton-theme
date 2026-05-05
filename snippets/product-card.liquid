@@ -67,9 +67,25 @@
     <div class="ame-card__image-wrap">
       {%- if card_img != blank -%}
         {%- assign card_img_alt = card_img.alt | default: card_title | escape -%}
-        {{ card_img | image_url: width: 600 | image_tag: loading: 'lazy', widths: '200, 400, 600', class: 'ame-card__img ame-card__img--primary', alt: card_img_alt }}
+        {{
+          card_img
+          | image_url: width: 600
+          | image_tag:
+            loading: 'lazy',
+            widths: '200, 400, 600',
+            class: 'ame-card__img ame-card__img--primary',
+            alt: card_img_alt
+        }}
         {%- if card_img_alt_src != blank -%}
-          {{ card_img_alt_src | image_url: width: 600 | image_tag: loading: 'lazy', widths: '200, 400, 600', class: 'ame-card__img ame-card__img--secondary', alt: '' }}
+          {{
+            card_img_alt_src
+            | image_url: width: 600
+            | image_tag:
+              loading: 'lazy',
+              widths: '200, 400, 600',
+              class: 'ame-card__img ame-card__img--secondary',
+              alt: ''
+          }}
         {%- endif -%}
       {%- else -%}
         {{ 'product-1' | placeholder_svg_tag: 'ame-card__img ame-card__img--placeholder' }}
@@ -103,8 +119,11 @@
         type="button"
         aria-pressed="false"
       >
-        <span class="material-symbols-outlined" style="font-size:1.125rem; font-variation-settings:'FILL' 0;"
-          aria-hidden="true">favorite</span
+        <span
+          class="material-symbols-outlined"
+          style="font-size:1.125rem; font-variation-settings:'FILL' 0;"
+          aria-hidden="true"
+          >favorite</span
         >
       </button>
     </div>
@@ -150,8 +169,10 @@
         assign cb_color = settings.cashback_color | default: '#5a4742'
         assign cb_mode = 'card'
 
+        # Cálculo em centavos (inteiro) pra usar money_without_currency e ter 2 casas
         assign cb_value_cents = card_effective_price | default: 0
-        assign cb_value_reais = cb_value_cents | times: cb_pct | divided_by: 10000.0
+        assign cb_value_centavos = cb_value_cents | times: cb_pct | divided_by: 100
+        assign cb_value_reais = cb_value_centavos | divided_by: 100.0
         assign cb_show_value = false
         if cb_value_reais >= cb_min
           assign cb_show_value = true
@@ -179,7 +200,7 @@
           {%- if cb_show_value -%}
             <strong class="ame-cashback__cifra">R$</strong>
             <strong class="ame-cashback__value" data-cashback-value>
-              {{- cb_value_reais | round: 1 | replace: '.', ',' -}}
+              {{- cb_value_centavos | money_without_currency -}}
             </strong>
           {%- else -%}
             <strong class="ame-cashback__value" data-cashback-value>{{ cb_pct | round }}%</strong>
@@ -222,15 +243,19 @@
     height: 100%;
     object-fit: cover;
     mix-blend-mode: multiply;
+    transition: transform 1s var(--ease-luxury, cubic-bezier(0.22, 1, 0.36, 1)), opacity 0.4s ease;
+  }
+  .ame-card__img--primary {
     opacity: 0.9;
-    transition: transform 1s var(--ease-luxury, cubic-bezier(0.22, 1, 0.36, 1)),
-                opacity 0.4s ease;
+    z-index: 1;
   }
   .ame-card__img--placeholder {
     opacity: 0.3;
   }
+  /* Em devices touch, a imagem secundária nem é renderizada — evita qualquer
+     sobreposição com a primária e economiza memória. */
   .ame-card__img--secondary {
-    opacity: 0;
+    display: none;
   }
   .ame-card:hover .ame-card__img--primary {
     transform: scale(1.05);
@@ -238,6 +263,11 @@
 
   /* Hover-swap só em devices com mouse real (desktop) */
   @media (hover: hover) and (pointer: fine) {
+    .ame-card__img--secondary {
+      display: block;
+      opacity: 0;
+      z-index: 2;
+    }
     .ame-card:hover .ame-card__img--primary {
       opacity: 0;
     }
@@ -431,11 +461,7 @@
   .ame-card__buy-btn {
     display: block;
     width: 100%;
-    background: linear-gradient(
-      135deg,
-      var(--color-btn-primary-bg, var(--color-primary, #5a4742)),
-      var(--color-primary-container, #735e59)
-    );
+    background: var(--pdp-btn-bg);
     color: var(--color-btn-primary-text, var(--color-on-primary, #ffffff));
     border: none;
     cursor: pointer;

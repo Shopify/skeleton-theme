@@ -158,6 +158,12 @@
           {%- comment -%} theme-check-enable AssetUrl {%- endcomment -%}
         </div>
       {%- endif -%}
+
+      <!-- Resumo das variações escolhidas (mobile, junto com a imagem principal) -->
+      <div class="pdp__selection-info" data-selection-info hidden aria-live="polite">
+        <span class="pdp__selection-info__label">Você selecionou:</span>
+        <span class="pdp__selection-info__values" data-selection-info-values></span>
+      </div>
     </div>
 
     <!-- Thumbnails em linha horizontal com scroll -->
@@ -862,6 +868,25 @@
       );
     }
 
+    /* ── Resumo "Você selecionou: X + Y + Z." sobre a imagem (mobile) ── */
+    function updateSelectionInfo() {
+      const wrap = document.querySelector('[data-selection-info]');
+      if (!wrap) return;
+      const valuesEl = wrap.querySelector('[data-selection-info-values]');
+      const groups = document.querySelectorAll('#pdp-options-wrap [data-option-index]');
+      const values = [];
+      groups.forEach(g => {
+        const active = g.querySelector('.pdp__swatch--active, .pdp__size-btn--active');
+        if (active?.dataset.value) values.push(active.dataset.value);
+      });
+      if (values.length === 0) {
+        wrap.hidden = true;
+        return;
+      }
+      valuesEl.textContent = values.join(' + ') + '.';
+      wrap.hidden = false;
+    }
+
     function bindOptionClicks() {
       document.querySelectorAll('#pdp-options-wrap [data-option-index]').forEach(group => {
         const btns = group.querySelectorAll('.pdp__swatch, .pdp__size-btn');
@@ -879,6 +904,8 @@
             navigateGalleryToMedia(btn.dataset.mediaId);
           }
 
+          updateSelectionInfo();
+
           // Section Rendering API só roda quando tudo está selecionado — sem isso o
           // servidor devolveria cv=nil e perderíamos os botões com seleção parcial.
           if (isSelectionComplete()) {
@@ -892,6 +919,10 @@
     }
 
     bindOptionClicks();
+    // Boot: caso a URL traga ?variant=... os botões já vêm marcados, então mostramos.
+    updateSelectionInfo();
+    // Re-aplica após Section Rendering API substituir o markup das opções.
+    document.addEventListener('pdp:variant-changed', updateSelectionInfo);
 
     /* ── Validação no submit: destaca opções faltantes + scroll + toast ── */
     function validateAndHighlight() {
@@ -1015,9 +1046,10 @@
           ...(Object.keys(coleiraProps).length ? { properties: coleiraProps } : {})
         }];
 
-        /* Adiciona pingente como item separado, se aplicável */
+        /* Adiciona pingente como item separado, se aplicável.
+           Passa a quantidade da coleira pra manter 1 pingente por coleira. */
         if (window.amePingente?.isActive()) {
-          const pingenteItem = window.amePingente.getCartItem();
+          const pingenteItem = window.amePingente.getCartItem(coleiraQty);
           if (pingenteItem) items.push(pingenteItem);
         }
 
@@ -1342,6 +1374,41 @@
     display: block;
     /* transform: scale(1.6); */
     /*margin-top: 10px;*/
+  }
+
+  /* ── Resumo das variações escolhidas (sobre a imagem, mobile) ── */
+  .pdp__selection-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    padding: 1.5rem 1rem 0.875rem;
+    background: linear-gradient(to top, rgba(32, 27, 20, 0.78) 0%, rgba(32, 27, 20, 0.45) 60%, transparent 100%);
+    color: #fff;
+    font-family: var(--font-primary--family, 'Lexend', sans-serif);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    text-align: center;
+    pointer-events: none;
+  }
+  .pdp__selection-info[hidden] {
+    display: none;
+  }
+  .pdp__selection-info__label {
+    font-weight: 400;
+    opacity: 0.85;
+    margin-right: 0.25rem;
+  }
+  .pdp__selection-info__values {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  /* Desktop não mostra (a coluna lateral já dá o feedback) */
+  @media (min-width: 1024px) {
+    .pdp__selection-info {
+      display: none;
+    }
   }
 
   /* ── Validação: opções não selecionadas no clique do CTA ── */

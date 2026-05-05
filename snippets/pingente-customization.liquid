@@ -1058,8 +1058,9 @@
           }
           return { ok: true };
         },
-        getCartItem() {
+        getCartItem(quantity) {
           if (!state.opted || !state.variant) return null;
+          const qty = Math.max(1, parseInt(quantity, 10) || 1);
           const pet = petInput?.value.trim() || '';
           const tutor = root.querySelector('[data-pingente-tutor]')?.value.trim() || '';
           const tel = root.querySelector('[data-pingente-tel]')?.value.trim() || '';
@@ -1078,7 +1079,7 @@
           properties['Nome do pet'] = pet;
           if (tutor) properties['Nome do tutor'] = tutor;
           if (tel) properties['Telefone do tutor'] = tel;
-          return { id: state.variant.id, quantity: 1, properties };
+          return { id: state.variant.id, quantity: qty, properties };
         },
       };
     })();

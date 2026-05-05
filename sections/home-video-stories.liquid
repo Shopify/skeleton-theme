@@ -40,7 +40,8 @@
 
 <style>
   .ame-vs-section {
-    padding: var(--section-gap, 7.5rem) var(--page-margin, 2rem);
+    /*padding: var(--section-gap, 7.5rem) var(--page-margin, 2rem);*/
+    padding: 10px;
     max-width: var(--page-width, 120rem);
     margin: 0 auto;
   }
@@ -116,7 +117,7 @@
       "id": "format",
       "label": "Formato de exibição",
       "options": [
-        { "value": "stories",   "label": "Stories (círculos)" },
+        { "value": "stories", "label": "Stories (círculos)" },
         { "value": "carrossel", "label": "Carrossel (cards 9:16)" },
         { "value": "spotlight", "label": "Destaque (cards 16:9 grandes)" }
       ],
@@ -157,7 +158,7 @@
       "id": "border_type",
       "label": "Tipo de borda",
       "options": [
-        { "value": "solida",  "label": "Sólida" },
+        { "value": "solida", "label": "Sólida" },
         { "value": "degrade", "label": "Degradê" }
       ],
       "default": "solida"
@@ -268,11 +269,7 @@
     {
       "name": "Vídeos (stories)",
       "settings": { "title": "Em movimento", "format": "stories" },
-      "blocks": [
-        { "type": "video" },
-        { "type": "video" },
-        { "type": "video" }
-      ]
+      "blocks": [{ "type": "video" }, { "type": "video" }, { "type": "video" }]
     }
   ],
   "disabled_on": { "groups": ["header", "footer"] }
