@@ -8,3 +8,6 @@
 ## 2024-05-14 - Eager Load LCP Images
 **Learning:** Hardcoding `loading: 'lazy'` inside loops for image galleries (like `{% for media in product.media %}`) is a common anti-pattern that causes the Largest Contentful Paint (LCP) element to be delayed, severely impacting Web Vitals. Liquid `forloop.first` can be used to conditionally apply `loading: 'eager'` and `fetchpriority: 'high'` to the first element instead.
 **Action:** Always check image rendering loops to ensure the first item (often the LCP candidate) is eager-loaded while subsequent items remain lazy-loaded.
+## 2026-05-18 - Optimize nested loops with contains operator
+**Learning:** When matching items from a large array (like `product.tags`) against dynamic settings, using a nested loop (`{% for tag in product.tags %} {% for i in (1..10) %}`) results in O(M*N) iteration overhead. Liquid's `contains` operator (`product.tags contains setting_val`) provides a much faster O(N) lookup.
+**Action:** Replace nested loops that merely check for array membership with a single loop and the native `contains` array operator to reduce iteration overhead.
