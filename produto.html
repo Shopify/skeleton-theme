@@ -324,8 +324,8 @@
         }
 
         .container-cor {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            display: flex;
+            flex-wrap: wrap;
             gap: 6px;
             width: 100%;
         }
@@ -338,7 +338,7 @@
         }
 
         .cor-item {
-            width: 100%;
+            width: calc(16.666% - 5px);
         }
 
         .cor-item img {
