@@ -2278,8 +2278,8 @@ shopify-account {
 
 /* Swatches — 6 colunas no mobile como produto.html */
 .pdp__swatches {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.450rem;
 }
 
@@ -2292,7 +2292,7 @@ shopify-account {
 }
 
 .pdp__swatch {
-  width: 100%;
+  width: calc(16.666% - 0.375rem);
   aspect-ratio: 1 / 1;
   border-radius: 8px;
   border: none;
