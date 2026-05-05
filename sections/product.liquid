@@ -146,6 +146,7 @@
 
       {%- if product.tags contains 'customizacao_pingente' -%}
         <div class="pdp__pingente-overlay" data-pingente-overlay hidden aria-hidden="true">
+          {%- comment -%} theme-check-disable AssetUrl {%- endcomment -%}
           <img
             src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
             alt=""
@@ -154,6 +155,7 @@
             width="800"
             height="800"
           >
+          {%- comment -%} theme-check-enable AssetUrl {%- endcomment -%}
         </div>
       {%- endif -%}
     </div>
@@ -780,10 +782,10 @@
     /* swipe */
     let sx = 0;
     track?.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
-    track?.addEventListener('touchend',   e => {
+    track?.addEventListener('touchend', e => {
       const dx = sx - e.changedTouches[0].clientX;
       if (Math.abs(dx) > 40) goTo(dx > 0 ? cur + 1 : cur - 1);
-    });
+    }, { passive: true });
 
     /* ── Quantidade ── */
     const qtyInput = document.getElementById('pdp-qty');
