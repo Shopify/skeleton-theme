@@ -70,6 +70,8 @@
 <div class="pdp full-width">
   <!-- ── Coluna esquerda: galeria ── -->
   <div class="pdp__gallery">
+    <!-- Wrapper sticky no mobile: imagem + barra de seleção compactam juntas -->
+    <div class="pdp__sticky-wrap">
     <!-- Imagem principal -->
     <div class="pdp__main-img-wrap">
       {%- if media_size > 0 -%}
@@ -158,13 +160,15 @@
           {%- comment -%} theme-check-enable AssetUrl {%- endcomment -%}
         </div>
       {%- endif -%}
-
-      <!-- Resumo das variações escolhidas (mobile, junto com a imagem principal) -->
-      <div class="pdp__selection-info" data-selection-info hidden aria-live="polite">
-        <span class="pdp__selection-info__label">Você selecionou:</span>
-        <span class="pdp__selection-info__values" data-selection-info-values></span>
-      </div>
     </div>
+
+    <!-- Resumo das variações escolhidas (mobile, abaixo da imagem — vira parte do sticky) -->
+    <div class="pdp__selection-info" data-selection-info hidden aria-live="polite">
+      <span class="pdp__selection-info__label">Você selecionou:</span>
+      <span class="pdp__selection-info__values" data-selection-info-values></span>
+    </div>
+    </div>
+    <!-- /pdp__sticky-wrap -->
 
     <!-- Thumbnails em linha horizontal com scroll -->
     {%- if media_size > 1 -%}
@@ -1105,7 +1109,8 @@
 <script>
   /* ── Imagem fixa no scroll mobile até o botão "Adicionar ao Carrinho" aparecer ── */
   (() => {
-    const wrap = document.querySelector('.pdp__main-img-wrap');
+    // O wrapper sticky inclui imagem + barra "Você selecionou: ..." — vira fixed juntos
+    const wrap = document.querySelector('.pdp__sticky-wrap');
     if (!wrap) return;
 
     // O CTA é re-buscado a cada update porque a Section Rendering API substitui o
@@ -1376,28 +1381,23 @@
     /*margin-top: 10px;*/
   }
 
-  /* ── Resumo das variações escolhidas (sobre a imagem, mobile) ── */
+  /* ── Resumo das variações escolhidas (abaixo da imagem, mobile) ── */
   .pdp__selection-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 4;
-    padding: 1.5rem 1rem 0.875rem;
-    background: linear-gradient(to top, rgba(32, 27, 20, 0.78) 0%, rgba(32, 27, 20, 0.45) 60%, transparent 100%);
-    color: #fff;
+    padding: 0.625rem 1rem;
+    background: var(--color-surface, #fff8f3);
+    color: var(--color-on-background, #201b14);
     font-family: var(--font-primary--family, 'Lexend', sans-serif);
     font-size: 0.8125rem;
-    line-height: 1.4;
+    line-height: 1.35;
     text-align: center;
-    pointer-events: none;
+    border-top: 1px solid rgba(210, 195, 192, 0.3);
   }
   .pdp__selection-info[hidden] {
     display: none;
   }
   .pdp__selection-info__label {
     font-weight: 400;
-    opacity: 0.85;
+    color: var(--color-on-surface-variant, #4f4442);
     margin-right: 0.25rem;
   }
   .pdp__selection-info__values {
@@ -1469,25 +1469,33 @@
     transform: translate(-50%, 0);
   }
 
-  /* ── Imagem fixa no scroll mobile (até o botão Adicionar ao Carrinho aparecer) ── */
+  /* ── Imagem + barra de seleção ficam fixas no scroll mobile até o CTA aparecer ── */
   .pdp__main-img-spacer {
     width: 100%;
     display: none;
   }
 
   @media (max-width: 1023px) {
-    .pdp__main-img-wrap.is-pinned {
+    .pdp__sticky-wrap.is-pinned {
       position: fixed;
       top: var(--pdp-pinned-top, 0px);
       left: 0;
       right: 0;
       width: 100%;
       margin: 0;
-      border-radius: 0;
       z-index: 50;
       will-change: transform;
+      background: var(--color-surface, #fff8f3);
+      box-shadow: 0 8px 16px rgba(32, 27, 20, 0.08);
     }
-    .pdp__main-img-wrap.is-pinned + .pdp__main-img-spacer {
+    /* Imagem encolhe quando pinada para liberar mais espaço da tela */
+    .pdp__sticky-wrap.is-pinned .pdp__main-img-wrap {
+      aspect-ratio: auto;
+      height: 38vh;
+      border-radius: 0;
+      margin: 0;
+    }
+    .pdp__sticky-wrap.is-pinned + .pdp__main-img-spacer {
       display: block;
     }
   }
