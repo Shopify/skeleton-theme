@@ -389,7 +389,7 @@
                   -%}
                   <button
                     type="button"
-                    class="pdp__swatch{% if option_value.selected %} pdp__swatch--active{% endif %}{% unless option_value.available %} pdp__swatch--disabled{% endunless %}"
+                    class="pdp__swatch{% if has_variant and option_value.selected %} pdp__swatch--active{% endif %}{% unless option_value.available %} pdp__swatch--disabled{% endunless %}"
                     data-value="{{ option_value | escape }}"
                     data-option-value-id="{{ option_value.id }}"
                     aria-label="{{ option_value }}"
@@ -426,7 +426,7 @@
                   {%- assign metal_slug = option_value | downcase | replace: ' ', '-' -%}
                   <button
                     type="button"
-                    class="pdp__size-btn pdp__size-btn--metal{% if option_value.selected %} pdp__size-btn--active{% endif %}{% unless option_value.available %} pdp__size-btn--disabled{% endunless %}"
+                    class="pdp__size-btn pdp__size-btn--metal{% if has_variant and option_value.selected %} pdp__size-btn--active{% endif %}{% unless option_value.available %} pdp__size-btn--disabled{% endunless %}"
                     data-value="{{ option_value | escape }}"
                     data-option-value-id="{{ option_value.id }}"
                     aria-label="{{ option_value | escape }}"
@@ -449,7 +449,7 @@
                 {%- for option_value in option.values -%}
                   <button
                     type="button"
-                    class="pdp__size-btn{% if option_value.selected %} pdp__size-btn--active{% endif %}{% unless option_value.available %} pdp__size-btn--disabled{% endunless %}"
+                    class="pdp__size-btn{% if has_variant and option_value.selected %} pdp__size-btn--active{% endif %}{% unless option_value.available %} pdp__size-btn--disabled{% endunless %}"
                     data-value="{{ option_value | escape }}"
                     data-option-value-id="{{ option_value.id }}"
                     aria-label="{{ option_value | escape }}"
@@ -653,11 +653,6 @@
         </button>
       </div>
     {%- endform -%}
-
-    <!-- ── Descrição completa (campo padrão Shopify) ── -->
-    {%- if product.description != blank -%}
-      <div class="pdp__desc pdp__desc--full">{{ product.description }}</div>
-    {%- endif -%}
   </div>
   <!-- /pdp__info -->
 </div>
@@ -1079,8 +1074,11 @@
   /* ── Imagem fixa no scroll mobile até o botão "Adicionar ao Carrinho" aparecer ── */
   (() => {
     const wrap = document.querySelector('.pdp__main-img-wrap');
-    const cta = document.querySelector('.ame-cta.pdp__add-btn');
-    if (!wrap || !cta) return;
+    if (!wrap) return;
+
+    // O CTA é re-buscado a cada update porque a Section Rendering API substitui o
+    // nó do botão (#pdp-add-btn-wrap) ao trocar variante — referência cacheada vira órfã.
+    const getCta = () => document.querySelector('.ame-cta.pdp__add-btn');
 
     const spacer = document.createElement('div');
     spacer.className = 'pdp__main-img-spacer';
@@ -1113,6 +1111,11 @@
 
     function update() {
       if (!mq.matches) {
+        unpin();
+        return;
+      }
+      const cta = getCta();
+      if (!cta) {
         unpin();
         return;
       }
@@ -1158,6 +1161,8 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
     if (mq.addEventListener) mq.addEventListener('change', onResize);
+    // Re-avalia quando a variante muda (CTA/preço/badge são re-renderizados pelo Section Rendering API)
+    document.addEventListener('pdp:variant-changed', () => requestAnimationFrame(update));
 
     if (document.readyState === 'complete') update();
     else window.addEventListener('load', update);
@@ -1337,13 +1342,6 @@
     display: block;
     /* transform: scale(1.6); */
     /*margin-top: 10px;*/
-  }
-
-  /* ── Descrição completa (após o botão de compra) ── */
-  .pdp__desc--full {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(210, 195, 192, 0.35);
   }
 
   /* ── Validação: opções não selecionadas no clique do CTA ── */
