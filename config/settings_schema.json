@@ -392,6 +392,43 @@
         "label": "Mensagem de incentivo (acima do Sim/Não)",
         "info": "Use {min} e {max} para inserir o preço mais barato e mais caro dos pingentes automaticamente.",
         "default": "Inclua um pingente personalizado a partir de {min}."
+      },
+      {
+        "type": "header",
+        "content": "Produtos-pingente usados na PDP"
+      },
+      {
+        "type": "paragraph",
+        "content": "Selecione exatamente quais produtos o sistema deve oferecer no fluxo de personalização da coleira. Útil quando você cadastra produtos ocultos só pra esse fluxo (separados dos pingentes vendidos avulsos). O matching pela cor da coleira é feito procurando o slug da cor (ex: 'off-white') no handle do produto. Se nenhum produto for selecionado abaixo, o sistema cai na convenção de handle antiga."
+      },
+      {
+        "type": "product",
+        "id": "pingente_metal_product",
+        "label": "Pingente de Metal (universal)",
+        "info": "Produto único usado quando o cliente escolhe pingente de metal puro."
+      },
+      {
+        "type": "product_list",
+        "id": "pingente_couro_products",
+        "label": "Pingentes de Couro (1 por cor de coleira)",
+        "info": "O sistema procura nesta lista um produto cujo handle termine com o slug da cor da coleira."
+      },
+      {
+        "type": "product_list",
+        "id": "pingente_metal_couro_products",
+        "label": "Pingentes de Metal com Couro (1 por cor de coleira)",
+        "info": "Mesmo critério: handle termina com o slug da cor da coleira."
+      },
+      {
+        "type": "header",
+        "content": "Mapeamento de tamanhos"
+      },
+      {
+        "type": "textarea",
+        "id": "pingente_size_map",
+        "label": "Tamanho da coleira → Tamanho do pingente",
+        "info": "Um par por linha ou separados por vírgula, no formato 'TamanhoColeira=TamanhoPingente'. Ex: XPP=P, P=P, M=G, G=G",
+        "default": "XPP=P, XPP+=P, PP=P, P=P, M=G, G=G"
       }
     ]
   },

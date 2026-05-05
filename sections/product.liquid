@@ -320,7 +320,13 @@
 
     <!-- ── Formulário de produto ── -->
     {%- form 'product', product, id: 'pdp-form', novalidate: true -%}
-      <input type="hidden" name="id" value="{{ cv.id }}" id="pdp-variant-id">
+      <input
+        type="hidden"
+        name="id"
+        value="{{ cv.id }}"
+        id="pdp-variant-id"
+        data-media-id="{{ cv.featured_media.id | default: cv.featured_image.id }}"
+      >
 
       <!-- Opções (Cor, Tamanho...) — renderizadas sob demanda via Section Rendering API -->
       <div id="pdp-options-wrap" data-section-id="{{ section.id }}">
@@ -793,12 +799,23 @@
 
         const freshVariantInput = doc.getElementById('pdp-variant-id');
         const currentVariantInput = document.getElementById('pdp-variant-id');
-        if (freshVariantInput && currentVariantInput) currentVariantInput.value = freshVariantInput.value;
+        if (freshVariantInput && currentVariantInput) {
+          currentVariantInput.value = freshVariantInput.value;
+          if (freshVariantInput.dataset.mediaId) {
+            currentVariantInput.dataset.mediaId = freshVariantInput.dataset.mediaId;
+          } else {
+            delete currentVariantInput.dataset.mediaId;
+          }
+        }
 
         bindOptionClicks();
 
+        // Prioriza a featured_media da variante selecionada (cobre opções como Tamanho,
+        // Cor do Metal, Formato — que não têm data-media-id no botão). Fallback: swatch ativo.
+        const variantMediaId = currentVariantInput?.dataset.mediaId;
         const newActive = document.querySelector('#pdp-options-wrap .pdp__swatch--active');
-        if (newActive?.dataset.mediaId) navigateGalleryToMedia(newActive.dataset.mediaId);
+        if (variantMediaId) navigateGalleryToMedia(variantMediaId);
+        else if (newActive?.dataset.mediaId) navigateGalleryToMedia(newActive.dataset.mediaId);
 
         document.dispatchEvent(new CustomEvent('pdp:variant-changed'));
       } catch (err) {
@@ -951,6 +968,86 @@
         }
       });
     });
+  })();
+</script>
+
+<script>
+  /* ── Imagem fixa no scroll mobile até o botão "Adicionar ao Carrinho" aparecer ── */
+  (() => {
+    const wrap = document.querySelector('.pdp__main-img-wrap');
+    const cta = document.querySelector('.ame-cta.pdp__add-btn');
+    if (!wrap || !cta) return;
+
+    const spacer = document.createElement('div');
+    spacer.className = 'pdp__main-img-spacer';
+    spacer.setAttribute('aria-hidden', 'true');
+    wrap.after(spacer);
+
+    const mq = window.matchMedia('(max-width: 1023px)');
+    let pinned = false;
+    let headerOffset = 0;
+
+    function measureHeader() {
+      const header = document.querySelector('.ame-header-group');
+      headerOffset = header ? header.getBoundingClientRect().height : 0;
+      wrap.style.setProperty('--pdp-pinned-top', headerOffset + 'px');
+    }
+
+    function pin() {
+      if (pinned) return;
+      spacer.style.height = wrap.offsetHeight + 'px';
+      wrap.classList.add('is-pinned');
+      pinned = true;
+    }
+    function unpin() {
+      if (!pinned) return;
+      wrap.classList.remove('is-pinned');
+      wrap.style.transform = '';
+      spacer.style.height = '';
+      pinned = false;
+    }
+
+    function update() {
+      if (!mq.matches) { unpin(); return; }
+      const ctaRect = cta.getBoundingClientRect();
+      const refRect = pinned ? spacer.getBoundingClientRect() : wrap.getBoundingClientRect();
+      const scrolledPastImage = refRect.top < headerOffset;
+
+      if (!scrolledPastImage) { unpin(); return; }
+
+      pin();
+      // Empurra a imagem pra cima quando o CTA se aproxima da base, evitando sobreposição
+      const pinnedHeight = wrap.offsetHeight;
+      const pinnedBottom = headerOffset + pinnedHeight;
+      const overlap = pinnedBottom + 16 - ctaRect.top;
+      if (overlap > 0) {
+        const ty = Math.min(overlap, pinnedHeight + 16);
+        wrap.style.transform = `translateY(-${ty}px)`;
+      } else {
+        wrap.style.transform = '';
+      }
+    }
+
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { ticking = false; update(); });
+    }
+
+    function onResize() {
+      measureHeader();
+      if (pinned) spacer.style.height = wrap.offsetHeight + 'px';
+      update();
+    }
+
+    measureHeader();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+    if (mq.addEventListener) mq.addEventListener('change', onResize);
+
+    if (document.readyState === 'complete') update();
+    else window.addEventListener('load', update);
   })();
 </script>
 
@@ -1127,6 +1224,29 @@
     display: block;
     transform: scale(1.6);
     margin-top: 10px;
+  }
+
+  /* ── Imagem fixa no scroll mobile (até o botão Adicionar ao Carrinho aparecer) ── */
+  .pdp__main-img-spacer {
+    width: 100%;
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .pdp__main-img-wrap.is-pinned {
+      position: fixed;
+      top: var(--pdp-pinned-top, 0px);
+      left: 0;
+      right: 0;
+      width: 100%;
+      margin: 0;
+      border-radius: 0;
+      z-index: 50;
+      will-change: transform;
+    }
+    .pdp__main-img-wrap.is-pinned + .pdp__main-img-spacer {
+      display: block;
+    }
   }
 {% endstylesheet %}
 

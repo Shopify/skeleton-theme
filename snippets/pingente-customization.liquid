@@ -7,11 +7,40 @@
 {% endcomment %}
 
 {%- if product.tags contains 'customizacao_pingente' -%}
+  {%- liquid
+    capture pingente_metal_handle
+      if settings.pingente_metal_product != blank
+        echo settings.pingente_metal_product.handle
+      endif
+    endcapture
+
+    capture pingente_couro_handles
+      for p in settings.pingente_couro_products
+        echo p.handle
+        unless forloop.last
+          echo ','
+        endunless
+      endfor
+    endcapture
+
+    capture pingente_metal_couro_handles
+      for p in settings.pingente_metal_couro_products
+        echo p.handle
+        unless forloop.last
+          echo ','
+        endunless
+      endfor
+    endcapture
+  -%}
   <section
     class="ame-pingente"
     data-pingente
     data-coleira-title="{{ product.title | escape }}"
     data-optin-template="{{ settings.pingente_optin_message | default: '' | escape }}"
+    data-metal-handle="{{ pingente_metal_handle | strip }}"
+    data-couro-handles="{{ pingente_couro_handles | strip }}"
+    data-metal-couro-handles="{{ pingente_metal_couro_handles | strip }}"
+    data-size-map="{{ settings.pingente_size_map | default: '' | escape }}"
   >
     <header class="ame-pingente__header">
       <p class="ame-pingente__eyebrow">Personalização</p>
@@ -495,8 +524,38 @@
         'metal-couro': 'pingente-de-metal-com-couro-para-identificacao-pet-',
       };
       const TIPO_NEEDS_COURO_COLOR = { metal: false, couro: true, 'metal-couro': true };
-      const SIZE_MAP = { XPP: 'P', 'XPP+': 'P', PP: 'P', P: 'P', M: 'G', G: 'G' };
       const FORMATOS = ['Círculo', 'Coração', 'Flor', 'Osso'];
+
+      /* SIZE_MAP padrão — sobrescrito pela textarea do painel se houver */
+      const DEFAULT_SIZE_MAP = { XPP: 'P', 'XPP+': 'P', PP: 'P', P: 'P', M: 'G', G: 'G' };
+
+      function parseSizeMap(raw) {
+        const out = { ...DEFAULT_SIZE_MAP };
+        if (!raw) return out;
+        String(raw)
+          .split(/[,\n;]+/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .forEach((pair) => {
+            const [k, v] = pair.split('=').map((s) => (s || '').trim());
+            if (k && v) out[k] = v;
+          });
+        return out;
+      }
+      const SIZE_MAP = parseSizeMap(root.dataset.sizeMap);
+
+      /* Listas de produtos-pingente configuradas no painel (handles separados por vírgula) */
+      function parseHandles(raw) {
+        return String(raw || '')
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+      const CONFIGURED_HANDLES = {
+        metal: root.dataset.metalHandle ? [root.dataset.metalHandle.trim()] : [],
+        couro: parseHandles(root.dataset.couroHandles),
+        'metal-couro': parseHandles(root.dataset.metalCouroHandles),
+      };
 
       /* Ícones por formato — emojis */
       const FORMATO_ICON = {
@@ -524,9 +583,27 @@
         return parts[parts.length - 1] || '';
       }
       function buildHandle(tipo, corDoCouro) {
-        if (!TIPO_NEEDS_COURO_COLOR[tipo]) return TIPO_HANDLE_PREFIX[tipo];
+        const scope = CONFIGURED_HANDLES[tipo] || [];
+
+        // Metal universal: 1 produto sem variação por cor.
+        if (!TIPO_NEEDS_COURO_COLOR[tipo]) {
+          if (scope[0]) return scope[0];
+          return TIPO_HANDLE_PREFIX[tipo];
+        }
+
         const slug = slugify(extractLastColor(corDoCouro));
         if (!slug) return null;
+
+        // Procura primeiro dentro da lista configurada no painel: handle deve terminar
+        // com o slug da cor (precedido por '-' pra evitar match parcial).
+        if (scope.length) {
+          const suffix = '-' + slug;
+          const match = scope.find((h) => h === slug || h.endsWith(suffix));
+          if (match) return match;
+          return null; // Lista configurada mas sem match — não cai no fallback global.
+        }
+
+        // Sem lista configurada: cai no comportamento antigo (handle convencional).
         return TIPO_HANDLE_PREFIX[tipo] + slug;
       }
       function moneyFmt(cents) {
