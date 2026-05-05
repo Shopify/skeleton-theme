@@ -10,6 +10,14 @@
   assign card_url = card_product.url
   assign card_title = card_product.title
   assign card_img = card_product.featured_image
+  # Segunda imagem (hover desktop) — só renderiza se for diferente da primeira
+  assign card_img_alt_src = blank
+  if card_product.images.size > 1
+    assign second = card_product.images[1]
+    if second.id != card_img.id
+      assign card_img_alt_src = second
+    endif
+  endif
   assign card_cta_label = card_btn_label | default: 'Comprar'
 
   assign card_has_discount = false
@@ -59,7 +67,10 @@
     <div class="ame-card__image-wrap">
       {%- if card_img != blank -%}
         {%- assign card_img_alt = card_img.alt | default: card_title | escape -%}
-        {{ card_img | image_url: width: 600 | image_tag: loading: 'lazy', widths: '200, 400, 600', class: 'ame-card__img', alt: card_img_alt }}
+        {{ card_img | image_url: width: 600 | image_tag: loading: 'lazy', widths: '200, 400, 600', class: 'ame-card__img ame-card__img--primary', alt: card_img_alt }}
+        {%- if card_img_alt_src != blank -%}
+          {{ card_img_alt_src | image_url: width: 600 | image_tag: loading: 'lazy', widths: '200, 400, 600', class: 'ame-card__img ame-card__img--secondary', alt: '' }}
+        {%- endif -%}
       {%- else -%}
         {{ 'product-1' | placeholder_svg_tag: 'ame-card__img ame-card__img--placeholder' }}
       {%- endif -%}
@@ -212,13 +223,28 @@
     object-fit: cover;
     mix-blend-mode: multiply;
     opacity: 0.9;
-    transition: transform 1s var(--ease-luxury, cubic-bezier(0.22, 1, 0.36, 1));
+    transition: transform 1s var(--ease-luxury, cubic-bezier(0.22, 1, 0.36, 1)),
+                opacity 0.4s ease;
   }
   .ame-card__img--placeholder {
     opacity: 0.3;
   }
-  .ame-card:hover .ame-card__img {
+  .ame-card__img--secondary {
+    opacity: 0;
+  }
+  .ame-card:hover .ame-card__img--primary {
     transform: scale(1.05);
+  }
+
+  /* Hover-swap só em devices com mouse real (desktop) */
+  @media (hover: hover) and (pointer: fine) {
+    .ame-card:hover .ame-card__img--primary {
+      opacity: 0;
+    }
+    .ame-card:hover .ame-card__img--secondary {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
   }
 
   /* Badge de desconto — top-left */

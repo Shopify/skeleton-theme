@@ -764,6 +764,29 @@
         return sel;
       }
 
+      /* ── Coleira completa? Esconde/exibe a section toda em função disso ── */
+      function isColeiraComplete() {
+        const groups = document.querySelectorAll('#pdp-options-wrap [data-option-index]');
+        if (!groups.length) return true;
+        return Array.from(groups).every((g) =>
+          g.querySelector('.pdp__swatch--active, .pdp__size-btn--active')
+        );
+      }
+      function syncVisibility() {
+        const ok = isColeiraComplete();
+        root.hidden = !ok;
+        if (!ok) {
+          // Reset estado do pingente se a coleira virou incompleta
+          state.opted = false;
+          state.tipo = null;
+          state.formato = null;
+          state.product = null;
+          state.variant = null;
+          updateOverlay();
+        }
+      }
+      syncVisibility();
+
       function setStatus(msg, isError) {
         if (!statusEl) return;
         statusEl.textContent = msg || '';
@@ -1001,6 +1024,8 @@
 
       /* ── Re-validar quando variante da coleira muda ── */
       document.addEventListener('pdp:variant-changed', () => {
+        syncVisibility();
+        if (root.hidden) return;
         loadPriceRange();
         if (!state.opted) return;
         loadTipoThumbs();

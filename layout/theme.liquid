@@ -77,6 +77,65 @@
         });
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeCart(); });
 
+        /* ── Arrastar pra baixo pra fechar (mobile) ──
+           Ativo no header e na barrinha (handle). No body, o scroll natural cuida.
+           Fecha se arrasto > 30% da altura ou velocidade > 0.5 px/ms. */
+        (() => {
+          const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
+          let startY = 0;
+          let startT = 0;
+          let dragging = false;
+          let dragHeight = 0;
+
+          function onTouchStart(e) {
+            if (!isMobile()) return;
+            const d = drawer();
+            if (!d || !d.classList.contains('is-open')) return;
+            // Só ativa quando o toque inicia no header ou na barrinha
+            if (!e.target.closest('.ame-cart-drawer__header, .ame-cart-drawer__handle')) return;
+            // Ignora se o toque foi no botão de fechar (clique normal cuida disso)
+            if (e.target.closest('[data-cart-close]')) return;
+            startY = e.touches[0].clientY;
+            startT = Date.now();
+            dragHeight = d.getBoundingClientRect().height;
+            dragging = true;
+            d.style.transition = 'none';
+          }
+
+          function onTouchMove(e) {
+            if (!dragging) return;
+            const dy = e.touches[0].clientY - startY;
+            if (dy <= 0) { drawer().style.transform = ''; return; } // ignora drag pra cima
+            e.preventDefault();
+            drawer().style.transform = `translateY(${dy}px)`;
+          }
+
+          function onTouchEnd(e) {
+            if (!dragging) return;
+            dragging = false;
+            const d = drawer();
+            const dy = (e.changedTouches[0].clientY - startY);
+            const elapsed = Date.now() - startT;
+            const velocity = dy / Math.max(1, elapsed);
+            d.style.transition = '';
+            d.style.transform = '';
+            if (dy > dragHeight * 0.3 || velocity > 0.5) {
+              closeCart();
+            }
+          }
+
+          document.addEventListener('touchstart', onTouchStart, { passive: true });
+          document.addEventListener('touchmove', onTouchMove, { passive: false });
+          document.addEventListener('touchend', onTouchEnd, { passive: true });
+          document.addEventListener('touchcancel', () => {
+            if (!dragging) return;
+            dragging = false;
+            const d = drawer();
+            d.style.transition = '';
+            d.style.transform = '';
+          }, { passive: true });
+        })();
+
         let _cartUpdating = false;
         let _discountCode = '';
 

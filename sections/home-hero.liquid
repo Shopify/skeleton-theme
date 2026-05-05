@@ -1,9 +1,22 @@
 {% comment %} Home Hero — editorial assimétrico {% endcomment %}
 
 {%- liquid
+  # Prioridade: vídeo nativo (Shopify-hosted) → URL do YouTube (legacy) → imagem fallback
+  assign hero_native_video = section.settings.video
+  assign hero_native_src = ''
+  if hero_native_video != blank and hero_native_video.sources.size > 0
+    assign hero_native_src = hero_native_video.sources[0].url
+    for s in hero_native_video.sources
+      if s.format == 'mp4' and s.height >= 720
+        assign hero_native_src = s.url
+        break
+      endif
+    endfor
+  endif
+
   assign hero_video_id = ''
   assign hero_video_url = section.settings.video_url
-  if hero_video_url != blank
+  if hero_native_src == '' and hero_video_url != blank
     assign hero_video_str = hero_video_url | downcase
     if hero_video_str contains 'youtube.com/watch'
       assign hero_video_id = hero_video_url | split: 'v=' | last | split: '&' | first
@@ -17,10 +30,22 @@
 
   <!-- Fundo (lado direito): vídeo ou imagem -->
   <div class="ame-hero__bg">
-    {%- if hero_video_id != '' -%}
+    {%- if hero_native_src != '' -%}
+      <video
+        class="ame-hero__bg-video"
+        src="{{ hero_native_src }}"
+        {%- if hero_native_video.preview_image != blank %} poster="{{ hero_native_video.preview_image | image_url: width: 1600 }}"{% endif -%}
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-hidden="true"
+      ></video>
+    {%- elsif hero_video_id != '' -%}
       <iframe
         class="ame-hero__bg-video"
-        src="https://www.youtube.com/embed/{{ hero_video_id }}?autoplay=1&mute=1&loop=1&playlist={{ hero_video_id }}&controls=0&disablekb=1&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&fs=0"
+        src="https://www.youtube-nocookie.com/embed/{{ hero_video_id }}?autoplay=1&mute=1&loop=1&playlist={{ hero_video_id }}&controls=0&disablekb=1&modestbranding=1&playsinline=1&rel=0&iv_load_policy=3&fs=0"
         frameborder="0"
         allow="autoplay; encrypted-media"
         allowfullscreen
@@ -328,10 +353,16 @@
   "tag": "section",
   "settings": [
     {
+      "type": "video",
+      "id": "video",
+      "label": "Vídeo de fundo (Shopify)",
+      "info": "Faça upload de um vídeo (recomendado: MP4, ≤ 50MB, ≥ 720p). Tem prioridade sobre o YouTube."
+    },
+    {
       "type": "text",
       "id": "video_url",
-      "label": "URL do vídeo (YouTube)",
-      "info": "Cole a URL do YouTube. O vídeo substitui a imagem quando preenchido."
+      "label": "URL do vídeo (YouTube — fallback)",
+      "info": "Usado apenas se nenhum vídeo for enviado acima."
     },
     {
       "type": "image_picker",
