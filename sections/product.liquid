@@ -440,15 +440,20 @@
       {%- render 'pingente-customization', product: product -%}
 
       <!-- ── Campos Personalizados ── -->
-      {%- for cf_tag_item in product.tags -%}
-        {%- for cf_i in (1..10) -%}
-          {%- liquid
-            assign cf_en_key = 'custom_field_' | append: cf_i | append: '_enable'
-            assign cf_tag_key = 'custom_field_' | append: cf_i | append: '_tag'
-            assign cf_enabled = settings[cf_en_key]
-            assign cf_cfg_tag = settings[cf_tag_key]
-          -%}
-          {%- if cf_enabled and cf_cfg_tag == cf_tag_item -%}
+      {%- for cf_i in (1..10) -%}
+        {%- liquid
+          assign cf_en_key = 'custom_field_' | append: cf_i | append: '_enable'
+          assign cf_tag_key = 'custom_field_' | append: cf_i | append: '_tag'
+          assign cf_enabled = settings[cf_en_key]
+          assign cf_cfg_tag = settings[cf_tag_key]
+        -%}
+        {%- if cf_enabled and product.tags contains cf_cfg_tag -%}
+          {%- comment -%}
+            ⚡ Bolt: Optimize Custom Fields Loop
+            💡 What: Replaced nested loop with a single loop and `contains` array check.
+            🎯 Why: Iterating over `product.tags` and `(1..10)` causes O(M*N) overhead. `contains` reduces iterations to exactly 10.
+            📊 Impact: Reduces iteration overhead from O(M*N) to O(N).
+          {%- endcomment -%}
             {%- liquid
               assign cf_nm_key = 'custom_field_' | append: cf_i | append: '_name'
               assign cf_tt_key = 'custom_field_' | append: cf_i | append: '_title'
@@ -560,7 +565,6 @@
             </div>
           {%- endif -%}
         {%- endfor -%}
-      {%- endfor -%}
 
       <!-- Quantidade -->
       <div class="pdp__qty">
