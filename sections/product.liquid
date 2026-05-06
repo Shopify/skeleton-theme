@@ -532,8 +532,15 @@
                   maxlength="{{ cf_limiter }}"
                 {% endif %}
               >
-              {%- if cf_helper != blank -%}
-                <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
+              {%- if cf_helper != blank or cf_limiter != blank -%}
+                <div class="pdp__custom-field__footer">
+                  {%- if cf_helper != blank -%}
+                    <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
+                  {%- endif -%}
+                  {%- if cf_limiter != blank -%}
+                    <span class="pdp__custom-field__counter" data-cf-counter data-cf-max="{{ cf_limiter }}" aria-live="polite">0 / {{ cf_limiter }}</span>
+                  {%- endif -%}
+                </div>
               {%- endif -%}
               {%- if cf_req -%}
                 <p class="pdp__custom-field__error-msg">Este campo é obrigatório.</p>
@@ -558,8 +565,15 @@
                 {% endif %}
                 rows="3"
               ></textarea>
-              {%- if cf_helper != blank -%}
-                <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
+              {%- if cf_helper != blank or cf_limiter != blank -%}
+                <div class="pdp__custom-field__footer">
+                  {%- if cf_helper != blank -%}
+                    <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
+                  {%- endif -%}
+                  {%- if cf_limiter != blank -%}
+                    <span class="pdp__custom-field__counter" data-cf-counter data-cf-max="{{ cf_limiter }}" aria-live="polite">0 / {{ cf_limiter }}</span>
+                  {%- endif -%}
+                </div>
               {%- endif -%}
               {%- if cf_req -%}
                 <p class="pdp__custom-field__error-msg">Este campo é obrigatório.</p>
@@ -987,6 +1001,23 @@
       });
     });
 
+    /* ── Contador de caracteres dos campos personalizados ── */
+    document.querySelectorAll('.pdp__custom-field [data-cf-counter]').forEach(counter => {
+      const max = parseInt(counter.dataset.cfMax, 10) || 0;
+      if (!max) return;
+      const wrap = counter.closest('.pdp__custom-field');
+      const field = wrap?.querySelector('input[maxlength], textarea[maxlength]');
+      if (!field) return;
+      const update = () => {
+        const len = field.value.length;
+        counter.textContent = `${len} / ${max}`;
+        counter.classList.toggle('is-near', len >= max * 0.8 && len < max);
+        counter.classList.toggle('is-full', len >= max);
+      };
+      field.addEventListener('input', update);
+      update();
+    });
+
     document.getElementById('pdp-form')?.addEventListener('input', e => {
       if (e.target.dataset.cfRequired) {
         e.target.closest('.pdp__custom-field')?.classList.remove('pdp__custom-field--error');
@@ -1256,6 +1287,37 @@
     color: var(--color-on-surface-variant, #4f4442);
     opacity: 0.7;
     margin: 0;
+  }
+
+  .pdp__custom-field__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .pdp__custom-field__footer .pdp__custom-field__helper {
+    flex: 1;
+  }
+
+  .pdp__custom-field__counter {
+    font-family: var(--font-primary--family, 'Lexend', sans-serif);
+    font-size: 0.6875rem;
+    color: var(--color-on-surface-variant, #4f4442);
+    opacity: 0.55;
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    transition: color 0.2s ease, opacity 0.2s ease;
+  }
+  .pdp__custom-field__counter.is-near {
+    opacity: 1;
+    color: var(--color-primary, #5a4742);
+  }
+  .pdp__custom-field__counter.is-full {
+    opacity: 1;
+    color: #c0392b;
+    font-weight: 600;
   }
 
   .pdp__custom-field__radio-group {
