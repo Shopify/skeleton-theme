@@ -261,19 +261,26 @@
     transform: scale(1.05);
   }
 
-  /* Hover-swap só em devices com mouse real (desktop) */
+  /* Hover-swap só em devices com mouse real (desktop).
+     visibility: hidden garante que a secundária não renderize no idle (evita
+     resíduos de mix-blend-mode em alguns browsers); o delay no transition mantém
+     o crossfade suave ao sair do hover. */
   @media (hover: hover) and (pointer: fine) {
     .ame-card__img--secondary {
       display: block;
       opacity: 0;
+      visibility: hidden;
       z-index: 2;
+      transition: opacity 0.4s ease, transform 1s var(--ease-luxury, cubic-bezier(0.22, 1, 0.36, 1)), visibility 0s 0.4s;
     }
     .ame-card:hover .ame-card__img--primary {
       opacity: 0;
     }
     .ame-card:hover .ame-card__img--secondary {
       opacity: 0.9;
+      visibility: visible;
       transform: scale(1.05);
+      transition: opacity 0.4s ease, transform 1s var(--ease-luxury, cubic-bezier(0.22, 1, 0.36, 1)), visibility 0s 0s;
     }
   }
 

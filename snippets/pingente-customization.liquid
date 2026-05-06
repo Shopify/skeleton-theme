@@ -124,12 +124,18 @@
       <div class="ame-pingente__field">
         <label for="ame-pingente-pet"> Nome do pet <span class="ame-pingente__req" aria-hidden="true">*</span> </label>
         <input type="text" id="ame-pingente-pet" data-pingente-pet maxlength="20" autocomplete="off" required>
-        <p class="ame-pingente__error" data-pingente-error-pet>Informe o nome do pet.</p>
+        <div class="ame-pingente__field-footer">
+          <p class="ame-pingente__error" data-pingente-error-pet>Informe o nome do pet.</p>
+          <span class="ame-pingente__counter" data-pingente-counter data-max="20" aria-live="polite">0 / 20</span>
+        </div>
       </div>
 
       <div class="ame-pingente__field">
         <label for="ame-pingente-tutor">Nome do tutor</label>
         <input type="text" id="ame-pingente-tutor" data-pingente-tutor maxlength="40" autocomplete="off">
+        <div class="ame-pingente__field-footer">
+          <span class="ame-pingente__counter" data-pingente-counter data-max="40" aria-live="polite">0 / 40</span>
+        </div>
       </div>
 
       <div class="ame-pingente__field">
@@ -499,6 +505,36 @@
     .ame-pingente__field.is-invalid input,
     .ame-pingente__field.is-invalid textarea {
       border-color: #c0392b;
+    }
+
+    .ame-pingente__field-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+    .ame-pingente__field-footer .ame-pingente__error {
+      flex: 1;
+    }
+    .ame-pingente__counter {
+      font-family: var(--font-primary--family, 'Lexend', sans-serif);
+      font-size: 0.6875rem;
+      color: var(--color-on-surface-variant, #4f4442);
+      opacity: 0.55;
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+    .ame-pingente__counter.is-near {
+      opacity: 1;
+      color: var(--color-primary, #5a4742);
+    }
+    .ame-pingente__counter.is-full {
+      opacity: 1;
+      color: #c0392b;
+      font-weight: 600;
     }
 
     .ame-pingente__status {
@@ -1040,6 +1076,22 @@
           petInput.closest('.ame-pingente__field')?.classList.remove('is-invalid');
         });
       }
+
+      /* ── Contador de caracteres ── */
+      root.querySelectorAll('[data-pingente-counter]').forEach((counter) => {
+        const max = parseInt(counter.dataset.max, 10) || 0;
+        if (!max) return;
+        const field = counter.closest('.ame-pingente__field')?.querySelector('input, textarea');
+        if (!field) return;
+        const update = () => {
+          const len = field.value.length;
+          counter.textContent = `${len} / ${max}`;
+          counter.classList.toggle('is-near', len >= max * 0.8 && len < max);
+          counter.classList.toggle('is-full', len >= max);
+        };
+        field.addEventListener('input', update);
+        update();
+      });
 
       /* ── Re-validar quando variante da coleira muda ── */
       document.addEventListener('pdp:variant-changed', () => {
