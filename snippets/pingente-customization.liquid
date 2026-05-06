@@ -122,7 +122,10 @@
       <p class="ame-pingente__step-label">Informações para gravação</p>
 
       <div class="ame-pingente__field">
-        <label for="ame-pingente-pet"> Nome do pet <span class="ame-pingente__req" aria-hidden="true">*</span> </label>
+        <label for="ame-pingente-pet">
+          Nome do pet <span class="ame-pingente__req" aria-hidden="true">*</span>
+          <span class="ame-pingente-aviso">frente do pingente</span>
+        </label>
         <div class="ame-pingente__input-wrap">
           <input
             type="text"
@@ -139,7 +142,9 @@
       </div>
 
       <div class="ame-pingente__field">
-        <label for="ame-pingente-tutor">Nome do tutor</label>
+        <label for="ame-pingente-tutor"
+          >Nome do tutor <span class="ame-pingente-aviso">verso do pingente 1ª linha</span></label
+        >
         <div class="ame-pingente__input-wrap">
           <input
             type="text"
@@ -149,12 +154,14 @@
             maxlength="40"
             autocomplete="off"
           >
-          <span class="ame-pingente__counter" data-pingente-counter data-max="40" aria-live="polite">0 / 40</span>
+          <span class="ame-pingente__counter" data-pingente-counter data-max="20" aria-live="polite">0 / 20</span>
         </div>
       </div>
 
       <div class="ame-pingente__field">
-        <label for="ame-pingente-tel">Telefone do tutor</label>
+        <label for="ame-pingente-tel"
+          >Telefone do tutor <span class="ame-pingente-aviso">verso do pingente 2ª linha</span></label
+        >
         <input
           type="tel"
           id="ame-pingente-tel"
@@ -520,6 +527,20 @@
     .ame-pingente__field.is-invalid input,
     .ame-pingente__field.is-invalid textarea {
       border-color: #c0392b;
+    }
+
+    /* Flash visual quando o cliente tenta adicionar ao carrinho sem completar */
+    .ame-pingente__step.is-invalid {
+      animation: amePingenteShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+    .ame-pingente__step.is-invalid .ame-pingente__step-label {
+      color: #c0392b;
+    }
+    @keyframes amePingenteShake {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(3px); }
+      30%, 50%, 70% { transform: translateX(-5px); }
+      40%, 60% { transform: translateX(5px); }
     }
 
     .ame-pingente__input-wrap {
@@ -1131,13 +1152,39 @@
         },
         validate() {
           if (!state.opted) return { ok: true };
-          if (!state.tipo) return { ok: false, msg: 'Selecione o tipo do pingente.' };
-          if (!state.formato) return { ok: false, msg: 'Selecione o formato do pingente.' };
-          if (!state.variant) return { ok: false, msg: 'Combinação do pingente não está disponível.' };
+
+          const headerH = document.querySelector('.ame-header-group')?.getBoundingClientRect().height || 0;
+          const scrollTo = (el) => {
+            if (!el) return;
+            const top = el.getBoundingClientRect().top + window.scrollY - headerH - 16;
+            window.scrollTo({ top, behavior: 'smooth' });
+          };
+          const flashStep = (n) => {
+            const step = root.querySelector(`[data-pingente-step="${n}"]`);
+            if (!step) return null;
+            step.classList.add('is-invalid');
+            setTimeout(() => step.classList.remove('is-invalid'), 1600);
+            return step;
+          };
+
+          if (!state.tipo) {
+            scrollTo(flashStep(2));
+            return { ok: false, msg: 'Selecione o tipo do pingente.' };
+          }
+          if (!state.formato) {
+            scrollTo(flashStep(3));
+            return { ok: false, msg: 'Selecione o formato do pingente.' };
+          }
+          if (!state.variant) {
+            scrollTo(flashStep(2));
+            return { ok: false, msg: 'Combinação do pingente não está disponível.' };
+          }
           const pet = petInput?.value.trim() || '';
           if (!pet) {
-            petInput?.closest('.ame-pingente__field')?.classList.add('is-invalid');
-            petInput?.focus();
+            const field = petInput?.closest('.ame-pingente__field');
+            field?.classList.add('is-invalid');
+            scrollTo(field);
+            setTimeout(() => petInput?.focus({ preventScroll: true }), 350);
             return { ok: false, msg: 'Informe o nome do pet.' };
           }
           return { ok: true };

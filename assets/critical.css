@@ -2713,3 +2713,8 @@ shopify-account {
   outline: 2px solid var(--color-primary, #5a4742);
   outline-offset: 2px;
 }
+
+.ame-pingente-aviso {
+  font-size: 0.75rem;
+  color: rgba(90, 71, 66, 0.5);
+}

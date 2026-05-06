@@ -1011,6 +1011,8 @@
       if (!r.ok) showSelectionToast(r.msg);
       return r.ok;
     };
+    // Toast público — usado também pelo snippet do pingente
+    window.AmePdpToast = showSelectionToast;
 
     /* ── Campos Personalizados — radio ── */
     document.querySelectorAll('.pdp__custom-field__radio-btn').forEach(btn => {
@@ -1075,7 +1077,7 @@
       if (window.amePingente?.isActive()) {
         const pv = window.amePingente.validate();
         if (!pv.ok) {
-          alert(pv.msg);
+          (window.AmePdpToast || ((m) => alert(m)))(pv.msg);
           return;
         }
       }
