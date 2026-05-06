@@ -549,7 +549,13 @@
                     <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
                   {%- endif -%}
                   {%- if cf_limiter != blank -%}
-                    <span class="pdp__custom-field__counter" data-cf-counter data-cf-max="{{ cf_limiter }}" aria-live="polite">0 / {{ cf_limiter }}</span>
+                    <span
+                      class="pdp__custom-field__counter"
+                      data-cf-counter
+                      data-cf-max="{{ cf_limiter }}"
+                      aria-live="polite"
+                      >0 / {{ cf_limiter -}}
+                    </span>
                   {%- endif -%}
                 </div>
               {%- endif -%}
@@ -582,7 +588,13 @@
                     <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
                   {%- endif -%}
                   {%- if cf_limiter != blank -%}
-                    <span class="pdp__custom-field__counter" data-cf-counter data-cf-max="{{ cf_limiter }}" aria-live="polite">0 / {{ cf_limiter }}</span>
+                    <span
+                      class="pdp__custom-field__counter"
+                      data-cf-counter
+                      data-cf-max="{{ cf_limiter }}"
+                      aria-live="polite"
+                      >0 / {{ cf_limiter -}}
+                    </span>
                   {%- endif -%}
                 </div>
               {%- endif -%}
@@ -1575,15 +1587,16 @@
       right: 0;
       width: 100%;
       margin: 0;
-      padding: 0.625rem 0.75rem 0;
+      /*padding: 0.625rem 0.75rem 0;*/
+      padding: 0 0.75rem 0;
       z-index: 50;
       will-change: transform;
       background: var(--color-surface, #fff8f3);
-      box-shadow: 0 8px 16px rgba(32, 27, 20, 0.08);
+      /*box-shadow: 0 8px 16px rgba(32, 27, 20, 0.08);*/
     }
     /* Imagem fica quadrada com borda lateral + sombra (efeito de flutuar) */
     .pdp__sticky-wrap.is-pinned .pdp__main-img-wrap {
-      width: min(100%, 38vh);
+      /*width: min(100%, 38vh);*/
       aspect-ratio: 1 / 1;
       height: auto;
       margin: 0 auto;
@@ -1592,8 +1605,8 @@
     }
     /* Pingente sobreposto reposicionado para acompanhar a imagem encolhida */
     .pdp__sticky-wrap.is-pinned .pdp__pingente-overlay {
-      bottom: 2%;
-      width: 25%;
+      bottom: 5%;
+      width: 30%;
     }
     .pdp__sticky-wrap.is-pinned + .pdp__main-img-spacer {
       display: block;
@@ -1642,7 +1655,7 @@
       "info": "Aparece apenas no mobile, após o cliente escolher pelo menos uma variação.",
       "options": [
         { "value": "below", "label": "Abaixo da imagem" },
-        { "value": "over",  "label": "Sobre o topo da imagem" }
+        { "value": "over", "label": "Sobre o topo da imagem" }
       ],
       "default": "below"
     },
