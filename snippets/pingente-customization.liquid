@@ -123,17 +123,32 @@
 
       <div class="ame-pingente__field">
         <label for="ame-pingente-pet"> Nome do pet <span class="ame-pingente__req" aria-hidden="true">*</span> </label>
-        <input type="text" id="ame-pingente-pet" data-pingente-pet maxlength="20" autocomplete="off" required>
-        <div class="ame-pingente__field-footer">
-          <p class="ame-pingente__error" data-pingente-error-pet>Informe o nome do pet.</p>
+        <div class="ame-pingente__input-wrap">
+          <input
+            type="text"
+            id="ame-pingente-pet"
+            data-pingente-pet
+            placeholder="Ex: Marley"
+            maxlength="20"
+            autocomplete="off"
+            required
+          >
           <span class="ame-pingente__counter" data-pingente-counter data-max="20" aria-live="polite">0 / 20</span>
         </div>
+        <p class="ame-pingente__error" data-pingente-error-pet>Informe o nome do pet.</p>
       </div>
 
       <div class="ame-pingente__field">
         <label for="ame-pingente-tutor">Nome do tutor</label>
-        <input type="text" id="ame-pingente-tutor" data-pingente-tutor maxlength="40" autocomplete="off">
-        <div class="ame-pingente__field-footer">
+        <div class="ame-pingente__input-wrap">
+          <input
+            type="text"
+            id="ame-pingente-tutor"
+            data-pingente-tutor
+            placeholder="Ex: Maria Silva"
+            maxlength="40"
+            autocomplete="off"
+          >
           <span class="ame-pingente__counter" data-pingente-counter data-max="40" aria-live="polite">0 / 40</span>
         </div>
       </div>
@@ -507,22 +522,22 @@
       border-color: #c0392b;
     }
 
-    .ame-pingente__field-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 0.5rem;
-      margin-top: 0.25rem;
+    .ame-pingente__input-wrap {
+      position: relative;
     }
-    .ame-pingente__field-footer .ame-pingente__error {
-      flex: 1;
+    .ame-pingente__input-wrap input {
+      padding-right: 3.5rem; /* reserva espaço pro contador */
     }
     .ame-pingente__counter {
+      position: absolute;
+      right: 0.875rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
       font-family: var(--font-primary--family, 'Lexend', sans-serif);
       font-size: 0.6875rem;
       color: var(--color-on-surface-variant, #4f4442);
       opacity: 0.55;
-      margin-left: auto;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
       transition: color 0.2s ease, opacity 0.2s ease;
@@ -804,9 +819,7 @@
       function isColeiraComplete() {
         const groups = document.querySelectorAll('#pdp-options-wrap [data-option-index]');
         if (!groups.length) return true;
-        return Array.from(groups).every((g) =>
-          g.querySelector('.pdp__swatch--active, .pdp__size-btn--active')
-        );
+        return Array.from(groups).every((g) => g.querySelector('.pdp__swatch--active, .pdp__size-btn--active'));
       }
       function syncVisibility() {
         const ok = isColeiraComplete();
