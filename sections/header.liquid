@@ -474,8 +474,14 @@
         const img = p.featured_image?.url || p.image || '';
         const title = escapeHTML(p.title || '');
         const url = p.url || '#';
-        const priceCents = p.price_min ?? p.price ?? 0;
-        const compareCents = p.compare_at_price_min ?? p.compare_at_price ?? 0;
+        // /search/suggest.json devolve price como string em reais ("60.00") — converter para centavos.
+        const toCents = (v) => {
+          if (v == null || v === '') return 0;
+          if (typeof v === 'number') return v;
+          return Math.round(parseFloat(String(v).replace(',', '.')) * 100) || 0;
+        };
+        const priceCents = toCents(p.price_min ?? p.price);
+        const compareCents = toCents(p.compare_at_price_min ?? p.compare_at_price);
         const hasCompare = compareCents > priceCents;
         return `
           <a class="ame-predictive__item" href="${escapeHTML(url)}">

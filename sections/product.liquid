@@ -70,8 +70,9 @@
 <div class="pdp full-width">
   <!-- ── Coluna esquerda: galeria ── -->
   <div class="pdp__gallery">
+    {%- assign selection_pos = section.settings.selection_info_position | default: 'below' -%}
     <!-- Wrapper sticky no mobile: imagem + barra de seleção compactam juntas -->
-    <div class="pdp__sticky-wrap">
+    <div class="pdp__sticky-wrap pdp__sticky-wrap--selection-{{ selection_pos }}">
       <!-- Imagem principal -->
       <div class="pdp__main-img-wrap">
         {%- if media_size > 0 -%}
@@ -160,13 +161,23 @@
             {%- comment -%} theme-check-enable AssetUrl {%- endcomment -%}
           </div>
         {%- endif -%}
+
+        {%- if selection_pos == 'over' -%}
+          <!-- Resumo sobre a imagem (overlay no topo) -->
+          <div class="pdp__selection-info" data-selection-info hidden aria-live="polite">
+            <span class="pdp__selection-info__label">Você selecionou:</span>
+            <span class="pdp__selection-info__values" data-selection-info-values></span>
+          </div>
+        {%- endif -%}
       </div>
 
-      <!-- Resumo das variações escolhidas (mobile, abaixo da imagem — vira parte do sticky) -->
-      <div class="pdp__selection-info" data-selection-info hidden aria-live="polite">
-        <span class="pdp__selection-info__label">Você selecionou:</span>
-        <span class="pdp__selection-info__values" data-selection-info-values></span>
-      </div>
+      {%- if selection_pos != 'over' -%}
+        <!-- Resumo abaixo da imagem (padrão) -->
+        <div class="pdp__selection-info" data-selection-info hidden aria-live="polite">
+          <span class="pdp__selection-info__label">Você selecionou:</span>
+          <span class="pdp__selection-info__values" data-selection-info-values></span>
+        </div>
+      {%- endif -%}
     </div>
     <!-- /pdp__sticky-wrap -->
 
@@ -1474,6 +1485,24 @@
     }
   }
 
+  /* Variante "over" — texto sobreposto no topo da imagem (libera espaço da tela) */
+  .pdp__sticky-wrap--selection-over .pdp__main-img-wrap > .pdp__selection-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    padding: 0.625rem 1rem 1.5rem;
+    background: linear-gradient(to bottom, rgba(32, 27, 20, 0.7) 0%, rgba(32, 27, 20, 0.35) 60%, transparent 100%);
+    color: #fff;
+    border-top: none;
+    pointer-events: none;
+    opacity: 1;
+  }
+  .pdp__sticky-wrap--selection-over .pdp__main-img-wrap > .pdp__selection-info .pdp__selection-info__label {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
   /* ── Validação: opções não selecionadas no clique do CTA ── */
   .pdp__option--invalid {
     border-radius: var(--radius-md, 4px);
@@ -1546,17 +1575,20 @@
       right: 0;
       width: 100%;
       margin: 0;
+      padding: 0.625rem 0.75rem 0;
       z-index: 50;
       will-change: transform;
       background: var(--color-surface, #fff8f3);
       box-shadow: 0 8px 16px rgba(32, 27, 20, 0.08);
     }
-    /* Imagem encolhe quando pinada para liberar mais espaço da tela */
+    /* Imagem fica quadrada com borda lateral + sombra (efeito de flutuar) */
     .pdp__sticky-wrap.is-pinned .pdp__main-img-wrap {
-      aspect-ratio: auto;
-      height: 38vh;
-      border-radius: 0;
-      margin: 0;
+      width: min(100%, 38vh);
+      aspect-ratio: 1 / 1;
+      height: auto;
+      margin: 0 auto;
+      border-radius: var(--radius-lg, 0.75rem);
+      box-shadow: 0 10px 24px rgba(32, 27, 20, 0.18);
     }
     /* Pingente sobreposto reposicionado para acompanhar a imagem encolhida */
     .pdp__sticky-wrap.is-pinned .pdp__pingente-overlay {
@@ -1598,6 +1630,21 @@
       "id": "pdp_btn_fg_color",
       "label": "Cor do texto do botão",
       "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Resumo de variações (mobile)"
+    },
+    {
+      "type": "select",
+      "id": "selection_info_position",
+      "label": "Posição do resumo \"Você selecionou: ...\"",
+      "info": "Aparece apenas no mobile, após o cliente escolher pelo menos uma variação.",
+      "options": [
+        { "value": "below", "label": "Abaixo da imagem" },
+        { "value": "over",  "label": "Sobre o topo da imagem" }
+      ],
+      "default": "below"
     },
     {
       "type": "header",

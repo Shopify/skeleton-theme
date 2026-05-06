@@ -1336,11 +1336,12 @@ body::after {
 /* ── Header principal ── */
 .ame-header {
   width: 100%;
-  height: 5rem;
+  min-height: 5rem;
+  /* Estende o background até a safe-area (Dynamic Island / notch do iPhone) */
+  padding: env(safe-area-inset-top, 0) var(--page-margin, 20px) 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--page-margin, 20px);
 
   /* Glassmorphism */
   background: rgba(255, 248, 243, 0.55);
@@ -1640,6 +1641,16 @@ shopify-account {
 
 .ame-header__search-input::placeholder {
   color: rgba(90, 71, 66, 0.35);
+}
+
+/* Esconde o "X" nativo do <input type="search"> em Chrome/Safari/Edge — já temos botão próprio */
+.ame-header__search-input::-webkit-search-cancel-button,
+.ame-header__search-input::-webkit-search-decoration,
+.ame-search-form__input::-webkit-search-cancel-button,
+.ame-search-form__input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
 }
 
 .ame-header__search-close {
