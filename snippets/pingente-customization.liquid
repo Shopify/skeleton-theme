@@ -897,6 +897,36 @@
         };
       }
 
+      /**
+       * Lista de tamanhos a tentar, na ordem: mapeamento custom do painel → fallback default (P/G).
+       * Permite que pingentes com menos tamanhos (ex: só P/G) continuem funcionando mesmo quando
+       * o lojista mapeou a coleira para um tamanho mais granular (ex: XPP → XPP) que só existe
+       * em alguns produtos-pingente.
+       */
+      function tamanhoCandidates(coleiraTamanho) {
+        if (!coleiraTamanho) return [null];
+        const out = [];
+        const custom = SIZE_MAP[coleiraTamanho];
+        const fallback = DEFAULT_SIZE_MAP[coleiraTamanho];
+        if (custom) out.push(custom);
+        if (fallback && !out.includes(fallback)) out.push(fallback);
+        return out.length ? out : [null];
+      }
+
+      /** Acha a primeira variante disponível que case formato + cor do metal + um dos tamanhos candidatos */
+      function findAvailableVariant(formato, idx, targetMetal, candidates) {
+        for (const tamanho of candidates) {
+          const v = state.product.variants.find((vv) => {
+            if (vv[`option${idx.formato + 1}`] !== formato) return false;
+            if (idx.corMetal !== -1 && targetMetal && vv[`option${idx.corMetal + 1}`] !== targetMetal) return false;
+            if (idx.tamanho !== -1 && tamanho && vv[`option${idx.tamanho + 1}`] !== tamanho) return false;
+            return true;
+          });
+          if (v && v.available) return v;
+        }
+        return null;
+      }
+
       function renderFormatos() {
         if (!state.product || !formatoGrid) return;
         const idx = getOptionIndexes(state.product);
@@ -913,20 +943,14 @@
 
         const coleira = readColeiraSelection();
         const targetMetal = coleira.corMetal;
-        const targetTamanho = SIZE_MAP[coleira.tamanho] || null;
+        const candidates = tamanhoCandidates(coleira.tamanho);
 
         const html = FORMATOS.map((formato) => {
-          // Preferido: variante com formato + cor do metal certa
-          let variant = state.product.variants.find((v) => {
-            if (v[`option${idx.formato + 1}`] !== formato) return false;
-            if (idx.corMetal !== -1 && targetMetal && v[`option${idx.corMetal + 1}`] !== targetMetal) return false;
-            if (idx.tamanho !== -1 && targetTamanho && v[`option${idx.tamanho + 1}`] !== targetTamanho) return false;
-            return true;
-          });
-          // Fallback: qualquer variante com esse formato (pra mostrar a imagem mesmo se indisponível)
+          const variant = findAvailableVariant(formato, idx, targetMetal, candidates);
+          // Fallback display: qualquer variante com esse formato (pra mostrar mesmo indisponível)
           const anyVariantOfFormato = state.product.variants.find((v) => v[`option${idx.formato + 1}`] === formato);
           const displayVariant = variant || anyVariantOfFormato;
-          const available = !!variant && variant.available;
+          const available = !!variant;
 
           const icon = FORMATO_ICON[formato] || '';
 
@@ -978,16 +1002,11 @@
         const idx = getOptionIndexes(state.product);
         const coleira = readColeiraSelection();
         const targetMetal = coleira.corMetal;
-        const targetTamanho = SIZE_MAP[coleira.tamanho];
+        const candidates = tamanhoCandidates(coleira.tamanho);
 
-        const variant = state.product.variants.find((v) => {
-          if (v[`option${idx.formato + 1}`] !== state.formato) return false;
-          if (idx.corMetal !== -1 && targetMetal && v[`option${idx.corMetal + 1}`] !== targetMetal) return false;
-          if (idx.tamanho !== -1 && targetTamanho && v[`option${idx.tamanho + 1}`] !== targetTamanho) return false;
-          return true;
-        });
+        const variant = findAvailableVariant(state.formato, idx, targetMetal, candidates);
 
-        if (!variant || !variant.available) {
+        if (!variant) {
           setStatus('Combinação de pingente indisponível (cor do metal ou tamanho).', true);
           state.variant = null;
           step4.hidden = true;
