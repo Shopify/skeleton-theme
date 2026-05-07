@@ -21,3 +21,8 @@
 **Vulnerability:** Unsanitized variable `article.author` was passed to a Shopify translation string ending in `_html` in `sections/article.liquid` and `sections/blog.liquid`.
 **Learning:** Shopify localizations with keys ending in `_html` output raw HTML directly. If unescaped variables are passed as arguments to these translations, they become vulnerable to Reflected XSS.
 **Prevention:** Always use the `escape` filter on user input or dynamic properties like `article.author` before passing them as arguments to `_html` translation keys (e.g., `{% assign escaped_author = article.author | escape %}`).
+
+## 2024-05-25 - [DOM-based XSS via innerHTML]
+**Vulnerability:** Unsanitized dynamic properties (like `data.src` and `data.id`) were being interpolated directly into `<iframe>` and `<video>` tags via `innerHTML` assignment without proper HTML escaping. Using a rudimentary `.replace(/"/g, '&quot;')` is insufficient.
+**Learning:** Assigning unescaped user-controlled or dynamic data to `innerHTML` can lead to DOM-based Cross-Site Scripting (XSS).
+**Prevention:** Always sanitize dynamic variables using robust local escaping functions (like `escapeHTML()` that escapes `&`, `<`, `>`, `"`, and `'`) before interpolating them into HTML strings that will be parsed by `innerHTML`.
