@@ -12,7 +12,23 @@
     "main": {
       "type": "product",
       "settings": {
-        "show_related": true
+        "show_related": true,
+        "pdp_btn_bg_color": "#000000",
+        "pdp_btn_fg_color": "#ffffff",
+        "selection_info_position": "over",
+        "videos_enabled": true,
+        "videos_position": "below-title",
+        "videos_format": "stories",
+        "videos_tamanho": 70,
+        "videos_espacamento": 12,
+        "videos_mostrar_titulo": false,
+        "videos_border_type": "degrade",
+        "videos_espessura": 2,
+        "videos_cor": "#fd1d1d",
+        "videos_cor_fim": "#fcb045",
+        "videos_cor_3": "#833ab4",
+        "videos_angulo": 135,
+        "videos_autoplay": true
       }
     }
   },

@@ -7,11 +7,40 @@
 {% endcomment %}
 
 {%- if product.tags contains 'customizacao_pingente' -%}
+  {%- liquid
+    capture pingente_metal_handle
+      if settings.pingente_metal_product != blank
+        echo settings.pingente_metal_product.handle
+      endif
+    endcapture
+
+    capture pingente_couro_handles
+      for p in settings.pingente_couro_products
+        echo p.handle
+        unless forloop.last
+          echo ','
+        endunless
+      endfor
+    endcapture
+
+    capture pingente_metal_couro_handles
+      for p in settings.pingente_metal_couro_products
+        echo p.handle
+        unless forloop.last
+          echo ','
+        endunless
+      endfor
+    endcapture
+  -%}
   <section
     class="ame-pingente"
     data-pingente
     data-coleira-title="{{ product.title | escape }}"
     data-optin-template="{{ settings.pingente_optin_message | default: '' | escape }}"
+    data-metal-handle="{{ pingente_metal_handle | strip }}"
+    data-couro-handles="{{ pingente_couro_handles | strip }}"
+    data-metal-couro-handles="{{ pingente_metal_couro_handles | strip }}"
+    data-size-map="{{ settings.pingente_size_map | default: '' | escape }}"
   >
     <header class="ame-pingente__header">
       <p class="ame-pingente__eyebrow">Personalização</p>
@@ -93,18 +122,46 @@
       <p class="ame-pingente__step-label">Informações para gravação</p>
 
       <div class="ame-pingente__field">
-        <label for="ame-pingente-pet"> Nome do pet <span class="ame-pingente__req" aria-hidden="true">*</span> </label>
-        <input type="text" id="ame-pingente-pet" data-pingente-pet maxlength="20" autocomplete="off" required>
+        <label for="ame-pingente-pet">
+          Nome do pet <span class="ame-pingente__req" aria-hidden="true">*</span>
+          <span class="ame-pingente-aviso">frente do pingente</span>
+        </label>
+        <div class="ame-pingente__input-wrap">
+          <input
+            type="text"
+            id="ame-pingente-pet"
+            data-pingente-pet
+            placeholder="Ex: Marley"
+            maxlength="20"
+            autocomplete="off"
+            required
+          >
+          <span class="ame-pingente__counter" data-pingente-counter data-max="13" aria-live="polite">0 / 13</span>
+        </div>
         <p class="ame-pingente__error" data-pingente-error-pet>Informe o nome do pet.</p>
       </div>
 
       <div class="ame-pingente__field">
-        <label for="ame-pingente-tutor">Nome do tutor</label>
-        <input type="text" id="ame-pingente-tutor" data-pingente-tutor maxlength="40" autocomplete="off">
+        <label for="ame-pingente-tutor"
+          >Nome do tutor <span class="ame-pingente-aviso">verso do pingente 1ª linha</span></label
+        >
+        <div class="ame-pingente__input-wrap">
+          <input
+            type="text"
+            id="ame-pingente-tutor"
+            data-pingente-tutor
+            placeholder="Ex: Maria Silva"
+            maxlength="13"
+            autocomplete="off"
+          >
+          <span class="ame-pingente__counter" data-pingente-counter data-max="13" aria-live="polite">0 / 13</span>
+        </div>
       </div>
 
       <div class="ame-pingente__field">
-        <label for="ame-pingente-tel">Telefone do tutor</label>
+        <label for="ame-pingente-tel"
+          >Telefone do tutor <span class="ame-pingente-aviso">verso do pingente 2ª linha</span></label
+        >
         <input
           type="tel"
           id="ame-pingente-tel"
@@ -472,6 +529,50 @@
       border-color: #c0392b;
     }
 
+    /* Flash visual quando o cliente tenta adicionar ao carrinho sem completar */
+    .ame-pingente__step.is-invalid {
+      animation: amePingenteShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+    .ame-pingente__step.is-invalid .ame-pingente__step-label {
+      color: #c0392b;
+    }
+    @keyframes amePingenteShake {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(3px); }
+      30%, 50%, 70% { transform: translateX(-5px); }
+      40%, 60% { transform: translateX(5px); }
+    }
+
+    .ame-pingente__input-wrap {
+      position: relative;
+    }
+    .ame-pingente__input-wrap input {
+      padding-right: 3.5rem; /* reserva espaço pro contador */
+    }
+    .ame-pingente__counter {
+      position: absolute;
+      right: 0.875rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      font-family: var(--font-primary--family, 'Lexend', sans-serif);
+      font-size: 0.6875rem;
+      color: var(--color-on-surface-variant, #4f4442);
+      opacity: 0.55;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+    .ame-pingente__counter.is-near {
+      opacity: 1;
+      color: var(--color-primary, #5a4742);
+    }
+    .ame-pingente__counter.is-full {
+      opacity: 1;
+      color: #c0392b;
+      font-weight: 600;
+    }
+
     .ame-pingente__status {
       font-family: var(--font-primary--family, 'Lexend', sans-serif);
       font-size: 0.75rem;
@@ -495,8 +596,38 @@
         'metal-couro': 'pingente-de-metal-com-couro-para-identificacao-pet-',
       };
       const TIPO_NEEDS_COURO_COLOR = { metal: false, couro: true, 'metal-couro': true };
-      const SIZE_MAP = { XPP: 'P', 'XPP+': 'P', PP: 'P', P: 'P', M: 'G', G: 'G' };
       const FORMATOS = ['Círculo', 'Coração', 'Flor', 'Osso'];
+
+      /* SIZE_MAP padrão — sobrescrito pela textarea do painel se houver */
+      const DEFAULT_SIZE_MAP = { XPP: 'P', 'XPP+': 'P', PP: 'P', P: 'P', M: 'G', G: 'G' };
+
+      function parseSizeMap(raw) {
+        const out = { ...DEFAULT_SIZE_MAP };
+        if (!raw) return out;
+        String(raw)
+          .split(/[,\n;]+/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .forEach((pair) => {
+            const [k, v] = pair.split('=').map((s) => (s || '').trim());
+            if (k && v) out[k] = v;
+          });
+        return out;
+      }
+      const SIZE_MAP = parseSizeMap(root.dataset.sizeMap);
+
+      /* Listas de produtos-pingente configuradas no painel (handles separados por vírgula) */
+      function parseHandles(raw) {
+        return String(raw || '')
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+      const CONFIGURED_HANDLES = {
+        metal: root.dataset.metalHandle ? [root.dataset.metalHandle.trim()] : [],
+        couro: parseHandles(root.dataset.couroHandles),
+        'metal-couro': parseHandles(root.dataset.metalCouroHandles),
+      };
 
       /* Ícones por formato — emojis */
       const FORMATO_ICON = {
@@ -524,9 +655,27 @@
         return parts[parts.length - 1] || '';
       }
       function buildHandle(tipo, corDoCouro) {
-        if (!TIPO_NEEDS_COURO_COLOR[tipo]) return TIPO_HANDLE_PREFIX[tipo];
+        const scope = CONFIGURED_HANDLES[tipo] || [];
+
+        // Metal universal: 1 produto sem variação por cor.
+        if (!TIPO_NEEDS_COURO_COLOR[tipo]) {
+          if (scope[0]) return scope[0];
+          return TIPO_HANDLE_PREFIX[tipo];
+        }
+
         const slug = slugify(extractLastColor(corDoCouro));
         if (!slug) return null;
+
+        // Procura primeiro dentro da lista configurada no painel: handle deve terminar
+        // com o slug da cor (precedido por '-' pra evitar match parcial).
+        if (scope.length) {
+          const suffix = '-' + slug;
+          const match = scope.find((h) => h === slug || h.endsWith(suffix));
+          if (match) return match;
+          return null; // Lista configurada mas sem match — não cai no fallback global.
+        }
+
+        // Sem lista configurada: cai no comportamento antigo (handle convencional).
         return TIPO_HANDLE_PREFIX[tipo] + slug;
       }
       function moneyFmt(cents) {
@@ -687,6 +836,27 @@
         return sel;
       }
 
+      /* ── Coleira completa? Esconde/exibe a section toda em função disso ── */
+      function isColeiraComplete() {
+        const groups = document.querySelectorAll('#pdp-options-wrap [data-option-index]');
+        if (!groups.length) return true;
+        return Array.from(groups).every((g) => g.querySelector('.pdp__swatch--active, .pdp__size-btn--active'));
+      }
+      function syncVisibility() {
+        const ok = isColeiraComplete();
+        root.hidden = !ok;
+        if (!ok) {
+          // Reset estado do pingente se a coleira virou incompleta
+          state.opted = false;
+          state.tipo = null;
+          state.formato = null;
+          state.product = null;
+          state.variant = null;
+          updateOverlay();
+        }
+      }
+      syncVisibility();
+
       function setStatus(msg, isError) {
         if (!statusEl) return;
         statusEl.textContent = msg || '';
@@ -797,6 +967,36 @@
         };
       }
 
+      /**
+       * Lista de tamanhos a tentar, na ordem: mapeamento custom do painel → fallback default (P/G).
+       * Permite que pingentes com menos tamanhos (ex: só P/G) continuem funcionando mesmo quando
+       * o lojista mapeou a coleira para um tamanho mais granular (ex: XPP → XPP) que só existe
+       * em alguns produtos-pingente.
+       */
+      function tamanhoCandidates(coleiraTamanho) {
+        if (!coleiraTamanho) return [null];
+        const out = [];
+        const custom = SIZE_MAP[coleiraTamanho];
+        const fallback = DEFAULT_SIZE_MAP[coleiraTamanho];
+        if (custom) out.push(custom);
+        if (fallback && !out.includes(fallback)) out.push(fallback);
+        return out.length ? out : [null];
+      }
+
+      /** Acha a primeira variante disponível que case formato + cor do metal + um dos tamanhos candidatos */
+      function findAvailableVariant(formato, idx, targetMetal, candidates) {
+        for (const tamanho of candidates) {
+          const v = state.product.variants.find((vv) => {
+            if (vv[`option${idx.formato + 1}`] !== formato) return false;
+            if (idx.corMetal !== -1 && targetMetal && vv[`option${idx.corMetal + 1}`] !== targetMetal) return false;
+            if (idx.tamanho !== -1 && tamanho && vv[`option${idx.tamanho + 1}`] !== tamanho) return false;
+            return true;
+          });
+          if (v && v.available) return v;
+        }
+        return null;
+      }
+
       function renderFormatos() {
         if (!state.product || !formatoGrid) return;
         const idx = getOptionIndexes(state.product);
@@ -813,20 +1013,14 @@
 
         const coleira = readColeiraSelection();
         const targetMetal = coleira.corMetal;
-        const targetTamanho = SIZE_MAP[coleira.tamanho] || null;
+        const candidates = tamanhoCandidates(coleira.tamanho);
 
         const html = FORMATOS.map((formato) => {
-          // Preferido: variante com formato + cor do metal certa
-          let variant = state.product.variants.find((v) => {
-            if (v[`option${idx.formato + 1}`] !== formato) return false;
-            if (idx.corMetal !== -1 && targetMetal && v[`option${idx.corMetal + 1}`] !== targetMetal) return false;
-            if (idx.tamanho !== -1 && targetTamanho && v[`option${idx.tamanho + 1}`] !== targetTamanho) return false;
-            return true;
-          });
-          // Fallback: qualquer variante com esse formato (pra mostrar a imagem mesmo se indisponível)
+          const variant = findAvailableVariant(formato, idx, targetMetal, candidates);
+          // Fallback display: qualquer variante com esse formato (pra mostrar mesmo indisponível)
           const anyVariantOfFormato = state.product.variants.find((v) => v[`option${idx.formato + 1}`] === formato);
           const displayVariant = variant || anyVariantOfFormato;
-          const available = !!variant && variant.available;
+          const available = !!variant;
 
           const icon = FORMATO_ICON[formato] || '';
 
@@ -878,16 +1072,11 @@
         const idx = getOptionIndexes(state.product);
         const coleira = readColeiraSelection();
         const targetMetal = coleira.corMetal;
-        const targetTamanho = SIZE_MAP[coleira.tamanho];
+        const candidates = tamanhoCandidates(coleira.tamanho);
 
-        const variant = state.product.variants.find((v) => {
-          if (v[`option${idx.formato + 1}`] !== state.formato) return false;
-          if (idx.corMetal !== -1 && targetMetal && v[`option${idx.corMetal + 1}`] !== targetMetal) return false;
-          if (idx.tamanho !== -1 && targetTamanho && v[`option${idx.tamanho + 1}`] !== targetTamanho) return false;
-          return true;
-        });
+        const variant = findAvailableVariant(state.formato, idx, targetMetal, candidates);
 
-        if (!variant || !variant.available) {
+        if (!variant) {
           setStatus('Combinação de pingente indisponível (cor do metal ou tamanho).', true);
           state.variant = null;
           step4.hidden = true;
@@ -922,8 +1111,26 @@
         });
       }
 
+      /* ── Contador de caracteres ── */
+      root.querySelectorAll('[data-pingente-counter]').forEach((counter) => {
+        const max = parseInt(counter.dataset.max, 10) || 0;
+        if (!max) return;
+        const field = counter.closest('.ame-pingente__field')?.querySelector('input, textarea');
+        if (!field) return;
+        const update = () => {
+          const len = field.value.length;
+          counter.textContent = `${len} / ${max}`;
+          counter.classList.toggle('is-near', len >= max * 0.8 && len < max);
+          counter.classList.toggle('is-full', len >= max);
+        };
+        field.addEventListener('input', update);
+        update();
+      });
+
       /* ── Re-validar quando variante da coleira muda ── */
       document.addEventListener('pdp:variant-changed', () => {
+        syncVisibility();
+        if (root.hidden) return;
         loadPriceRange();
         if (!state.opted) return;
         loadTipoThumbs();
@@ -945,19 +1152,46 @@
         },
         validate() {
           if (!state.opted) return { ok: true };
-          if (!state.tipo) return { ok: false, msg: 'Selecione o tipo do pingente.' };
-          if (!state.formato) return { ok: false, msg: 'Selecione o formato do pingente.' };
-          if (!state.variant) return { ok: false, msg: 'Combinação do pingente não está disponível.' };
+
+          const headerH = document.querySelector('.ame-header-group')?.getBoundingClientRect().height || 0;
+          const scrollTo = (el) => {
+            if (!el) return;
+            const top = el.getBoundingClientRect().top + window.scrollY - headerH - 16;
+            window.scrollTo({ top, behavior: 'smooth' });
+          };
+          const flashStep = (n) => {
+            const step = root.querySelector(`[data-pingente-step="${n}"]`);
+            if (!step) return null;
+            step.classList.add('is-invalid');
+            setTimeout(() => step.classList.remove('is-invalid'), 1600);
+            return step;
+          };
+
+          if (!state.tipo) {
+            scrollTo(flashStep(2));
+            return { ok: false, msg: 'Selecione o tipo do pingente.' };
+          }
+          if (!state.formato) {
+            scrollTo(flashStep(3));
+            return { ok: false, msg: 'Selecione o formato do pingente.' };
+          }
+          if (!state.variant) {
+            scrollTo(flashStep(2));
+            return { ok: false, msg: 'Combinação do pingente não está disponível.' };
+          }
           const pet = petInput?.value.trim() || '';
           if (!pet) {
-            petInput?.closest('.ame-pingente__field')?.classList.add('is-invalid');
-            petInput?.focus();
+            const field = petInput?.closest('.ame-pingente__field');
+            field?.classList.add('is-invalid');
+            scrollTo(field);
+            setTimeout(() => petInput?.focus({ preventScroll: true }), 350);
             return { ok: false, msg: 'Informe o nome do pet.' };
           }
           return { ok: true };
         },
-        getCartItem() {
+        getCartItem(quantity) {
           if (!state.opted || !state.variant) return null;
+          const qty = Math.max(1, parseInt(quantity, 10) || 1);
           const pet = petInput?.value.trim() || '';
           const tutor = root.querySelector('[data-pingente-tutor]')?.value.trim() || '';
           const tel = root.querySelector('[data-pingente-tel]')?.value.trim() || '';
@@ -976,7 +1210,7 @@
           properties['Nome do pet'] = pet;
           if (tutor) properties['Nome do tutor'] = tutor;
           if (tel) properties['Telefone do tutor'] = tel;
-          return { id: state.variant.id, quantity: 1, properties };
+          return { id: state.variant.id, quantity: qty, properties };
         },
       };
     })();

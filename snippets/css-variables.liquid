@@ -1,4 +1,5 @@
 {% comment %} Âme — Design Tokens + Font preloads {% endcomment %}
+{%- comment -%} theme-check-disable AssetUrl {%- endcomment -%}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link
@@ -14,6 +15,7 @@
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
   rel="stylesheet"
 >
+{%- comment -%} theme-check-enable AssetUrl {%- endcomment -%}
 
 {% style %}
   {{ settings.type_primary_font | font_face: font_display: 'swap' }}
@@ -131,6 +133,10 @@
     --info-600: #2563eb;
     --teal-500: #06b6d4;
     --whatsapp-500: #25d366;
+
+
+    --pdp-btn-bg: #000000;
+    --pdp-btn-text: #ffffff;
   }
 {% endstyle %}
 

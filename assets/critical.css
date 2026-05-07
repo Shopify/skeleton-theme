@@ -232,7 +232,7 @@ body::after {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, var(--color-btn-primary-bg, var(--color-primary, #5a4742)), var(--color-primary-container, #735e59));
+  background: var(--pdp-btn-bg, #000000);
   color: var(--color-btn-primary-text, var(--color-on-primary, #ffffff));
   border: none;
   cursor: pointer;
@@ -1016,7 +1016,7 @@ body::after {
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--success-400);
+  color: var(--color-on-background);
   padding: 0.375rem 0.625rem;
   border-radius: var(--radius-md, 0.25rem);
   transition: background 0.2s ease;
@@ -1029,7 +1029,7 @@ body::after {
 .ame-cart-discount__btn:disabled {
   opacity: 0.6;
   cursor: default;
-  color: var(--color-primary, #5a4742);
+  color: var(--success-400);
   background: none;
 }
 
@@ -1336,11 +1336,12 @@ body::after {
 /* ── Header principal ── */
 .ame-header {
   width: 100%;
-  height: 5rem;
+  min-height: 5rem;
+  /* Estende o background até a safe-area (Dynamic Island / notch do iPhone) */
+  padding: env(safe-area-inset-top, 0) var(--page-margin, 20px) 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--page-margin, 20px);
 
   /* Glassmorphism */
   background: rgba(255, 248, 243, 0.55);
@@ -1640,6 +1641,16 @@ shopify-account {
 
 .ame-header__search-input::placeholder {
   color: rgba(90, 71, 66, 0.35);
+}
+
+/* Esconde o "X" nativo do <input type="search"> em Chrome/Safari/Edge — já temos botão próprio */
+.ame-header__search-input::-webkit-search-cancel-button,
+.ame-header__search-input::-webkit-search-decoration,
+.ame-search-form__input::-webkit-search-cancel-button,
+.ame-search-form__input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
 }
 
 .ame-header__search-close {
@@ -2278,8 +2289,8 @@ shopify-account {
 
 /* Swatches — 6 colunas no mobile como produto.html */
 .pdp__swatches {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.450rem;
 }
 
@@ -2292,7 +2303,7 @@ shopify-account {
 }
 
 .pdp__swatch {
-  width: 100%;
+  width: calc(16.666% - 0.375rem);
   aspect-ratio: 1 / 1;
   border-radius: 8px;
   border: none;
@@ -2701,4 +2712,9 @@ shopify-account {
 .ame-search-page-form__btn:focus-visible {
   outline: 2px solid var(--color-primary, #5a4742);
   outline-offset: 2px;
+}
+
+.ame-pingente-aviso {
+  font-size: 0.55rem;
+  color: rgba(90, 71, 66, 0.5);
 }

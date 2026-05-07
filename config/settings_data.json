@@ -1,38 +1,82 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
     "type_primary_font": "assistant_n4",
     "max_page_width": "120rem",
-    "min_page_margin": 64,
+    "min_page_margin": 160,
     "section_gap": 120,
-    "border_radius_base": 4,
-
+    "border_radius_base": 6,
     "color_primary": "#5a4742",
     "color_primary_container": "#735e59",
     "color_on_primary": "#ffffff",
-
     "color_secondary": "#655d54",
     "color_secondary_container": "#e9ded2",
-
-    "color_background": "#fff8f3",
+    "color_background": "#f7f5f2",
     "color_surface_container": "#f8ece0",
     "color_surface_container_high": "#f2e6da",
-
     "color_on_background": "#201b14",
     "color_on_surface_variant": "#4f4442",
-
-    "color_announce_bg": "#5a4742",
+    "color_announce_bg": "#000000",
     "color_announce_text": "#ffffff",
-
-    "color_btn_primary_bg": "#5a4742",
+    "color_btn_primary_bg": "#000000",
     "color_btn_primary_text": "#ffffff",
-
     "color_outline_variant": "#d2c3c0",
-
     "header_sticky": true,
     "header_transparent": true,
     "cart_type": "drawer",
+    "cashback_percent": 10,
     "social_instagram": "",
     "social_facebook": "",
-    "social_whatsapp": ""
+    "social_whatsapp": "",
+    "pingente_metal_product": "pingente-de-metal",
+    "pingente_metal_couro_products": [
+      "pingente-de-metal-com-couro-off-white",
+      "pingente-de-metal-com-couro-azul-bebe",
+      "pingente-de-metal-com-couro-nude",
+      "pingente-de-metal-com-couro-rosa-bebe",
+      "pingente-de-metal-com-couro-allure",
+      "pingente-de-metal-com-couro-branco",
+      "pingente-de-metal-com-couro-lilas-candy"
+    ],
+    "pingente_size_map": "XPP=P, XPP+=P, PP=P, P=P, M=G, G=G, XPP=XPP, XPP+=XPP, PP=XPP",
+    "custom_field_1_enable": true,
+    "custom_field_1_tag": "customizacao_raca",
+    "custom_field_1_name": "Observações",
+    "custom_field_1_title": "Qual a raça, idade e peso do pet?",
+    "custom_field_1_placeholder": "Usamos essas informações somente para auxiliar você na escolha correta do tamanho das peças.",
+    "custom_field_1_type": "long_text",
+    "custom_field_1_required": true,
+    "custom_field_2_enable": true,
+    "custom_field_2_tag": "customizacao_nome_pet",
+    "custom_field_2_name": "Nome do Pet",
+    "custom_field_2_title": "Frente / Nome do Pet",
+    "custom_field_2_limiter": "20",
+    "custom_field_2_required": true,
+    "custom_field_3_enable": true,
+    "custom_field_3_tag": "customizacao_nome_tutor",
+    "custom_field_3_name": "Nome do Tutor",
+    "custom_field_3_title": "Verso 1ª Linha / Nome do Tutor",
+    "custom_field_3_required": true,
+    "custom_field_4_enable": true,
+    "custom_field_4_tag": "customizacao_telefone",
+    "custom_field_4_name": "Telefone",
+    "custom_field_4_title": "Verso 2ª Linha / Telefone do tutor",
+    "custom_field_4_required": true,
+    "content_for_index": [],
+    "blocks": {
+      "9741741230116411038": {
+        "type": "shopify://apps/optis-color-swatch/blocks/bss-se-script/ad128d8f-5ebd-45ad-954a-7dd4c4226109",
+        "disabled": false,
+        "settings": {}
+      }
+    }
   }
 }

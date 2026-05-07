@@ -112,6 +112,7 @@
           endif
         endif
       elsif vs_source == 'blocks'
+        assign block_video = v.settings.video
         assign block_url_raw = v.settings.url | default: ''
         assign block_url = block_url_raw | downcase
         assign vt_title = v.settings.title
@@ -121,7 +122,23 @@
         assign vt_cta_url = v.settings.cta_url
         assign vt_cta_label = v.settings.cta_label | default: vs_cta_default
 
-        if block_url contains 'youtube.com/watch'
+        # Prioridade: vídeo nativo do Shopify → URL externa (YouTube/Vimeo) — legacy
+        if block_video != blank and block_video.sources.size > 0
+          assign vt_type = 'native'
+          assign vt_id = block_video.id
+          for s in block_video.sources
+            if s.format == 'mp4' and s.height >= 720
+              assign vt_native_src = s.url
+              break
+            endif
+          endfor
+          if vt_native_src == ''
+            assign vt_native_src = block_video.sources[0].url
+          endif
+          if vt_image == '' and block_video.preview_image != blank
+            assign vt_image = block_video.preview_image | image_url: width: 720
+          endif
+        elsif block_url contains 'youtube.com/watch'
           assign vt_type = 'external'
           assign vt_host = 'youtube'
           assign vt_id = block_url_raw | split: 'v=' | last | split: '&' | first
@@ -214,7 +231,7 @@
           <div class="ame-vs__ring">
             <div class="ame-vs__media">
               {%- if vt_image != '' -%}
-                <img src="{{ vt_image }}" alt="{{ vt_title | escape }}" loading="lazy">
+                <img src="{{ vt_image }}" alt="{{ vt_title | escape }}" loading="lazy" width="720" height="720">
               {%- else -%}
                 <span class="ame-vs__media-fallback" aria-hidden="true">
                   <span class="material-symbols-outlined">play_circle</span>
@@ -843,7 +860,7 @@
         const autoplay = AUTOPLAY_DEFAULT ? '1' : '0';
         const muted = AUTOPLAY_DEFAULT ? '1' : '0';
         if (data.type === 'external' && data.host === 'youtube') {
-          return `<iframe src="https://www.youtube.com/embed/${escapeHTML(encodeURIComponent(data.id))}?autoplay=${autoplay}&mute=${muted}&controls=0&rel=0&playsinline=1&modestbranding=1&disablekb=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+          return `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(data.id)}?autoplay=${autoplay}&mute=${muted}&controls=0&rel=0&playsinline=1&modestbranding=1&disablekb=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
         }
         if (data.type === 'external' && data.host === 'vimeo') {
           return `<iframe src="https://player.vimeo.com/video/${escapeHTML(encodeURIComponent(data.id))}?autoplay=${autoplay}&muted=${muted}&playsinline=1&controls=0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
@@ -871,16 +888,38 @@
 
       function startProgress(modal) {
         cancelAnimationFrame(state.progressFrame);
-        state.progressStart = Date.now();
         const fills = modal.querySelectorAll('[data-vs-bar-fill]');
         fills.forEach((fill, i) => {
           fill.style.transition = 'none';
           fill.style.width = i < state.idx ? '100%' : '0%';
         });
+
+        const fill = modal.querySelector(`[data-vs-bar-fill="${state.idx}"]`);
+        const videoEl = modal.querySelector('[data-vs-modal-player] video');
+
+        // Vídeo nativo: barra acompanha currentTime/duration real
+        if (videoEl) {
+          const updateFromVideo = () => {
+            const dur = videoEl.duration;
+            if (!dur || !isFinite(dur)) return;
+            const pct = Math.min((videoEl.currentTime / dur) * 100, 100);
+            if (fill) {
+              fill.style.transition = 'none';
+              fill.style.width = pct + '%';
+            }
+          };
+          videoEl.addEventListener('timeupdate', updateFromVideo);
+          videoEl.addEventListener('ended', () => navigate(1), { once: true });
+          // Garante reset visual mesmo se metadata ainda não carregou
+          updateFromVideo();
+          return;
+        }
+
+        // Fallback (iframes YouTube/Vimeo, ou enquanto não há vídeo): timer fixo
+        state.progressStart = Date.now();
         function tick() {
           const elapsed = Date.now() - state.progressStart;
           const pct = Math.min((elapsed / STORY_DURATION) * 100, 100);
-          const fill = modal.querySelector(`[data-vs-bar-fill="${state.idx}"]`);
           if (fill) {
             fill.style.transition = 'none';
             fill.style.width = pct + '%';
@@ -1076,7 +1115,7 @@
         const id = card.dataset.vsId;
         const src = card.dataset.vsSrc;
         if (type === 'external' && host === 'youtube' && id) {
-          vid.innerHTML = `<iframe src="https://www.youtube.com/embed/${escapeHTML(encodeURIComponent(id))}?autoplay=1&mute=1&controls=0&loop=1&playlist=${escapeHTML(encodeURIComponent(id))}&playsinline=1&modestbranding=1&rel=0&disablekb=1" frameborder="0" allow="autoplay; encrypted-media" tabindex="-1"></iframe>`;
+          vid.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&mute=1&controls=0&loop=1&playlist=${encodeURIComponent(id)}&playsinline=1&modestbranding=1&rel=0&disablekb=1" frameborder="0" allow="autoplay; encrypted-media" tabindex="-1"></iframe>`;
         } else if (type === 'external' && host === 'vimeo' && id) {
           vid.innerHTML = `<iframe src="https://player.vimeo.com/video/${escapeHTML(encodeURIComponent(id))}?autoplay=1&muted=1&loop=1&background=1&controls=0" frameborder="0" allow="autoplay; encrypted-media" tabindex="-1"></iframe>`;
         } else if (type === 'native' && src) {

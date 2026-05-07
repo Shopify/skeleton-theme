@@ -1,7 +1,12 @@
 {% comment %} Âme — Página de Produto {% endcomment %}
 
 {%- liquid
-  assign cv = product.selected_or_first_available_variant
+  # cv é nil quando nenhum option_values foi enviado na URL — força o cliente a escolher
+  assign cv = product.selected_variant
+  assign has_variant = false
+  if cv != blank
+    assign has_variant = true
+  endif
   assign media_size = product.media.size
 
   assign pdp_videos_show = false
@@ -65,85 +70,116 @@
 <div class="pdp full-width">
   <!-- ── Coluna esquerda: galeria ── -->
   <div class="pdp__gallery">
-    <!-- Imagem principal -->
-    <div class="pdp__main-img-wrap">
-      {%- if media_size > 0 -%}
-        <div class="pdp__track" id="pdp-track">
-          {%- for media in product.media -%}
-            <div class="pdp__slide" data-media-id="{{ media.id }}">
-              {%- if media.media_type == 'image' -%}
-                {%- liquid
-                  assign img_loading = 'lazy'
-                  assign img_fetchpriority = 'auto'
+    {%- assign selection_pos = section.settings.selection_info_position | default: 'below' -%}
+    <!-- Wrapper sticky no mobile: imagem + barra de seleção compactam juntas -->
+    <div class="pdp__sticky-wrap pdp__sticky-wrap--selection-{{ selection_pos }}">
+      <!-- Imagem principal -->
+      <div class="pdp__main-img-wrap">
+        {%- if media_size > 0 -%}
+          <div class="pdp__track" id="pdp-track">
+            {%- for media in product.media -%}
+              <div class="pdp__slide" data-media-id="{{ media.id }}">
+                {%- if media.media_type == 'image' -%}
+                  {%- liquid
+                    assign img_loading = 'lazy'
+                    assign img_fetchpriority = 'auto'
 
-                  # ⚡ Bolt: Eager load the LCP (Largest Contentful Paint) image.
-                  # 💡 What: Apply `loading: 'eager'` and `fetchpriority: 'high'` to the first image in the product gallery.
-                  # 🎯 Why: Hardcoding `loading: 'lazy'` for all images delays the LCP. Eager loading the first image improves perceived load time.
-                  # 📊 Impact: Improves LCP Web Vital metric significantly.
-                  if forloop.first
-                    assign img_loading = 'eager'
-                    assign img_fetchpriority = 'high'
-                  endif
-                  assign img_alt = media.alt | default: product.title | escape
-                -%}
-                {{-
-                  media
-                  | image_url: width: 1200
-                  | image_tag:
-                    loading: img_loading,
-                    fetchpriority: img_fetchpriority,
-                    class: 'pdp__slide-img',
-                    alt: img_alt
-                -}}
-              {%- elsif media.media_type == 'video' -%}
-                {{ media | video_tag: class: 'pdp__slide-img', autoplay: false, loop: true, muted: true }}
-              {%- endif -%}
-            </div>
-          {%- endfor -%}
-        </div>
-        <!-- contador -->
-        <div class="pdp__counter" aria-live="polite"><span id="pdp-current">1</span> / {{ media_size }}</div>
-        <!-- botões de navegação -->
-        <button class="pdp__nav pdp__nav--prev" id="pdp-prev" aria-label="Anterior">
-          <span class="material-symbols-outlined" aria-hidden="true">arrow_back_ios</span>
-        </button>
-        <button class="pdp__nav pdp__nav--next" id="pdp-next" aria-label="Próximo">
-          <span class="material-symbols-outlined" aria-hidden="true">arrow_forward_ios</span>
-        </button>
-      {%- else -%}
-        <div class="pdp__track" id="pdp-track">
-          <div class="pdp__slide">
-            {{ 'product-1' | placeholder_svg_tag: 'pdp__slide-img pdp__slide-img--placeholder' }}
+                    # ⚡ Bolt: Eager load the LCP (Largest Contentful Paint) image.
+                    # 💡 What: Apply `loading: 'eager'` and `fetchpriority: 'high'` to the first image in the product gallery.
+                    # 🎯 Why: Hardcoding `loading: 'lazy'` for all images delays the LCP. Eager loading the first image improves perceived load time.
+                    # 📊 Impact: Improves LCP Web Vital metric significantly.
+                    if forloop.first
+                      assign img_loading = 'eager'
+                      assign img_fetchpriority = 'high'
+                    endif
+                    assign img_alt = media.alt | default: product.title | escape
+                  -%}
+                  {{-
+                    media
+                    | image_url: width: 1200
+                    | image_tag:
+                      loading: img_loading,
+                      fetchpriority: img_fetchpriority,
+                      class: 'pdp__slide-img',
+                      alt: img_alt
+                  -}}
+                {%- elsif media.media_type == 'video' -%}
+                  {{ media | video_tag: class: 'pdp__slide-img', autoplay: false, loop: true, muted: true }}
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
           </div>
-        </div>
-      {%- endif -%}
+          <!-- contador -->
+          <div class="pdp__counter" aria-live="polite"><span id="pdp-current">1</span> / {{ media_size }}</div>
+          <!-- botões de navegação -->
+          <button class="pdp__nav pdp__nav--prev" id="pdp-prev" aria-label="Anterior">
+            <span class="material-symbols-outlined" aria-hidden="true">arrow_back_ios</span>
+          </button>
+          <button class="pdp__nav pdp__nav--next" id="pdp-next" aria-label="Próximo">
+            <span class="material-symbols-outlined" aria-hidden="true">arrow_forward_ios</span>
+          </button>
+        {%- else -%}
+          <div class="pdp__track" id="pdp-track">
+            <div class="pdp__slide">
+              {{ 'product-1' | placeholder_svg_tag: 'pdp__slide-img pdp__slide-img--placeholder' }}
+            </div>
+          </div>
+        {%- endif -%}
 
-      {%- liquid
-        assign img_compare = cv.compare_at_price | default: 0
-        if img_compare == 0
-          assign img_compare = product.compare_at_price_max | default: 0
-        endif
-        assign pdp_img_discount = 0
-        if img_compare > cv.price
-          assign pdp_img_discount = img_compare | minus: cv.price | times: 100 | divided_by: img_compare | round
-        elsif settings.auto_discount_enabled and settings.auto_discount_percent > 0
-          assign pdp_img_discount = settings.auto_discount_percent
-        endif
-      -%}
-      <div id="pdp-img-badge-wrap">
-        {%- if pdp_img_discount > 0 -%}
-          <span class="pdp__img-discount-badge" aria-label="{{ pdp_img_discount }}% de desconto">
-            {{ pdp_img_discount }}% OFF
-          </span>
+        {%- liquid
+          assign img_base_price = cv.price | default: product.price_min
+          assign img_compare = cv.compare_at_price | default: 0
+          if img_compare == 0
+            assign img_compare = product.compare_at_price_max | default: 0
+          endif
+          assign pdp_img_discount = 0
+          if img_compare > img_base_price
+            assign pdp_img_discount = img_compare | minus: img_base_price | times: 100 | divided_by: img_compare | round
+          elsif settings.auto_discount_enabled and settings.auto_discount_percent > 0
+            assign pdp_img_discount = settings.auto_discount_percent
+          endif
+        -%}
+        <div id="pdp-img-badge-wrap">
+          {%- if pdp_img_discount > 0 -%}
+            <span class="pdp__img-discount-badge" aria-label="{{ pdp_img_discount }}% de desconto">
+              {{ pdp_img_discount }}% OFF
+            </span>
+          {%- endif -%}
+        </div>
+
+        {%- if product.tags contains 'customizacao_pingente' -%}
+          <div class="pdp__pingente-overlay" data-pingente-overlay hidden aria-hidden="true">
+            {%- comment -%} theme-check-disable AssetUrl {%- endcomment -%}
+            <img
+              src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+              alt=""
+              data-pingente-overlay-img
+              loading="lazy"
+              width="800"
+              height="800"
+            >
+            {%- comment -%} theme-check-enable AssetUrl {%- endcomment -%}
+          </div>
+        {%- endif -%}
+
+        {%- if selection_pos == 'over' -%}
+          <!-- Resumo sobre a imagem (overlay no topo) -->
+          <div class="pdp__selection-info" data-selection-info hidden aria-live="polite">
+            <span class="pdp__selection-info__label">Você selecionou:</span>
+            <span class="pdp__selection-info__values" data-selection-info-values></span>
+          </div>
         {%- endif -%}
       </div>
 
-      {%- if product.tags contains 'customizacao_pingente' -%}
-        <div class="pdp__pingente-overlay" data-pingente-overlay hidden aria-hidden="true">
-          <img src="" alt="" data-pingente-overlay-img loading="lazy" width="800" height="800">
+      {%- if selection_pos != 'over' -%}
+        <!-- Resumo abaixo da imagem (padrão) -->
+        <div class="pdp__selection-info" data-selection-info hidden aria-live="polite">
+          <span class="pdp__selection-info__label">Você selecionou:</span>
+          <span class="pdp__selection-info__values" data-selection-info-values></span>
         </div>
       {%- endif -%}
     </div>
+    <!-- /pdp__sticky-wrap -->
 
     <!-- Thumbnails em linha horizontal com scroll -->
     {%- if media_size > 1 -%}
@@ -239,25 +275,31 @@
 
     <!-- ── Bloco de preços ── -->
     {%- liquid
+      # Sem variante selecionada: usa price_min do produto
+      assign base_price = cv.price
+      if has_variant == false
+        assign base_price = product.price_min
+      endif
+
       assign cv_compare = cv.compare_at_price | default: 0
       if cv_compare == 0
         assign cv_compare = product.compare_at_price_max | default: 0
       endif
       assign has_compare = false
       assign discount_pct = 0
-      if cv_compare > cv.price
+      if cv_compare > base_price
         assign has_compare = true
-        assign discount_pct = cv_compare | minus: cv.price | times: 100 | divided_by: cv_compare
+        assign discount_pct = cv_compare | minus: base_price | times: 100 | divided_by: cv_compare
       endif
 
-      assign effective_price = cv.price
+      assign effective_price = base_price
       assign displayed_compare = cv_compare
       if has_compare == false and settings.auto_discount_enabled and settings.auto_discount_percent > 0
         assign has_compare = true
         assign discount_pct = settings.auto_discount_percent
-        assign displayed_compare = cv.price
-        assign disc_cents = cv.price | times: discount_pct | divided_by: 100
-        assign effective_price = cv.price | minus: disc_cents
+        assign displayed_compare = base_price
+        assign disc_cents = base_price | times: discount_pct | divided_by: 100
+        assign effective_price = base_price | minus: disc_cents
       endif
 
       assign pix_pct = settings.pix_discount | default: 5
@@ -313,14 +355,20 @@
 
     {%- if pdp_videos_pos == 'below-price' -%}{{ pdp_videos_widget }}{%- endif -%}
 
-    <!-- ── Descrição curta ── -->
-    {%- if product.description != blank -%}
-      <div class="pdp__desc">{{ product.description }}</div>
+    <!-- ── Descrição curta (metafield custom.descricao_curta) ── -->
+    {%- if product.metafields.custom.descricao_curta != blank -%}
+      <div class="pdp__desc pdp__desc--short">{{ product.metafields.custom.descricao_curta }}</div>
     {%- endif -%}
 
     <!-- ── Formulário de produto ── -->
     {%- form 'product', product, id: 'pdp-form', novalidate: true -%}
-      <input type="hidden" name="id" value="{{ cv.id }}" id="pdp-variant-id">
+      <input
+        type="hidden"
+        name="id"
+        value="{{ cv.id }}"
+        id="pdp-variant-id"
+        data-media-id="{{ cv.featured_media.id | default: cv.featured_image.id }}"
+      >
 
       <!-- Opções (Cor, Tamanho...) — renderizadas sob demanda via Section Rendering API -->
       <div id="pdp-options-wrap" data-section-id="{{ section.id }}">
@@ -336,10 +384,12 @@
             endif
           -%}
 
-          <div class="pdp__option">
+          <div class="pdp__option" data-option-group-index="{{ forloop.index0 }}">
             <div class="pdp__option-header">
               <span class="pdp__option-label">{{ option.name }}</span>
-              <span class="pdp__option-value" id="pdp-opt-val-{{ forloop.index }}">{{ option.selected_value }}</span>
+              <span class="pdp__option-value" id="pdp-opt-val-{{ forloop.index }}">
+                {%- if has_variant -%}{{ option.selected_value }}{%- endif -%}
+              </span>
             </div>
 
             {%- if is_color -%}
@@ -360,7 +410,7 @@
                   -%}
                   <button
                     type="button"
-                    class="pdp__swatch{% if option_value.selected %} pdp__swatch--active{% endif %}{% unless option_value.available %} pdp__swatch--disabled{% endunless %}"
+                    class="pdp__swatch{% if has_variant and option_value.selected %} pdp__swatch--active{% endif %}{% unless option_value.available %} pdp__swatch--disabled{% endunless %}"
                     data-value="{{ option_value | escape }}"
                     data-option-value-id="{{ option_value.id }}"
                     aria-label="{{ option_value }}"
@@ -397,7 +447,7 @@
                   {%- assign metal_slug = option_value | downcase | replace: ' ', '-' -%}
                   <button
                     type="button"
-                    class="pdp__size-btn pdp__size-btn--metal{% if option_value.selected %} pdp__size-btn--active{% endif %}{% unless option_value.available %} pdp__size-btn--disabled{% endunless %}"
+                    class="pdp__size-btn pdp__size-btn--metal{% if has_variant and option_value.selected %} pdp__size-btn--active{% endif %}{% unless option_value.available %} pdp__size-btn--disabled{% endunless %}"
                     data-value="{{ option_value | escape }}"
                     data-option-value-id="{{ option_value.id }}"
                     aria-label="{{ option_value | escape }}"
@@ -420,7 +470,7 @@
                 {%- for option_value in option.values -%}
                   <button
                     type="button"
-                    class="pdp__size-btn{% if option_value.selected %} pdp__size-btn--active{% endif %}{% unless option_value.available %} pdp__size-btn--disabled{% endunless %}"
+                    class="pdp__size-btn{% if has_variant and option_value.selected %} pdp__size-btn--active{% endif %}{% unless option_value.available %} pdp__size-btn--disabled{% endunless %}"
                     data-value="{{ option_value | escape }}"
                     data-option-value-id="{{ option_value.id }}"
                     aria-label="{{ option_value | escape }}"
@@ -440,126 +490,156 @@
       {%- render 'pingente-customization', product: product -%}
 
       <!-- ── Campos Personalizados ── -->
-      {%- for cf_tag_item in product.tags -%}
-        {%- for cf_i in (1..10) -%}
+      {%- for cf_i in (1..10) -%}
+        {%- liquid
+          assign cf_en_key = 'custom_field_' | append: cf_i | append: '_enable'
+          assign cf_tag_key = 'custom_field_' | append: cf_i | append: '_tag'
+          assign cf_enabled = settings[cf_en_key]
+          assign cf_cfg_tag = settings[cf_tag_key]
+        -%}
+        {%- if cf_enabled and product.tags contains cf_cfg_tag -%}
+          {%- comment -%}
+            ⚡ Bolt: Optimize Custom Fields Loop
+            💡 What: Replaced nested loop with a single loop and `contains` array check.
+            🎯 Why: Iterating over `product.tags` and `(1..10)` causes O(M*N) overhead. `contains` reduces iterations to exactly 10.
+            📊 Impact: Reduces iteration overhead from O(M*N) to O(N).
+          {%- endcomment -%}
           {%- liquid
-            assign cf_en_key = 'custom_field_' | append: cf_i | append: '_enable'
-            assign cf_tag_key = 'custom_field_' | append: cf_i | append: '_tag'
-            assign cf_enabled = settings[cf_en_key]
-            assign cf_cfg_tag = settings[cf_tag_key]
+            assign cf_nm_key = 'custom_field_' | append: cf_i | append: '_name'
+            assign cf_tt_key = 'custom_field_' | append: cf_i | append: '_title'
+            assign cf_ph_key = 'custom_field_' | append: cf_i | append: '_placeholder'
+            assign cf_hl_key = 'custom_field_' | append: cf_i | append: '_helper'
+            assign cf_lm_key = 'custom_field_' | append: cf_i | append: '_limiter'
+            assign cf_tp_key = 'custom_field_' | append: cf_i | append: '_type'
+            assign cf_op_key = 'custom_field_' | append: cf_i | append: '_options'
+            assign cf_rq_key = 'custom_field_' | append: cf_i | append: '_required'
+            assign cf_name = settings[cf_nm_key]
+            assign cf_title = settings[cf_tt_key]
+            assign cf_placeholder = settings[cf_ph_key] | default: cf_title
+            assign cf_helper = settings[cf_hl_key]
+            assign cf_limiter = settings[cf_lm_key]
+            assign cf_type = settings[cf_tp_key]
+            assign cf_options = settings[cf_op_key]
+            assign cf_req = settings[cf_rq_key]
           -%}
-          {%- if cf_enabled and cf_cfg_tag == cf_tag_item -%}
-            {%- liquid
-              assign cf_nm_key = 'custom_field_' | append: cf_i | append: '_name'
-              assign cf_tt_key = 'custom_field_' | append: cf_i | append: '_title'
-              assign cf_ph_key = 'custom_field_' | append: cf_i | append: '_placeholder'
-              assign cf_hl_key = 'custom_field_' | append: cf_i | append: '_helper'
-              assign cf_lm_key = 'custom_field_' | append: cf_i | append: '_limiter'
-              assign cf_tp_key = 'custom_field_' | append: cf_i | append: '_type'
-              assign cf_op_key = 'custom_field_' | append: cf_i | append: '_options'
-              assign cf_rq_key = 'custom_field_' | append: cf_i | append: '_required'
-              assign cf_name = settings[cf_nm_key]
-              assign cf_title = settings[cf_tt_key]
-              assign cf_placeholder = settings[cf_ph_key] | default: cf_title
-              assign cf_helper = settings[cf_hl_key]
-              assign cf_limiter = settings[cf_lm_key]
-              assign cf_type = settings[cf_tp_key]
-              assign cf_options = settings[cf_op_key]
-              assign cf_req = settings[cf_rq_key]
-            -%}
-            <div class="pdp__custom-field">
-              {%- if cf_type == 'text' or cf_type == 'date' -%}
-                <label class="pdp__custom-field__label" for="cf-{{ cf_name | handle }}">
-                  {{- cf_title -}}
-                  {%- if cf_req -%}
-                    <span class="pdp__custom-field__req" aria-hidden="true"> *</span>
-                  {%- endif -%}
-                </label>
-                <input
-                  id="cf-{{ cf_name | handle }}"
-                  type="text"
-                  name="properties[{{ cf_name }}]"
-                  placeholder="{{ cf_placeholder }}"
-                  class="pdp__custom-field__input{% if cf_type == 'date' %} pdp__custom-field__input--date{% endif %}"
-                  {%- if cf_req %}
-                    data-cf-required="true"
-                  {% endif %}
-                  {%- if cf_limiter != blank %}
-                    maxlength="{{ cf_limiter }}"
-                  {% endif %}
-                >
-                {%- if cf_helper != blank -%}
-                  <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
-                {%- endif -%}
+          <div class="pdp__custom-field">
+            {%- if cf_type == 'text' or cf_type == 'date' -%}
+              <label class="pdp__custom-field__label" for="cf-{{ cf_name | handle }}">
+                {{- cf_title -}}
                 {%- if cf_req -%}
-                  <p class="pdp__custom-field__error-msg">Este campo é obrigatório.</p>
+                  <span class="pdp__custom-field__req" aria-hidden="true"> *</span>
                 {%- endif -%}
-              {%- elsif cf_type == 'long_text' -%}
-                <label class="pdp__custom-field__label" for="cf-{{ cf_name | handle }}">
-                  {{- cf_title -}}
-                  {%- if cf_req -%}
-                    <span class="pdp__custom-field__req" aria-hidden="true"> *</span>
+              </label>
+              <input
+                id="cf-{{ cf_name | handle }}"
+                type="text"
+                name="properties[{{ cf_name }}]"
+                placeholder="{{ cf_placeholder }}"
+                class="pdp__custom-field__input{% if cf_type == 'date' %} pdp__custom-field__input--date{% endif %}"
+                {%- if cf_req %}
+                  data-cf-required="true"
+                {% endif %}
+                {%- if cf_limiter != blank %}
+                  maxlength="{{ cf_limiter }}"
+                {% endif %}
+              >
+              {%- if cf_helper != blank or cf_limiter != blank -%}
+                <div class="pdp__custom-field__footer">
+                  {%- if cf_helper != blank -%}
+                    <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
                   {%- endif -%}
-                </label>
-                <textarea
-                  id="cf-{{ cf_name | handle }}"
-                  name="properties[{{ cf_name }}]"
-                  placeholder="{{ cf_placeholder }}"
-                  class="pdp__custom-field__textarea"
-                  {%- if cf_req %}
-                    data-cf-required="true"
-                  {% endif %}
-                  {%- if cf_limiter != blank %}
-                    maxlength="{{ cf_limiter }}"
-                  {% endif %}
-                  rows="3"
-                ></textarea>
-                {%- if cf_helper != blank -%}
-                  <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
-                {%- endif -%}
-                {%- if cf_req -%}
-                  <p class="pdp__custom-field__error-msg">Este campo é obrigatório.</p>
-                {%- endif -%}
-              {%- elsif cf_type == 'radio' -%}
-                <div class="pdp__custom-field__label">
-                  {{- cf_title -}}
-                  {%- if cf_req -%}
-                    <span class="pdp__custom-field__req" aria-hidden="true"> *</span>
+                  {%- if cf_limiter != blank -%}
+                    <span
+                      class="pdp__custom-field__counter"
+                      data-cf-counter
+                      data-cf-max="{{ cf_limiter }}"
+                      aria-live="polite"
+                      >0 / {{ cf_limiter -}}
+                    </span>
                   {%- endif -%}
                 </div>
-                <div class="pdp__custom-field__radio-group">
-                  {%- assign cf_opts = cf_options | split: ',' -%}
-                  {%- for cf_opt in cf_opts -%}
-                    {%- assign opt_val = cf_opt | strip -%}
-                    <button
-                      type="button"
-                      class="pdp__custom-field__radio-btn"
-                      data-value="{{ opt_val | escape }}"
-                      aria-label="{{ opt_val | escape }}"
-                    >
-                      {{- opt_val -}}
-                    </button>
-                  {%- endfor -%}
-                </div>
-                <input
-                  type="hidden"
-                  name="properties[{{ cf_name }}]"
-                  id="cf-hidden-{{ cf_name | handle }}"
-                  class="pdp__custom-field__radio-val"
-                  {%- if cf_req %}
-                    data-cf-required="true"
-                  {% endif %}
-                >
-                {%- if cf_helper != blank -%}
-                  <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
-                {%- endif -%}
-                {%- if cf_req -%}
-                  <p class="pdp__custom-field__error-msg">Selecione uma opção.</p>
-                {%- endif -%}
               {%- endif -%}
-            </div>
-          {%- endif -%}
-        {%- endfor -%}
+              {%- if cf_req -%}
+                <p class="pdp__custom-field__error-msg">Este campo é obrigatório.</p>
+              {%- endif -%}
+            {%- elsif cf_type == 'long_text' -%}
+              <label class="pdp__custom-field__label" for="cf-{{ cf_name | handle }}">
+                {{- cf_title -}}
+                {%- if cf_req -%}
+                  <span class="pdp__custom-field__req" aria-hidden="true"> *</span>
+                {%- endif -%}
+              </label>
+              <textarea
+                id="cf-{{ cf_name | handle }}"
+                name="properties[{{ cf_name }}]"
+                placeholder="{{ cf_placeholder }}"
+                class="pdp__custom-field__textarea"
+                {%- if cf_req %}
+                  data-cf-required="true"
+                {% endif %}
+                {%- if cf_limiter != blank %}
+                  maxlength="{{ cf_limiter }}"
+                {% endif %}
+                rows="3"
+              ></textarea>
+              {%- if cf_helper != blank or cf_limiter != blank -%}
+                <div class="pdp__custom-field__footer">
+                  {%- if cf_helper != blank -%}
+                    <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
+                  {%- endif -%}
+                  {%- if cf_limiter != blank -%}
+                    <span
+                      class="pdp__custom-field__counter"
+                      data-cf-counter
+                      data-cf-max="{{ cf_limiter }}"
+                      aria-live="polite"
+                      >0 / {{ cf_limiter -}}
+                    </span>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+              {%- if cf_req -%}
+                <p class="pdp__custom-field__error-msg">Este campo é obrigatório.</p>
+              {%- endif -%}
+            {%- elsif cf_type == 'radio' -%}
+              <div class="pdp__custom-field__label">
+                {{- cf_title -}}
+                {%- if cf_req -%}
+                  <span class="pdp__custom-field__req" aria-hidden="true"> *</span>
+                {%- endif -%}
+              </div>
+              <div class="pdp__custom-field__radio-group">
+                {%- assign cf_opts = cf_options | split: ',' -%}
+                {%- for cf_opt in cf_opts -%}
+                  {%- assign opt_val = cf_opt | strip -%}
+                  <button
+                    type="button"
+                    class="pdp__custom-field__radio-btn"
+                    data-value="{{ opt_val | escape }}"
+                    aria-label="{{ opt_val | escape }}"
+                  >
+                    {{- opt_val -}}
+                  </button>
+                {%- endfor -%}
+              </div>
+              <input
+                type="hidden"
+                name="properties[{{ cf_name }}]"
+                id="cf-hidden-{{ cf_name | handle }}"
+                class="pdp__custom-field__radio-val"
+                {%- if cf_req %}
+                  data-cf-required="true"
+                {% endif %}
+              >
+              {%- if cf_helper != blank -%}
+                <p class="pdp__custom-field__helper">{{ cf_helper }}</p>
+              {%- endif -%}
+              {%- if cf_req -%}
+                <p class="pdp__custom-field__error-msg">Selecione uma opção.</p>
+              {%- endif -%}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
       {%- endfor -%}
 
       <!-- Quantidade -->
@@ -585,19 +665,27 @@
       <!-- CTAs -->
       <div class="pdp__ctas">
         <div id="pdp-add-btn-wrap" style="display:contents">
+          {%- liquid
+            # Só desabilita quando o cliente já escolheu uma variante e ela está esgotada.
+            # Sem nada selecionado, deixa habilitado pra exibir o erro de validação no clique.
+            assign cta_sold_out = false
+            if has_variant and cv.available == false
+              assign cta_sold_out = true
+            endif
+          -%}
           <button
             type="submit"
             class="ame-cta pdp__add-btn"
             id="pdp-add-btn"
-            {%- unless cv.available %}
+            {% if cta_sold_out %}
               disabled
-            {%- endunless %}
+            {% endif %}
           >
-            {%- if cv.available -%}
+            {%- if cta_sold_out -%}
+              Esgotado
+            {%- else -%}
               Adicionar ao Carrinho
               <span class="material-symbols-outlined" style="font-size:1rem;" aria-hidden="true">shopping_bag</span>
-            {%- else -%}
-              Esgotado
             {%- endif -%}
           </button>
         </div>
@@ -736,10 +824,10 @@
     /* swipe */
     let sx = 0;
     track?.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
-    track?.addEventListener('touchend',   e => {
+    track?.addEventListener('touchend', e => {
       const dx = sx - e.changedTouches[0].clientX;
       if (Math.abs(dx) > 40) goTo(dx > 0 ? cur + 1 : cur - 1);
-    });
+    }, { passive: true });
 
     /* ── Quantidade ── */
     const qtyInput = document.getElementById('pdp-qty');
@@ -789,17 +877,55 @@
 
         const freshVariantInput = doc.getElementById('pdp-variant-id');
         const currentVariantInput = document.getElementById('pdp-variant-id');
-        if (freshVariantInput && currentVariantInput) currentVariantInput.value = freshVariantInput.value;
+        if (freshVariantInput && currentVariantInput) {
+          currentVariantInput.value = freshVariantInput.value;
+          if (freshVariantInput.dataset.mediaId) {
+            currentVariantInput.dataset.mediaId = freshVariantInput.dataset.mediaId;
+          } else {
+            delete currentVariantInput.dataset.mediaId;
+          }
+        }
 
         bindOptionClicks();
 
+        // Prioriza a featured_media da variante selecionada (cobre opções como Tamanho,
+        // Cor do Metal, Formato — que não têm data-media-id no botão). Fallback: swatch ativo.
+        const variantMediaId = currentVariantInput?.dataset.mediaId;
         const newActive = document.querySelector('#pdp-options-wrap .pdp__swatch--active');
-        if (newActive?.dataset.mediaId) navigateGalleryToMedia(newActive.dataset.mediaId);
+        if (variantMediaId) navigateGalleryToMedia(variantMediaId);
+        else if (newActive?.dataset.mediaId) navigateGalleryToMedia(newActive.dataset.mediaId);
 
         document.dispatchEvent(new CustomEvent('pdp:variant-changed'));
       } catch (err) {
         console.warn('[pdp] refreshVariantSection failed', err);
       }
+    }
+
+    function isSelectionComplete() {
+      const groups = document.querySelectorAll('#pdp-options-wrap [data-option-index]');
+      if (!groups.length) return true;
+      return Array.from(groups).every(g =>
+        g.querySelector('.pdp__swatch--active, .pdp__size-btn--active')
+      );
+    }
+
+    /* ── Resumo "Você selecionou: X + Y + Z." sobre a imagem (mobile) ── */
+    function updateSelectionInfo() {
+      const wrap = document.querySelector('[data-selection-info]');
+      if (!wrap) return;
+      const valuesEl = wrap.querySelector('[data-selection-info-values]');
+      const groups = document.querySelectorAll('#pdp-options-wrap [data-option-index]');
+      const values = [];
+      groups.forEach(g => {
+        const active = g.querySelector('.pdp__swatch--active, .pdp__size-btn--active');
+        if (active?.dataset.value) values.push(active.dataset.value);
+      });
+      if (values.length === 0) {
+        wrap.hidden = true;
+        return;
+      }
+      valuesEl.textContent = values.join(' + ') + '.';
+      wrap.hidden = false;
     }
 
     function bindOptionClicks() {
@@ -812,16 +938,81 @@
           const valEl = document.getElementById(`pdp-opt-val-${+group.dataset.optionIndex + 1}`);
           if (valEl) valEl.textContent = btn.dataset.value;
 
+          // Limpa o highlight de erro nesse grupo (cliente respondeu)
+          group.closest('.pdp__option')?.classList.remove('pdp__option--invalid');
+
           if (btn.classList.contains('pdp__swatch') && btn.dataset.mediaId) {
             navigateGalleryToMedia(btn.dataset.mediaId);
           }
 
-          refreshVariantSection();
+          updateSelectionInfo();
+
+          // Section Rendering API só roda quando tudo está selecionado — sem isso o
+          // servidor devolveria cv=nil e perderíamos os botões com seleção parcial.
+          if (isSelectionComplete()) {
+            refreshVariantSection();
+          } else {
+            // Sinaliza pro pingente revalidar o estado da coleira (mesmo sem variant final)
+            document.dispatchEvent(new CustomEvent('pdp:variant-changed'));
+          }
         }));
       });
     }
 
     bindOptionClicks();
+    // Boot: caso a URL traga ?variant=... os botões já vêm marcados, então mostramos.
+    updateSelectionInfo();
+    // Re-aplica após Section Rendering API substituir o markup das opções.
+    document.addEventListener('pdp:variant-changed', updateSelectionInfo);
+
+    /* ── Validação no submit: destaca opções faltantes + scroll + toast ── */
+    function validateAndHighlight() {
+      const groups = document.querySelectorAll('#pdp-options-wrap [data-option-index]');
+      const missing = [];
+      groups.forEach(g => {
+        const wrap = g.closest('.pdp__option');
+        if (!g.querySelector('.pdp__swatch--active, .pdp__size-btn--active')) {
+          wrap?.classList.add('pdp__option--invalid');
+          missing.push(wrap);
+        } else {
+          wrap?.classList.remove('pdp__option--invalid');
+        }
+      });
+      if (missing.length === 0) return { ok: true };
+      const labels = missing.map(w => w.querySelector('.pdp__option-label')?.textContent.trim()).filter(Boolean);
+      // Scroll até o primeiro grupo faltante
+      const headerH = document.querySelector('.ame-header-group')?.getBoundingClientRect().height || 0;
+      const firstTop = missing[0].getBoundingClientRect().top + window.scrollY - headerH - 16;
+      window.scrollTo({ top: firstTop, behavior: 'smooth' });
+      return { ok: false, msg: labels.length
+        ? `Selecione: ${labels.join(', ')}.`
+        : 'Selecione todas as opções antes de continuar.' };
+    }
+
+    /* Toast simples no topo da PDP */
+    function showSelectionToast(msg) {
+      let toast = document.getElementById('pdp-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'pdp-toast';
+        toast.className = 'pdp__toast';
+        toast.setAttribute('role', 'alert');
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.classList.add('is-visible');
+      clearTimeout(showSelectionToast._t);
+      showSelectionToast._t = setTimeout(() => toast.classList.remove('is-visible'), 3500);
+    }
+
+    // Expõe pra ser usado pelo handler de submit que já existe abaixo
+    window.AmePdpValidate = function () {
+      const r = validateAndHighlight();
+      if (!r.ok) showSelectionToast(r.msg);
+      return r.ok;
+    };
+    // Toast público — usado também pelo snippet do pingente
+    window.AmePdpToast = showSelectionToast;
 
     /* ── Campos Personalizados — radio ── */
     document.querySelectorAll('.pdp__custom-field__radio-btn').forEach(btn => {
@@ -833,6 +1024,23 @@
         if (hidden) hidden.value = btn.dataset.value;
         group?.classList.remove('pdp__custom-field--error');
       });
+    });
+
+    /* ── Contador de caracteres dos campos personalizados ── */
+    document.querySelectorAll('.pdp__custom-field [data-cf-counter]').forEach(counter => {
+      const max = parseInt(counter.dataset.cfMax, 10) || 0;
+      if (!max) return;
+      const wrap = counter.closest('.pdp__custom-field');
+      const field = wrap?.querySelector('input[maxlength], textarea[maxlength]');
+      if (!field) return;
+      const update = () => {
+        const len = field.value.length;
+        counter.textContent = `${len} / ${max}`;
+        counter.classList.toggle('is-near', len >= max * 0.8 && len < max);
+        counter.classList.toggle('is-full', len >= max);
+      };
+      field.addEventListener('input', update);
+      update();
     });
 
     document.getElementById('pdp-form')?.addEventListener('input', e => {
@@ -853,6 +1061,9 @@
     document.getElementById('pdp-form')?.addEventListener('submit', async e => {
       e.preventDefault();
 
+      /* Validate variant selection (todas as opções escolhidas) */
+      if (!window.AmePdpValidate || !window.AmePdpValidate()) return;
+
       /* Validate required custom fields */
       let cfValid = true;
       e.target.querySelectorAll('[data-cf-required]').forEach(field => {
@@ -866,7 +1077,7 @@
       if (window.amePingente?.isActive()) {
         const pv = window.amePingente.validate();
         if (!pv.ok) {
-          alert(pv.msg);
+          (window.AmePdpToast || ((m) => alert(m)))(pv.msg);
           return;
         }
       }
@@ -874,7 +1085,7 @@
       const btn  = document.getElementById('pdp-add-btn');
       const orig = btn.innerHTML;
 
-      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:1rem;animation:pdp-spin 0.6s linear infinite;" aria-hidden="true">refresh</span>';
+      btn.innerHTML = 'Adicionando... <span class="material-symbols-outlined" style="font-size:1rem;animation:pdp-spin 0.6s linear infinite;" aria-hidden="true">refresh</span>';
       btn.disabled  = true;
       btn.setAttribute('aria-busy', 'true');
 
@@ -895,9 +1106,10 @@
           ...(Object.keys(coleiraProps).length ? { properties: coleiraProps } : {})
         }];
 
-        /* Adiciona pingente como item separado, se aplicável */
+        /* Adiciona pingente como item separado, se aplicável.
+           Passa a quantidade da coleira pra manter 1 pingente por coleira. */
         if (window.amePingente?.isActive()) {
-          const pingenteItem = window.amePingente.getCartItem();
+          const pingenteItem = window.amePingente.getCartItem(coleiraQty);
           if (pingenteItem) items.push(pingenteItem);
         }
 
@@ -947,6 +1159,106 @@
         }
       });
     });
+  })();
+</script>
+
+<script>
+  /* ── Imagem fixa no scroll mobile até o botão "Adicionar ao Carrinho" aparecer ── */
+  (() => {
+    // O wrapper sticky inclui imagem + barra "Você selecionou: ..." — vira fixed juntos
+    const wrap = document.querySelector('.pdp__sticky-wrap');
+    if (!wrap) return;
+
+    // O CTA é re-buscado a cada update porque a Section Rendering API substitui o
+    // nó do botão (#pdp-add-btn-wrap) ao trocar variante — referência cacheada vira órfã.
+    const getCta = () => document.querySelector('.ame-cta.pdp__add-btn');
+
+    const spacer = document.createElement('div');
+    spacer.className = 'pdp__main-img-spacer';
+    spacer.setAttribute('aria-hidden', 'true');
+    wrap.after(spacer);
+
+    const mq = window.matchMedia('(max-width: 1023px)');
+    let pinned = false;
+    let headerOffset = 0;
+
+    function measureHeader() {
+      const header = document.querySelector('.ame-header-group');
+      headerOffset = header ? header.getBoundingClientRect().height : 0;
+      wrap.style.setProperty('--pdp-pinned-top', headerOffset + 'px');
+    }
+
+    function pin() {
+      if (pinned) return;
+      spacer.style.height = wrap.offsetHeight + 'px';
+      wrap.classList.add('is-pinned');
+      pinned = true;
+    }
+    function unpin() {
+      if (!pinned) return;
+      wrap.classList.remove('is-pinned');
+      wrap.style.transform = '';
+      spacer.style.height = '';
+      pinned = false;
+    }
+
+    function update() {
+      if (!mq.matches) {
+        unpin();
+        return;
+      }
+      const cta = getCta();
+      if (!cta) {
+        unpin();
+        return;
+      }
+      const ctaRect = cta.getBoundingClientRect();
+      const refRect = pinned ? spacer.getBoundingClientRect() : wrap.getBoundingClientRect();
+      const scrolledPastImage = refRect.top < headerOffset;
+
+      if (!scrolledPastImage) {
+        unpin();
+        return;
+      }
+
+      pin();
+      // Empurra a imagem pra cima quando o CTA se aproxima da base, evitando sobreposição
+      const pinnedHeight = wrap.offsetHeight;
+      const pinnedBottom = headerOffset + pinnedHeight;
+      const overlap = pinnedBottom + 16 - ctaRect.top;
+      if (overlap > 0) {
+        const ty = Math.min(overlap, pinnedHeight + 16);
+        wrap.style.transform = `translateY(-${ty}px)`;
+      } else {
+        wrap.style.transform = '';
+      }
+    }
+
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        update();
+      });
+    }
+
+    function onResize() {
+      measureHeader();
+      if (pinned) spacer.style.height = wrap.offsetHeight + 'px';
+      update();
+    }
+
+    measureHeader();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+    if (mq.addEventListener) mq.addEventListener('change', onResize);
+    // Re-avalia quando a variante muda (CTA/preço/badge são re-renderizados pelo Section Rendering API)
+    document.addEventListener('pdp:variant-changed', () => requestAnimationFrame(update));
+
+    if (document.readyState === 'complete') update();
+    else window.addEventListener('load', update);
   })();
 </script>
 
@@ -1000,6 +1312,37 @@
     color: var(--color-on-surface-variant, #4f4442);
     opacity: 0.7;
     margin: 0;
+  }
+
+  .pdp__custom-field__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+  .pdp__custom-field__footer .pdp__custom-field__helper {
+    flex: 1;
+  }
+
+  .pdp__custom-field__counter {
+    font-family: var(--font-primary--family, 'Lexend', sans-serif);
+    font-size: 0.6875rem;
+    color: var(--color-on-surface-variant, #4f4442);
+    opacity: 0.55;
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    transition: color 0.2s ease, opacity 0.2s ease;
+  }
+  .pdp__custom-field__counter.is-near {
+    opacity: 1;
+    color: var(--color-primary, #5a4742);
+  }
+  .pdp__custom-field__counter.is-full {
+    opacity: 1;
+    color: #c0392b;
+    font-weight: 600;
   }
 
   .pdp__custom-field__radio-group {
@@ -1121,8 +1464,155 @@
     height: 100%;
     object-fit: contain;
     display: block;
-    transform: scale(1.6);
-    margin-top: 10px;
+    /* transform: scale(1.6); */
+    /*margin-top: 10px;*/
+  }
+
+  /* ── Resumo das variações escolhidas (abaixo da imagem, mobile) ── */
+  .pdp__selection-info {
+    padding: 0.625rem 1rem;
+    background: var(--color-surface, #fff8f3);
+    color: var(--color-on-background, #201b14);
+    font-family: var(--font-primary--family, 'Lexend', sans-serif);
+    font-size: 0.67rem;
+    line-height: 1.35;
+    text-align: center;
+    border-top: 1px solid rgba(210, 195, 192, 0.3);
+    opacity: 0.8;
+  }
+  .pdp__selection-info[hidden] {
+    display: none;
+  }
+  .pdp__selection-info__label {
+    font-weight: 400;
+    color: var(--color-on-surface-variant, #4f4442);
+    margin-right: 0.25rem;
+  }
+  .pdp__selection-info__values {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  /* Desktop não mostra (a coluna lateral já dá o feedback) */
+  @media (min-width: 1024px) {
+    .pdp__selection-info {
+      display: none;
+    }
+  }
+
+  /* Variante "over" — texto sobreposto no topo da imagem (libera espaço da tela) */
+  .pdp__sticky-wrap--selection-over .pdp__main-img-wrap > .pdp__selection-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    padding: 0.625rem 1rem 1.5rem;
+    background: linear-gradient(to bottom, rgba(32, 27, 20, 0.7) 0%, rgba(32, 27, 20, 0.35) 60%, transparent 100%);
+    color: #fff;
+    border-top: none;
+    pointer-events: none;
+    opacity: 1;
+  }
+  .pdp__sticky-wrap--selection-over .pdp__main-img-wrap > .pdp__selection-info .pdp__selection-info__label {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* ── Validação: opções não selecionadas no clique do CTA ── */
+  .pdp__option--invalid {
+    border-radius: var(--radius-md, 4px);
+    padding: 0.75rem;
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+    background: rgba(192, 57, 43, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(192, 57, 43, 0.55);
+    animation: pdpOptionShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+  .pdp__option--invalid .pdp__option-label {
+    color: #c0392b;
+  }
+  @keyframes pdpOptionShake {
+    10%,
+    90% {
+      transform: translateX(-2px);
+    }
+    20%,
+    80% {
+      transform: translateX(3px);
+    }
+    30%,
+    50%,
+    70% {
+      transform: translateX(-5px);
+    }
+    40%,
+    60% {
+      transform: translateX(5px);
+    }
+  }
+
+  /* ── Toast de erro de seleção ── */
+  .pdp__toast {
+    position: fixed;
+    top: 5rem;
+    left: 50%;
+    transform: translate(-50%, -16px);
+    z-index: 200;
+    background: #201b14;
+    color: #fff;
+    font-family: var(--font-primary--family, 'Lexend', sans-serif);
+    font-size: 0.875rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-md, 4px);
+    box-shadow: 0 12px 32px rgba(32, 27, 20, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    max-width: calc(100vw - 2rem);
+    text-align: center;
+  }
+  .pdp__toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  /* ── Imagem + barra de seleção ficam fixas no scroll mobile até o CTA aparecer ── */
+  .pdp__main-img-spacer {
+    width: 100%;
+    display: none;
+  }
+
+  @media (max-width: 1023px) {
+    .pdp__sticky-wrap.is-pinned {
+      position: fixed;
+      top: var(--pdp-pinned-top, 0px);
+      left: 0;
+      right: 0;
+      width: 100%;
+      margin: 0;
+      /*padding: 0.625rem 0.75rem 0;*/
+      padding: 0 0.75rem 0;
+      z-index: 50;
+      will-change: transform;
+      background: var(--color-surface, #fff8f3);
+      /*box-shadow: 0 8px 16px rgba(32, 27, 20, 0.08);*/
+    }
+    /* Imagem fica quadrada com borda lateral + sombra (efeito de flutuar) */
+    .pdp__sticky-wrap.is-pinned .pdp__main-img-wrap {
+      /*width: min(100%, 38vh);*/
+      aspect-ratio: 1 / 1;
+      height: auto;
+      margin: 0 auto;
+      border-radius: var(--radius-lg, 0.75rem);
+      box-shadow: 0 10px 24px rgba(32, 27, 20, 0.18);
+    }
+    /* Pingente sobreposto reposicionado para acompanhar a imagem encolhida */
+    .pdp__sticky-wrap.is-pinned .pdp__pingente-overlay {
+      bottom: 5%;
+      width: 30%;
+    }
+    .pdp__sticky-wrap.is-pinned + .pdp__main-img-spacer {
+      display: block;
+    }
   }
 {% endstylesheet %}
 
@@ -1155,6 +1645,21 @@
       "id": "pdp_btn_fg_color",
       "label": "Cor do texto do botão",
       "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Resumo de variações (mobile)"
+    },
+    {
+      "type": "select",
+      "id": "selection_info_position",
+      "label": "Posição do resumo \"Você selecionou: ...\"",
+      "info": "Aparece apenas no mobile, após o cliente escolher pelo menos uma variação.",
+      "options": [
+        { "value": "below", "label": "Abaixo da imagem" },
+        { "value": "over", "label": "Sobre o topo da imagem" }
+      ],
+      "default": "below"
     },
     {
       "type": "header",
