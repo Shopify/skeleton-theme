@@ -70,6 +70,13 @@
     "custom_field_4_name": "Telefone",
     "custom_field_4_title": "Verso 2ª Linha / Telefone do tutor",
     "custom_field_4_required": true,
-    "content_for_index": []
+    "content_for_index": [],
+    "blocks": {
+      "9741741230116411038": {
+        "type": "shopify://apps/optis-color-swatch/blocks/bss-se-script/ad128d8f-5ebd-45ad-954a-7dd4c4226109",
+        "disabled": false,
+        "settings": {}
+      }
+    }
   }
 }
