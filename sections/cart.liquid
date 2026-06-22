@@ -19,7 +19,12 @@
           {{ 'cart.remove' | t | link_to: item.url_to_remove }}
         </td>
         <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
+          <input
+            type="text"
+            name="updates[]"
+            value="{{ item.quantity }}"
+            aria-label="{{ 'cart.quantity' | t: title: item.product.title }}"
+          >
           <input type="submit" value="{{ 'cart.update' | t }}">
         </td>
       </tr>
