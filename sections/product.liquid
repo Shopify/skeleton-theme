@@ -7,7 +7,7 @@
 
 <div class="product-images">
   {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
+    {% render 'image', class: 'product-image', image: image, alt: image.alt %}
   {% endfor %}
 </div>
 

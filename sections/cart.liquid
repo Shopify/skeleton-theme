@@ -12,7 +12,7 @@
     {% for item in cart.items %}
       <tr>
         <td>
-          {% render 'image', image: item.image, url: item.url %}
+          {% render 'image', image: item.image, url: item.url, alt: item.image.alt %}
         </td>
         <td>
           <p>{{ item.product.title }}</p>

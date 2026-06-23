@@ -13,6 +13,7 @@
   @param {number} [width] - The highest resolution width of the image to be rendered
   @param {number} [height] - The highest resolution height of the image to be rendered
   @param {string} [crop] - The crop position of the image
+  @param {string} [alt] - The image description
 
   @example
   {% render 'image', image: product.featured_image %}
@@ -24,6 +25,7 @@
     width: 1200,
     height: 800,
     crop: 'center',
+    alt: product.featured_image.alt
   %}
 {% enddoc %}
 
@@ -45,7 +47,7 @@
     href="{{ url }}"
   {% endif %}
 >
-  {{ image | image_url: width: width, height: height, crop: crop | image_tag }}
+  {{ image | image_url: width: width, height: height, crop: crop | image_tag: alt: alt }}
 </{{ wrapper }}>
 
 {% stylesheet %}
