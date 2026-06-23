@@ -44,6 +44,7 @@
   },
   "search": {
     "title": "Search",
+    "search": "Search",
     "placeholder": "Search articles, pages, or products",
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
