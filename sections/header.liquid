@@ -1,4 +1,8 @@
 <header>
+  <a href="#main" class="skip-link visually-hidden">
+    {{ 'general.skip_link' | t }}
+  </a>
+
   <h2 class="header__title">
     {{ shop.name | link_to: routes.root_url }}
   </h2>
@@ -54,6 +58,14 @@
   header .header__icons {
     display: flex;
     gap: 1rem;
+  }
+
+  header .skip-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: var(--page-margin);
+    background-color: var(--color-background);
   }
 {% endstylesheet %}
 

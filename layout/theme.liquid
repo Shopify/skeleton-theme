@@ -29,7 +29,9 @@
   <body>
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
   </body>

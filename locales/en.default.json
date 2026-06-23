@@ -30,6 +30,9 @@
   "collections": {
     "title": "Collections"
   },
+  "general": {
+    "skip_link": "Skip to main content"
+  },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
     "card": "Gift card",
@@ -37,6 +40,7 @@
     "expires_on": "Expires on {{ expires_on }}",
     "use_at_checkout": "Use this gift card at checkout"
   },
+
   "password": {
     "title": "This shop is private",
     "password": "Password",
