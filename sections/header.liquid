@@ -1,7 +1,7 @@
 <header>
-  <h2 class="header__title">
+  <div class="header__title">
     {{ shop.name | link_to: routes.root_url }}
-  </h2>
+  </div>
 
   <div class="header__menu">
     {% for link in section.settings.menu.links %}
@@ -54,6 +54,10 @@
   header .header__icons {
     display: flex;
     gap: 1rem;
+  }
+  header .header__title {
+    font-size: 1.5rem;
+    font-weight: 700;
   }
 {% endstylesheet %}
 
