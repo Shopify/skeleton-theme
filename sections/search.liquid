@@ -31,7 +31,13 @@
           <div class="search-result">
             {% assign featured_image = result.featured_image | default: result.image %}
             {% if featured_image %}
-              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
+              {% render 'image',
+                class: 'search-result__image',
+                image: featured_image,
+                url: result.url,
+                width: 400,
+                alt: featured_image.alt
+              %}
             {% endif %}
             <div class="search-result__content">
               <p>
