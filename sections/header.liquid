@@ -3,11 +3,20 @@
     {{ shop.name | link_to: routes.root_url }}
   </h2>
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+  <nav class="header__menu">
+    <ul class="header__list">
+      {% for link in section.settings.menu.links %}
+        <li
+          class="header__item"
+          {% if link.current %}
+            aria-current="page"
+          {% endif %}
+        >
+          {{ link.title | link_to: link.url }}
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
 
   <div class="header__icons">
     {% if shop.customer_accounts_enabled %}
@@ -50,10 +59,13 @@
   header svg {
     width: 2rem;
   }
-  header .header__menu,
+  header .header__list,
   header .header__icons {
     display: flex;
     gap: 1rem;
+  }
+  header .header__item {
+    list-style: none;
   }
 {% endstylesheet %}
 
@@ -64,7 +76,8 @@
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "t:labels.menu",
+      "default": "main-menu"
     },
     {
       "type": "link_list",
