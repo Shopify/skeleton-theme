@@ -37,6 +37,16 @@
     "alignment": "Alignment",
     "background": "Background",
     "foreground": "Foreground",
+    "base_colors": "Base",
+    "brand_colors": "Brand colors",
+    "ui_colors": "UI & state colors",
+    "inputs": "Inputs",
+    "color_primary": "Primary",
+    "color_secondary": "Secondary",
+    "color_border": "Border",
+    "color_error": "Error",
+    "color_success": "Success",
+    "color_warning": "Warning",
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
     "input_corner_radius": "Input corner radius",
@@ -72,6 +82,6 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
   }
 }

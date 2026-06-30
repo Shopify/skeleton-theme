@@ -57,6 +57,10 @@
     "name": "t:general.colors",
     "settings": [
       {
+        "type": "header",
+        "content": "t:labels.base_colors"
+      },
+      {
         "type": "color",
         "id": "background_color",
         "default": "#FFFFFF",
@@ -67,6 +71,54 @@
         "id": "foreground_color",
         "default": "#333333",
         "label": "t:labels.foreground"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.brand_colors"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "default": "#2B5BE0",
+        "label": "t:labels.color_primary"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "default": "#6B7280",
+        "label": "t:labels.color_secondary"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.ui_colors"
+      },
+      {
+        "type": "color",
+        "id": "color_border",
+        "default": "#E5E7EB",
+        "label": "t:labels.color_border"
+      },
+      {
+        "type": "color",
+        "id": "color_error",
+        "default": "#EF4444",
+        "label": "t:labels.color_error"
+      },
+      {
+        "type": "color",
+        "id": "color_success",
+        "default": "#10B981",
+        "label": "t:labels.color_success"
+      },
+      {
+        "type": "color",
+        "id": "color_warning",
+        "default": "#F59E0B",
+        "label": "t:labels.color_warning"
+      },
+      {
+        "type": "header",
+        "content": "t:labels.inputs"
       },
       {
         "type": "range",

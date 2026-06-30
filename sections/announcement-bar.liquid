@@ -1,0 +1,173 @@
+{% if section.blocks.size > 0 %}
+<announcement-bar
+  data-interval="{{ section.settings.rotation_interval }}"
+  style="background-color: {{ section.settings.background_color }};"
+>
+  <div class="announcement-bar__track">
+    {% for block in section.blocks %}
+      <div
+        class="announcement-bar__slide{% if forloop.first %} is-active{% endif %}"
+        {{ block.shopify_attributes }}
+      >
+        {% if block.settings.link != blank %}
+          <a
+            class="announcement-bar__text"
+            href="{{ block.settings.link }}"
+            style="color: {{ section.settings.text_color }};"
+          >
+            {{- block.settings.text -}}
+          </a>
+        {% elsif block.settings.text != blank %}
+          <span
+            class="announcement-bar__text"
+            style="color: {{ section.settings.text_color }};"
+          >
+            {{- block.settings.text -}}
+          </span>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</announcement-bar>
+{% endif %}
+
+{% stylesheet %}
+  announcement-bar {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 1rem;
+    text-align: center;
+  }
+
+  .announcement-bar__track {
+    position: relative;
+    min-height: 1.25em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .announcement-bar__slide {
+    display: none;
+    animation: ab-fade-in 0.4s ease;
+  }
+
+  .announcement-bar__slide.is-active {
+    display: block;
+  }
+
+  .announcement-bar__text {
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    line-height: 1.4;
+  }
+
+  a.announcement-bar__text:hover {
+    text-decoration: underline;
+  }
+
+  @keyframes ab-fade-in {
+    from { opacity: 0; transform: translateY(-3px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class AnnouncementBar extends HTMLElement {
+    connectedCallback() {
+      this._slides = Array.from(this.querySelectorAll('.announcement-bar__slide'));
+      if (this._slides.length <= 1) return;
+      this._index = 0;
+      const ms = (parseInt(this.dataset.interval, 10) || 5) * 1000;
+      this._timer = setInterval(this._rotate.bind(this), ms);
+    }
+
+    disconnectedCallback() {
+      clearInterval(this._timer);
+    }
+
+    _rotate() {
+      this._slides[this._index].classList.remove('is-active');
+      this._index = (this._index + 1) % this._slides.length;
+      this._slides[this._index].classList.add('is-active');
+    }
+  }
+
+  customElements.define('announcement-bar', AnnouncementBar);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "rotation_interval",
+      "label": "Rotation interval",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "placeholder": "Announce something here"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar",
+      "blocks": [
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping on orders over $100 →"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "New arrivals — shop the latest collection →"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Complimentary gift wrapping available →"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
