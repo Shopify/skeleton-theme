@@ -1,0 +1,259 @@
+{% comment %}
+  Full-viewport cinematic hero with a background video (or image fallback),
+  overlay, eyebrow, headline and call-to-action buttons.
+{% endcomment %}
+
+{% liquid
+  assign poster = section.settings.poster_url
+  if section.settings.poster_image != blank
+    assign poster = section.settings.poster_image | image_url: width: 2400
+  endif
+%}
+
+<section class="hero full-width" style="--overlay: {{ section.settings.overlay_opacity }}%; --min-h: {{ section.settings.height }}svh;">
+  <div class="hero__media">
+    {% if section.settings.video_url != blank %}
+      <video
+        class="hero__video"
+        autoplay
+        muted
+        loop
+        playsinline
+        poster="{{ poster }}"
+      >
+        <source src="{{ section.settings.video_url }}" type="video/mp4">
+      </video>
+    {% else %}
+      <img class="hero__video" src="{{ poster }}" alt="" loading="eager" width="2400" height="1350">
+    {% endif %}
+    <div class="hero__overlay"></div>
+  </div>
+
+  <div class="hero__content text-center">
+    {% if section.settings.eyebrow != blank %}
+      <p class="eyebrow hero__eyebrow">{{ section.settings.eyebrow }}</p>
+    {% endif %}
+    {% if section.settings.heading != blank %}
+      <h1 class="hero__heading">{{ section.settings.heading }}</h1>
+    {% endif %}
+    {% if section.settings.subheading != blank %}
+      <p class="hero__subheading measure">{{ section.settings.subheading }}</p>
+    {% endif %}
+
+    <div class="hero__actions">
+      {% if section.settings.button_label != blank %}
+        <a class="button button--on-dark" href="{{ section.settings.button_url | default: routes.all_products_collection_url }}">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+      {% if section.settings.button_label_2 != blank %}
+        <a class="button button--ghost hero__button-ghost" href="{{ section.settings.button_url_2 }}">
+          {{ section.settings.button_label_2 }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if section.settings.show_scroll_cue %}
+    <div class="hero__scroll" aria-hidden="true">
+      <span></span>
+    </div>
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  .hero {
+    position: relative;
+    min-height: var(--min-h, 92svh);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    color: var(--color-contrast);
+    isolation: isolate;
+  }
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .hero__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(14, 30, 51, 0.25), rgba(14, 30, 51, 0.65)),
+      rgba(14, 30, 51, calc(var(--overlay) / 100));
+  }
+  .hero__content {
+    padding: var(--space-2xl) var(--page-margin);
+    max-width: 60rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    animation: hero-rise 1.2s var(--ease) both;
+  }
+  .hero__eyebrow {
+    color: var(--color-accent-soft);
+  }
+  .hero__heading {
+    font-size: var(--text-hero);
+    margin: 0;
+  }
+  .hero__subheading {
+    font-size: var(--text-lg);
+    color: color-mix(in srgb, var(--color-contrast) 88%, transparent);
+  }
+  .hero__actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: var(--space-sm);
+  }
+  .hero__button-ghost {
+    color: var(--color-contrast);
+    border-color: var(--color-contrast);
+  }
+  .hero__button-ghost:hover {
+    background-color: var(--color-contrast);
+    color: var(--color-navy);
+  }
+  .hero__scroll {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 3.5rem;
+    background: color-mix(in srgb, var(--color-contrast) 40%, transparent);
+    overflow: hidden;
+  }
+  .hero__scroll span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: var(--color-contrast);
+    animation: hero-scroll 2s var(--ease) infinite;
+  }
+
+  @keyframes hero-rise {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes hero-scroll {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(250%); }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Background video URL (mp4)",
+      "info": "Leave empty to use the poster image only.",
+      "default": "https://assets.mixkit.co/videos/preview/mixkit-waves-coming-to-the-beach-5016-large.mp4"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_image",
+      "label": "Poster image"
+    },
+    {
+      "type": "text",
+      "id": "poster_url",
+      "label": "Poster image URL (fallback)",
+      "default": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=2400&q=80"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay darkness",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "min": 60,
+      "max": 100,
+      "step": 2,
+      "unit": "vh",
+      "label": "Section height",
+      "default": 92
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Odyssey Jewels"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Travel the World, Collect the World"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Rare, one-of-a-kind treasures gathered from artisans across the globe. Every jewel tells a story."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Primary button label",
+      "default": "Explore the collection"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Primary button link"
+    },
+    {
+      "type": "text",
+      "id": "button_label_2",
+      "label": "Secondary button label",
+      "default": "Our story"
+    },
+    {
+      "type": "url",
+      "id": "button_url_2",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_cue",
+      "label": "Show scroll indicator",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero"
+    }
+  ]
+}
+{% endschema %}

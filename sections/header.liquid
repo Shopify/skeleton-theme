@@ -1,66 +1,308 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+{% comment %}
+  Premium site header: announcement bar, centered brand, region-based nav,
+  search / account / cart. Optional transparent overlay on the homepage hero.
+{% endcomment %}
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
+{% liquid
+  assign is_transparent = false
+  if section.settings.transparent_on_home and template.name == 'index'
+    assign is_transparent = true
+  endif
+%}
+
+{% if section.settings.announcement != blank %}
+  <div class="announcement">
+    <p class="announcement__text">{{ section.settings.announcement }}</p>
   </div>
+{% endif %}
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      <shopify-account menu="{{ section.settings.customer_account_menu }}">
-        {{ 'icon-account.svg' | inline_asset_content }}
-      </shopify-account>
-    {% endif %}
+<header
+  class="site-header{% if is_transparent %} site-header--transparent{% endif %}"
+  data-sticky="{{ section.settings.sticky }}"
+>
+  <div class="site-header__inner full-width">
+    <nav class="site-header__nav site-header__nav--left" aria-label="Primary">
+      {% for link in section.settings.menu.links %}
+        <a class="nav-link" href="{{ link.url }}">{{ link.title }}</a>
+      {% endfor %}
+    </nav>
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
+    <a class="site-header__brand" href="{{ routes.root_url }}">
+      {% if section.settings.logo != blank %}
+        {{
+          section.settings.logo
+          | image_url: width: 600
+          | image_tag:
+            class: 'site-header__logo',
+            alt: shop.name,
+            loading: 'eager',
+            widths: '120, 240, 360, 480, 600',
+            style: 'width: ' | append: section.settings.logo_width | append: 'px'
+        }}
+      {% else %}
+        <span class="site-header__wordmark">{{ shop.name }}</span>
+      {% endif %}
+    </a>
+
+    <div class="site-header__actions">
+      <a class="site-header__icon" href="{{ routes.search_url }}" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" width="22" height="22" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.5"/>
+          <path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </a>
+
+      {% if shop.customer_accounts_enabled %}
+        <shopify-account class="site-header__icon" menu="{{ section.settings.customer_account_menu }}">
+          {{ 'icon-account.svg' | inline_asset_content }}
+        </shopify-account>
       {% endif %}
 
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+      <a class="site-header__icon site-header__cart" href="{{ routes.cart_url }}" aria-label="Cart">
+        {{ 'icon-cart.svg' | inline_asset_content }}
+        {% if cart.item_count > 0 %}
+          <sup class="site-header__cart-count">{{ cart.item_count }}</sup>
+        {% endif %}
+      </a>
+
+      <details class="nav-mobile">
+        <summary class="site-header__icon nav-mobile__toggle" aria-label="Menu">
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </summary>
+        <div class="nav-mobile__panel">
+          {% for link in section.settings.menu.links %}
+            <a class="nav-mobile__link" href="{{ link.url }}">{{ link.title }}</a>
+          {% endfor %}
+        </div>
+      </details>
+    </div>
   </div>
 </header>
 
 {% stylesheet %}
-  header {
-    height: 5rem;
+  .announcement {
+    background-color: var(--color-navy);
+    color: var(--color-contrast);
+    text-align: center;
+    padding: 0.6rem var(--page-margin);
+  }
+  .announcement__text {
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--color-line);
+    transition: background-color var(--duration) var(--ease), color var(--duration) var(--ease), border-color var(--duration) var(--ease);
+  }
+
+  .site-header__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-md);
+    padding-inline: var(--page-margin);
+    min-height: 5.5rem;
+  }
+
+  .site-header__nav {
+    display: flex;
+    gap: var(--space-md);
+  }
+  .site-header__nav--left {
+    justify-content: flex-start;
+  }
+
+  .nav-link {
+    font-size: var(--text-sm);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: currentcolor;
+    position: relative;
+    padding-block: 0.5rem;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration) var(--ease);
+  }
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .site-header__brand {
+    text-align: center;
+    text-decoration: none;
+    color: currentcolor;
+  }
+  .site-header__wordmark {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-xl);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .site-header__logo {
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .site-header__actions {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
+    gap: var(--space-sm);
   }
-  header a {
-    position: relative;
-    text-decoration: none;
-    color: var(--color-foreground);
-    display: flex;
+  .site-header__icon {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    color: currentcolor;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    position: relative;
   }
-  header a sup {
+  .site-header__icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  .site-header__cart-count {
     position: absolute;
+    top: -0.5rem;
     left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
+    margin-left: -0.6rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    background-color: var(--color-accent);
+    color: var(--color-contrast);
+    min-width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25rem;
   }
-  header svg {
-    width: 2rem;
+
+  /* Transparent overlay on homepage hero */
+  .site-header--transparent:not([data-scrolled="true"]) {
+    position: fixed;
+    inset: 0 0 auto 0;
+    background-color: transparent;
+    border-bottom-color: transparent;
+    color: var(--color-contrast);
   }
-  header .header__menu,
-  header .header__icons {
+  .site-header--transparent:not([data-scrolled="true"]) .nav-link::after {
+    background-color: var(--color-contrast);
+  }
+
+  /* Mobile nav */
+  .nav-mobile {
+    display: none;
+    position: relative;
+  }
+  .nav-mobile__panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.75rem);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border: 1px solid var(--color-line);
+    padding: var(--space-sm);
+    min-width: 14rem;
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.25rem;
+    box-shadow: 0 20px 50px -20px rgba(14, 30, 51, 0.35);
+  }
+  .nav-mobile__link {
+    padding: 0.65rem 0.5rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: var(--text-sm);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .nav-mobile__link:last-child {
+    border-bottom: 0;
+  }
+  .nav-mobile summary {
+    list-style: none;
+  }
+  .nav-mobile summary::-webkit-details-marker {
+    display: none;
+  }
+
+  @media (max-width: 749px) {
+    .site-header__nav--left {
+      display: none;
+    }
+    .site-header__inner {
+      grid-template-columns: 1fr auto 1fr;
+      min-height: 4.5rem;
+    }
+    .nav-mobile {
+      display: block;
+    }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    const header = document.currentScript
+      ? document.querySelector('.site-header')
+      : null;
+    const el = document.querySelector('.site-header--transparent');
+    if (!el) return;
+    const onScroll = () => {
+      el.dataset.scrolled = window.scrollY > 40 ? 'true' : 'false';
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
   "name": "t:general.header",
   "settings": [
+    {
+      "type": "text",
+      "id": "announcement",
+      "label": "Announcement text",
+      "default": "Complimentary worldwide shipping — Every jewel tells a story"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 320,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 160
+    },
     {
       "type": "link_list",
       "id": "menu",
@@ -71,6 +313,18 @@
       "id": "customer_account_menu",
       "label": "t:labels.customer_account_menu",
       "default": "customer-account-main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky",
+      "label": "Sticky header",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_on_home",
+      "label": "Transparent over homepage hero",
+      "default": true
     }
   ]
 }

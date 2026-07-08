@@ -1,39 +1,207 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
+{% comment %}
+  Premium footer: brand statement, newsletter signup, link columns,
+  social, payment icons and legal row.
+{% endcomment %}
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+<footer class="site-footer on-dark">
+  <div class="site-footer__inner full-width">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        {% if section.settings.tagline != blank %}
+          <p class="eyebrow">{{ section.settings.tagline }}</p>
+        {% endif %}
+        <p class="site-footer__wordmark">{{ shop.name }}</p>
+        {% if section.settings.blurb != blank %}
+          <p class="site-footer__blurb measure">{{ section.settings.blurb }}</p>
+        {% endif %}
+      </div>
 
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
+      {% if section.settings.show_newsletter %}
+        <div class="site-footer__newsletter">
+          <p class="site-footer__news-title">{{ section.settings.newsletter_title }}</p>
+          {% form 'customer' %}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div class="newsletter-field">
+              <input
+                type="email"
+                name="contact[email]"
+                placeholder="{{ section.settings.newsletter_placeholder }}"
+                aria-label="Email"
+                required
+              >
+              <button type="submit" class="newsletter-field__submit" aria-label="Subscribe">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            {% if form.posted_successfully? %}
+              <p class="newsletter-note">Thank you — welcome to the expedition.</p>
+            {% endif %}
+          {% endform %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="site-footer__columns">
+      {% for block in section.blocks %}
+        {% if block.type == 'menu' %}
+          <div class="footer-col" {{ block.shopify_attributes }}>
+            {% if block.settings.title != blank %}
+              <p class="footer-col__title">{{ block.settings.title }}</p>
+            {% endif %}
+            <ul class="footer-col__list">
+              {% for link in block.settings.menu.links %}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
       {% endfor %}
-    {% endif %}
+    </div>
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__copyright">
+        &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.
+      </p>
+
+      {% if section.settings.show_payment_icons %}
+        <div class="site-footer__payment">
+          {% for type in shop.enabled_payment_types %}
+            {{ type | payment_type_svg_tag }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
   </div>
 </footer>
 
 {% stylesheet %}
-  footer {
+  .site-footer {
+    margin-top: 0;
+  }
+  .site-footer__inner {
+    padding: var(--space-2xl) var(--page-margin) var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  .site-footer__top {
     display: flex;
     justify-content: space-between;
-    margin-top: 2rem;
+    gap: var(--space-xl);
+    flex-wrap: wrap;
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-contrast) 18%, transparent);
   }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
+  .site-footer__wordmark {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-2xl);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: var(--space-2xs);
   }
-  footer .footer__links,
-  footer .footer__payment {
+  .site-footer__blurb {
+    margin-top: var(--space-sm);
+    color: color-mix(in srgb, var(--color-contrast) 80%, transparent);
+  }
+  .site-footer__news-title {
+    font-size: var(--text-sm);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+  }
+  .newsletter-field {
     display: flex;
-    gap: 1rem;
+    align-items: center;
+    gap: var(--space-2xs);
+    border-bottom: 1px solid var(--color-contrast);
+    min-width: min(24rem, 80vw);
+  }
+  .newsletter-field input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    color: var(--color-contrast);
+    padding: 0.75rem 0;
+    outline: none;
+  }
+  .newsletter-field input::placeholder {
+    color: color-mix(in srgb, var(--color-contrast) 60%, transparent);
+  }
+  .newsletter-field__submit {
+    background: none;
+    border: 0;
+    color: var(--color-contrast);
+    cursor: pointer;
+    display: inline-flex;
+    transition: color var(--duration) var(--ease), transform var(--duration) var(--ease);
+  }
+  .newsletter-field__submit:hover {
+    color: var(--color-accent-soft);
+    transform: translateX(3px);
+  }
+  .newsletter-note {
+    margin-top: var(--space-xs);
+    font-size: var(--text-sm);
+    color: var(--color-accent-soft);
+  }
+
+  .site-footer__columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--space-lg);
+  }
+  .footer-col__title {
+    font-size: var(--text-xs);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-accent-soft);
+    margin-bottom: var(--space-sm);
+  }
+  .footer-col__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .footer-col__list a {
+    text-decoration: none;
+    color: color-mix(in srgb, var(--color-contrast) 82%, transparent);
+    font-size: var(--text-sm);
+    transition: color var(--duration) var(--ease);
+  }
+  .footer-col__list a:hover {
+    color: var(--color-contrast);
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    padding-top: var(--space-lg);
+    border-top: 1px solid color-mix(in srgb, var(--color-contrast) 18%, transparent);
+  }
+  .site-footer__copyright {
+    font-size: var(--text-xs);
+    letter-spacing: 0.5px;
+    color: color-mix(in srgb, var(--color-contrast) 70%, transparent);
+  }
+  .site-footer__payment {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 749px) {
+    .site-footer__top {
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
   }
 {% endstylesheet %}
 
@@ -42,15 +210,77 @@
   "name": "t:general.footer",
   "settings": [
     {
-      "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Travel the world, collect the world"
+    },
+    {
+      "type": "textarea",
+      "id": "blurb",
+      "label": "Brand statement",
+      "default": "One-of-a-kind treasures gathered from artisans across the globe. Each piece carries the story of where it came from."
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show newsletter signup",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_title",
+      "label": "Newsletter title",
+      "default": "Join the expedition"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "label": "Newsletter placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "header",
+      "content": "Bottom row"
     },
     {
       "type": "checkbox",
       "id": "show_payment_icons",
       "label": "t:labels.show_payment_icons",
       "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Link column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Explore"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "t:labels.menu"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "t:general.footer",
+      "blocks": [
+        { "type": "menu" },
+        { "type": "menu" }
+      ]
     }
   ]
 }

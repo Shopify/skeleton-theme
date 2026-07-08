@@ -1,0 +1,153 @@
+{% comment %}
+  Full-width closing call-to-action with an image or video background.
+{% endcomment %}
+
+{% liquid
+  assign bg = section.settings.image_url
+  if section.settings.image != blank
+    assign bg = section.settings.image | image_url: width: 2400
+  endif
+%}
+
+<section class="cta-banner full-width" style="--overlay: {{ section.settings.overlay_opacity }}%;">
+  <div class="cta-banner__media">
+    {% if section.settings.video_url != blank %}
+      <video class="cta-banner__bg" autoplay muted loop playsinline poster="{{ bg }}">
+        <source src="{{ section.settings.video_url }}" type="video/mp4">
+      </video>
+    {% else %}
+      <img class="cta-banner__bg" src="{{ bg }}" alt="" loading="lazy" width="2400" height="1200">
+    {% endif %}
+    <div class="cta-banner__overlay"></div>
+  </div>
+
+  <div class="cta-banner__content text-center">
+    {% if section.settings.eyebrow != blank %}
+      <p class="eyebrow cta-banner__eyebrow">{{ section.settings.eyebrow }}</p>
+    {% endif %}
+    {% if section.settings.heading != blank %}
+      <h2 class="cta-banner__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+    {% if section.settings.subheading != blank %}
+      <p class="cta-banner__sub measure">{{ section.settings.subheading }}</p>
+    {% endif %}
+    {% if section.settings.button_label != blank %}
+      <a class="button button--on-dark" href="{{ section.settings.button_url | default: routes.all_products_collection_url }}">
+        {{ section.settings.button_label }}
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .cta-banner {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 70svh;
+    overflow: hidden;
+    color: var(--color-contrast);
+    isolation: isolate;
+  }
+  .cta-banner__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .cta-banner__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cta-banner__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 30, 51, calc(var(--overlay) / 100));
+  }
+  .cta-banner__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-2xl) var(--page-margin);
+    max-width: 52rem;
+  }
+  .cta-banner__eyebrow {
+    color: var(--color-accent-soft);
+  }
+  .cta-banner__heading {
+    font-size: var(--text-4xl);
+  }
+  .cta-banner__sub {
+    font-size: var(--text-lg);
+    color: color-mix(in srgb, var(--color-contrast) 86%, transparent);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "CTA banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Background video URL (mp4)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "text",
+      "id": "image_url",
+      "label": "Background image URL (fallback)",
+      "default": "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=2400&q=80"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay darkness",
+      "default": 45
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The odyssey begins"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Begin your collection"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "The first expedition has landed. Claim a piece of Oceania before it's gone forever."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop the first drop"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "CTA banner"
+    }
+  ]
+}
+{% endschema %}

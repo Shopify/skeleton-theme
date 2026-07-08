@@ -1,9 +1,9 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
+    "theme_name": "Odyssey Jewels",
     "theme_version": "0.1.0",
-    "theme_author": "Shopify",
+    "theme_author": "Odyssey Jewels",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
   },
@@ -16,9 +16,35 @@
       },
       {
         "type": "font_picker",
+        "id": "type_heading_font",
+        "default": "playfair_display_n4",
+        "label": "Heading font"
+      },
+      {
+        "type": "font_picker",
         "id": "type_primary_font",
-        "default": "work_sans_n4",
+        "default": "jost_n4",
         "label": "t:general.primary"
+      },
+      {
+        "type": "range",
+        "id": "type_heading_tracking",
+        "min": -4,
+        "max": 4,
+        "step": 1,
+        "unit": "px",
+        "label": "Heading letter spacing",
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "type_eyebrow_tracking",
+        "min": 0,
+        "max": 8,
+        "step": 1,
+        "unit": "px",
+        "label": "Eyebrow letter spacing",
+        "default": 3
       }
     ]
   },
@@ -39,7 +65,7 @@
             "label": "t:options.page_width.wide"
           }
         ],
-        "default": "90rem"
+        "default": "110rem"
       },
       {
         "type": "range",
@@ -49,7 +75,7 @@
         "step": 1,
         "unit": "px",
         "label": "t:labels.page_margin",
-        "default": 20
+        "default": 32
       }
     ]
   },
@@ -59,14 +85,46 @@
       {
         "type": "color",
         "id": "background_color",
-        "default": "#FFFFFF",
+        "default": "#FAF7F2",
         "label": "t:labels.background"
       },
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
+        "default": "#12263F",
         "label": "t:labels.foreground"
+      },
+      {
+        "type": "header",
+        "content": "Brand"
+      },
+      {
+        "type": "color",
+        "id": "color_navy",
+        "default": "#0E1E33",
+        "label": "Navy"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "default": "#B76E79",
+        "label": "Rose accent"
+      },
+      {
+        "type": "color",
+        "id": "color_accent_soft",
+        "default": "#E7CFC9",
+        "label": "Rose soft"
+      },
+      {
+        "type": "color",
+        "id": "color_contrast",
+        "default": "#FAF7F2",
+        "label": "On-dark text"
+      },
+      {
+        "type": "header",
+        "content": "Shape"
       },
       {
         "type": "range",
@@ -76,7 +134,7 @@
         "step": 1,
         "unit": "px",
         "label": "t:labels.input_corner_radius",
-        "default": 4
+        "default": 0
       }
     ]
   }

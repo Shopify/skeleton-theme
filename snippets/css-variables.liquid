@@ -1,18 +1,66 @@
 {% style %}
-  {% # Loads all font variantions with display: swap %}
+  {% # Load all body font variations with display: swap %}
   {{ settings.type_primary_font | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
 
+  {% # Load heading font variations %}
+  {{ settings.type_heading_font | font_face: font_display: 'swap' }}
+  {{ settings.type_heading_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+  {{ settings.type_heading_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+
   :root {
+    /* Typography */
     --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
     --font-primary--style: {{ settings.type_primary_font.style }};
     --font-primary--weight: {{ settings.type_primary_font.weight }};
+    --font-heading--family: {{ settings.type_heading_font.family }}, {{ settings.type_heading_font.fallback_families }};
+    --font-heading--style: {{ settings.type_heading_font.style }};
+    --font-heading--weight: {{ settings.type_heading_font.weight }};
+    --tracking-heading: {{ settings.type_heading_tracking }}px;
+    --tracking-eyebrow: {{ settings.type_eyebrow_tracking }}px;
+
+    /* Type scale (fluid) */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+    --text-2xl: clamp(1.6rem, 1.3rem + 1.4vw, 2.25rem);
+    --text-3xl: clamp(2rem, 1.5rem + 2.4vw, 3.25rem);
+    --text-4xl: clamp(2.6rem, 1.8rem + 4vw, 5rem);
+    --text-hero: clamp(3rem, 2rem + 6vw, 7rem);
+
+    /* Layout */
     --page-width: {{ settings.max_page_width }};
     --page-margin: {{ settings.min_page_margin }}px;
+
+    /* Spacing scale */
+    --space-2xs: 0.5rem;
+    --space-xs: 0.75rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2.5rem;
+    --space-xl: 4rem;
+    --space-2xl: 6rem;
+    --space-3xl: 9rem;
+    --section-spacing: clamp(4rem, 2rem + 7vw, 9rem);
+
+    /* Colors */
     --color-background: {{ settings.background_color }};
     --color-foreground: {{ settings.foreground_color }};
+    --color-navy: {{ settings.color_navy }};
+    --color-accent: {{ settings.color_accent }};
+    --color-accent-soft: {{ settings.color_accent_soft }};
+    --color-contrast: {{ settings.color_contrast }};
+    --color-foreground-50: color-mix(in srgb, var(--color-foreground) 50%, transparent);
+    --color-foreground-12: color-mix(in srgb, var(--color-foreground) 12%, transparent);
+    --color-line: color-mix(in srgb, var(--color-foreground) 14%, transparent);
+
+    /* Shape & motion */
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --duration: 0.6s;
   }
 {% endstyle %}

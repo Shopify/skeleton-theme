@@ -9,12 +9,180 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "eyebrow": "Odyssey Jewels",
+        "heading": "Travel the World, Collect the World",
+        "subheading": "Rare, one-of-a-kind treasures gathered from artisans across the globe. Every jewel tells a story.",
+        "button_label": "Explore the collection",
+        "button_label_2": "Our story",
+        "overlay_opacity": 25,
+        "height": 92
+      }
+    },
+    "promises": {
+      "type": "promises",
+      "blocks": {
+        "p1": {
+          "type": "promise",
+          "settings": {
+            "title": "One of a kind",
+            "text": "Every piece is unique. When it's gone, it's gone."
+          }
+        },
+        "p2": {
+          "type": "promise",
+          "settings": {
+            "title": "Artisan made",
+            "text": "Crafted by master makers in their homeland."
+          }
+        },
+        "p3": {
+          "type": "promise",
+          "settings": {
+            "title": "Worldwide delivery",
+            "text": "Complimentary, insured shipping across the globe."
+          }
+        }
+      },
+      "block_order": ["p1", "p2", "p3"]
+    },
+    "regions": {
+      "type": "regions",
+      "settings": {
+        "eyebrow": "Collections by region",
+        "heading": "Where in the world will you begin?",
+        "subheading": "Each region reveals a curated collection of treasures — released one expedition at a time."
+      },
+      "blocks": {
+        "r1": {
+          "type": "region",
+          "settings": {
+            "title": "Oceania",
+            "status": "Available now",
+            "subtitle": "Treasures of the South Pacific",
+            "cta": "Discover",
+            "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
+          }
+        },
+        "r2": {
+          "type": "region",
+          "settings": {
+            "title": "The Founders Collection",
+            "status": "By invitation",
+            "subtitle": "Rare pieces for our earliest collectors",
+            "cta": "Enquire",
+            "image_url": "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1200&q=80"
+          }
+        },
+        "r3": {
+          "type": "region",
+          "settings": {
+            "title": "Asia",
+            "status": "Coming soon",
+            "subtitle": "Along the ancient trade routes",
+            "cta": "Join the waitlist",
+            "image_url": "https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=1200&q=80"
+          }
+        }
+      },
+      "block_order": ["r1", "r2", "r3"]
+    },
+    "story": {
+      "type": "story",
+      "settings": {
+        "media_position": "left",
+        "dark": false,
+        "eyebrow": "Our philosophy",
+        "heading": "Every jewel tells a story",
+        "body": "<p>We travel to the far corners of the world to work directly with master artisans. Each piece we bring home is one of a kind — shaped by the hands, heritage and horizon of the place it came from. When it's gone, it's gone.</p>",
+        "button_label": "Read our story",
+        "image_url": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1600&q=80"
+      }
+    },
+    "featured": {
+      "type": "featured",
+      "settings": {
+        "eyebrow": "The first drop",
+        "heading": "Oceania Collection",
+        "link_label": "View all pieces"
+      },
+      "blocks": {
+        "f1": {
+          "type": "piece",
+          "settings": {
+            "title": "Coral Tide Ring",
+            "region": "Oceania",
+            "badge": "One of a kind",
+            "price": "$1,200",
+            "image_url": "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=80"
+          }
+        },
+        "f2": {
+          "type": "piece",
+          "settings": {
+            "title": "Lagoon Pearl Pendant",
+            "region": "Oceania",
+            "badge": "One of a kind",
+            "price": "$980",
+            "image_url": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=80"
+          }
+        },
+        "f3": {
+          "type": "piece",
+          "settings": {
+            "title": "Reef Gold Bangle",
+            "region": "Oceania",
+            "badge": "One of a kind",
+            "price": "$1,540",
+            "image_url": "https://images.unsplash.com/photo-1611085583191-a3b181a88401?auto=format&fit=crop&w=900&q=80"
+          }
+        },
+        "f4": {
+          "type": "piece",
+          "settings": {
+            "title": "Tide Drop Earrings",
+            "region": "Oceania",
+            "badge": "One of a kind",
+            "price": "$760",
+            "image_url": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=80"
+          }
+        }
+      },
+      "block_order": ["f1", "f2", "f3", "f4"]
+    },
+    "story_artisans": {
+      "type": "story",
+      "settings": {
+        "media_position": "right",
+        "dark": true,
+        "eyebrow": "The makers",
+        "heading": "Meet the artisans",
+        "body": "<p>Behind every treasure is a person and a place. We put their names, their cities and their craft at the heart of the story — because you're not just collecting jewellery, you're collecting the world.</p>",
+        "button_label": "Meet the makers",
+        "image_url": "https://images.unsplash.com/photo-1590650516494-0c8e4a4dd67e?auto=format&fit=crop&w=1600&q=80"
+      }
+    },
+    "cta": {
+      "type": "cta-banner",
+      "settings": {
+        "eyebrow": "The odyssey begins",
+        "heading": "Begin your collection",
+        "subheading": "The first expedition has landed. Claim a piece of Oceania before it's gone forever.",
+        "button_label": "Shop the first drop",
+        "overlay_opacity": 45,
+        "image_url": "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=2400&q=80"
+      }
     }
   },
   "order": [
-    "main"
+    "hero",
+    "promises",
+    "regions",
+    "story",
+    "featured",
+    "story_artisans",
+    "cta"
   ]
 }

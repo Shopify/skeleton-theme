@@ -1,0 +1,156 @@
+{% comment %}
+  Editorial split section: large image paired with a story column.
+  Supports image on the left or right and an optional dark theme.
+{% endcomment %}
+
+{% liquid
+  assign img = section.settings.image_url
+  if section.settings.image != blank
+    assign img = section.settings.image | image_url: width: 1600
+  endif
+%}
+
+<section class="story section-spacing{% if section.settings.dark %} on-dark{% endif %} story--media-{{ section.settings.media_position }}">
+  <div class="story__grid full-width">
+    <div class="story__media">
+      <img src="{{ img }}" alt="{{ section.settings.heading | escape }}" loading="lazy" width="1600" height="1800">
+    </div>
+    <div class="story__content">
+      {% if section.settings.eyebrow != blank %}
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      {% endif %}
+      {% if section.settings.heading != blank %}
+        <h2 class="story__heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+      {% if section.settings.body != blank %}
+        <div class="story__body">{{ section.settings.body }}</div>
+      {% endif %}
+      {% if section.settings.button_label != blank %}
+        <a class="link-underline story__link" href="{{ section.settings.button_url | default: '#' }}">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .story__grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 6rem);
+    padding-inline: var(--page-margin);
+  }
+  .story--media-right .story__media {
+    order: 2;
+  }
+  .story__media {
+    overflow: hidden;
+  }
+  .story__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 4 / 5;
+  }
+  .story__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    max-width: 34rem;
+  }
+  .story__heading {
+    font-size: var(--text-3xl);
+  }
+  .story__body {
+    color: var(--color-foreground-50);
+    font-size: var(--text-lg);
+    line-height: 1.7;
+  }
+  .on-dark .story__body {
+    color: color-mix(in srgb, var(--color-contrast) 80%, transparent);
+  }
+  .story__link {
+    margin-top: var(--space-2xs);
+  }
+
+  @media (max-width: 749px) {
+    .story__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+    .story--media-right .story__media {
+      order: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Story",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "image_url",
+      "label": "Image URL (fallback)",
+      "default": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1600&q=80"
+    },
+    {
+      "type": "select",
+      "id": "media_position",
+      "label": "Image position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "dark",
+      "label": "Dark theme",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Our philosophy"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Every jewel tells a story"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body",
+      "default": "<p>We travel to the far corners of the world to work directly with master artisans. Each piece we bring home is one of a kind — shaped by the hands, heritage and horizon of the place it came from. When it's gone, it's gone.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Link label",
+      "default": "Read our story"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Story"
+    }
+  ]
+}
+{% endschema %}

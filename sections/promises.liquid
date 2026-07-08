@@ -1,0 +1,112 @@
+{% comment %}
+  Slim assurance band: a row of short brand promises (icon + label + text).
+{% endcomment %}
+
+<section class="promises {% if section.settings.dark %}on-dark{% endif %}">
+  <div class="promises__row full-width">
+    {% for block in section.blocks %}
+      <div class="promise" {{ block.shopify_attributes }}>
+        {% if block.settings.title != blank %}
+          <p class="promise__title">{{ block.settings.title }}</p>
+        {% endif %}
+        {% if block.settings.text != blank %}
+          <p class="promise__text">{{ block.settings.text }}</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .promises__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+    gap: var(--space-lg);
+    padding: var(--space-xl) var(--page-margin);
+    border-top: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .on-dark .promises__row {
+    border-color: color-mix(in srgb, var(--color-contrast) 18%, transparent);
+  }
+  .promise {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .promise__title {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-xl);
+  }
+  .promise__text {
+    font-size: var(--text-sm);
+    color: var(--color-foreground-50);
+  }
+  .on-dark .promise__text {
+    color: color-mix(in srgb, var(--color-contrast) 78%, transparent);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Promises",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "dark",
+      "label": "Dark theme",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "promise",
+      "name": "Promise",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "One of a kind"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Every piece is unique. When it's gone, it's gone."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Promises",
+      "blocks": [
+        {
+          "type": "promise",
+          "settings": {
+            "title": "One of a kind",
+            "text": "Every piece is unique. When it's gone, it's gone."
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "title": "Artisan made",
+            "text": "Crafted by master makers in their homeland."
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "title": "Worldwide delivery",
+            "text": "Complimentary, insured shipping across the globe."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

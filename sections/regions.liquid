@@ -1,0 +1,255 @@
+{% comment %}
+  Region-based collection showcase. Each block is a region card with imagery,
+  a status label (e.g. Available now / Coming soon) and a link.
+{% endcomment %}
+
+<section class="regions section-spacing">
+  <div class="regions__head text-center">
+    {% if section.settings.eyebrow != blank %}
+      <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+    {% endif %}
+    {% if section.settings.heading != blank %}
+      <h2 class="regions__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+    {% if section.settings.subheading != blank %}
+      <p class="regions__sub measure">{{ section.settings.subheading }}</p>
+    {% endif %}
+  </div>
+
+  <div class="regions__grid">
+    {% for block in section.blocks %}
+      {% liquid
+        assign img = block.settings.image_url
+        if block.settings.image != blank
+          assign img = block.settings.image | image_url: width: 1200
+        endif
+      %}
+      <a
+        class="region-card"
+        href="{{ block.settings.link | default: '#' }}"
+        {{ block.shopify_attributes }}
+      >
+        <div class="region-card__media">
+          <img src="{{ img }}" alt="{{ block.settings.title | escape }}" loading="lazy" width="1200" height="1500">
+          <div class="region-card__overlay"></div>
+        </div>
+        <div class="region-card__body">
+          {% if block.settings.status != blank %}
+            <span class="region-card__status">{{ block.settings.status }}</span>
+          {% endif %}
+          <h3 class="region-card__title">{{ block.settings.title }}</h3>
+          {% if block.settings.subtitle != blank %}
+            <p class="region-card__subtitle">{{ block.settings.subtitle }}</p>
+          {% endif %}
+          <span class="region-card__cta">{{ block.settings.cta | default: 'Discover' }}</span>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .regions__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+  }
+  .regions__sub {
+    color: var(--color-foreground-50);
+    font-size: var(--text-lg);
+  }
+  .regions__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    gap: var(--space-md);
+  }
+  .region-card {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    color: var(--color-contrast);
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    isolation: isolate;
+  }
+  .region-card__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .region-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease);
+  }
+  .region-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(14, 30, 51, 0.85) 0%, rgba(14, 30, 51, 0.1) 55%, rgba(14, 30, 51, 0.2) 100%);
+    transition: background var(--duration) var(--ease);
+  }
+  .region-card:hover .region-card__media img {
+    transform: scale(1.06);
+  }
+  .region-card__body {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .region-card__status {
+    align-self: flex-start;
+    font-size: var(--text-xs);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--color-contrast) 55%, transparent);
+    color: var(--color-contrast);
+    margin-bottom: var(--space-2xs);
+  }
+  .region-card__title {
+    font-size: var(--text-2xl);
+    margin: 0;
+  }
+  .region-card__subtitle {
+    color: color-mix(in srgb, var(--color-contrast) 82%, transparent);
+    font-size: var(--text-sm);
+  }
+  .region-card__cta {
+    margin-top: var(--space-xs);
+    font-size: var(--text-sm);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    position: relative;
+    width: fit-content;
+    padding-bottom: 0.3rem;
+  }
+  .region-card__cta::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration) var(--ease);
+  }
+  .region-card:hover .region-card__cta::after {
+    transform: scaleX(1);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Region collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Collections by region"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Where in the world will you begin?"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Each region reveals a curated collection of treasures — released one expedition at a time."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "region",
+      "name": "Region",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Image URL (fallback)"
+        },
+        {
+          "type": "text",
+          "id": "status",
+          "label": "Status label",
+          "default": "Available now"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Oceania"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Treasures of the South Pacific"
+        },
+        {
+          "type": "text",
+          "id": "cta",
+          "label": "Link label",
+          "default": "Discover"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Region collections",
+      "blocks": [
+        {
+          "type": "region",
+          "settings": {
+            "title": "Oceania",
+            "status": "Available now",
+            "subtitle": "Treasures of the South Pacific",
+            "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
+          }
+        },
+        {
+          "type": "region",
+          "settings": {
+            "title": "The Founders Collection",
+            "status": "By invitation",
+            "subtitle": "Rare pieces for our earliest collectors",
+            "image_url": "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1200&q=80"
+          }
+        },
+        {
+          "type": "region",
+          "settings": {
+            "title": "Asia",
+            "status": "Coming soon",
+            "subtitle": "Along the ancient trade routes",
+            "image_url": "https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=1200&q=80"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,241 @@
+{% comment %}
+  Featured pieces grid. Uses curated blocks with stock imagery so the layout
+  looks complete before real products are connected. Swap to a product-backed
+  collection during build-out.
+{% endcomment %}
+
+<section class="featured section-spacing">
+  <div class="featured__head">
+    <div>
+      {% if section.settings.eyebrow != blank %}
+        <p class="eyebrow">{{ section.settings.eyebrow }}</p>
+      {% endif %}
+      {% if section.settings.heading != blank %}
+        <h2 class="featured__heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+    </div>
+    {% if section.settings.link_label != blank %}
+      <a class="link-underline featured__view-all" href="{{ section.settings.link_url | default: routes.all_products_collection_url }}">
+        {{ section.settings.link_label }}
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="featured__grid">
+    {% for block in section.blocks %}
+      {% liquid
+        assign img = block.settings.image_url
+        if block.settings.image != blank
+          assign img = block.settings.image | image_url: width: 900
+        endif
+      %}
+      <a class="piece-card" href="{{ block.settings.link | default: '#' }}" {{ block.shopify_attributes }}>
+        <div class="piece-card__media">
+          <img src="{{ img }}" alt="{{ block.settings.title | escape }}" loading="lazy" width="900" height="1125">
+          {% if block.settings.badge != blank %}
+            <span class="piece-card__badge">{{ block.settings.badge }}</span>
+          {% endif %}
+        </div>
+        <div class="piece-card__info">
+          {% if block.settings.region != blank %}
+            <span class="piece-card__region">{{ block.settings.region }}</span>
+          {% endif %}
+          <h3 class="piece-card__title">{{ block.settings.title }}</h3>
+          {% if block.settings.price != blank %}
+            <span class="piece-card__price">{{ block.settings.price }}</span>
+          {% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .featured__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-xl);
+  }
+  .featured__heading {
+    font-size: var(--text-3xl);
+    margin-top: var(--space-2xs);
+  }
+  .featured__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(16rem, 100%), 1fr));
+    gap: var(--space-lg) var(--space-md);
+  }
+  .piece-card {
+    text-decoration: none;
+    color: var(--color-foreground);
+    display: block;
+  }
+  .piece-card__media {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-foreground-12);
+    aspect-ratio: 4 / 5;
+    margin-bottom: var(--space-sm);
+  }
+  .piece-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.1s var(--ease);
+  }
+  .piece-card:hover .piece-card__media img {
+    transform: scale(1.05);
+  }
+  .piece-card__badge {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    background: var(--color-background);
+    color: var(--color-navy);
+    font-size: var(--text-xs);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+  }
+  .piece-card__region {
+    font-size: var(--text-xs);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  .piece-card__title {
+    font-size: var(--text-lg);
+    margin: 0.35rem 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+  }
+  .piece-card__price {
+    font-size: var(--text-sm);
+    color: var(--color-foreground-50);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Featured pieces",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The first drop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Oceania Collection"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "View-all label",
+      "default": "View all pieces"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "View-all link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "piece",
+      "name": "Piece",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Image URL (fallback)"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge",
+          "default": "One of a kind"
+        },
+        {
+          "type": "text",
+          "id": "region",
+          "label": "Region",
+          "default": "Oceania"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Coral Tide Ring"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Price",
+          "default": "$1,200"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Featured pieces",
+      "blocks": [
+        {
+          "type": "piece",
+          "settings": {
+            "title": "Coral Tide Ring",
+            "region": "Oceania",
+            "price": "$1,200",
+            "image_url": "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=80"
+          }
+        },
+        {
+          "type": "piece",
+          "settings": {
+            "title": "Lagoon Pearl Pendant",
+            "region": "Oceania",
+            "price": "$980",
+            "image_url": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=80"
+          }
+        },
+        {
+          "type": "piece",
+          "settings": {
+            "title": "Reef Gold Bangle",
+            "region": "Oceania",
+            "price": "$1,540",
+            "image_url": "https://images.unsplash.com/photo-1611085583191-a3b181a88401?auto=format&fit=crop&w=900&q=80"
+          }
+        },
+        {
+          "type": "piece",
+          "settings": {
+            "title": "Tide Drop Earrings",
+            "region": "Oceania",
+            "price": "$760",
+            "image_url": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=80"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
