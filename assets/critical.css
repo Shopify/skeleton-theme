@@ -204,3 +204,38 @@ body {
 .text--subtitle {
   font-size: 1.5rem;
 }
+
+/** Collection page */
+.collection-products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+}
+
+/** Collections list page */
+.collections {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--collection-card-size), 100%), 1fr));
+  gap: var(--grid-gap);
+}
+.collections--compact {
+  --collection-card-size: 160px;
+}
+.collections--full {
+  --collection-card-size: 280px;
+}
+.collection-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/** Search page */
+.search-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+.search-results .prev,
+.search-results .page,
+.search-results .next {
+  grid-column: 1 / -1;
+}

@@ -1,0 +1,27 @@
+{% block 'container' %}
+  <h1>{{ 'collections.title' | t }}</h1>
+
+  <div class="collections collections--full" style="--grid-gap: 10px">
+    {% for collection in collections %}
+      <a class="collection-card" href="{{ collection.url }}">
+        {% if collection.featured_image %}
+          {% render 'image',
+            class: 'collection-card__image',
+            image: collection.featured_image,
+            width: 600,
+            height: 600,
+            crop: 'center'
+          %}
+        {% endif %}
+
+        <div class="collection-card__content">
+          <p>{{ collection.title }}</p>
+
+          {% if collection.description %}
+            <p>{{ collection.description | strip_html | truncatewords: 15 }}</p>
+          {% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% endblock %}
