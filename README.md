@@ -5,7 +5,10 @@
   Shopify Skeleton Theme
 </h1>
 
-A minimal, carefully structured Shopify theme designed to help you quickly get started. Designed with modularity, maintainability, and Shopify's best practices in mind.
+A minimal Shopify theme built on block-first composition. Templates compose each
+page directly from blocks, snippets, and inline markup — no sections, no JSON
+templates. It's designed to stay lean and to be edited by coding agents as
+readily as by people.
 
 <p align="center">
   <a href="./LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
@@ -46,108 +49,74 @@ shopify theme dev
 
 ```bash
 .
-├── assets          # Stores static assets (CSS, JS, images, fonts, etc.)
+├── assets          # Static assets, including critical.css (all theme CSS)
 ├── blocks          # Reusable, nestable, customizable UI components
 ├── config          # Global theme settings and customization options
-├── layout          # Top-level wrappers for pages (layout templates)
+├── layout          # Top-level page wrappers
 ├── locales         # Translation files for theme internationalization
-├── sections        # Modular full-width page components
 ├── snippets        # Reusable Liquid code or HTML fragments
-└── templates       # Templates combining sections to define page structures
+└── templates       # Liquid composition roots, one per page type
 ```
 
 To learn more, refer to the [theme architecture documentation](https://shopify.dev/docs/storefronts/themes/architecture).
 
+## Block-first composition
+
+Every page is composed from blocks. The composition flows in one direction:
+
+```
+templates/*.liquid → {% block 'container' %} → blocks / snippets / inline markup
+```
+
 ### Templates
 
-[Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) control what's rendered on each type of page in a theme.
+[Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types)
+control what's rendered on each type of page. In this theme they are Liquid
+files (`templates/*.liquid`), not JSON. Each template is a composition root: it
+wraps its page content in the `container` block and composes the rest from
+blocks and inline markup.
 
-The Skeleton Theme scaffolds [JSON templates](https://shopify.dev/docs/storefronts/themes/architecture/templates/json-templates) to make it easy for merchants to customize their store.
+For example, `templates/index.liquid` composes the `hello-world` block inside a
+container:
 
-None of the template types are required, and not all of them are included in the Skeleton Theme. Refer to the [template types reference](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) for a full list.
-
-### Sections
-
-[Sections](https://shopify.dev/docs/storefronts/themes/architecture/sections) are Liquid files that allow you to create reusable modules of content that can be customized by merchants. They can also include blocks which allow merchants to add, remove, and reorder content within a section.
-
-Sections are made customizable by including a `{% schema %}` in the body. For more information, refer to the [section schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/sections/section-schema).
+```liquid
+{% block 'container', tag: 'div' %}
+  {% block 'hello-world' %}{% endblock %}
+{% endblock %}
+```
 
 ### Blocks
 
-[Blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks) let developers create flexible layouts by breaking down sections into smaller, reusable pieces of Liquid. Each block has its own set of settings, and can be added, removed, and reordered within a section.
+[Blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks) are
+the theme's building units. Each block is a single file in `blocks/`, opens with
+a `{% doc %}` header describing its parameters, and ends with a `{% schema %}`
+(no `presets`). A block renders caller-supplied content through
+`{{ block.content }}` and keeps `{{ block.shopify_attributes }}` on its root
+element for theme-editor support.
 
-Blocks are made customizable by including a `{% schema %}` in the body. For more information, refer to the [block schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/schema).
+The `container` block owns each page's outer layout element; `blocks/hello-world.liquid`
+is the theme's starter demo block. `layout/theme.liquid` composes the `header`
+and `footer` blocks directly, keeping the layout a thin shell.
 
-## Schemas
+## Non-negotiables
 
-When developing components defined by schema settings, we recommend these guidelines to simplify your code:
+This theme deliberately excludes the section-based model. When editing it:
 
-- **Single property settings**: For settings that correspond to a single CSS property, use CSS variables:
+- No `sections/` directory, and no `{% section %}` / `{% sections %}` tags.
+- No JSON templates and no schema `presets`.
+- No Liquid-embedded assets: keep CSS in `assets/critical.css` rather than
+  `{% stylesheet %}` / `{% javascript %}` blocks.
+- Compose pages from blocks and inline markup, not single-use page sections.
 
-  ```liquid
-  <div class="collection" style="--gap: {{ block.settings.gap }}px">
-    ...
-  </div>
+[`AGENTS.md`](./AGENTS.md) is the source of truth for the theme's dialect and the
+full set of rules coding agents follow.
 
-  {% stylesheet %}
-    .collection {
-      gap: var(--gap);
-    }
-  {% endstylesheet %}
+## CSS
 
-  {% schema %}
-  {
-    "settings": [{
-      "type": "range",
-      "label": "gap",
-      "id": "gap",
-      "min": 0,
-      "max": 100,
-      "unit": "px",
-      "default": 0,
-    }]
-  }
-  {% endschema %}
-  ```
-
-- **Multiple property settings**: For settings that control multiple CSS properties, use CSS classes:
-
-  ```liquid
-  <div class="collection {{ block.settings.layout }}">
-    ...
-  </div>
-
-  {% stylesheet %}
-    .collection--full-width {
-      /* multiple styles */
-    }
-    .collection--narrow {
-      /* multiple styles */
-    }
-  {% endstylesheet %}
-
-  {% schema %}
-  {
-    "settings": [{
-      "type": "select",
-      "id": "layout",
-      "label": "layout",
-      "values": [
-        { "value": "collection--full-width", "label": "t:options.full" },
-        { "value": "collection--narrow", "label": "t:options.narrow" }
-      ]
-    }]
-  }
-  {% endschema %}
-  ```
-
-## CSS & JavaScript
-
-For CSS and JavaScript, we recommend using the [`{% stylesheet %}`](https://shopify.dev/docs/api/liquid/tags#stylesheet) and [`{% javascript %}`](https://shopify.dev/docs/api/liquid/tags/javascript) tags. They can be included multiple times, but the code will only appear once.
-
-### `critical.css`
-
-The Skeleton Theme explicitly separates essential CSS necessary for every page into a dedicated `critical.css` file.
+All theme CSS lives in [`assets/critical.css`](./assets/critical.css), loaded
+once from `layout/theme.liquid`. Keeping styles in one file — rather than
+embedding them in Liquid — preserves the theme's minimalism and keeps blocks
+markup-only.
 
 ## Contributing
 
