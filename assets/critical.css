@@ -285,3 +285,17 @@ footer .footer__payment {
   display: flex;
   gap: 1rem;
 }
+
+/** Image snippet */
+.image {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
+}
+
+.image > img {
+  width: 100%;
+  height: auto;
+}
