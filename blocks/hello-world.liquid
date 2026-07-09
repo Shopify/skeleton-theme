@@ -1,8 +1,10 @@
-{% comment %}
-  Welcome to Shopify theme development!
-{% endcomment %}
+{% doc %}
+  Renders the skeleton theme's welcome message and getting-started
+  highlights. This is the theme's signature starter block: the index
+  template composes it inside a container block.
+{% enddoc %}
 
-<div class="welcome full-width">
+<div class="welcome full-width" {{ block.shopify_attributes }}>
   <div class="welcome-content">
     <div>
       <h1>Hello, World!</h1>
@@ -52,93 +54,11 @@
   </div>
 </div>
 
-{% stylesheet %}
-  .welcome {
-    display: grid;
-    grid-template-columns: var(--content-grid);
-    background-color: #f6f6f7;
-    padding: 72px 0;
-  }
-
-  .welcome-content {
-    grid-column: 2;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-    padding: 0 24px;
-  }
-
-  .welcome-description {
-    max-width: 80ch;
-    line-height: 1.4;
-    margin-top: 1.5rem;
-  }
-
-  .icon {
-    width: 300px;
-  }
-
-  .highlights {
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: repeat(3, 1fr);
-    margin-top: 50px;
-  }
-
-  @media (max-width: 1100px) {
-    .highlights {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .highlight {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 24px;
-    border-radius: 8px;
-    background-color: #eef3ff;
-    color: rgb(92, 95, 98);
-    line-height: 1.4;
-  }
-
-  .highlight > * + * {
-    margin-top: 1rem;
-  }
-
-  .highlight h3 {
-    font-size: 1rem;
-    color: rgb(32, 34, 35);
-  }
-
-  .highlight-description {
-    flex: 1 1;
-  }
-
-  .highlight a {
-    display: flex;
-    width: fit-content;
-    background-color: rgb(250, 251, 251);
-    box-shadow: rgba(0, 0, 0, 0.2) 0px -3px 0px 0px inset, rgba(255, 255, 255, 0.9) 0px 2px 0px 0px inset;
-    border: 1px solid rgb(140, 145, 150);
-    border-radius: 4px;
-    color: rgb(92, 95, 98);
-    padding: 3px 10px 5px;
-    text-decoration: none;
-  }
-{% endstylesheet %}
+{{ block.content }}
 
 {% schema %}
 {
-  "name": "Hello World",
-  "settings": [],
-  "presets": [
-    {
-      "name": "Hello World Template",
-      "category": "Demo"
-    }
-  ]
+  "name": "Hello world",
+  "settings": []
 }
 {% endschema %}

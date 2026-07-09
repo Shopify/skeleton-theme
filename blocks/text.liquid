@@ -2,7 +2,7 @@
   Renders a text block.
 
   @example
-  {% content_for 'block', type: 'text', id: 'text' %}
+  {% block 'text' %}{% endblock %}
 {% enddoc %}
 
 <div
@@ -11,20 +11,8 @@
   {{ block.shopify_attributes }}
 >
   {{ block.settings.text }}
+  {{ block.content }}
 </div>
-
-{% stylesheet %}
-  .text {
-    text-align: var(--text-align);
-  }
-  .text--title {
-    font-size: 2rem;
-    font-weight: 700;
-  }
-  .text--subtitle {
-    font-size: 1.5rem;
-  }
-{% endstylesheet %}
 
 {% schema %}
 {
@@ -53,7 +41,6 @@
       "label": "t:labels.alignment",
       "default": "left"
     }
-  ],
-  "presets": [{ "name": "t:general.text" }]
+  ]
 }
 {% endschema %}
