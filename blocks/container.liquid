@@ -1,0 +1,33 @@
+{% doc %}
+  Wraps composed page content in a semantic HTML element. Every template
+  composes its page through a container block: the block owns the outer
+  layout element and renders the composed body via {{ block.content }}.
+
+  @param {string} [tag] - HTML element for the wrapper. Default: 'section'.
+
+  @example Default section wrapper
+  {% block 'container' %}
+    <h1>{{ page.title }}</h1>
+    {{ page.content }}
+  {% endblock %}
+
+  @example Override the wrapper element
+  {% block 'container', tag: 'div' %}
+    ...
+  {% endblock %}
+{% enddoc %}
+
+{%- liquid
+  assign tag = tag | default: 'section'
+-%}
+
+<{{ tag }} {{ block.shopify_attributes }}>
+  {{ block.content }}
+</{{ tag }}>
+
+{% schema %}
+{
+  "name": "Container",
+  "settings": []
+}
+{% endschema %}
