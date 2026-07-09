@@ -239,3 +239,49 @@ body {
 .search-results .next {
   grid-column: 1 / -1;
 }
+
+/** Header */
+header {
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+header a {
+  position: relative;
+  text-decoration: none;
+  color: var(--color-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+header a sup {
+  position: absolute;
+  left: 100%;
+  overflow: hidden;
+  max-width: var(--page-margin);
+}
+header svg {
+  width: 2rem;
+}
+header .header__menu,
+header .header__icons {
+  display: flex;
+  gap: 1rem;
+}
+
+/** Footer */
+footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+footer a {
+  text-decoration: none;
+  color: var(--color-foreground);
+}
+footer .footer__links,
+footer .footer__payment {
+  display: flex;
+  gap: 1rem;
+}
