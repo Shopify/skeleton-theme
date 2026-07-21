@@ -1,4 +1,10 @@
-<footer>
+{% doc %}
+  Renders the theme's storefront footer: copyright line, footer menu,
+  and optional payment icons. Composed directly in layout/theme.liquid
+  so it appears on every page.
+{% enddoc %}
+
+<footer {{ block.shopify_attributes }}>
   <div class="footer__copyright">
     &copy;
     {{ 'now' | date: '%Y' }}
@@ -6,36 +12,19 @@
   </div>
 
   <div class="footer__links">
-    {% for link in section.settings.menu.links %}
+    {% for link in block.settings.menu.links %}
       {{ link.title | link_to: link.url }}
     {% endfor %}
   </div>
 
   <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
+    {% if block.settings.show_payment_icons %}
       {% for type in shop.enabled_payment_types %}
         {{ type | payment_type_svg_tag }}
       {% endfor %}
     {% endif %}
   </div>
 </footer>
-
-{% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-  }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  footer .footer__links,
-  footer .footer__payment {
-    display: flex;
-    gap: 1rem;
-  }
-{% endstylesheet %}
 
 {% schema %}
 {

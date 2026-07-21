@@ -1,10 +1,3 @@
-{% comment %}
-  This section is used in the blog template to render the blog page listing all
-  articles within a blog.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/blog
-{% endcomment %}
-
 <h1>{{ blog.title }}</h1>
 
 {% paginate blog.articles by 5 %}
@@ -26,10 +19,3 @@
     {{- paginate | default_pagination -}}
   {%- endif -%}
 {% endpaginate %}
-
-{% schema %}
-{
-  "name": "t:general.blog",
-  "settings": []
-}
-{% endschema %}

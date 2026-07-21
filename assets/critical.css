@@ -78,20 +78,20 @@ body {
   color: var(--color-foreground);
 }
 
-/** Section layout utilities */
+/** Block container layout utilities */
 
 /**
  * Setup a grid that enables both full-width and constrained layouts
  * depending on the class of the child elements.
  *
  * By default, a minimum content margin is set on the left and right
- * sides of the section and the content is centered in the viewport to
- * not exceed the maximum page width.
+ * sides of the container and the content is centered in the viewport
+ * to not exceed the maximum page width.
  *
  * When a child element is given the `full-width` class, it will span
  * the entire viewport.
  */
-.shopify-section {
+.block-container {
   --content-width: min(
     calc(var(--page-width) - var(--page-margin) * 2),
     calc(100% - var(--page-margin) * 2)
@@ -103,15 +103,16 @@ body {
   position: relative;
   grid-template-columns: var(--content-grid);
   display: grid;
+  text-align: var(--text-align, left);
   width: 100%;
 }
 
 /* Child elements, by default, are constrained to the central column of the grid. */
-.shopify-section > * {
+.block-container > * {
   grid-column: 2;
 }
 
 /* Child elements that use the full-width utility class span the entire viewport. */
-.shopify-section > .full-width {
+.block-container > .full-width {
   grid-column: 1 / -1;
 }

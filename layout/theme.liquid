@@ -19,6 +19,7 @@
 
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'base.css' | asset_url | stylesheet_tag }}
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
@@ -27,10 +28,12 @@
   </head>
 
   <body>
-    {% sections 'header-group' %}
+    {% block 'container' %}
+      {% block 'header' -%}{%- endblock %}
 
-    {{ content_for_layout }}
+      {{ content_for_layout }}
 
-    {% sections 'footer-group' %}
+      {% block 'footer' -%}{%- endblock %}
+    {% endblock %}
   </body>
 </html>

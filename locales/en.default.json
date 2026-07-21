@@ -37,6 +37,25 @@
     "expires_on": "Expires on {{ expires_on }}",
     "use_at_checkout": "Use this gift card at checkout"
   },
+  "hello_world": {
+    "title": "Hello, World!",
+    "intro": "The Skeleton theme is a minimal, carefully structured Shopify theme designed to help you quickly get started. Designed with modularity, maintainability, and Shopify's best practices in mind.",
+    "description": "Themes shape the online store experience for merchants and their customers. Build fast, flexible themes at scale using Liquid, Shopify's theme templating language, along with HTML, CSS, JavaScript, and JSON.",
+    "key_concepts_title": "Key Concepts",
+    "key_concepts_body": "Shopify themes are a package of template files, building blocks, and supporting assets. Use these building blocks to create modular, customizable themes.",
+    "key_concepts_link": "Learn more about key concepts",
+    "liquid_title": "Liquid",
+    "liquid_body": "The Liquid templating language is the backbone of Shopify themes, and is used to load dynamic content on storefronts. Extend Liquid objects to store and present custom data using metafields.",
+    "liquid_link": "View the Liquid reference",
+    "best_practices_title": "Best Practices",
+    "best_practices_body": "To optimize your theme development experience, Shopify has established a set of best practices that you can refer to when developing your theme and setting up your toolchains and processes.",
+    "best_practices_link": "Follow best practices",
+    "liquid_tips_title": "Liquid tips",
+    "liquid_tips_refresh": "Show another tip",
+    "liquid_tips_1": "Prefer whitespace control with {%- -%} to keep rendered markup clean",
+    "liquid_tips_2": "Reach for the render tag instead of include so each snippet gets its own scope",
+    "liquid_tips_3": "Assign expensive lookups to a variable once and reuse it across the template"
+  },
   "password": {
     "title": "This shop is private",
     "password": "Password",

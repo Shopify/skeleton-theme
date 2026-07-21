@@ -1,0 +1,213 @@
+/** Hello world block */
+.welcome {
+  display: grid;
+  grid-template-columns: var(--content-grid);
+  background-color: #f6f6f7;
+  padding: 72px 0;
+}
+
+.welcome-content {
+  grid-column: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0 24px;
+}
+
+.welcome-description {
+  max-width: 80ch;
+  line-height: 1.4;
+  margin-top: 1.5rem;
+}
+
+.icon {
+  width: 300px;
+}
+
+.highlights {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 50px;
+}
+
+@media (max-width: 1100px) {
+  .highlights {
+    grid-template-columns: 1fr;
+  }
+}
+
+.highlight {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px;
+  border-radius: 8px;
+  background-color: #eef3ff;
+  color: rgb(92, 95, 98);
+  line-height: 1.4;
+}
+
+.highlight > * + * {
+  margin-top: 1rem;
+}
+
+.highlight h3 {
+  font-size: 1rem;
+  color: rgb(32, 34, 35);
+}
+
+.highlight-description {
+  flex: 1 1;
+}
+
+/**
+ * Flashes a liquid-tip after the "show another tip" button swaps in fresh
+ * content through partial rendering. The brief highlight pulse draws the
+ * eye to the new tip so the change is noticeable without a page reload.
+ */
+@keyframes highlight-flash {
+  from {
+    background-color: #c9d9ff;
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.highlight-description--flash {
+  animation: highlight-flash 0.6s ease-out;
+  border-radius: 4px;
+}
+
+.highlight a,
+.welcome-content a {
+  display: flex;
+  width: fit-content;
+  background-color: rgb(250, 251, 251);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px -3px 0px 0px inset, rgba(255, 255, 255, 0.9) 0px 2px 0px 0px inset;
+  border: 1px solid rgb(140, 145, 150);
+  border-radius: 4px;
+  color: rgb(92, 95, 98);
+  padding: 3px 10px 5px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/** Text block */
+.text {
+  text-align: var(--text-align);
+}
+.text--title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+.text--subtitle {
+  font-size: 1.5rem;
+}
+
+/** Collection page */
+.collection-products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+}
+
+/** Collections list page */
+.collections {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--collection-card-size), 100%), 1fr));
+  gap: var(--grid-gap);
+}
+.collections--compact {
+  --collection-card-size: 160px;
+}
+.collections--full {
+  --collection-card-size: 280px;
+}
+.collection-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/** Search page */
+.search-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+.search-results .prev,
+.search-results .page,
+.search-results .next {
+  grid-column: 1 / -1;
+}
+
+/** Header */
+header {
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+header a {
+  position: relative;
+  text-decoration: none;
+  color: var(--color-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+header a sup {
+  position: absolute;
+  left: 100%;
+  overflow: hidden;
+  max-width: var(--page-margin);
+}
+header svg {
+  width: 2rem;
+}
+header .header__menu,
+header .header__icons {
+  display: flex;
+  gap: 1rem;
+}
+
+/** Footer */
+footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+footer a {
+  text-decoration: none;
+  color: var(--color-foreground);
+}
+footer .footer__links,
+footer .footer__payment {
+  display: flex;
+  gap: 1rem;
+}
+
+/** Image snippet */
+.image {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
+}
+
+.image > img {
+  width: 100%;
+  height: auto;
+}
+
+/** Gift card template */
+.template-gift-card main {
+  text-align: center;
+}
+
+.template-gift-card main img {
+  display: unset;
+}

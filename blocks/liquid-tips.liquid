@@ -1,0 +1,51 @@
+{% doc %}
+  Renders a "Liquid tips" highlight card. One tip sentence lives in a
+  {% partial %} region so JavaScript can fetch a fresh tip without a full
+  page load, while the heading and refresh control stay intact. This is the
+  theme's canonical partial-refresh example.
+
+  The {% partial %} region renders on the storefront only when
+  `shop.features.agentic_editor_enabled?` is on and the page is served by
+  StorefrontRenderer; otherwise the storefront raises `Unknown tag 'partial'`.
+
+  @param {string[]} [tips] - Translation keys for the tip sentences to choose
+    from. One is shown at a time; refreshing the partial picks another.
+
+  @example
+  {% block 'liquid-tips', tips: ['hello_world.liquid_tips_1', 'hello_world.liquid_tips_2'] %}{% endblock %}
+{% enddoc %}
+
+{%- liquid
+  assign tip_count = tips.size
+  assign seed = 'now' | date: '%N'
+-%}
+
+<div class="highlight" {{ block.shopify_attributes }}>
+  <h3>{{ 'hello_world.liquid_tips_title' | t }}</h3>
+
+  {% partial 'liquid-tip' %}
+    {%- if tip_count > 0 -%}
+      {%- assign index = seed | modulo: tip_count -%}
+      {%- for tip in tips limit: 1 offset: index -%}
+        <p class="highlight-description">{{ tip | t }}</p>
+      {%- endfor -%}
+    {%- endif -%}
+  {% endpartial %}
+
+  <p>
+    <a role="button" tabindex="0" data-refresh-tip>
+      {{ 'hello_world.liquid_tips_refresh' | t }}
+    </a>
+  </p>
+</div>
+
+{{ block.content }}
+
+<script src="{{ 'liquid-tips.js' | asset_url }}" type="module"></script>
+
+{% schema %}
+{
+  "name": "t:general.liquid_tips",
+  "settings": []
+}
+{% endschema %}

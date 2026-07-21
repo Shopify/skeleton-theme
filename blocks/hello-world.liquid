@@ -1,0 +1,61 @@
+{% doc %}
+  Renders the skeleton theme's welcome message and getting-started
+  highlights. This is the theme's signature starter block: the index
+  template composes it inside a container block.
+{% enddoc %}
+
+<div class="welcome full-width" {{ block.shopify_attributes }}>
+  <div class="welcome-content">
+    <div>
+      <h1>{{ 'hello_world.title' | t }}</h1>
+
+      <p class="welcome-description">
+        {{ 'hello_world.intro' | t }}
+      </p>
+
+      <p class="welcome-description">
+        {{ 'hello_world.description' | t }}
+      </p>
+    </div>
+    <div class="icon">
+      <img src="{{ 'shoppy-x-ray.svg' | asset_url }}" width="300" height="300">
+    </div>
+  </div>
+</div>
+
+<div class="highlights">
+  <div class="highlight">
+    <h3>{{ 'hello_world.key_concepts_title' | t }}</h3>
+    <p class="highlight-description">
+      {{ 'hello_world.key_concepts_body' | t }}
+    </p>
+    <p>{{ 'hello_world.key_concepts_link' | t | link_to: 'https://shopify.dev/docs/storefronts/themes/architecture' }}</p>
+  </div>
+
+  <div class="highlight">
+    <h3>{{ 'hello_world.liquid_title' | t }}</h3>
+    <p class="highlight-description">
+      {{ 'hello_world.liquid_body' | t }}
+    </p>
+    <p>{{ 'hello_world.liquid_link' | t | link_to: 'https://shopify.dev/docs/api/liquid' }}</p>
+  </div>
+
+  <div class="highlight">
+    <h3>{{ 'hello_world.best_practices_title' | t }}</h3>
+    <p class="highlight-description">
+      {{ 'hello_world.best_practices_body' | t }}
+    </p>
+    <p>{{ 'hello_world.best_practices_link' | t | link_to: 'https://shopify.dev/docs/storefronts/themes/best-practices' }}</p>
+  </div>
+
+  {% block 'liquid-tips', tips: ['hello_world.liquid_tips_1', 'hello_world.liquid_tips_2', 'hello_world.liquid_tips_3'] %}{% endblock %}
+</div>
+
+{{ block.content }}
+
+{% schema %}
+{
+  "name": "t:general.hello_world",
+  "settings": []
+}
+{% endschema %}
