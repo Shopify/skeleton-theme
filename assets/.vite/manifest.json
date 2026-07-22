@@ -1,6 +1,6 @@
 {
   "frontend/entrypoints/css/main.css": {
-    "file": "main-tbrddIQa.css",
+    "file": "main-Dfgop5gB.css",
     "name": "main",
     "names": [
       "main.css"
@@ -9,25 +9,25 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/404.ts": {
-    "file": "404-BPQrMuxs.js",
+    "file": "404-BvRk9kiK.js",
     "name": "404",
     "src": "frontend/entrypoints/ts/404.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/article.ts": {
-    "file": "article-C-l2wKs3.js",
+    "file": "article-BvRk9kiK.js",
     "name": "article",
     "src": "frontend/entrypoints/ts/article.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/blog.ts": {
-    "file": "blog-Ch1z4KXd.js",
+    "file": "blog-BvRk9kiK.js",
     "name": "blog",
     "src": "frontend/entrypoints/ts/blog.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/cart.ts": {
-    "file": "cart-PdypMeQq.js",
+    "file": "cart-B8ck3vl8.js",
     "name": "cart",
     "src": "frontend/entrypoints/ts/cart.ts",
     "isEntry": true,
@@ -37,20 +37,20 @@
     ]
   },
   "frontend/entrypoints/ts/cart/drawer.ts": {
-    "file": "drawer-Kxuma_J5.js",
+    "file": "drawer-DtORmutN.js",
     "name": "drawer",
     "src": "frontend/entrypoints/ts/cart/drawer.ts",
     "isEntry": true,
     "imports": [
-      "frontend/entrypoints/ts/utils/cart-events.ts",
       "frontend/entrypoints/ts/utils/cart.ts",
+      "frontend/entrypoints/ts/utils/section-rendering.ts",
+      "frontend/entrypoints/ts/utils/cart-events.ts",
       "frontend/entrypoints/ts/utils/dialog.ts",
-      "frontend/entrypoints/ts/utils/dialog.ts",
-      "frontend/entrypoints/ts/utils/section-rendering.ts"
+      "frontend/entrypoints/ts/utils/dialog.ts"
     ]
   },
   "frontend/entrypoints/ts/cart/page.ts": {
-    "file": "page-C4MBAmOn.js",
+    "file": "page-CZlB3ydb.js",
     "name": "page",
     "src": "frontend/entrypoints/ts/cart/page.ts",
     "isEntry": true,
@@ -60,92 +60,92 @@
     ]
   },
   "frontend/entrypoints/ts/collection.ts": {
-    "file": "collection-kM74UuJR.js",
+    "file": "collection--qS4YJfq.js",
     "name": "collection",
     "src": "frontend/entrypoints/ts/collection.ts",
     "isEntry": true,
     "imports": [
-      "frontend/entrypoints/ts/utils/cart-events.ts",
       "frontend/entrypoints/ts/utils/cart.ts",
+      "frontend/entrypoints/ts/utils/cart-events.ts",
       "frontend/entrypoints/ts/utils/dialog.ts",
       "frontend/entrypoints/ts/utils/dialog.ts"
     ]
   },
   "frontend/entrypoints/ts/gift-card.ts": {
-    "file": "gift-card-Ciee4aDH.js",
+    "file": "gift-card-BvRk9kiK.js",
     "name": "gift-card",
     "src": "frontend/entrypoints/ts/gift-card.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/index.ts": {
-    "file": "index-D_EjmhRG.js",
+    "file": "index-BvRk9kiK.js",
     "name": "index",
     "src": "frontend/entrypoints/ts/index.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/list-collections.ts": {
-    "file": "list-collections-87bPu3lg.js",
+    "file": "list-collections-BvRk9kiK.js",
     "name": "list-collections",
     "src": "frontend/entrypoints/ts/list-collections.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/page.ts": {
-    "file": "page-EITKwFv5.js",
+    "file": "page-BvRk9kiK.js",
     "name": "page",
     "src": "frontend/entrypoints/ts/page.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/password.ts": {
-    "file": "password-BArd4X24.js",
+    "file": "password-BvRk9kiK.js",
     "name": "password",
     "src": "frontend/entrypoints/ts/password.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/product.ts": {
-    "file": "product-N-NZPkxH.js",
+    "file": "product-Df_87Buv.js",
     "name": "product",
     "src": "frontend/entrypoints/ts/product.ts",
     "isEntry": true,
     "imports": [
-      "frontend/entrypoints/ts/product/handlers.ts",
-      "frontend/entrypoints/ts/product/handlers.ts",
-      "frontend/entrypoints/ts/product/recommendations.ts",
-      "frontend/entrypoints/ts/product/recommendations.ts",
       "frontend/entrypoints/ts/product/state.ts",
       "frontend/entrypoints/ts/product/state.ts",
       "frontend/entrypoints/ts/product/sync.ts",
-      "frontend/entrypoints/ts/product/sync.ts"
+      "frontend/entrypoints/ts/product/sync.ts",
+      "frontend/entrypoints/ts/product/handlers.ts",
+      "frontend/entrypoints/ts/product/handlers.ts",
+      "frontend/entrypoints/ts/product/recommendations.ts",
+      "frontend/entrypoints/ts/product/recommendations.ts"
     ]
   },
   "frontend/entrypoints/ts/product/handlers.ts": {
-    "file": "handlers-DPWifyt0.js",
+    "file": "handlers-BtYgqm1O.js",
     "name": "handlers",
     "src": "frontend/entrypoints/ts/product/handlers.ts",
     "isEntry": true,
     "imports": [
-      "frontend/entrypoints/ts/product/state.ts",
-      "frontend/entrypoints/ts/product/state.ts",
-      "frontend/entrypoints/ts/product/sync.ts",
-      "frontend/entrypoints/ts/product/sync.ts",
-      "frontend/entrypoints/ts/utils/cart-events.ts",
       "frontend/entrypoints/ts/utils/cart.ts",
-      "frontend/entrypoints/ts/utils/variant-picker.ts"
+      "frontend/entrypoints/ts/utils/cart-events.ts",
+      "frontend/entrypoints/ts/product/state.ts",
+      "frontend/entrypoints/ts/product/state.ts",
+      "frontend/entrypoints/ts/utils/variant-picker.ts",
+      "frontend/entrypoints/ts/product/sync.ts",
+      "frontend/entrypoints/ts/product/sync.ts"
     ]
   },
   "frontend/entrypoints/ts/product/recommendations.ts": {
-    "file": "recommendations-CnpPRP46.js",
+    "file": "recommendations-DyLg83T5.js",
     "name": "recommendations",
     "src": "frontend/entrypoints/ts/product/recommendations.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/product/state.ts": {
-    "file": "state-yJSoUqNP.js",
+    "file": "state-rSwTArSf.js",
     "name": "state",
     "src": "frontend/entrypoints/ts/product/state.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/product/sync.ts": {
-    "file": "sync-CE2WZql2.js",
+    "file": "sync-DYXvFdju.js",
     "name": "sync",
     "src": "frontend/entrypoints/ts/product/sync.ts",
     "isEntry": true,
@@ -156,7 +156,7 @@
     ]
   },
   "frontend/entrypoints/ts/search.ts": {
-    "file": "search-CllQz1yR.js",
+    "file": "search-DcDAzKEa.js",
     "name": "search",
     "src": "frontend/entrypoints/ts/search.ts",
     "isEntry": true,
@@ -166,7 +166,7 @@
     ]
   },
   "frontend/entrypoints/ts/search/drawer.ts": {
-    "file": "drawer-HQx3d6fQ.js",
+    "file": "drawer-CeuXq2mI.js",
     "name": "drawer",
     "src": "frontend/entrypoints/ts/search/drawer.ts",
     "isEntry": true,
@@ -178,7 +178,7 @@
     ]
   },
   "frontend/entrypoints/ts/theme.ts": {
-    "file": "theme-CZ3UQBQh.js",
+    "file": "theme-0q-JPqcS.js",
     "name": "theme",
     "src": "frontend/entrypoints/ts/theme.ts",
     "isEntry": true,
@@ -188,37 +188,37 @@
     ]
   },
   "frontend/entrypoints/ts/utils/cart-events.ts": {
-    "file": "cart-events-DFMQ7aoZ.js",
+    "file": "cart-events-DJ-1qa8_.js",
     "name": "cart-events",
     "src": "frontend/entrypoints/ts/utils/cart-events.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/utils/cart.ts": {
-    "file": "cart-DFJfubsI.js",
+    "file": "cart-D3XvhVwB.js",
     "name": "cart",
     "src": "frontend/entrypoints/ts/utils/cart.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/utils/dialog.ts": {
-    "file": "dialog-BWyteaFW.js",
+    "file": "dialog-DZ40meJl.js",
     "name": "dialog",
     "src": "frontend/entrypoints/ts/utils/dialog.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/utils/predictive-search.ts": {
-    "file": "predictive-search-CJKYAMdO.js",
+    "file": "predictive-search-DE-k4dbp.js",
     "name": "predictive-search",
     "src": "frontend/entrypoints/ts/utils/predictive-search.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/utils/section-rendering.ts": {
-    "file": "section-rendering-DJnrq5Jd.js",
+    "file": "section-rendering-Cp06r6eu.js",
     "name": "section-rendering",
     "src": "frontend/entrypoints/ts/utils/section-rendering.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/utils/variant-picker.ts": {
-    "file": "variant-picker-BaRxeAxi.js",
+    "file": "variant-picker-CzuIIm9q.js",
     "name": "variant-picker",
     "src": "frontend/entrypoints/ts/utils/variant-picker.ts",
     "isEntry": true

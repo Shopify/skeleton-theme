@@ -1,1 +1,0 @@
-import{initCartPage as e}from"./page-C4MBAmOn.js";document.addEventListener(`DOMContentLoaded`,()=>{e()});

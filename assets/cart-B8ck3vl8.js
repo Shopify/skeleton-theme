@@ -1,0 +1,1 @@
+import{initCartPage as e}from"./page-CZlB3ydb.js";document.addEventListener(`DOMContentLoaded`,()=>{e()});
