@@ -12,7 +12,7 @@
         <div class="flex flex-col gap-3 lg:flex-row-reverse">
 
             {{- '<!-- Main viewer -->' }}
-            <div class="flex-1" data-product-media>
+            <div class="flex-1 lg:flex lg:max-h-[100svh] lg:flex-col lg:gap-3 lg:overflow-y-auto" data-product-media>
                 {% for media in product.media %}
                     {%- assign media_variant_ids = '' -%}
                     {%- for variant in product.variants -%}
@@ -75,7 +75,7 @@
         </div>
     </aside>
 
-    <main>
+    <div>
         <div class="product-info">
             <h1>{{ product.title }}</h1>
             <p data-js="product-price">{{ current_variant.price | money }}</p>
@@ -106,7 +106,7 @@
                 {{ form | payment_button }}
             {% endform %}
         </div>
-    </main>
+    </div>
 </div>
 
 <div

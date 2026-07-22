@@ -28,7 +28,7 @@ jobs:
           echo "Branch strategy check passed for $HEAD -> $BASE"
 
   quality:
-    name: Typecheck and Build
+    name: Lint, Typecheck and Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +37,8 @@ jobs:
           bun-version: latest
       - name: Install dependencies
         run: bun install --frozen-lockfile
+      - name: Lint
+        run: bun run lint
       - name: Typecheck
         run: bun run typecheck
       - name: Build assets

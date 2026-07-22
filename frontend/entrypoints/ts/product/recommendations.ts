@@ -14,7 +14,7 @@ export function loadRecommendations(): void {
   const url = `${window.Shopify.routes.root}recommendations/products?section_id=${sectionId}&product_id=${productId}&intent=related`;
 
   fetch(url)
-    .then((res) => res.text())
+    .then(res => res.text())
     .then((html) => {
       const parsed = new DOMParser().parseFromString(html, 'text/html');
       const inner = parsed.querySelector('[data-js="product-recommendations-root"]');

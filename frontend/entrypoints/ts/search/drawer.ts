@@ -1,68 +1,10 @@
-declare global {
-  interface Window {
-    Shopify: { routes: { root: string } };
-  }
-}
-
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
-
-interface PredictiveItem {
-  title: string;
-  url: string;
-  image?: { url: string; alt?: string | null } | null;
-}
-
-interface PredictivePayload {
-  resources?: {
-    results?: {
-      products?: PredictiveItem[];
-      articles?: PredictiveItem[];
-      pages?: PredictiveItem[];
-    };
-  };
-}
+import { handleDialogKeyDown } from '../utils/dialog';
+import { createPredictiveResultItem, debounce, fetchPredictiveResults } from '../utils/predictive-search';
+import type { PredictiveItem } from '../utils/predictive-search';
 
 interface SearchGroup {
   title: string;
   items: PredictiveItem[];
-}
-
-function debounce<T extends (...args: never[]) => void>(fn: T, delay = 250): (...args: Parameters<T>) => void {
-  let timeoutId: number | null = null;
-
-  return (...args: Parameters<T>) => {
-    if (timeoutId !== null) {
-      window.clearTimeout(timeoutId);
-    }
-
-    timeoutId = window.setTimeout(() => {
-      fn(...args);
-    }, delay);
-  };
-}
-
-function createResultItem(item: PredictiveItem): HTMLLIElement {
-  const li = document.createElement('li');
-  const anchor = document.createElement('a');
-  anchor.href = item.url;
-  anchor.className = 'flex items-center gap-3 rounded border px-2 py-2 hover:bg-gray-50';
-
-  if (item.image?.url) {
-    const img = document.createElement('img');
-    img.src = item.image.url;
-    img.alt = item.image.alt ?? item.title;
-    img.className = 'h-10 w-10 object-cover';
-    anchor.appendChild(img);
-  }
-
-  const title = document.createElement('span');
-  title.className = 'text-sm';
-  title.textContent = item.title;
-  anchor.appendChild(title);
-
-  li.appendChild(anchor);
-  return li;
 }
 
 function createGroupNode(group: SearchGroup): HTMLElement {
@@ -74,7 +16,7 @@ function createGroupNode(group: SearchGroup): HTMLElement {
   const list = document.createElement('ul');
   list.className = 'space-y-1';
   group.items.forEach((item) => {
-    list.appendChild(createResultItem(item));
+    list.appendChild(createPredictiveResultItem(item));
   });
 
   wrapper.appendChild(heading);
@@ -140,38 +82,9 @@ export function initSearchDrawer(): void {
     empty.classList.remove('hidden');
   };
 
-  const focusables = (): HTMLElement[] =>
-    Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-      (el) => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden'),
-    );
-
   const onKeyDown = (event: KeyboardEvent): void => {
     if (!isOpen) return;
-
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closeDrawer();
-      return;
-    }
-
-    if (event.key !== 'Tab') return;
-
-    const nodes = focusables();
-    if (nodes.length === 0) return;
-
-    const first = nodes[0];
-    const last = nodes[nodes.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-      return;
-    }
-
-    if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
+    handleDialogKeyDown(event, panel, closeDrawer);
   };
 
   function openDrawer(trigger?: HTMLElement): void {
@@ -181,7 +94,7 @@ export function initSearchDrawer(): void {
 
     drawer.hidden = false;
     drawer.setAttribute('aria-hidden', 'false');
-    triggers.forEach((button) => button.setAttribute('aria-expanded', 'true'));
+    triggers.forEach(button => button.setAttribute('aria-expanded', 'true'));
     document.body.style.overflow = 'hidden';
     setExpanded(true);
     document.addEventListener('keydown', onKeyDown);
@@ -198,7 +111,7 @@ export function initSearchDrawer(): void {
 
     drawer.hidden = true;
     drawer.setAttribute('aria-hidden', 'true');
-    triggers.forEach((button) => button.setAttribute('aria-expanded', 'false'));
+    triggers.forEach(button => button.setAttribute('aria-expanded', 'false'));
     document.body.style.overflow = '';
     setExpanded(false);
     setBusy(false);
@@ -230,7 +143,7 @@ export function initSearchDrawer(): void {
     setStatus(`${total} quick matches`);
   };
 
-  const fetchPredictiveResults = async (term: string): Promise<void> => {
+  const runPredictiveSearch = async (term: string): Promise<void> => {
     if (!isOpen) return;
 
     if (term.length < 2) {
@@ -251,28 +164,8 @@ export function initSearchDrawer(): void {
     setError('');
     setStatus('Searching...');
 
-    const params = new URLSearchParams();
-    params.set('q', term);
-    params.set('resources[type]', 'product,page,article');
-    params.set('resources[limit]', '6');
-    params.set('resources[options][unavailable_products]', 'last');
-
-    const url = `${window.Shopify.routes.root}search/suggest.json?${params.toString()}`;
-
     try {
-      const response = await fetch(url, {
-        signal: activeController.signal,
-        headers: {
-          Accept: 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Predictive endpoint unavailable');
-      }
-
-      const payload = (await response.json()) as PredictivePayload;
+      const payload = await fetchPredictiveResults(term, activeController.signal);
 
       if (requestId !== latestRequestId) {
         return;
@@ -316,7 +209,7 @@ export function initSearchDrawer(): void {
   };
 
   const onInput = debounce((value: string) => {
-    void fetchPredictiveResults(value.trim());
+    void runPredictiveSearch(value.trim());
   });
 
   triggers.forEach((trigger) => {

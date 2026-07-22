@@ -15,7 +15,7 @@
     <form data-js="collection-controls" class="space-y-4 border-b pb-4" method="get" action="{{ collection.url }}">
       <div class="flex flex-wrap items-end gap-4">
         <div>
-          <label for="CollectionSort" class="block text-sm">Sort by</label>
+          <label for="CollectionSort" class="block text-sm">{{ 'collections.sort_by' | t }}</label>
           <select id="CollectionSort" name="sort_by" data-js="collection-sort" class="mt-1 border px-3 py-2">
             {% for option in collection.sort_options %}
               <option value="{{ option.value | escape }}" {% if option.value == collection.sort_by %}selected{% endif %}>
@@ -25,67 +25,102 @@
           </select>
         </div>
 
-        <button type="submit" class="border px-3 py-2">Apply filters</button>
+        <button type="submit" class="border px-3 py-2">{{ 'collections.apply_filters' | t }}</button>
         <a
           href="{{ collection.url }}?sort_by={{ collection.sort_by | default: collection.default_sort_by | escape }}"
           data-js="collection-clear"
           class="underline"
         >
-          Clear all
+          {{ 'collections.clear_all' | t }}
         </a>
+
+        {% if collection.filters.size > 0 %}
+          <button
+            type="button"
+            data-js="collection-filters-open"
+            aria-haspopup="dialog"
+            aria-controls="CollectionFiltersDrawer"
+            aria-expanded="false"
+            class="border px-3 py-2 md:hidden"
+          >
+            {{ 'collections.filters' | t }}
+          </button>
+        {% endif %}
       </div>
 
       {% if collection.filters.size > 0 %}
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-js="collection-filters">
-          {% for filter in collection.filters %}
-            <fieldset class="space-y-2 border p-3">
-              <legend class="text-sm font-medium">{{ filter.label }}</legend>
+        <div
+          id="CollectionFiltersDrawer"
+          data-js="collection-filters-drawer"
+          class="fixed inset-0 z-50"
+          data-open="false"
+        >
+          <div data-js="collection-filters-overlay" class="absolute inset-0 bg-black/40 md:hidden" aria-hidden="true"></div>
 
-              {% case filter.type %}
-                {% when 'list', 'boolean' %}
-                  {% for filter_value in filter.values %}
-                    <label class="flex items-center gap-2 text-sm" for="Filter-{{ filter.param_name }}-{{ forloop.index }}">
-                      <input
-                        id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
-                        type="checkbox"
-                        name="{{ filter_value.param_name }}"
-                        value="{{ filter_value.value }}"
-                        {% if filter_value.active %}checked{% endif %}
-                      >
-                      <span>{{ filter_value.label }}</span>
-                      <span class="opacity-60">({{ filter_value.count }})</span>
-                    </label>
-                  {% endfor %}
-                {% when 'price_range' %}
-                  <div class="grid grid-cols-2 gap-2">
-                    <label class="text-sm" for="Filter-{{ filter.min_value.param_name }}">
-                      Min
-                      <input
-                        id="Filter-{{ filter.min_value.param_name }}"
-                        type="number"
-                        name="{{ filter.min_value.param_name }}"
-                        min="0"
-                        value="{{ filter.min_value.value }}"
-                        placeholder="0"
-                        class="mt-1 w-full border px-2 py-1"
-                      >
-                    </label>
-                    <label class="text-sm" for="Filter-{{ filter.max_value.param_name }}">
-                      Max
-                      <input
-                        id="Filter-{{ filter.max_value.param_name }}"
-                        type="number"
-                        name="{{ filter.max_value.param_name }}"
-                        min="0"
-                        value="{{ filter.max_value.value }}"
-                        placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
-                        class="mt-1 w-full border px-2 py-1"
-                      >
-                    </label>
-                  </div>
-              {% endcase %}
-            </fieldset>
-          {% endfor %}
+          <div
+            data-js="collection-filters-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-label="{{ 'collections.filters' | t }}"
+            class="absolute right-0 top-0 h-full w-full max-w-xs overflow-y-auto bg-white p-4 shadow-2xl md:static md:h-auto md:w-auto md:max-w-none md:overflow-visible md:bg-transparent md:p-0 md:shadow-none"
+          >
+            <div class="mb-3 flex items-center justify-between md:hidden">
+              <h2 class="text-lg font-semibold">{{ 'collections.filters' | t }}</h2>
+              <button type="button" data-js="collection-filters-close" class="h-9 w-9 border" aria-label="{{ 'collections.close_filters' | t }}">x</button>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-js="collection-filters">
+              {% for filter in collection.filters %}
+                <fieldset class="space-y-2 border p-3">
+                  <legend class="text-sm font-medium">{{ filter.label }}</legend>
+
+                  {% case filter.type %}
+                    {% when 'list', 'boolean' %}
+                      {% for filter_value in filter.values %}
+                        <label class="flex items-center gap-2 text-sm" for="Filter-{{ filter.param_name }}-{{ forloop.index }}">
+                          <input
+                            id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                            type="checkbox"
+                            name="{{ filter_value.param_name }}"
+                            value="{{ filter_value.value }}"
+                            {% if filter_value.active %}checked{% endif %}
+                          >
+                          <span>{{ filter_value.label }}</span>
+                          <span class="opacity-60">({{ filter_value.count }})</span>
+                        </label>
+                      {% endfor %}
+                    {% when 'price_range' %}
+                      <div class="grid grid-cols-2 gap-2">
+                        <label class="text-sm" for="Filter-{{ filter.min_value.param_name }}">
+                          Min
+                          <input
+                            id="Filter-{{ filter.min_value.param_name }}"
+                            type="number"
+                            name="{{ filter.min_value.param_name }}"
+                            min="0"
+                            value="{{ filter.min_value.value }}"
+                            placeholder="0"
+                            class="mt-1 w-full border px-2 py-1"
+                          >
+                        </label>
+                        <label class="text-sm" for="Filter-{{ filter.max_value.param_name }}">
+                          Max
+                          <input
+                            id="Filter-{{ filter.max_value.param_name }}"
+                            type="number"
+                            name="{{ filter.max_value.param_name }}"
+                            min="0"
+                            value="{{ filter.max_value.value }}"
+                            placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                            class="mt-1 w-full border px-2 py-1"
+                          >
+                        </label>
+                      </div>
+                  {% endcase %}
+                </fieldset>
+              {% endfor %}
+            </div>
+          </div>
         </div>
       {% endif %}
     </form>
@@ -127,14 +162,14 @@
       {% for product in collection.products %}
         {% render 'product-card', product: product, enable_quick_buy: true %}
       {% else %}
-        <p>No products found for current filters.</p>
+        <p>{{ 'collections.no_products_found' | t }}</p>
       {% endfor %}
     </div>
 
     <div class="mt-4" data-js="collection-pagination-wrap">
       {% if paginate.next %}
         <button type="button" data-js="collection-load-more" data-next-url="{{ paginate.next.url }}" class="border px-4 py-2">
-          Load more
+          {{ 'collections.load_more' | t }}
         </button>
       {% endif %}
 
@@ -152,6 +187,16 @@
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  [data-js='collection-filters-drawer'][data-open='false'] {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    [data-js='collection-filters-drawer'] {
+      display: contents !important;
+    }
   }
 {% endstylesheet %}
 

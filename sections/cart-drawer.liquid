@@ -56,16 +56,16 @@
     </ul>
 
     <div data-js="cart-empty" class="mt-4 text-sm" {% if cart.item_count > 0 %}hidden{% endif %}>
-      <p>Your cart is empty.</p>
-      <a href="{{ routes.all_products_collection_url }}" class="mt-2 inline-block underline">Continue shopping</a>
+      <p>{{ 'cart.empty' | t }}</p>
+      <a href="{{ routes.all_products_collection_url }}" class="mt-2 inline-block underline">{{ 'cart.continue_shopping' | t }}</a>
     </div>
 
     <div data-js="cart-drawer-footer" class="absolute bottom-0 left-0 right-0 border-t bg-white p-4">
       <div class="mb-3 flex items-center justify-between">
-        <p class="text-sm">Subtotal</p>
+        <p class="text-sm">{{ 'cart.subtotal' | t }}</p>
         <p data-js="cart-subtotal" class="text-sm font-semibold">{{ cart.total_price | money }}</p>
       </div>
-      <a href="{{ routes.cart_url }}" class="block w-full border px-3 py-2 text-center">View cart</a>
+      <a href="{{ routes.cart_url }}" class="block w-full border px-3 py-2 text-center">{{ 'cart.view_cart' | t }}</a>
       <form action="{{ routes.cart_url }}" method="post" class="mt-2">
         <button type="submit" name="checkout" class="w-full border px-3 py-2">{{ 'cart.checkout' | t }}</button>
       </form>

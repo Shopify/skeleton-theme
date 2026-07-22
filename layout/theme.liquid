@@ -35,9 +35,15 @@
     </head>
 
     <body>
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2">
+            {{ 'general.skip_to_content' | t }}
+        </a>
+
         {% sections 'header-group' %}
 
-        {{ content_for_layout }}
+        <main id="main-content">
+            {{ content_for_layout }}
+        </main>
 
         {% section 'cart-drawer' %}
         {% section 'search-drawer' %}

@@ -9,9 +9,9 @@ function resolveVariantFromURL(productData: ProductData): ProductData['variants'
   const variantIdParam = Number(params.get('variant'));
 
   return (
-    productData.variants.find((v) => v.id === variantIdParam) ??
-    productData.variants.find((v) => v.available) ??
-    productData.variants[0]
+    productData.variants.find(v => v.id === variantIdParam)
+    ?? productData.variants.find(v => v.available)
+    ?? productData.variants[0]
   );
 }
 
@@ -32,10 +32,6 @@ function applyVariantSelection(variant: ProductData['variants'][number]): void {
     state.currentMediaId = firstMediaId || null;
     state.mediaContextVariantId = firstMediaOwnerVariantId || state.mediaContextVariantId;
   }
-}
-
-function isOptionClick(event: Event): boolean {
-  return Boolean((event.target as HTMLElement).closest('[data-js="option-value"]'));
 }
 
 function isProductInteractionTarget(target: EventTarget | null): target is HTMLElement {

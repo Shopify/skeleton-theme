@@ -12,8 +12,8 @@
   <p data-js="cart-page-error" role="alert" class="min-h-5 text-sm text-red-700"></p>
 
   <div data-js="cart-page-empty" {% if cart.item_count > 0 %}hidden{% endif %}>
-    <p>Your cart is empty.</p>
-    <a href="{{ routes.all_products_collection_url }}" class="underline">Continue shopping</a>
+    <p>{{ 'cart.empty' | t }}</p>
+    <a href="{{ routes.all_products_collection_url }}" class="underline">{{ 'cart.continue_shopping' | t }}</a>
   </div>
 
   <ul data-js="cart-page-items" class="space-y-3" {% if cart.item_count == 0 %}hidden{% endif %}>
@@ -48,7 +48,7 @@
   </ul>
 
   <div data-js="cart-page-footer" class="space-y-3" {% if cart.item_count == 0 %}hidden{% endif %}>
-    <p class="text-sm">Subtotal: <strong data-js="cart-page-subtotal">{{ cart.total_price | money }}</strong></p>
+    <p class="text-sm">{{ 'cart.subtotal' | t }}: <strong data-js="cart-page-subtotal">{{ cart.total_price | money }}</strong></p>
 
     <form action="{{ routes.cart_url }}" method="post" class="space-y-3 border p-3">
       <label for="CartNote" class="block text-sm font-medium">{{ 'cart.note' | t }}</label>

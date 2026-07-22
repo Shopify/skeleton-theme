@@ -1,13 +1,11 @@
 import { changeCartLine } from '../utils/cart';
 import { CART_OPEN_EVENT, CART_UPDATED_EVENT } from '../utils/cart-events';
+import { handleDialogKeyDown } from '../utils/dialog';
 import {
   applySectionReplace,
   fetchSingleSectionHtml,
   normalizeSectionsUrl,
 } from '../utils/section-rendering';
-
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
 export function initCartDrawer(): void {
   const drawerRoot = document.querySelector<HTMLElement>('[data-js="cart-drawer"]');
@@ -24,14 +22,14 @@ export function initCartDrawer(): void {
   const countNodes = document.querySelectorAll<HTMLElement>('[data-js="cart-count"]');
 
   if (
-    !overlayRoot ||
-    !panelRoot ||
-    !closeButtonRoot ||
-    !itemsContainerRoot ||
-    !emptyStateRoot ||
-    !subtotalRoot ||
-    !statusRoot ||
-    !errorRoot
+    !overlayRoot
+    || !panelRoot
+    || !closeButtonRoot
+    || !itemsContainerRoot
+    || !emptyStateRoot
+    || !subtotalRoot
+    || !statusRoot
+    || !errorRoot
   ) {
     return;
   }
@@ -204,38 +202,9 @@ export function initCartDrawer(): void {
     void flushQueuedUpdates();
   };
 
-  const focusables = (): HTMLElement[] =>
-    Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-      (el) => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden'),
-    );
-
   const onKeyDown = (event: KeyboardEvent): void => {
     if (!isOpen) return;
-
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closeDrawer();
-      return;
-    }
-
-    if (event.key !== 'Tab') return;
-
-    const nodes = focusables();
-    if (nodes.length === 0) return;
-
-    const first = nodes[0];
-    const last = nodes[nodes.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-      return;
-    }
-
-    if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
+    handleDialogKeyDown(event, panel, closeDrawer);
   };
 
   function openDrawer(trigger?: HTMLElement): void {
@@ -245,7 +214,7 @@ export function initCartDrawer(): void {
 
     drawer.hidden = false;
     drawer.setAttribute('aria-hidden', 'false');
-    triggers.forEach((button) => button.setAttribute('aria-expanded', 'true'));
+    triggers.forEach(button => button.setAttribute('aria-expanded', 'true'));
     document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', onKeyDown);
 
@@ -259,7 +228,7 @@ export function initCartDrawer(): void {
 
     drawer.hidden = true;
     drawer.setAttribute('aria-hidden', 'true');
-    triggers.forEach((button) => button.setAttribute('aria-expanded', 'false'));
+    triggers.forEach(button => button.setAttribute('aria-expanded', 'false'));
     document.body.style.overflow = '';
     document.removeEventListener('keydown', onKeyDown);
 

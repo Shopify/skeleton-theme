@@ -1,41 +1,7 @@
-declare global {
-  interface Window {
-    Shopify: { routes: { root: string } };
-  }
-}
+import { createPredictiveResultItem, debounce, fetchPredictiveResults } from './utils/predictive-search';
+import type { PredictiveItem } from './utils/predictive-search';
 
 export {};
-
-interface PredictiveItem {
-  title: string;
-  url: string;
-  price?: string;
-  image?: { url: string; alt?: string | null } | null;
-}
-
-interface PredictivePayload {
-  resources?: {
-    results?: {
-      products?: PredictiveItem[];
-      articles?: PredictiveItem[];
-      pages?: PredictiveItem[];
-    };
-  };
-}
-
-function debounce<T extends (...args: never[]) => void>(fn: T, delay = 250): (...args: Parameters<T>) => void {
-  let timeoutId: number | null = null;
-
-  return (...args: Parameters<T>) => {
-    if (timeoutId !== null) {
-      window.clearTimeout(timeoutId);
-    }
-
-    timeoutId = window.setTimeout(() => {
-      fn(...args);
-    }, delay);
-  };
-}
 
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.querySelector<HTMLElement>('[data-js="search-root"]');
@@ -68,30 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     input.setAttribute('aria-expanded', 'true');
   };
 
-  const createResultNode = (item: PredictiveItem): HTMLLIElement => {
-    const listItem = document.createElement('li');
-
-    const link = document.createElement('a');
-    link.href = item.url;
-    link.className = 'flex items-center gap-3 rounded border px-2 py-2 hover:bg-gray-50';
-
-    if (item.image?.url) {
-      const image = document.createElement('img');
-      image.src = item.image.url;
-      image.alt = item.image.alt ?? item.title;
-      image.className = 'h-10 w-10 object-cover';
-      link.appendChild(image);
-    }
-
-    const title = document.createElement('span');
-    title.className = 'text-sm';
-    title.textContent = item.title;
-    link.appendChild(title);
-
-    listItem.appendChild(link);
-    return listItem;
-  };
-
   const renderResults = (results: PredictiveItem[]): void => {
     list.replaceChildren();
 
@@ -103,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fragment = document.createDocumentFragment();
     results.forEach((item) => {
-      fragment.appendChild(createResultNode(item));
+      fragment.appendChild(createPredictiveResultItem(item));
     });
     list.appendChild(fragment);
 
@@ -111,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     openPanel();
   };
 
-  const fetchPredictiveResults = async (term: string): Promise<void> => {
+  const fetchAndRender = async (term: string): Promise<void> => {
     if (term.length < 2) {
       closePanel();
       setPredictiveStatus('');
@@ -125,22 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setSearchStatus('Predictive search active');
     openPanel();
 
-    const url = `${window.Shopify.routes.root}search/suggest.json?q=${encodeURIComponent(term)}&resources[type]=product,page,article&resources[limit]=6&resources[options][unavailable_products]=last`;
-
     try {
-      const response = await fetch(url, {
-        signal: currentController.signal,
-        headers: {
-          Accept: 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Predictive endpoint unavailable');
-      }
-
-      const payload = (await response.json()) as PredictivePayload;
+      const payload = await fetchPredictiveResults(term, currentController.signal);
       const products = payload.resources?.results?.products ?? [];
       const pages = payload.resources?.results?.pages ?? [];
       const articles = payload.resources?.results?.articles ?? [];
@@ -156,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const onInput = debounce((value: string) => {
-    void fetchPredictiveResults(value.trim());
+    void fetchAndRender(value.trim());
   });
 
   input.addEventListener('input', () => {

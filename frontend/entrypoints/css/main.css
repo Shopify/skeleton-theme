@@ -6,59 +6,11 @@
 @source "../../../section";
 @source "../../../templates";
 
-@theme {
-    /* Colors */
-    /*--color-*: initial;*/
-
-    /* Typo */
-    /*--text-*: initial;
-    --text-h1: var(--h1);
-    --text-h1--line-height: var(--h1--line-height);
-    --text-h1--font-weight: var(--h1--font-weight);*/
-
-    /* Spacing */
-    /*--spacing-*: initial;
-    --spacing-0: 0;
-    --spacing-col1: 8.33333333333%;
-    --spacing-col2: 16.66666666667%;
-    --spacing-col3: 25%;
-    --spacing-col4: 33.33333333333%;
-    --spacing-col5: 41.66666666667%;
-    --spacing-col6: 50%;
-    --spacing-col7: 58.33333333333%;
-    --spacing-col8: 66.66666666667%;
-    --spacing-col9: 75%;
-    --spacing-col10: 83.33333333333%;
-    --spacing-col11: 91.66666666667%;
-    --spacing-col12: 100%;*/
-
-    /* Gap */
-    /*--gap-*: initial;*/
-
-    /* Margin */
-    /*--margin-*: initial;*/
-
-    /* Flex */
-    /*--flex-col1: 8.33333333333%;
-    --flex-col2: 16.66666666667%;
-    --flex-col3: 25%;
-    --flex-col4: 33.33333333333%;
-    --flex-col5: 41.66666666667%;
-    --flex-col6: 50%;
-    --flex-col7: 58.33333333333%;
-    --flex-col8: 66.66666666667%;
-    --flex-col9: 75%;
-    --flex-col10: 83.33333333333%;
-    --flex-col11: 91.66666666667%;
-    --flex-col12: 100%;*/
-}
-
 html {
     overscroll-behavior: none;
 
     @media (min-width: 768px) {
         scrollbar-gutter: stable;
-        -webkit-scroll-gutter: stable;
     }
 }
 

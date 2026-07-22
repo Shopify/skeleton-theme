@@ -61,6 +61,13 @@ export function onThumbnailClick(e: Event): void {
   }
 
   syncDOM();
+
+  const mediaContainer = document.querySelector<HTMLElement>('[data-product-media]');
+  const mediaItem = mediaContainer?.querySelector<HTMLElement>(`[data-js="media-item"][data-media-id="${mediaId}"]`);
+  if (mediaContainer && mediaItem) {
+    const delta = mediaItem.getBoundingClientRect().top - mediaContainer.getBoundingClientRect().top;
+    mediaContainer.scrollTo({ top: mediaContainer.scrollTop + delta, behavior: 'smooth' });
+  }
 }
 
 /**
