@@ -65,23 +65,26 @@ To learn more, refer to the [theme architecture documentation](https://shopify.d
 Every page is composed from blocks. The composition flows in one direction:
 
 ```
-layout/*.liquid → {% block 'container' %} → content_for_layout → templates/*.liquid
+templates/*.liquid → {% block 'container' %} → blocks / snippets / inline markup
 ```
 
 ### Templates
 
 [Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types)
 control what's rendered on each type of page. In this theme they are Liquid
-files (`templates/*.liquid`), not JSON. Each template is a composition root
-that renders blocks and inline markup directly. The layout wraps
-`content_for_layout` in a single `container` block, so templates do not add
-their own containers.
+files (`templates/*.liquid`), not JSON. Each template is a composition root:
+it wraps its page content in one or more `container` blocks — one per vertical
+slice — and composes blocks, snippets, and inline markup inside them. The layout
+renders `content_for_layout` in a plain `<main>` and reserves the `container`
+block for the header and footer only.
 
-For example, `templates/index.liquid` composes the `hello-world` block
-directly:
+For example, `templates/index.liquid` wraps the `hello-world` block in a
+container:
 
 ```liquid
-{% block 'hello-world' %}{% endblock %}
+{% block 'container' %}
+  {% block 'hello-world' %}{% endblock %}
+{% endblock %}
 ```
 
 ### Blocks
@@ -93,11 +96,11 @@ a `{% doc %}` header describing its parameters, and ends with a `{% schema %}`
 `{{ block.content }}` and keeps `{{ block.shopify_attributes }}` on its root
 element for theme-editor support.
 
-The `container` block owns each page's outer layout element. Skeleton
-intentionally uses one layout-owned container around `content_for_layout`:
-the theme is simple enough that per-template containers do not justify the
-additional pattern. `blocks/hello-world.liquid` is the theme's starter demo
-block. `layout/theme.liquid` composes the `header` and `footer` blocks directly.
+The `container` block owns a page region's outer layout element. Each template
+wraps its content in one or more `container` blocks, and `layout/theme.liquid`
+wraps the `header` and `footer` blocks in their own containers while rendering
+`content_for_layout` in a plain `<main>`. `blocks/hello-world.liquid` is the
+theme's starter demo block.
 
 ## Non-negotiables
 
