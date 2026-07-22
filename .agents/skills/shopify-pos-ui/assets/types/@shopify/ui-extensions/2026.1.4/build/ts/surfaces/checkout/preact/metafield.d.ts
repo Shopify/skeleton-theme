@@ -1,0 +1,14 @@
+import type { Metafield } from '../api/standard/standard';
+interface MetafieldFilter {
+    namespace: string;
+    key: string;
+}
+/**
+ * Returns a single filtered `Metafield` or `undefined`.
+ * @arg {MetafieldFilter} - filter the list of returned metafields to a single metafield
+ * @deprecated `useMetafield` is deprecated. Use `useAppMetafields` with cart metafields instead.
+ * @publicDocs
+ */
+export declare function useMetafield(filters: MetafieldFilter): Metafield | undefined;
+export {};
+//# sourceMappingURL=metafield.d.ts.map

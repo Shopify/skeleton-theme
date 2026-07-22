@@ -1,0 +1,6 @@
+/**
+ * The standard set of UI components available in most admin extensions. These components provide the building blocks for creating extension interfaces including layout elements, form inputs, data display, navigation, and interactive controls. Use these components to build consistent, accessible UIs that match the Shopify admin design system.
+ */
+export type StandardComponents = 'Avatar' | 'Badge' | 'Banner' | 'Box' | 'Button' | 'ButtonGroup' | 'Checkbox' | 'Chip' | 'Choice' | 'ChoiceList' | 'Clickable' | 'ClickableChip' | 'ColorField' | 'ColorPicker' | 'DateField' | 'DatePicker' | 'DropZone' | 'Divider' | 'EmailField' | 'Grid' | 'GridItem' | 'Heading' | 'Icon' | 'Image' | 'Link' | 'ListItem' | 'Menu' | 'MoneyField' | 'NumberField' | 'Option' | 'OptionGroup' | 'OrderedList' | 'Paragraph' | 'PasswordField' | 'QueryContainer' | 'SearchField' | 'Section' | 'Select' | 'Spinner' | 'Stack' | 'Switch' | 'Table' | 'TableBody' | 'TableCell' | 'TableHeader' | 'TableHeaderRow' | 'TableRow' | 'Text' | 'TextArea' | 'TextField' | 'Thumbnail' | 'Tooltip' | 'UnorderedList' | 'URLField';
+export default StandardComponents;
+//# sourceMappingURL=StandardComponents.d.ts.map

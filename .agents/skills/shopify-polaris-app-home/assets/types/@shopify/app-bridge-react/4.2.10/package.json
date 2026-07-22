@@ -1,0 +1,74 @@
+{
+  "name": "@shopify/app-bridge-react",
+  "version": "4.2.10",
+  "description": "React wrappers for the Shopify App Bridge library",
+  "license": "MIT",
+  "author": "Shopify Inc.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shopify/shopify-app-bridge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Shopify/shopify-app-bridge/issues"
+  },
+  "homepage": "https://shopify.dev/docs/api/app-bridge",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "@shopify:registry": "https://registry.npmjs.org"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "main": "./build/cjs/index.cjs",
+  "types": "./build/types/esm/index.d.ts",
+  "module": "./build/esm/index.js",
+  "esnext": "./build/esnext/index.esnext",
+  "exports": {
+    ".": {
+      "esnext": "./build/esnext/index.esnext",
+      "import": {
+        "types": "./build/types/esm/index.d.ts",
+        "default": "./build/esm/index.js"
+      },
+      "require": {
+        "types": "./build/types/cjs/index.d.cts",
+        "default": "./build/cjs/index.cjs"
+      }
+    },
+    "./*": {
+      "esnext": "./build/esnext/*.esnext",
+      "import": {
+        "types": "./build/types/esm/*.d.ts",
+        "default": "./build/esm/*.js"
+      },
+      "require": {
+        "types": "./build/types/cjs/*.d.cts",
+        "default": "./build/cjs/*.cjs"
+      }
+    }
+  },
+  "files": [
+    "build",
+    "CHANGELOG.md"
+  ],
+  "dependencies": {
+    "@shopify/app-bridge-types": "0.7.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.4",
+    "@types/react-dom": "^18.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-dom": "*"
+  },
+  "scripts": {
+    "build": "vite build",
+    "watch": "vite build --watch --mode=development",
+    "test": "vitest run --passWithNoTests",
+    "type-check": "tsc --noEmit",
+    "coverage": "vitest run --passWithNoTests --coverage"
+  }
+}

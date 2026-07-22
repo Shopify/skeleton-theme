@@ -7,7 +7,7 @@
   assign path = entry | replace: '@ts/', 'ts/' | replace: '@css/', 'css/' | replace: '~/', '../' | replace: '@/', '../'
 %}
 {% if path == "/frontend/entrypoints/css/main.css" or path == "css/main.css" %}
-  {{ 'main-JmcnsjPw.css' | asset_url | split: '?' | first | stylesheet_tag: preload: preload_stylesheet }}
+  {{ 'main-BJ1Xktd6.css' | asset_url | split: '?' | first | stylesheet_tag: preload: preload_stylesheet }}
 {% elsif path == "/frontend/entrypoints/ts/404.ts" or path == "ts/404.ts" %}
   <script src="{{ '404-BPQrMuxs.js' | asset_url | split: '?' | first }}" type="module" crossorigin="anonymous"></script>
 {% elsif path == "/frontend/entrypoints/ts/article.ts" or path == "ts/article.ts" %}

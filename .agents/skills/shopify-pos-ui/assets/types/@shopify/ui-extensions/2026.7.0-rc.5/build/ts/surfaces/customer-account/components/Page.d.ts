@@ -1,0 +1,54 @@
+import {BaseElementPropsWithChildren, IdProps, SizeKeyword} from './shared';
+
+export interface PageProps extends IdProps {
+  /**
+   * The main heading displayed at the top of the page.
+   */
+  heading?: string;
+
+  /**
+   * A secondary heading displayed below the main heading for additional context.
+   */
+  subheading?: string;
+
+  /**
+   * The inline size of the page
+   * - `base` corresponds to a set default inline size
+   * - `large` full width with whitespace
+   *
+   * @default 'base'
+   */
+  inlineSize?: Extract<SizeKeyword, 'base' | 'large'>;
+}
+
+export interface PageElementSlots {
+  /**
+   * A navigation link that lets the customer return to the previous page. Accepts a single [button](/docs/api/{API_NAME}/{API_VERSION}/web-components/actions/button) component. Learn more about [breadcrumb actions](#breadcrumb-actions).
+   */
+  'breadcrumb-actions'?: HTMLElement;
+  /**
+   * The main call-to-action for the page. Accepts a single [button](/docs/api/{API_NAME}/{API_VERSION}/web-components/actions/button) component. Learn more about [primary actions](#primary-actions).
+   */
+  'primary-action'?: HTMLElement;
+  /**
+   * Additional actions for the page. Accepts one or more [button](/docs/api/{API_NAME}/{API_VERSION}/web-components/actions/button) components. Learn more about [secondary actions](#secondary-actions).
+   */
+  'secondary-actions'?: HTMLElement;
+}
+
+export interface PageElement extends HTMLElement, PageProps {}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    ['s-page']: PageElement;
+  }
+}
+
+declare module 'preact' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace createElement.JSX {
+    interface IntrinsicElements {
+      ['s-page']: BaseElementPropsWithChildren<PageElement> & PageProps;
+    }
+  }
+}

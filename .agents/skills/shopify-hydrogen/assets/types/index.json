@@ -1,0 +1,134 @@
+{
+  "hydrogen": {
+    "2026-04": [
+      {
+        "package": "@shopify/hydrogen",
+        "version": "2026.4.2"
+      },
+      {
+        "package": "@shopify/hydrogen-react",
+        "version": "2026.4.2"
+      },
+      {
+        "package": "react-router",
+        "version": "7.14.0"
+      },
+      {
+        "package": "@react-router/dev",
+        "version": "7.14.0"
+      },
+      {
+        "package": "graphql",
+        "version": "16.14.0"
+      },
+      {
+        "package": "type-fest",
+        "version": "4.41.0"
+      },
+      {
+        "package": "schema-dts",
+        "version": "2.0.0"
+      }
+    ],
+    "2026-01": [
+      {
+        "package": "@shopify/hydrogen",
+        "version": "2026.1.4"
+      },
+      {
+        "package": "@shopify/hydrogen-react",
+        "version": "2026.1.2"
+      },
+      {
+        "package": "react-router",
+        "version": "7.12.0"
+      },
+      {
+        "package": "@react-router/dev",
+        "version": "7.12.0"
+      },
+      {
+        "package": "graphql",
+        "version": "16.14.0"
+      },
+      {
+        "package": "type-fest",
+        "version": "4.41.0"
+      },
+      {
+        "package": "schema-dts",
+        "version": "2.0.0"
+      }
+    ],
+    "2025-10": [
+      {
+        "package": "@shopify/hydrogen",
+        "version": "2025.10.1"
+      },
+      {
+        "package": "@shopify/hydrogen-react",
+        "version": "2025.10.0"
+      },
+      {
+        "package": "react-router",
+        "version": "7.12.0"
+      },
+      {
+        "package": "@react-router/dev",
+        "version": "7.12.0"
+      },
+      {
+        "package": "graphql",
+        "version": "16.14.0"
+      },
+      {
+        "package": "type-fest",
+        "version": "4.41.0"
+      },
+      {
+        "package": "schema-dts",
+        "version": "2.0.0"
+      }
+    ],
+    "2025-07": [
+      {
+        "package": "@shopify/hydrogen",
+        "version": "2025.7.3"
+      },
+      {
+        "package": "@shopify/hydrogen-react",
+        "version": "2025.7.2"
+      },
+      {
+        "package": "react-router",
+        "version": "7.12.0"
+      },
+      {
+        "package": "@react-router/dev",
+        "version": "7.12.0"
+      },
+      {
+        "package": "graphql",
+        "version": "16.14.0"
+      },
+      {
+        "package": "type-fest",
+        "version": "4.41.0"
+      },
+      {
+        "package": "schema-dts",
+        "version": "2.0.0"
+      }
+    ]
+  },
+  "_always_loaded": [
+    {
+      "package": "preact",
+      "version": "10.29.2"
+    },
+    {
+      "package": "@types/react",
+      "version": "18.3.29"
+    }
+  ]
+}

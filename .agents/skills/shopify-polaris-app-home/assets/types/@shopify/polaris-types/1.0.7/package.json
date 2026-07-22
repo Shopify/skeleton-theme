@@ -1,0 +1,41 @@
+{
+  "name": "@shopify/polaris-types",
+  "version": "1.0.7",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "@shopify:registry": "https://registry.npmjs.org"
+  },
+  "engines": {
+    "pnpm": ">=10.2.0",
+    "node": ">=22.18.0"
+  },
+  "types": "./dist/polaris.d.ts",
+  "customElements": "./dist/custom-elements.json",
+  "exports": {
+    ".": {
+      "types": "./dist/polaris.d.ts"
+    },
+    "./custom-elements": "./dist/custom-elements.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "preact": "^10.29.1",
+    "react": "^18.3.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "scripts": {
+    "test": "npm run test:types && npm run test:imports && npm run test:cem && npm run test:cem-unit",
+    "test:imports": "vitest run tests/imports.test.ts",
+    "test:cem": "vitest run tests/custom-elements.test.ts",
+    "test:cem-unit": "vitest run tests/custom-data-unit.test.ts",
+    "test:types": "npm run test:vanilla && npm run test:react && npm run test:preact",
+    "test:react": "tsc --noEmit --jsx react-jsx tests/react.test.tsx",
+    "test:preact": "tsc --noEmit --jsx react-jsx tests/preact.test.tsx",
+    "test:vanilla": "tsc --noEmit tests/vanilla.test.ts"
+  }
+}
