@@ -48,7 +48,7 @@ function normalizeSectionsUrl(url: string): string {
 export async function getCart(): Promise<CartResponse> {
   const res = await fetch(`${window.Shopify.routes.root}cart.js`, {
     headers: {
-      Accept: 'application/json',
+      'Accept': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
     },
   });
@@ -84,7 +84,7 @@ export async function changeCartLine(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json',
+      'Accept': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
     },
     body: JSON.stringify(payload),

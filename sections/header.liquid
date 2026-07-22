@@ -12,7 +12,7 @@
     <div class="header__icons">
         {% if shop.customer_accounts_enabled %}
             <shopify-account menu="{{ section.settings.customer_account_menu }}">
-                Account
+                {{ 'customers.account' | t }}
             </shopify-account>
         {% endif %}
 

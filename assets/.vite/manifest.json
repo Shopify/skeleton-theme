@@ -1,6 +1,6 @@
 {
   "frontend/entrypoints/css/main.css": {
-    "file": "main-BJ1Xktd6.css",
+    "file": "main-CYx3exFl.css",
     "name": "main",
     "names": [
       "main.css"
@@ -27,7 +27,7 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/cart.ts": {
-    "file": "cart-Dkg_Sf-E.js",
+    "file": "cart-B7utYmcy.js",
     "name": "cart",
     "src": "frontend/entrypoints/ts/cart.ts",
     "isEntry": true,
@@ -37,7 +37,7 @@
     ]
   },
   "frontend/entrypoints/ts/cart/drawer.ts": {
-    "file": "drawer-BY7bJn32.js",
+    "file": "drawer-TdcfS8lM.js",
     "name": "drawer",
     "src": "frontend/entrypoints/ts/cart/drawer.ts",
     "isEntry": true,
@@ -48,7 +48,7 @@
     ]
   },
   "frontend/entrypoints/ts/cart/page.ts": {
-    "file": "page-CKX_Lx8T.js",
+    "file": "page-vK-gnoMI.js",
     "name": "page",
     "src": "frontend/entrypoints/ts/cart/page.ts",
     "isEntry": true,
@@ -98,7 +98,7 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/product.ts": {
-    "file": "product-B6uO69WW.js",
+    "file": "product-pmWcp0Ls.js",
     "name": "product",
     "src": "frontend/entrypoints/ts/product.ts",
     "isEntry": true,
@@ -114,7 +114,7 @@
     ]
   },
   "frontend/entrypoints/ts/product/handlers.ts": {
-    "file": "handlers-CMuQJ9_L.js",
+    "file": "handlers-CQkLtqut.js",
     "name": "handlers",
     "src": "frontend/entrypoints/ts/product/handlers.ts",
     "isEntry": true,
@@ -141,7 +141,7 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/product/sync.ts": {
-    "file": "sync-CuhjKoMp.js",
+    "file": "sync-BmF36hyv.js",
     "name": "sync",
     "src": "frontend/entrypoints/ts/product/sync.ts",
     "isEntry": true,
@@ -152,19 +152,27 @@
     ]
   },
   "frontend/entrypoints/ts/search.ts": {
-    "file": "search-EaqtnZZe.js",
+    "file": "search-DsW6X2-0.js",
     "name": "search",
     "src": "frontend/entrypoints/ts/search.ts",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "frontend/entrypoints/ts/utils/predictive-search.ts",
+      "frontend/entrypoints/ts/utils/predictive-search.ts"
+    ]
   },
   "frontend/entrypoints/ts/search/drawer.ts": {
-    "file": "drawer-DwueD-Lo.js",
+    "file": "drawer-sudVcv83.js",
     "name": "drawer",
     "src": "frontend/entrypoints/ts/search/drawer.ts",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "frontend/entrypoints/ts/utils/predictive-search.ts",
+      "frontend/entrypoints/ts/utils/predictive-search.ts"
+    ]
   },
   "frontend/entrypoints/ts/theme.ts": {
-    "file": "theme-DcEodf02.js",
+    "file": "theme-BMOD3QbV.js",
     "name": "theme",
     "src": "frontend/entrypoints/ts/theme.ts",
     "isEntry": true,
@@ -185,14 +193,20 @@
     "src": "frontend/entrypoints/ts/utils/cart.ts",
     "isEntry": true
   },
+  "frontend/entrypoints/ts/utils/predictive-search.ts": {
+    "file": "predictive-search-BBcHyQ0S.js",
+    "name": "predictive-search",
+    "src": "frontend/entrypoints/ts/utils/predictive-search.ts",
+    "isEntry": true
+  },
   "frontend/entrypoints/ts/utils/section-rendering.ts": {
-    "file": "section-rendering-COdqImLj.js",
+    "file": "section-rendering-BoTIezdu.js",
     "name": "section-rendering",
     "src": "frontend/entrypoints/ts/utils/section-rendering.ts",
     "isEntry": true
   },
   "frontend/entrypoints/ts/utils/variant-picker.ts": {
-    "file": "variant-picker-BcihOqVL.js",
+    "file": "variant-picker-BwvsrKki.js",
     "name": "variant-picker",
     "src": "frontend/entrypoints/ts/utils/variant-picker.ts",
     "isEntry": true

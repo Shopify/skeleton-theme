@@ -240,9 +240,10 @@ import '@css/main.css';
 
 ## Linting Strategy
 
-- TypeScript quality gate: `bun run typecheck`
+- TypeScript lint + format gate: `bun run lint` (ESLint, flat config in `eslint.config.js`; `bun run lint:fix` to auto-fix)
+- TypeScript type gate: `bun run typecheck`
 - Liquid quality gate: Theme Check in CI (`Theme Check` job)
-- Local checks: `bun run typecheck` and `bun run build` (plus optional `theme-check`)
+- Local checks: `bun run lint`, `bun run typecheck` and `bun run build` (plus optional `theme-check`)
 
 ---
 

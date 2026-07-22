@@ -6,8 +6,8 @@ import {
   normalizeSectionsUrl,
 } from '../utils/section-rendering';
 
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE_SELECTOR
+  = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
 export function initCartDrawer(): void {
   const drawerRoot = document.querySelector<HTMLElement>('[data-js="cart-drawer"]');
@@ -24,14 +24,14 @@ export function initCartDrawer(): void {
   const countNodes = document.querySelectorAll<HTMLElement>('[data-js="cart-count"]');
 
   if (
-    !overlayRoot ||
-    !panelRoot ||
-    !closeButtonRoot ||
-    !itemsContainerRoot ||
-    !emptyStateRoot ||
-    !subtotalRoot ||
-    !statusRoot ||
-    !errorRoot
+    !overlayRoot
+    || !panelRoot
+    || !closeButtonRoot
+    || !itemsContainerRoot
+    || !emptyStateRoot
+    || !subtotalRoot
+    || !statusRoot
+    || !errorRoot
   ) {
     return;
   }
@@ -206,7 +206,7 @@ export function initCartDrawer(): void {
 
   const focusables = (): HTMLElement[] =>
     Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-      (el) => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden'),
+      el => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true',
     );
 
   const onKeyDown = (event: KeyboardEvent): void => {
@@ -245,7 +245,7 @@ export function initCartDrawer(): void {
 
     drawer.hidden = false;
     drawer.setAttribute('aria-hidden', 'false');
-    triggers.forEach((button) => button.setAttribute('aria-expanded', 'true'));
+    triggers.forEach(button => button.setAttribute('aria-expanded', 'true'));
     document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', onKeyDown);
 
@@ -259,7 +259,7 @@ export function initCartDrawer(): void {
 
     drawer.hidden = true;
     drawer.setAttribute('aria-hidden', 'true');
-    triggers.forEach((button) => button.setAttribute('aria-expanded', 'false'));
+    triggers.forEach(button => button.setAttribute('aria-expanded', 'false'));
     document.body.style.overflow = '';
     document.removeEventListener('keydown', onKeyDown);
 

@@ -42,9 +42,9 @@
     <section id="SearchDrawerResults" data-js="search-drawer-results" role="region" class="mt-3 min-h-[240px] rounded border p-3">
       <div data-js="search-drawer-loader" class="hidden items-center gap-2 text-sm opacity-70" aria-hidden="true">
         <span class="h-4 w-4 rounded-full border-2 border-black/20 border-t-black animate-spin"></span>
-        <span>Searching...</span>
+        <span>{{ 'search.searching' | t }}</span>
       </div>
-      <p data-js="search-drawer-empty" class="text-sm opacity-70">Start typing to see quick results.</p>
+      <p data-js="search-drawer-empty" class="text-sm opacity-70">{{ 'search.start_typing' | t }}</p>
       <div data-js="search-drawer-groups" class="space-y-4"></div>
     </section>
   </aside>

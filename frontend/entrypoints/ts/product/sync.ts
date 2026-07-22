@@ -3,7 +3,7 @@ import { state } from './state';
 
 function matchesVariantOwner(ownerVariantIds: string | undefined, variantId: string): boolean {
   if (!ownerVariantIds) return false;
-  return ownerVariantIds.split(',').some((id) => id.trim() === variantId);
+  return ownerVariantIds.split(',').some(id => id.trim() === variantId);
 }
 
 function moveActiveMediaToFront(activeMediaId: string | null): void {
@@ -32,7 +32,7 @@ function moveActiveMediaToFront(activeMediaId: string | null): void {
 }
 
 function resolvePrimaryVariantMediaId(items: HTMLElement[], variantId: string): string | null {
-  const primary = items.find((item) => matchesVariantOwner(item.dataset.variantMedia, variantId));
+  const primary = items.find(item => matchesVariantOwner(item.dataset.variantMedia, variantId));
   return primary?.dataset.mediaId ?? null;
 }
 
@@ -67,15 +67,15 @@ function syncMedia(): void {
   const items = Array.from(document.querySelectorAll<HTMLElement>('[data-js="media-item"]'));
   if (items.length === 0) return;
 
-  const activeMediaContextVariantId =
-    state.mediaContextVariantId !== null
+  const activeMediaContextVariantId
+    = state.mediaContextVariantId !== null
       ? String(state.mediaContextVariantId)
       : String(state.currentVariant.id);
 
   const primaryVariantMediaId = resolvePrimaryVariantMediaId(items, activeMediaContextVariantId);
 
   const targetId = state.currentMediaId !== null ? String(state.currentMediaId) : null;
-  const targetNode = targetId ? items.find((item) => item.dataset.mediaId === targetId) : null;
+  const targetNode = targetId ? items.find(item => item.dataset.mediaId === targetId) : null;
   const targetIsSharedMedia = targetNode ? !targetNode.dataset.variantMedia : false;
 
   const fallbackVisibleMediaId = items[0]?.dataset.mediaId ?? null;
@@ -117,8 +117,8 @@ function syncMedia(): void {
   document.querySelectorAll<HTMLButtonElement>('[data-js="thumbnail"]').forEach((btn) => {
     const ownerVariantIds = btn.dataset.variantMedia;
     const isShared = !ownerVariantIds;
-    const isPrimaryVariantMedia =
-      primaryVariantMediaId !== null && btn.dataset.thumbnail === primaryVariantMediaId;
+    const isPrimaryVariantMedia
+      = primaryVariantMediaId !== null && btn.dataset.thumbnail === primaryVariantMediaId;
 
     if (isShared || isPrimaryVariantMedia) {
       btn.removeAttribute('hidden');

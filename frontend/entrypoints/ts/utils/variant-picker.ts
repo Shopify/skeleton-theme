@@ -25,7 +25,7 @@ export function findVariantByOptions(
   variants: ProductVariant[],
   selectedOptions: string[],
 ): ProductVariant | undefined {
-  return variants.find((v) => v.options.every((opt, i) => opt === selectedOptions[i]));
+  return variants.find(v => v.options.every((opt, i) => opt === selectedOptions[i]));
 }
 
 /**
@@ -44,8 +44,8 @@ export function getAvailableValues(
 ): Set<string> {
   return new Set(
     variants
-      .filter((v) => v.options.every((opt, i) => i === targetPosition || opt === selectedOptions[i]))
-      .filter((v) => v.available)
-      .map((v) => v.options[targetPosition]),
+      .filter(v => v.options.every((opt, i) => i === targetPosition || opt === selectedOptions[i]))
+      .filter(v => v.available)
+      .map(v => v.options[targetPosition]),
   );
 }
