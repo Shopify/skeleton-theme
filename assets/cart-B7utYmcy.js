@@ -1,1 +1,0 @@
-import{initCartPage as e}from"./page-vK-gnoMI.js";document.addEventListener(`DOMContentLoaded`,()=>{e()});
