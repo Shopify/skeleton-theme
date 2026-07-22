@@ -13,12 +13,14 @@ file. The code is the source of truth.
 - **Direct Liquid templates:** templates render page content from blocks,
   snippets, and inline markup. Don't introduce a section for markup that is
   used by only one page.
-- **Container-owned layout:** both `layout/theme.liquid` and
-  `layout/password.liquid` wrap `content_for_layout` in the `container` block,
-  which owns the outer layout element, so templates render their content
-  directly with no per-template container. The only exception is
-  `gift_card.liquid` (`{% layout none %}`): with no layout there is no
-  layout-owned container, so it manages its own structure.
+- **Template-owned containers:** each `templates/*.liquid` file is the
+  composition root and wraps its page content in one or more `container`
+  blocks — one per vertical slice. `layout/theme.liquid` wraps only the
+  `header` and `footer` blocks in their own `container` blocks and renders
+  `content_for_layout` in a plain `<main>`; `layout/password.liquid` renders
+  `content_for_layout` in a plain `<main>`, and its template owns the
+  container. The exception is `gift_card.liquid` (`{% layout none %}`): it
+  manages its own document structure.
 - **Whitespace matters:** include whitespace between an HTML tag name and a
   following Liquid delimiter (`<li {% ... %}`, not `<li{% ... %}`).
 - **Translated UI only:** every user-facing string uses a literal
@@ -29,17 +31,16 @@ file. The code is the source of truth.
 ## Page structure
 
 ```
-layout/theme.liquid    → {% block 'container' %} → header, content_for_layout, footer
-layout/password.liquid → {% block 'container' %} → content_for_layout
-templates/*.liquid     → blocks / snippets / inline HTML (rendered in the container)
+layout/theme.liquid    → {% block 'container' %} (header) + <main> content_for_layout + {% block 'container' %} (footer)
+layout/password.liquid → <main> content_for_layout
+templates/*.liquid     → {% block 'container' %} → blocks / snippets / inline HTML
 ```
 
-Both `layout/theme.liquid` and `layout/password.liquid` wrap
-`content_for_layout` in the `container` block, so every template with a layout
-renders inside one layout-owned container. In `theme.liquid` the `header` and
-`footer` blocks are nested inside that container alongside `content_for_layout`.
-Each template shows its page content directly — blocks, snippets, or HTML —
-with no per-template container wrapper.
+Neither layout wraps `content_for_layout` in a `container` block; each renders
+it in a plain `<main>`. In `theme.liquid` the `header` and `footer` blocks each
+get their own `container` block. Every template is the composition root and
+wraps its page content in one or more `container` blocks — a template may hold
+any number of containers, one per vertical slice.
 
 ## The block tag
 
@@ -100,7 +101,7 @@ Current blocks: `container`, `hello-world`, `text`, `header`, `footer`,
 ```
 blocks/               container, hello-world, text, header, footer, liquid-tips
 templates/            *.liquid page structure (no JSON templates)
-layout/               theme.liquid document shell with header/footer blocks
+layout/               theme.liquid document shell: header/footer container blocks + <main>
 snippets/             internal utilities (css-variables, image, meta-tags)
 assets/               CSS, JavaScript, and other static assets
 ```

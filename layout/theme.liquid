@@ -28,11 +28,15 @@
   </head>
 
   <body>
-    {% block 'container' %}
+    {% block 'container', tag: 'div' %}
       {% block 'header' -%}{%- endblock %}
+    {% endblock %}
 
+    <main>
       {{ content_for_layout }}
+    </main>
 
+    {% block 'container', tag: 'div' %}
       {% block 'footer' -%}{%- endblock %}
     {% endblock %}
   </body>
