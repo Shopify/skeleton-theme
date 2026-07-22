@@ -1,13 +1,11 @@
 import { changeCartLine } from '../utils/cart';
 import { CART_OPEN_EVENT, CART_UPDATED_EVENT } from '../utils/cart-events';
+import { handleDialogKeyDown } from '../utils/dialog';
 import {
   applySectionReplace,
   fetchSingleSectionHtml,
   normalizeSectionsUrl,
 } from '../utils/section-rendering';
-
-const FOCUSABLE_SELECTOR
-  = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
 export function initCartDrawer(): void {
   const drawerRoot = document.querySelector<HTMLElement>('[data-js="cart-drawer"]');
@@ -204,38 +202,9 @@ export function initCartDrawer(): void {
     void flushQueuedUpdates();
   };
 
-  const focusables = (): HTMLElement[] =>
-    Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-      el => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true',
-    );
-
   const onKeyDown = (event: KeyboardEvent): void => {
     if (!isOpen) return;
-
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closeDrawer();
-      return;
-    }
-
-    if (event.key !== 'Tab') return;
-
-    const nodes = focusables();
-    if (nodes.length === 0) return;
-
-    const first = nodes[0];
-    const last = nodes[nodes.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-      return;
-    }
-
-    if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
+    handleDialogKeyDown(event, panel, closeDrawer);
   };
 
   function openDrawer(trigger?: HTMLElement): void {

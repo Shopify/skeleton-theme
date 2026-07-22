@@ -1,8 +1,6 @@
+import { handleDialogKeyDown } from '../utils/dialog';
 import { createPredictiveResultItem, debounce, fetchPredictiveResults } from '../utils/predictive-search';
 import type { PredictiveItem } from '../utils/predictive-search';
-
-const FOCUSABLE_SELECTOR
-  = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
 interface SearchGroup {
   title: string;
@@ -84,38 +82,9 @@ export function initSearchDrawer(): void {
     empty.classList.remove('hidden');
   };
 
-  const focusables = (): HTMLElement[] =>
-    Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-      el => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true',
-    );
-
   const onKeyDown = (event: KeyboardEvent): void => {
     if (!isOpen) return;
-
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closeDrawer();
-      return;
-    }
-
-    if (event.key !== 'Tab') return;
-
-    const nodes = focusables();
-    if (nodes.length === 0) return;
-
-    const first = nodes[0];
-    const last = nodes[nodes.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-      return;
-    }
-
-    if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
+    handleDialogKeyDown(event, panel, closeDrawer);
   };
 
   function openDrawer(trigger?: HTMLElement): void {
