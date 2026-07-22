@@ -1,4 +1,7 @@
 {
+  "general": {
+    "skip_to_content": "Salta al contenuto"
+  },
   "404": {
     "title": "404",
     "not_found": "Pagina non trovata.",
@@ -15,13 +18,18 @@
   },
   "cart": {
     "checkout": "Checkout",
+    "continue_shopping": "Continua gli acquisti",
+    "empty": "Il tuo carrello e vuoto.",
     "note": "Nota ordine",
     "order_reference": "Riferimento ordine",
+    "subtotal": "Subtotale",
     "title": "Carrello",
     "update": "Aggiorna",
-    "remove": "Rimuovi"
+    "remove": "Rimuovi",
+    "view_cart": "Vedi carrello"
   },
   "customers": {
+    "account": "Account",
     "login": {
       "email": "Email",
       "password": "Password",
@@ -31,6 +39,13 @@
   },
   "collections": {
     "title": "Collezioni",
+    "sort_by": "Ordina per",
+    "apply_filters": "Applica filtri",
+    "clear_all": "Cancella tutto",
+    "filters": "Filtri",
+    "close_filters": "Chiudi il pannello filtri",
+    "no_products_found": "Nessun prodotto trovato per i filtri correnti.",
+    "load_more": "Carica altri",
     "quick_buy": "Acquista subito",
     "quick_buy_loading": "Aggiunta...",
     "quick_buy_success": "Aggiunto",
@@ -54,6 +69,8 @@
     "placeholder": "Cerca articoli, pagine o prodotti",
     "submit": "Cerca",
     "no_results_html": "Nessun risultato per {{ terms }}",
-    "results_for_html": "{{ count }} risultati per {{ terms }}"
+    "results_for_html": "{{ count }} risultati per {{ terms }}",
+    "searching": "Ricerca in corso...",
+    "start_typing": "Inizia a digitare per vedere i risultati rapidi."
   }
 }

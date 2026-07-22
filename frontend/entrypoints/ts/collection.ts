@@ -1,5 +1,6 @@
 import { addToCart } from './utils/cart';
 import { emitCartOpen, emitCartUpdated } from './utils/cart-events';
+import { getDialogFocusables, handleDialogKeyDown } from './utils/dialog';
 
 const ROOT_SELECTOR = '[data-js="collection-root"]';
 
@@ -12,6 +13,9 @@ interface CollectionView {
   loadStatus: HTMLElement | null;
   status: HTMLElement | null;
   error: HTMLElement | null;
+  filtersOpenButton: HTMLButtonElement | null;
+  filtersDrawer: HTMLElement | null;
+  filtersPanel: HTMLElement | null;
 }
 
 function queryView(root: HTMLElement): CollectionView {
@@ -24,6 +28,9 @@ function queryView(root: HTMLElement): CollectionView {
     loadStatus: root.querySelector<HTMLElement>('[data-js="collection-load-status"]'),
     status: root.querySelector<HTMLElement>('[data-js="collection-status"]'),
     error: root.querySelector<HTMLElement>('[data-js="collection-error"]'),
+    filtersOpenButton: root.querySelector<HTMLButtonElement>('[data-js="collection-filters-open"]'),
+    filtersDrawer: root.querySelector<HTMLElement>('[data-js="collection-filters-drawer"]'),
+    filtersPanel: root.querySelector<HTMLElement>('[data-js="collection-filters-panel"]'),
   };
 }
 
@@ -131,10 +138,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let activeRequestId = 0;
   let activeController: AbortController | null = null;
+  let filtersOpen = false;
+  let filtersLastFocused: HTMLElement | null = null;
 
   const syncActiveView = (nextRoot: HTMLElement): void => {
     activeRoot = nextRoot;
     activeView = queryView(nextRoot);
+
+    if (filtersOpen && activeView.filtersDrawer) {
+      activeView.filtersDrawer.dataset.open = 'true';
+      activeView.filtersOpenButton?.setAttribute('aria-expanded', 'true');
+    }
+  };
+
+  const openFiltersDrawer = (trigger?: HTMLElement): void => {
+    if (!activeView.filtersDrawer) return;
+
+    filtersOpen = true;
+    filtersLastFocused = trigger ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+
+    activeView.filtersDrawer.dataset.open = 'true';
+    activeView.filtersOpenButton?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+
+    const focusables = activeView.filtersPanel ? getDialogFocusables(activeView.filtersPanel) : [];
+    focusables[0]?.focus();
+  };
+
+  const closeFiltersDrawer = (): void => {
+    if (!activeView.filtersDrawer || !filtersOpen) return;
+
+    filtersOpen = false;
+
+    activeView.filtersDrawer.dataset.open = 'false';
+    activeView.filtersOpenButton?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+
+    filtersLastFocused?.focus();
   };
 
   const fetchNextRoot = async (targetUrl: URL, requestId: number): Promise<HTMLElement> => {
@@ -242,6 +282,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const onRootClick = (event: MouseEvent): void => {
     const target = event.target as HTMLElement;
 
+    const filtersOpenButton = target.closest<HTMLButtonElement>('[data-js="collection-filters-open"]');
+    if (filtersOpenButton) {
+      event.preventDefault();
+      openFiltersDrawer(filtersOpenButton);
+      return;
+    }
+
+    const filtersCloseButton = target.closest<HTMLButtonElement>('[data-js="collection-filters-close"]');
+    if (filtersCloseButton) {
+      event.preventDefault();
+      closeFiltersDrawer();
+      return;
+    }
+
+    const filtersOverlay = target.closest<HTMLElement>('[data-js="collection-filters-overlay"]');
+    if (filtersOverlay) {
+      event.preventDefault();
+      closeFiltersDrawer();
+      return;
+    }
+
     const quickBuyButton = target.closest<HTMLButtonElement>('[data-js="collection-quick-buy"]');
     if (quickBuyButton) {
       event.preventDefault();
@@ -303,6 +364,13 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
     void replaceView(serializeControls(form), true);
   };
+
+  const onDocumentKeyDown = (event: KeyboardEvent): void => {
+    if (!filtersOpen || !activeView.filtersPanel) return;
+    handleDialogKeyDown(event, activeView.filtersPanel, closeFiltersDrawer);
+  };
+
+  document.addEventListener('keydown', onDocumentKeyDown);
 
   document.addEventListener('click', (event) => {
     if (!activeRoot.contains(event.target as Node)) return;

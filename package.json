@@ -21,6 +21,7 @@
     "lint:fix": "eslint . --fix",
     "shopify:dev": "shopify theme dev --environment development",
     "shopify:push": "shopify theme push",
+    "theme-check": "shopify theme check",
     "typecheck": "tsc --noEmit",
     "vite:dev": "vite",
     "vite:build": "vite build"
