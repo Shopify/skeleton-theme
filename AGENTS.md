@@ -9,7 +9,7 @@ file. The code is the source of truth.
 - **No sections:** no `sections/` folder, no `{% section %}`/`{% sections %}`
   tags, no JSON templates, no schema `presets`.
 - **No Liquid-embedded assets:** no `{% stylesheet %}`, no `{% javascript %}`.
-  All CSS lives in `assets/critical.css`.
+  All CSS and JavaScript live in `assets/`.
 - **Direct Liquid templates:** templates render page content from blocks,
   snippets, and inline markup. Don't introduce a section for markup that is
   used by only one page.
@@ -92,10 +92,6 @@ Skeleton keeps `.theme-check.yml` as a pristine
 `extends: theme-check:recommended` with **zero overrides**. Fix Theme Check
 errors in the Liquid instead of adding configuration exceptions.
 
-Blocks without a leading underscore can be rendered from any template or
-block. A leading underscore, as in `_private`, marks a block that belongs to a
-specific parent or context.
-
 Current blocks: `container`, `hello-world`, `text`, `header`, `footer`,
 `liquid-tips`.
 
@@ -106,5 +102,5 @@ blocks/               container, hello-world, text, header, footer, liquid-tips
 templates/            *.liquid page structure (no JSON templates)
 layout/               theme.liquid document shell with header/footer blocks
 snippets/             internal utilities (css-variables, image, meta-tags)
-assets/critical.css   all theme CSS
+assets/               CSS, JavaScript, and other static assets
 ```

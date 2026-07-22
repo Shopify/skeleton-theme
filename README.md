@@ -49,7 +49,7 @@ shopify theme dev
 
 ```bash
 .
-├── assets          # Static assets, including critical.css (all theme CSS)
+├── assets          # CSS, JavaScript, and other static assets
 ├── blocks          # Reusable, nestable, customizable UI components
 ├── config          # Global theme settings and customization options
 ├── layout          # Top-level page wrappers
@@ -65,24 +65,23 @@ To learn more, refer to the [theme architecture documentation](https://shopify.d
 Every page is composed from blocks. The composition flows in one direction:
 
 ```
-templates/*.liquid → {% block 'container' %} → blocks / snippets / inline markup
+layout/*.liquid → {% block 'container' %} → content_for_layout → templates/*.liquid
 ```
 
 ### Templates
 
 [Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types)
 control what's rendered on each type of page. In this theme they are Liquid
-files (`templates/*.liquid`), not JSON. Each template is a composition root: it
-wraps its page content in the `container` block and composes the rest from
-blocks and inline markup.
+files (`templates/*.liquid`), not JSON. Each template is a composition root
+that renders blocks and inline markup directly. The layout wraps
+`content_for_layout` in a single `container` block, so templates do not add
+their own containers.
 
-For example, `templates/index.liquid` composes the `hello-world` block inside a
-container:
+For example, `templates/index.liquid` composes the `hello-world` block
+directly:
 
 ```liquid
-{% block 'container', tag: 'div' %}
-  {% block 'hello-world' %}{% endblock %}
-{% endblock %}
+{% block 'hello-world' %}{% endblock %}
 ```
 
 ### Blocks
@@ -94,9 +93,11 @@ a `{% doc %}` header describing its parameters, and ends with a `{% schema %}`
 `{{ block.content }}` and keeps `{{ block.shopify_attributes }}` on its root
 element for theme-editor support.
 
-The `container` block owns each page's outer layout element; `blocks/hello-world.liquid`
-is the theme's starter demo block. `layout/theme.liquid` composes the `header`
-and `footer` blocks directly, keeping the layout a thin shell.
+The `container` block owns each page's outer layout element. Skeleton
+intentionally uses one layout-owned container around `content_for_layout`:
+the theme is simple enough that per-template containers do not justify the
+additional pattern. `blocks/hello-world.liquid` is the theme's starter demo
+block. `layout/theme.liquid` composes the `header` and `footer` blocks directly.
 
 ## Non-negotiables
 
@@ -104,19 +105,18 @@ This theme deliberately excludes the section-based model. When editing it:
 
 - No `sections/` directory, and no `{% section %}` / `{% sections %}` tags.
 - No JSON templates and no schema `presets`.
-- No Liquid-embedded assets: keep CSS in `assets/critical.css` rather than
+- No Liquid-embedded assets: keep all CSS and JavaScript in `assets/` rather
   `{% stylesheet %}` / `{% javascript %}` blocks.
 - Compose pages from blocks and inline markup, not single-use page sections.
 
 [`AGENTS.md`](./AGENTS.md) is the source of truth for the theme's dialect and the
 full set of rules coding agents follow.
 
-## CSS
+## CSS and JavaScript
 
-All theme CSS lives in [`assets/critical.css`](./assets/critical.css), loaded
-once from `layout/theme.liquid`. Keeping styles in one file — rather than
-embedding them in Liquid — preserves the theme's minimalism and keeps blocks
-markup-only.
+All theme CSS and JavaScript live in [`assets/`](./assets/), rather than being
+embedded in Liquid. This keeps blocks focused on markup without requiring
+assets to live in a single file.
 
 ## Contributing
 
