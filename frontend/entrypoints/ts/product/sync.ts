@@ -6,31 +6,6 @@ function matchesVariantOwner(ownerVariantIds: string | undefined, variantId: str
   return ownerVariantIds.split(',').some(id => id.trim() === variantId);
 }
 
-function moveActiveMediaToFront(activeMediaId: string | null): void {
-  if (!activeMediaId) return;
-
-  const mediaContainer = document.querySelector<HTMLElement>('[data-product-media]');
-  const thumbnailContainer = document.querySelector<HTMLElement>('[data-product-thumbnails]');
-
-  if (mediaContainer) {
-    const activeMedia = mediaContainer.querySelector<HTMLElement>(
-      `[data-js="media-item"][data-media-id="${activeMediaId}"]`,
-    );
-    if (activeMedia && mediaContainer.firstElementChild !== activeMedia) {
-      mediaContainer.prepend(activeMedia);
-    }
-  }
-
-  if (thumbnailContainer) {
-    const activeThumbnail = thumbnailContainer.querySelector<HTMLButtonElement>(
-      `[data-js="thumbnail"][data-thumbnail="${activeMediaId}"]`,
-    );
-    if (activeThumbnail && thumbnailContainer.firstElementChild !== activeThumbnail) {
-      thumbnailContainer.prepend(activeThumbnail);
-    }
-  }
-}
-
 function resolvePrimaryVariantMediaId(items: HTMLElement[], variantId: string): string | null {
   const primary = items.find(item => matchesVariantOwner(item.dataset.variantMedia, variantId));
   return primary?.dataset.mediaId ?? null;
@@ -111,7 +86,6 @@ function syncMedia(): void {
 
   const preferredVisibleMediaId = primaryVariantMediaId ?? (targetIsSharedMedia ? targetId : null) ?? fallbackVisibleMediaId;
   const activeMediaId = hasVisibleMedia ? preferredVisibleMediaId : fallbackVisibleMediaId;
-  moveActiveMediaToFront(primaryVariantMediaId ?? activeMediaId);
 
   // Thumbnail visibility: shared always visible; variant thumbnails only when active
   document.querySelectorAll<HTMLButtonElement>('[data-js="thumbnail"]').forEach((btn) => {
