@@ -1,0 +1,28 @@
+{
+  "polaris-app-home": {
+    "_": [
+      {
+        "package": "@shopify/polaris-types",
+        "version": "1.0.7"
+      },
+      {
+        "package": "@shopify/app-bridge-types",
+        "version": "0.7.0"
+      },
+      {
+        "package": "@shopify/app-bridge-react",
+        "version": "4.2.10"
+      }
+    ]
+  },
+  "_always_loaded": [
+    {
+      "package": "preact",
+      "version": "10.29.2"
+    },
+    {
+      "package": "@types/react",
+      "version": "18.3.29"
+    }
+  ]
+}

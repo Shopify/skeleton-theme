@@ -1,0 +1,3 @@
+export type StandardComponents = 'Badge' | 'Banner' | 'Box' | 'Button' | 'Choice' | 'ChoiceList' | 'Clickable' | 'DateField' | 'DatePicker' | 'DateSpinner' | 'Divider' | 'EmailField' | 'Heading' | 'Icon' | 'Image' | 'Modal' | 'NumberField' | 'Page' | 'POSBlock' | 'PosBlock' | 'QRCode' | 'QrCode' | 'Route' | 'Router' | 'ScrollBox' | 'SearchField' | 'Section' | 'Stack' | 'Text' | 'TextArea' | 'TextField' | 'Tile' | 'TimeField' | 'TimePicker';
+export default StandardComponents;
+//# sourceMappingURL=StandardComponents.d.ts.map

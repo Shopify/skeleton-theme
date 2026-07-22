@@ -1,0 +1,8 @@
+{
+  "name": "shopify-hydrogen",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "typescript": "5.9.3"
+  }
+}

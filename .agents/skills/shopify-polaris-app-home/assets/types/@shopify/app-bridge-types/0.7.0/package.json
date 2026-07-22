@@ -1,0 +1,36 @@
+{
+  "name": "@shopify/app-bridge-types",
+  "version": "0.7.0",
+  "description": "Companion types library for the Shopify App Bridge script",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "@shopify:registry": "https://registry.npmjs.org"
+  },
+  "license": "ISC",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "module": "./dist/index.mjs",
+    "import": "./dist/index.mjs",
+    "default": "./dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "cjyes": "^0.3.1"
+  },
+  "dependencies": {
+    "@standard-schema/spec": "^1.0.0"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "prebuild": "mkdir -p ./dist && touch ./dist/index.mjs",
+    "build": "npm run prebuild && cjyes && node ./scripts/build.mjs",
+    "type-check": "tsc -p tests"
+  }
+}

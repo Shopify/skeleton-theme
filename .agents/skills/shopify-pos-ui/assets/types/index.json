@@ -1,0 +1,72 @@
+{
+  "pos-ui": {
+    "2026-07": [
+      {
+        "package": "@shopify/ui-extensions",
+        "version": "2026.7.0-rc.5"
+      }
+    ],
+    "2026-04": [
+      {
+        "package": "@shopify/ui-extensions",
+        "version": "2026.4.3"
+      }
+    ],
+    "2026-01": [
+      {
+        "package": "@shopify/ui-extensions",
+        "version": "2026.1.4"
+      }
+    ],
+    "2025-10": [
+      {
+        "package": "@shopify/ui-extensions",
+        "version": "2025.10.15"
+      }
+    ],
+    "2025-07": [
+      {
+        "package": "@shopify/ui-extensions",
+        "version": "2025.7.4"
+      },
+      {
+        "package": "@shopify/ui-extensions-react",
+        "version": "2025.7.4"
+      },
+      {
+        "package": "@remote-ui/react",
+        "version": "5.0.8"
+      },
+      {
+        "package": "@remote-ui/async-subscription",
+        "version": "2.1.18"
+      },
+      {
+        "package": "@remote-ui/core",
+        "version": "2.2.7"
+      },
+      {
+        "package": "@remote-ui/rpc",
+        "version": "1.4.7"
+      },
+      {
+        "package": "@remote-ui/types",
+        "version": "1.1.3"
+      },
+      {
+        "package": "@types/react-reconciler",
+        "version": "0.28.9"
+      }
+    ]
+  },
+  "_always_loaded": [
+    {
+      "package": "preact",
+      "version": "10.29.2"
+    },
+    {
+      "package": "@types/react",
+      "version": "18.3.29"
+    }
+  ]
+}
