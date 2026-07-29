@@ -140,35 +140,35 @@
     "featured": {
       "type": "featured",
       "blocks": {
-        "f1": {
-          "type": "piece",
-          "settings": {
-            "image_url": "https://lh3.google.com/u/0/d/1sBu0kVtw7UFzbYQv7_SA2Ic86sd03y5C=w2850-h1676-iv1?auditContext=prefetch",
-            "badge": "One of a kind",
-            "region": "Oceania",
-            "title": "Coral Tide Ring",
-            "price": "$1,200",
-            "link": ""
-          }
-        },
         "f2": {
           "type": "piece",
           "settings": {
-            "image_url": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=80",
+            "image_url": "https://v3b.fal.media/files/b/0aa43ef7/MeBlaZ9fcF1eV-EpztFDK_C7MMfBhB.jpg",
             "badge": "One of a kind",
             "region": "Oceania",
-            "title": "Lagoon Pearl Pendant",
+            "title": "Peach Baroque Pearl Necklace",
             "price": "$980",
+            "link": ""
+          }
+        },
+        "f1": {
+          "type": "piece",
+          "settings": {
+            "image_url": "https://v3b.fal.media/files/b/0aa2a355/1KvGspbVz7FB-vNaVmuMs_1PMtu5Fl.jpg",
+            "badge": "One of a kind",
+            "region": "Oceania",
+            "title": "Silver Bangle W Dragon Heads & Red Garnets",
+            "price": "$1,200",
             "link": ""
           }
         },
         "f3": {
           "type": "piece",
           "settings": {
-            "image_url": "https://images.unsplash.com/photo-1611085583191-a3b181a88401?auto=format&fit=crop&w=900&q=80",
+            "image_url": "https://v3b.fal.media/files/b/0aa2a035/_vPx06A9yHfRFH2-_-MfC_T6W1QA3Z.jpg",
             "badge": "One of a kind",
             "region": "Oceania",
-            "title": "Reef Gold Bangle",
+            "title": "Silver Rope Necklace With Silver Heart",
             "price": "$1,540",
             "link": ""
           }
@@ -176,10 +176,10 @@
         "f4": {
           "type": "piece",
           "settings": {
-            "image_url": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=80",
+            "image_url": "https://v3b.fal.media/files/b/0aa43e65/UYxn4eeG2gPYcD3XVIq2y_kulxxVs7.jpg",
             "badge": "One of a kind",
             "region": "Oceania",
-            "title": "Tide Drop Earrings",
+            "title": "Pink Pearl Stud Earrings",
             "price": "$760",
             "link": ""
           }
@@ -187,18 +187,18 @@
         "f5": {
           "type": "piece",
           "settings": {
-            "image_url": "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=900&q=80",
+            "image_url": "https://v3b.fal.media/files/b/0aa43dde/Xj5y88Yz1T0TS7lnAg4tC_g6xrYfnK.jpg",
             "badge": "One of a kind",
             "region": "Oceania",
-            "title": "Atoll Signet",
+            "title": "Red Howlite Silver Earrings",
             "price": "$1,880",
             "link": ""
           }
         }
       },
       "block_order": [
-        "f1",
         "f2",
+        "f1",
         "f3",
         "f4",
         "f5"
