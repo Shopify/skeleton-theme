@@ -1,0 +1,72 @@
+{% comment %}
+  Responsive background video.
+
+  Renders a single <video> that plays a desktop source by default (works with
+  no JS). theme.js swaps to the mobile source below the breakpoint — without
+  downloading both files. Falls back to the poster image when no video is set.
+
+  Accepts:
+    desktop_video    — Shopify video object (optional)
+    desktop_url      — mp4 URL fallback (optional)
+    mobile_video     — Shopify video object (optional)
+    mobile_url       — mp4 URL fallback (optional)
+    poster           — poster image URL
+    classes          — class string for the <video>
+    autoplay         — boolean (muted + loop when true)
+    breakpoint       — max-width px for the mobile source (default 750)
+{% endcomment %}
+
+{% liquid
+  assign d_url = ''
+  if desktop_video != blank
+    for s in desktop_video.sources
+      if s.format == 'mp4' and d_url == blank
+        assign d_url = s.url
+      endif
+    endfor
+    if d_url == blank
+      assign d_url = desktop_video.sources.first.url
+    endif
+  elsif desktop_url != blank
+    assign d_url = desktop_url
+  endif
+
+  assign m_url = ''
+  if mobile_video != blank
+    for s in mobile_video.sources
+      if s.format == 'mp4' and m_url == blank
+        assign m_url = s.url
+      endif
+    endfor
+    if m_url == blank
+      assign m_url = mobile_video.sources.first.url
+    endif
+  elsif mobile_url != blank
+    assign m_url = mobile_url
+  endif
+
+  if m_url == blank
+    assign m_url = d_url
+  endif
+%}
+
+<video
+  class="{{ classes }}"
+  {% if autoplay %}autoplay muted loop{% endif %}
+  playsinline
+  preload="metadata"
+  poster="{{ poster }}"
+  data-responsive-video
+  data-desktop="{{ d_url }}"
+  data-mobile="{{ m_url }}"
+  data-breakpoint="{{ breakpoint | default: 750 }}"
+>
+  {% comment %} Desktop sources render inline so playback works without JS {% endcomment %}
+  {% if desktop_video != blank %}
+    {% for s in desktop_video.sources %}
+      <source src="{{ s.url }}" type="{{ s.mime_type }}">
+    {% endfor %}
+  {% elsif desktop_url != blank %}
+    <source src="{{ desktop_url }}" type="video/mp4">
+  {% endif %}
+</video>

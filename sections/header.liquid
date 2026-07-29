@@ -1,76 +1,545 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+{% comment %}
+  Site header. The whole section wrapper is sticky: the announcement line
+  scrolls away (negative sticky top) while the nav bar remains. On the
+  homepage the header overlays the hero (negative bottom margin) and gains
+  a blurred background once scrolled (state set by theme.js on [data-header]).
+{% endcomment %}
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+{% liquid
+  assign overlay = false
+  if section.settings.transparent_on_home and template.name == 'index'
+    assign overlay = true
+  endif
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      <shopify-account menu="{{ section.settings.customer_account_menu }}">
-        {{ 'icon-account.svg' | inline_asset_content }}
-      </shopify-account>
-    {% endif %}
+  if section.settings.announcement != blank
+    assign ann_height = '2.5rem'
+  else
+    assign ann_height = '0rem'
+  endif
+%}
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
+{% style %}
+  /*
+    The skeleton constrains .shopify-section children to a center grid
+    column. The header must escape that entirely: the wrapper becomes a
+    plain sticky block spanning the full viewport width.
+  */
+  #shopify-section-{{ section.id }} {
+    display: block;
+    position: sticky;
+    top: calc(-1 * {{ ann_height }});
+    z-index: 100;
+    width: 100%;
+  }
+  #shopify-section-{{ section.id }} > * {
+    grid-column: unset;
+  }
+  {% if overlay %}
+    /* Overlay the hero: remove the header's footprint from the page flow. */
+    #shopify-section-{{ section.id }} {
+      margin-bottom: calc(-1 * (var(--hdr-bar-height) + {{ ann_height }}));
+    }
+  {% endif %}
+{% endstyle %}
+
+<div
+  class="hdr{% if overlay %} hdr--overlay{% endif %}"
+  data-header
+  data-scrolled="false"
+>
+  {% if section.settings.announcement != blank %}
+    <p class="hdr__announcement">{{ section.settings.announcement }}</p>
+  {% endif %}
+
+  <div class="hdr__bar">
+    <div class="hdr__side hdr__side--left">
+      <button class="hdr__burger" data-menu-toggle aria-label="Open menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="hdr__nav" aria-label="Primary">
+        {% for link in section.settings.menu.links %}
+          <a class="hdr__nav-link" href="{{ link.url }}">{{ link.title }}</a>
+        {% endfor %}
+      </nav>
+    </div>
+
+    <a class="hdr__brand" href="{{ routes.root_url }}">
+      {% if section.settings.logo != blank %}
+        {{
+          section.settings.logo
+          | image_url: width: 600
+          | image_tag:
+            class: 'hdr__logo',
+            alt: shop.name,
+            loading: 'eager',
+            widths: '120, 240, 360, 480, 600',
+            style: 'width: ' | append: section.settings.logo_width | append: 'px'
+        }}
+      {% else %}
+        <span class="hdr__wordmark">{{ shop.name }}</span>
+      {% endif %}
+    </a>
+
+    <div class="hdr__side hdr__side--right">
+      <a class="hdr__icon" href="{{ routes.search_url }}" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" width="20" height="20" aria-hidden="true">
+          <circle cx="11" cy="11" r="7.25" stroke="currentColor"/>
+          <path d="m20.5 20.5-4-4" stroke="currentColor" stroke-linecap="round"/>
+        </svg>
+      </a>
+
+      {% if shop.customer_accounts_enabled %}
+        <shopify-account class="hdr__icon hdr__icon--account" menu="{{ section.settings.customer_account_menu }}">
+          {{ 'icon-account.svg' | inline_asset_content }}
+        </shopify-account>
       {% endif %}
 
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+      <a class="hdr__icon hdr__cart" href="{{ routes.cart_url }}" aria-label="Cart">
+        <svg viewBox="0 0 24 24" fill="none" width="20" height="20" aria-hidden="true">
+          <path d="M5 8h14l-1.1 11.05a1.5 1.5 0 0 1-1.5 1.45H7.6a1.5 1.5 0 0 1-1.5-1.45L5 8Z" stroke="currentColor"/>
+          <path d="M8.5 10.5V6.75a3.5 3.5 0 0 1 7 0v3.75" stroke="currentColor" stroke-linecap="round"/>
+        </svg>
+        {% if cart.item_count > 0 %}
+          <span class="hdr__cart-count">{{ cart.item_count }}</span>
+        {% endif %}
+      </a>
+    </div>
   </div>
-</header>
+</div>
+
+{% # Full-screen menu overlay %}
+<div class="menu-overlay" data-menu-overlay aria-hidden="true">
+  <div class="menu-overlay__head">
+    <span class="meta-label">{{ section.settings.menu_overlay_label }}</span>
+    <button class="menu-overlay__close" data-menu-toggle aria-label="Close menu">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" aria-hidden="true">
+        <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="menu-overlay__nav" aria-label="Mobile">
+    {% for link in section.settings.menu.links %}
+      <a class="menu-overlay__link" href="{{ link.url }}" style="--i: {{ forloop.index }}">
+        <span class="menu-overlay__index">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+        {{ link.title }}
+      </a>
+    {% endfor %}
+  </nav>
+
+  <div class="menu-overlay__foot">
+    <span class="meta-label">{{ section.settings.menu_overlay_footer }}</span>
+    <a class="meta-label menu-overlay__search" href="{{ routes.search_url }}">Search</a>
+  </div>
+</div>
 
 {% stylesheet %}
-  header {
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  :root {
+    --hdr-bar-height: 5.25rem;
   }
-  header a {
+
+  .hdr {
     position: relative;
-    text-decoration: none;
+    width: 100%;
     color: var(--color-foreground);
+    transition: color var(--duration) var(--ease);
+  }
+
+  /* Announcement: full-bleed navy line */
+  .hdr__announcement {
+    position: relative;
+    z-index: 2;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  header a sup {
-    position: absolute;
-    left: 100%;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: var(--color-navy);
+    color: var(--color-contrast);
+    padding-inline: var(--page-inline);
+    white-space: nowrap;
     overflow: hidden;
-    max-width: var(--page-margin);
+    text-overflow: ellipsis;
   }
-  header svg {
-    width: 2rem;
+
+  /* Bar: backdrop lives on the bar itself so it always paints edge to edge */
+  .hdr__bar {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    height: var(--hdr-bar-height);
+    padding-inline: var(--page-inline);
+    gap: var(--space-md);
+    background: color-mix(in srgb, var(--color-background) 94%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--color-line);
+    transition:
+      background-color var(--duration) var(--ease),
+      border-color var(--duration) var(--ease);
   }
-  header .header__menu,
-  header .header__icons {
+  .hdr[data-scrolled="true"] .hdr__bar {
+    box-shadow: 0 10px 40px -18px rgba(10, 22, 40, 0.18);
+  }
+
+  .hdr__side {
     display: flex;
-    gap: 1rem;
+    align-items: center;
+    gap: var(--space-md);
+  }
+  .hdr__side--right {
+    justify-content: flex-end;
+    gap: 1.4rem;
+  }
+
+  .hdr__nav {
+    display: flex;
+    gap: 2.25rem;
+  }
+  .hdr__nav-link {
+    position: relative;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: currentcolor;
+    padding-block: 0.5rem;
+    opacity: 0.85;
+    transition: opacity var(--duration) var(--ease);
+  }
+  .hdr__nav-link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0.15rem;
+    width: 100%;
+    height: 1px;
+    background: currentcolor;
+    transform: translateX(-50%) scaleX(0);
+    transition: transform var(--duration) var(--ease);
+  }
+  .hdr__nav-link:hover {
+    opacity: 1;
+  }
+  .hdr__nav-link:hover::after {
+    transform: translateX(-50%) scaleX(1);
+  }
+
+  .hdr__brand {
+    position: relative;
+    text-decoration: none;
+    color: currentcolor;
+    text-align: center;
+  }
+  .hdr__wordmark {
+    font-family: var(--font-heading--family);
+    font-size: 1.45rem;
+    letter-spacing: 0.42em;
+    text-indent: 0.42em; /* optically recenters letterspaced caps */
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .hdr__logo {
+    height: auto;
+    margin-inline: auto;
+  }
+
+  .hdr__icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: currentcolor;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity var(--duration) var(--ease);
+  }
+  .hdr__icon:hover {
+    opacity: 1;
+  }
+  .hdr__icon svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.25;
+  }
+  .hdr__icon--account svg {
+    width: 20px;
+    height: 20px;
+  }
+  .hdr__cart-count {
+    position: absolute;
+    top: -0.45rem;
+    right: -0.65rem;
+    font-size: 0.6rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    background: var(--color-accent);
+    color: var(--color-contrast);
+    min-width: 1rem;
+    height: 1rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.2rem;
+  }
+
+  /* Burger — two lines, elegant */
+  .hdr__burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    width: 26px;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    color: currentcolor;
+  }
+  .hdr__burger span {
+    display: block;
+    height: 1px;
+    width: 100%;
+    background: currentcolor;
+    transition: transform var(--duration) var(--ease), width var(--duration) var(--ease);
+  }
+  .hdr__burger:hover span:last-child {
+    width: 60%;
+  }
+
+  /* ---- Overlay (transparent over hero, until scrolled) ---- */
+  .hdr--overlay[data-scrolled="false"] {
+    color: var(--color-contrast);
+  }
+  .hdr--overlay[data-scrolled="false"] .hdr__bar {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom-color: color-mix(in srgb, var(--color-contrast) 16%, transparent);
+  }
+
+  /* ---- Full-screen menu ---- */
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: var(--color-navy);
+    color: var(--color-contrast);
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-md) var(--page-margin) calc(var(--space-lg) + env(safe-area-inset-bottom, 0px));
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s var(--ease), visibility 0.5s var(--ease);
+  }
+  html.menu-open {
+    overflow: hidden;
+  }
+  html.menu-open .menu-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .menu-overlay__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--hdr-bar-height);
+  }
+  .menu-overlay__close {
+    background: none;
+    border: 0;
+    color: currentcolor;
+    cursor: pointer;
+    padding: 0.25rem;
+    opacity: 0.8;
+    transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease);
+  }
+  .menu-overlay__close:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+  }
+
+  .menu-overlay__nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+  .menu-overlay__link {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    font-family: var(--font-heading--family);
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    line-height: 1.25;
+    text-decoration: none;
+    color: currentcolor;
+    padding-block: 0.35rem;
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.7s var(--ease),
+      transform 0.7s var(--ease),
+      color 0.4s var(--ease);
+    transition-delay: calc(var(--i) * 70ms);
+  }
+  html.menu-open .menu-overlay__link {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .menu-overlay__link:hover {
+    color: var(--color-accent-soft);
+    font-style: italic;
+  }
+  .menu-overlay__index {
+    font-family: var(--font-primary--family);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    opacity: 0.5;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .menu-overlay__foot {
+    display: flex;
+    justify-content: space-between;
+    color: color-mix(in srgb, var(--color-contrast) 65%, transparent);
+  }
+  .menu-overlay__search {
+    color: var(--color-contrast);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-contrast) 45%, transparent);
+    padding-bottom: 0.25rem;
+  }
+
+  @media (max-width: 989px) {
+    .hdr__nav {
+      display: none;
+    }
+    .hdr__burger {
+      display: flex;
+    }
+    .hdr__wordmark {
+      /* Scales with viewport so the brand can never overflow narrow phones */
+      font-size: clamp(0.8rem, 3.4vw, 1.05rem);
+      letter-spacing: 0.22em;
+      text-indent: 0.22em;
+    }
+    .hdr__logo {
+      max-width: 42vw;
+    }
+    .hdr__announcement {
+      font-size: 0.58rem;
+      letter-spacing: 2px;
+    }
+    .hdr__side--right {
+      gap: 1rem;
+    }
+    .hdr__bar {
+      gap: var(--space-sm);
+    }
+    :root {
+      --hdr-bar-height: 4.25rem;
+    }
+  }
+
+  @media (max-width: 479px) {
+    /* Very narrow phones: search lives in the menu; keep the bar airy */
+    .hdr__icon[aria-label="Search"] {
+      display: none;
+    }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-menu-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const open = document.documentElement.classList.toggle('menu-open');
+      document
+        .querySelectorAll('[data-menu-toggle]')
+        .forEach((b) => b.setAttribute('aria-expanded', open));
+      const overlay = document.querySelector('[data-menu-overlay]');
+      if (overlay) overlay.setAttribute('aria-hidden', !open);
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.documentElement.classList.contains('menu-open')) {
+      document.documentElement.classList.remove('menu-open');
+    }
+  });
+{% endjavascript %}
 
 {% schema %}
 {
   "name": "t:general.header",
   "settings": [
     {
+      "type": "text",
+      "id": "announcement",
+      "label": "Announcement text",
+      "default": "Complimentary worldwide shipping — Every jewel tells a story"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 320,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 160
+    },
+    {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "t:labels.menu",
+      "default": "main-menu"
     },
     {
       "type": "link_list",
       "id": "customer_account_menu",
       "label": "t:labels.customer_account_menu",
       "default": "customer-account-main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "transparent_on_home",
+      "label": "Transparent over homepage hero",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Menu overlay"
+    },
+    {
+      "type": "text",
+      "id": "menu_overlay_label",
+      "label": "Overlay label",
+      "default": "Odyssey Jewels"
+    },
+    {
+      "type": "text",
+      "id": "menu_overlay_footer",
+      "label": "Overlay footer text",
+      "default": "Travel the world — Collect the world"
     }
   ]
 }

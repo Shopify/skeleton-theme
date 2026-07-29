@@ -1,0 +1,47 @@
+{% comment %}
+  Copy block for the video story section. Shared between the overlay and
+  split layouts so the markup stays in one place.
+
+  Accepts:
+    s      — the section.settings object
+{% endcomment %}
+
+{% liquid
+  assign is_overlay = false
+  if s.layout == 'overlay'
+    assign is_overlay = true
+  endif
+%}
+
+{% if s.eyebrow != blank %}
+  <p class="vstory__eyebrow" data-reveal>{{ s.eyebrow }}</p>
+{% endif %}
+
+<h2 class="vstory__heading" data-reveal style="--reveal-delay: 0.1s">
+  {{ s.heading }}
+  {% if s.heading_italic != blank %}
+    <em>{{ s.heading_italic }}</em>
+  {% endif %}
+</h2>
+
+{% if s.body != blank %}
+  <div class="vstory__body" data-reveal style="--reveal-delay: 0.2s">{{ s.body }}</div>
+{% endif %}
+
+{% if s.button_label != blank or s.link_label != blank %}
+  <div class="vstory__actions" data-reveal style="--reveal-delay: 0.3s">
+    {% if s.button_label != blank %}
+      <a
+        class="button {% if is_overlay %}button--on-dark{% else %}button--ghost{% endif %}"
+        href="{{ s.button_url | default: '#' }}"
+      >
+        {{ s.button_label }}
+      </a>
+    {% endif %}
+    {% if s.link_label != blank %}
+      <a class="link-underline vstory__text-link" href="{{ s.link_url | default: '#' }}">
+        {{ s.link_label }}
+      </a>
+    {% endif %}
+  </div>
+{% endif %}

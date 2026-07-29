@@ -1,0 +1,466 @@
+{% comment %}
+  Featured pieces — horizontal gallery rail with scroll-snap, thin arrow
+  controls and a hairline progress indicator. Curated blocks with stock
+  imagery until real products are connected.
+{% endcomment %}
+
+<section class="featured section-spacing">
+  <div class="featured__head">
+    <div>
+      {% if section.settings.eyebrow != blank %}
+        <p class="eyebrow eyebrow--rule" data-reveal>{{ section.settings.eyebrow }}</p>
+      {% endif %}
+      <h2 class="featured__heading" data-reveal style="--reveal-delay: 0.1s">
+        {{ section.settings.heading }}
+        {% if section.settings.heading_italic != blank %}
+          <em>{{ section.settings.heading_italic }}</em>
+        {% endif %}
+      </h2>
+    </div>
+
+    <div class="featured__controls" data-reveal style="--reveal-delay: 0.2s">
+      <button class="featured__arrow" data-rail-prev aria-label="Previous">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+          <path d="M20 12H5m0 0 5.5-5.5M5 12l5.5 5.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="featured__arrow" data-rail-next aria-label="Next">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+          <path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="featured__rail-wrap full-width" data-rail-scope>
+    <div class="featured__rail" data-rail>
+      {% for block in section.blocks %}
+        {% liquid
+          assign img = block.settings.image_url
+          if block.settings.image != blank
+            assign img = block.settings.image | image_url: width: 900
+          endif
+          assign index_label = forloop.index | prepend: '00' | slice: -2, 2
+        %}
+        <a class="piece-card" href="{{ block.settings.link | default: '#' }}" {{ block.shopify_attributes }}>
+          <div class="piece-card__media">
+            <img src="{{ img }}" alt="{{ block.settings.title | escape }}" loading="lazy" width="900" height="1125">
+            {% if block.settings.badge != blank %}
+              <span class="piece-card__badge">{{ block.settings.badge }}</span>
+            {% endif %}
+            <span class="piece-card__view">
+              View piece
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" aria-hidden="true">
+                <path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+          <div class="piece-card__info">
+            <span class="meta-label piece-card__index">N&deg; {{ index_label }}</span>
+            <div>
+              {% if block.settings.region != blank %}
+                <span class="piece-card__region">{{ block.settings.region }}</span>
+              {% endif %}
+              <h3 class="piece-card__title">{{ block.settings.title }}</h3>
+              {% if block.settings.price != blank %}
+                <span class="piece-card__price">{{ block.settings.price }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+
+      {% if section.settings.link_label != blank %}
+        <a class="piece-card piece-card--end" href="{{ section.settings.link_url | default: routes.all_products_collection_url }}">
+          <span class="piece-card__end-inner">
+            <span class="piece-card__end-label">{{ section.settings.link_label }}</span>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
+              <path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="featured__progress">
+      <span class="featured__progress-bar" data-rail-progress></span>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .featured {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+    box-sizing: border-box;
+  }
+  .featured__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-lg);
+  }
+  .featured__heading {
+    margin-top: var(--space-sm);
+    font-weight: 400;
+  }
+
+  .featured__controls {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .featured__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-foreground);
+    cursor: pointer;
+    transition: background-color var(--duration) var(--ease), color var(--duration) var(--ease), border-color var(--duration) var(--ease);
+  }
+  .featured__arrow:hover {
+    background-color: var(--color-navy);
+    border-color: var(--color-navy);
+    color: var(--color-contrast);
+  }
+
+  .featured__rail-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .featured__rail {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: var(--space-md);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--page-inline);
+    padding-inline: var(--page-inline);
+    scrollbar-width: none;
+  }
+  .featured__rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .piece-card {
+    flex: 0 0 clamp(15rem, 24vw, 22rem);
+    scroll-snap-align: start;
+    text-decoration: none;
+    color: var(--color-foreground);
+  }
+
+  @media (max-width: 749px) {
+    /* Touch-first: swipe is the navigation, cards show a peek of the next */
+    .featured__controls {
+      display: none;
+    }
+    .piece-card {
+      flex: 0 0 82%;
+    }
+    .featured__head {
+      margin-bottom: var(--space-md);
+    }
+    .featured__rail {
+      padding-inline: 0;
+      scroll-padding-inline: 0;
+    }
+    .featured__progress {
+      margin-top: var(--space-md);
+      margin-inline: 0;
+    }
+  }
+  .piece-card__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    background: var(--color-foreground-12);
+    margin-bottom: var(--space-sm);
+  }
+  .piece-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease);
+  }
+  .piece-card:hover .piece-card__media img {
+    transform: scale(1.05);
+  }
+  .piece-card__badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: color-mix(in srgb, var(--color-background) 92%, transparent);
+    backdrop-filter: blur(4px);
+    color: var(--color-navy);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+  }
+  .piece-card__view {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-contrast);
+    background: color-mix(in srgb, var(--color-navy) 82%, transparent);
+    backdrop-filter: blur(6px);
+    padding: 0.6rem 1rem;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease);
+  }
+  .piece-card:hover .piece-card__view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .piece-card__info {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+  }
+  .piece-card__index {
+    color: var(--color-foreground-50);
+  }
+  .piece-card__region {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  .piece-card__title {
+    font-size: var(--text-xl);
+    font-weight: 400;
+    margin: 0.2rem 0;
+  }
+  .piece-card__price {
+    font-size: var(--text-sm);
+    color: var(--color-foreground-50);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .piece-card--end {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    background: var(--color-navy);
+    color: var(--color-contrast);
+  }
+  .piece-card__end-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    text-align: center;
+    padding: var(--space-md);
+    transition: transform var(--duration) var(--ease);
+  }
+  .piece-card--end:hover .piece-card__end-inner {
+    transform: translateX(6px);
+  }
+  .piece-card__end-label {
+    font-family: var(--font-heading--family);
+    font-style: italic;
+    font-size: var(--text-xl);
+  }
+
+  .featured__progress {
+    margin: var(--space-lg) var(--page-inline) 0;
+    height: 1px;
+    background: var(--color-line);
+  }
+  .featured__progress-bar {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: var(--color-accent);
+    transition: width 0.2s linear;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-rail-scope]').forEach((scope) => {
+    const rail = scope.querySelector('[data-rail]');
+    const progress = scope.querySelector('[data-rail-progress]');
+    const section = scope.closest('.shopify-section') || document;
+    const prev = section.querySelector('[data-rail-prev]');
+    const next = section.querySelector('[data-rail-next]');
+    if (!rail) return;
+
+    const step = () => {
+      const card = rail.querySelector('.piece-card');
+      return card ? card.getBoundingClientRect().width + 24 : 320;
+    };
+
+    prev?.addEventListener('click', () => rail.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next?.addEventListener('click', () => rail.scrollBy({ left: step(), behavior: 'smooth' }));
+
+    const updateProgress = () => {
+      if (!progress) return;
+      const max = rail.scrollWidth - rail.clientWidth;
+      const pct = max > 0 ? (rail.scrollLeft / max) * 100 : 0;
+      progress.style.width = Math.max(6, pct) + '%';
+    };
+    rail.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Featured pieces",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The first drop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Oceania"
+    },
+    {
+      "type": "text",
+      "id": "heading_italic",
+      "label": "Heading (italic)",
+      "default": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "End-card label",
+      "default": "View the full collection"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "End-card link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "piece",
+      "name": "Piece",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Image URL (fallback)"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge",
+          "default": "One of a kind"
+        },
+        {
+          "type": "text",
+          "id": "region",
+          "label": "Region",
+          "default": "Oceania"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Coral Tide Ring"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Price",
+          "default": "$1,200"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Featured pieces",
+      "blocks": [
+        {
+          "type": "piece",
+          "settings": {
+            "title": "Coral Tide Ring",
+            "region": "Oceania",
+            "price": "$1,200",
+            "image_url": "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=80"
+          }
+        },
+        {
+          "type": "piece",
+          "settings": {
+            "title": "Lagoon Pearl Pendant",
+            "region": "Oceania",
+            "price": "$980",
+            "image_url": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=80"
+          }
+        },
+        {
+          "type": "piece",
+          "settings": {
+            "title": "Reef Gold Bangle",
+            "region": "Oceania",
+            "price": "$1,540",
+            "image_url": "https://images.unsplash.com/photo-1611085583191-a3b181a88401?auto=format&fit=crop&w=900&q=80"
+          }
+        },
+        {
+          "type": "piece",
+          "settings": {
+            "title": "Tide Drop Earrings",
+            "region": "Oceania",
+            "price": "$760",
+            "image_url": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=80"
+          }
+        },
+        {
+          "type": "piece",
+          "settings": {
+            "title": "Atoll Signet",
+            "region": "Oceania",
+            "price": "$1,880",
+            "image_url": "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=900&q=80"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

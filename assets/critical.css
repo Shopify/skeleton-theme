@@ -74,11 +74,283 @@ p:empty {
 /** Theme styles below */
 body {
   font-family: var(--font-primary--family);
+  font-weight: var(--font-primary--weight);
   background-color: var(--color-background);
   color: var(--color-foreground);
+  font-size: var(--text-base);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/** Typography */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading--family);
+  font-weight: var(--font-heading--weight);
+  font-style: var(--font-heading--style);
+  line-height: 1.02;
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--text-4xl);
+}
+h2 {
+  font-size: var(--text-3xl);
+}
+h3 {
+  font-size: var(--text-2xl);
+}
+h4 {
+  font-size: var(--text-xl);
+}
+
+/** Italic serif accent inside headings */
+h1 em,
+h2 em,
+h3 em {
+  font-style: italic;
+  font-weight: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+/** Eyebrow / overline label with optional hairline */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 100%;
+  font-family: var(--font-primary--family);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin: 0;
+}
+.eyebrow--rule::before {
+  content: "";
+  display: inline-block;
+  width: 2.5rem;
+  height: 1px;
+  background: currentcolor;
+  opacity: 0.7;
+}
+
+/** Small meta label — coordinates, indices, region numbers */
+.meta-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+
+/** Scroll reveal (activated by theme.js) */
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 1s var(--ease),
+    transform 1s var(--ease);
+  transition-delay: var(--reveal-delay, 0s);
+}
+.reveal-ready [data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/** Buttons */
+.button,
+button.button {
+  --btn-bg: var(--color-navy);
+  --btn-fg: var(--color-contrast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+  padding: 1.1rem 2.75rem;
+  min-height: 3.25rem;
+  font-family: var(--font-primary--family);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--btn-fg);
+  background-color: var(--btn-bg);
+  border: 1px solid var(--btn-bg);
+  border-radius: var(--style-border-radius-inputs);
+  cursor: pointer;
+  transition: background-color var(--duration) var(--ease), color var(--duration) var(--ease), border-color var(--duration) var(--ease), transform var(--duration) var(--ease);
+}
+
+.button:hover {
+  --btn-bg: var(--color-accent);
+  --btn-fg: var(--color-contrast);
+}
+
+.button--ghost {
+  --btn-bg: transparent;
+  --btn-fg: currentcolor;
+  border-color: currentcolor;
+}
+.button--ghost:hover {
+  --btn-bg: var(--color-foreground);
+  --btn-fg: var(--color-background);
+  border-color: var(--color-foreground);
+}
+
+.button--on-dark {
+  --btn-bg: var(--color-contrast);
+  --btn-fg: var(--color-navy);
+  border-color: var(--color-contrast);
+}
+.button--on-dark:hover {
+  --btn-bg: var(--color-accent);
+  --btn-fg: var(--color-contrast);
+  border-color: var(--color-accent);
+}
+
+/** Text link with animated underline */
+.link-underline {
+  position: relative;
+  display: inline-block;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding-bottom: 0.35rem;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background-color: currentcolor;
+  transform: scaleX(1);
+  transform-origin: right;
+  transition: transform var(--duration) var(--ease);
+}
+.link-underline:hover::after {
+  transform: scaleX(0);
+}
+
+/** Shared cinematic media controls (hero + video story) */
+.media-controls {
+  position: absolute;
+  right: clamp(1.25rem, 0.5rem + 2vw, 2.75rem);
+  bottom: clamp(1.25rem, 0.5rem + 2vw, 2.75rem);
+  display: flex;
+  gap: 1px;
+  z-index: 3;
+}
+.media-controls__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  color: var(--color-contrast);
+  background: color-mix(in srgb, var(--color-navy) 42%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-contrast) 35%, transparent);
+  border-radius: var(--style-border-radius-inputs);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color var(--duration) var(--ease), border-color var(--duration) var(--ease);
+}
+/* Keep the pair reading as one refined unit */
+.media-controls__btn + .media-controls__btn {
+  border-left: none;
+}
+.media-controls__btn:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+.media-controls__icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+/* Toggle icon visibility from the button's data-state */
+.media-controls__icon--play,
+.media-controls__icon--unmuted {
+  display: none;
+}
+[data-video-play][data-state="paused"] .media-controls__icon--pause { display: none; }
+[data-video-play][data-state="paused"] .media-controls__icon--play { display: block; }
+[data-video-mute][data-state="unmuted"] .media-controls__icon--muted { display: none; }
+[data-video-mute][data-state="unmuted"] .media-controls__icon--unmuted { display: block; }
+
+@media (max-width: 749px) {
+  .media-controls__btn {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+}
+
+/** Utilities */
+.section-spacing {
+  padding-block: var(--section-spacing);
+}
+
+.measure {
+  max-width: 46ch;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.on-dark {
+  background-color: var(--color-navy);
+  color: var(--color-contrast);
+}
+.on-dark .eyebrow {
+  color: var(--color-accent-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /** Section layout utilities */
+
+/*
+ * Horizontal padding aligned to the page column.
+ * On mobile we use the gutter only — never 100vw (that includes scrollbar
+ * width and causes subtle overflow on real devices).
+ */
+:root {
+  --page-inline: var(--page-margin);
+}
+
+@media (min-width: 990px) {
+  :root {
+    --page-inline: max(
+      var(--page-margin),
+      calc((100% - min(var(--page-width), 100%)) / 2 + var(--page-margin))
+    );
+  }
+}
 
 /**
  * Setup a grid that enables both full-width and constrained layouts
@@ -99,19 +371,42 @@ body {
   --content-margin: minmax(var(--page-margin), 1fr);
   --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
 
-  /* This is required to make <img> elements work as background images */
   position: relative;
   grid-template-columns: var(--content-grid);
   display: grid;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Child elements, by default, are constrained to the central column of the grid. */
 .shopify-section > * {
   grid-column: 2;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Child elements that use the full-width utility class span the entire viewport. */
 .shopify-section > .full-width {
   grid-column: 1 / -1;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+
+/* Constrained sections: belt-and-suspenders padding on small screens */
+@media (max-width: 989px) {
+  .regions,
+  .promises,
+  .featured {
+    padding-inline: var(--page-margin);
+  }
+
+  .featured__head {
+    padding-inline: 0;
+  }
 }

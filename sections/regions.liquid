@@ -1,0 +1,393 @@
+{% comment %}
+  Region grid — asymmetric editorial layout. Cards vary in size and
+  vertical offset in a repeating 3-card rhythm, each numbered like a
+  region ledger entry.
+{% endcomment %}
+
+<section class="regions section-spacing">
+  <div class="regions__head">
+    <div>
+      {% if section.settings.eyebrow != blank %}
+        <p class="eyebrow eyebrow--rule" data-reveal>{{ section.settings.eyebrow }}</p>
+      {% endif %}
+      <h2 class="regions__heading" data-reveal style="--reveal-delay: 0.1s">
+        {{ section.settings.heading }}
+        {% if section.settings.heading_italic != blank %}
+          <em>{{ section.settings.heading_italic }}</em>
+        {% endif %}
+      </h2>
+    </div>
+    {% if section.settings.link_label != blank %}
+      <a class="link-underline regions__all" data-reveal style="--reveal-delay: 0.2s" href="{{ section.settings.link_url | default: routes.collections_url }}">
+        {{ section.settings.link_label }}
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="regions__grid">
+    {% for block in section.blocks %}
+      {% liquid
+        assign img = block.settings.image_url
+        if block.settings.image != blank
+          assign img = block.settings.image | image_url: width: 1400
+        endif
+        assign index_label = forloop.index | prepend: '00' | slice: -2, 2
+      %}
+      <a
+        class="region-card"
+        href="{{ block.settings.link | default: '#' }}"
+        data-reveal
+        style="--reveal-delay: {{ forloop.index0 | times: 0.08 }}s"
+        {{ block.shopify_attributes }}
+      >
+        <div class="region-card__media">
+          <img src="{{ img }}" alt="{{ block.settings.title | escape }}" loading="lazy" width="1400" height="1680">
+          <div class="region-card__shade"></div>
+
+          <span class="meta-label region-card__index">N&deg; {{ index_label }}</span>
+          {% if block.settings.status != blank %}
+            <span class="region-card__status">{{ block.settings.status }}</span>
+          {% endif %}
+
+          <div class="region-card__body">
+            <h3 class="region-card__title">{{ block.settings.title }}</h3>
+            {% if block.settings.subtitle != blank %}
+              <p class="region-card__subtitle">{{ block.settings.subtitle }}</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="region-card__foot">
+          <span class="meta-label">{{ block.settings.meta }}</span>
+          <span class="region-card__cta">
+            {{ block.settings.cta | default: 'Discover' }}
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" aria-hidden="true">
+              <path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .regions {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .regions__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-xl);
+  }
+  .regions__heading {
+    margin-top: var(--space-sm);
+    max-width: 22ch;
+  }
+  .regions__all {
+    margin-bottom: 0.5rem;
+  }
+
+  .regions__grid {
+    display: grid;
+    /* minmax(0, 1fr): image intrinsic widths must never expand the tracks */
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-lg) var(--space-md);
+    align-items: start;
+  }
+
+  .region-card {
+    display: block;
+    min-width: 0;
+    text-decoration: none;
+    color: var(--color-foreground);
+  }
+  .region-card:nth-child(3n + 1) {
+    grid-column: 1 / span 7;
+    --card-ratio: 7 / 6;
+  }
+  .region-card:nth-child(3n + 2) {
+    grid-column: 9 / span 4;
+    --card-ratio: 4 / 5;
+    margin-top: 22%;
+  }
+  .region-card:nth-child(3n + 3) {
+    grid-column: 3 / span 8;
+    --card-ratio: 16 / 9;
+  }
+
+  .region-card__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--card-ratio, 4 / 5);
+    isolation: isolate;
+    color: var(--color-contrast);
+  }
+  .region-card__media img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    transition: transform 1.4s var(--ease);
+  }
+  .region-card:hover .region-card__media img {
+    transform: scale(1.05);
+  }
+  .region-card__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10, 22, 40, 0.72) 0%, rgba(10, 22, 40, 0.05) 50%);
+    transition: opacity var(--duration) var(--ease);
+  }
+
+  .region-card__index {
+    position: absolute;
+    top: 1.4rem;
+    left: 1.4rem;
+    color: var(--color-contrast);
+    opacity: 0.9;
+  }
+  .region-card__status {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--color-contrast) 45%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background-color var(--duration) var(--ease), border-color var(--duration) var(--ease);
+  }
+  .region-card:hover .region-card__status {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .region-card__body {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 1.75rem;
+  }
+  .region-card__title {
+    font-size: var(--text-2xl);
+    font-weight: 400;
+    margin: 0;
+  }
+  .region-card__subtitle {
+    margin-top: 0.4rem;
+    font-size: var(--text-sm);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    color: color-mix(in srgb, var(--color-contrast) 82%, transparent);
+  }
+
+  .region-card__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding-top: 1rem;
+    border-bottom: 1px solid var(--color-line);
+    padding-bottom: 1rem;
+    min-width: 0;
+  }
+  .region-card__foot .meta-label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .region-card__cta {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+  }
+  .region-card__cta svg {
+    transition: transform var(--duration) var(--ease);
+  }
+  .region-card:hover .region-card__cta svg {
+    transform: translateX(5px);
+  }
+
+  @media (max-width: 989px) {
+    .regions__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+    .region-card:nth-child(n) {
+      grid-column: 1 / -1;
+      margin-top: 0;
+      --card-ratio: 4 / 5;
+    }
+    .regions__head {
+      margin-bottom: var(--space-lg);
+    }
+    .region-card__body {
+      padding: 1.25rem;
+    }
+    .region-card__index {
+      top: 1rem;
+      left: 1rem;
+    }
+    .region-card__status {
+      top: 0.85rem;
+      right: 0.85rem;
+      font-size: 0.55rem;
+      letter-spacing: 1.5px;
+      padding: 0.35rem 0.65rem;
+      max-width: calc(100% - 5rem);
+      text-align: center;
+      line-height: 1.3;
+    }
+    .region-card__foot {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.65rem;
+    }
+    .region-card__title {
+      font-size: var(--text-xl);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Region collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The regions"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Where in the world"
+    },
+    {
+      "type": "text",
+      "id": "heading_italic",
+      "label": "Heading (italic)",
+      "default": "will you begin?"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "All regions"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link URL"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "region",
+      "name": "Region",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "image_url",
+          "label": "Image URL (fallback)"
+        },
+        {
+          "type": "text",
+          "id": "status",
+          "label": "Status label",
+          "default": "Available now"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Oceania"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Treasures of the South Pacific"
+        },
+        {
+          "type": "text",
+          "id": "meta",
+          "label": "Meta line",
+          "default": "First drop — 200 pieces"
+        },
+        {
+          "type": "text",
+          "id": "cta",
+          "label": "Link label",
+          "default": "Discover"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 9,
+  "presets": [
+    {
+      "name": "Region collections",
+      "blocks": [
+        {
+          "type": "region",
+          "settings": {
+            "title": "Oceania",
+            "status": "Available now",
+            "subtitle": "Treasures of the South Pacific",
+            "meta": "First drop — 200 pieces",
+            "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80"
+          }
+        },
+        {
+          "type": "region",
+          "settings": {
+            "title": "The Founders Collection",
+            "status": "By invitation",
+            "subtitle": "Rare pieces for our earliest collectors",
+            "meta": "Private access",
+            "cta": "Enquire",
+            "image_url": "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1400&q=80"
+          }
+        },
+        {
+          "type": "region",
+          "settings": {
+            "title": "Asia",
+            "status": "Coming soon",
+            "subtitle": "Along the ancient trade routes",
+            "meta": "Region in progress",
+            "cta": "Join the waitlist",
+            "image_url": "https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=1400&q=80"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

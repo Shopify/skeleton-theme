@@ -1,0 +1,174 @@
+{% comment %}
+  Brand promises as a numbered ledger row — hairline-divided columns with
+  index numbers, serif titles and quiet supporting text.
+{% endcomment %}
+
+<section class="promises section-spacing{% if section.settings.dark %} on-dark{% endif %}">
+  {% if section.settings.eyebrow != blank %}
+    <p class="eyebrow eyebrow--rule promises__eyebrow" data-reveal>{{ section.settings.eyebrow }}</p>
+  {% endif %}
+
+  <div class="promises__row">
+    {% for block in section.blocks %}
+      <div
+        class="promise"
+        data-reveal
+        style="--reveal-delay: {{ forloop.index0 | times: 0.12 }}s"
+        {{ block.shopify_attributes }}
+      >
+        <span class="meta-label promise__index">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
+        {% if block.settings.title != blank %}
+          <h3 class="promise__title">{{ block.settings.title }}</h3>
+        {% endif %}
+        {% if block.settings.text != blank %}
+          <p class="promise__text">{{ block.settings.text }}</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .promises {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .promises__eyebrow {
+    margin-bottom: var(--space-xl);
+  }
+  .promises__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+    border-top: 1px solid var(--color-line);
+  }
+  .on-dark .promises__row {
+    border-color: color-mix(in srgb, var(--color-contrast) 18%, transparent);
+  }
+  .promise {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-lg) var(--space-lg) 0 0;
+    border-top: 1px solid transparent;
+    position: relative;
+  }
+  .promise + .promise {
+    padding-left: var(--space-lg);
+    border-left: 1px solid var(--color-line);
+  }
+  .on-dark .promise + .promise {
+    border-color: color-mix(in srgb, var(--color-contrast) 18%, transparent);
+  }
+  .promise__index {
+    color: var(--color-accent);
+  }
+  .promise__title {
+    font-size: var(--text-2xl);
+    font-weight: 400;
+    margin: 0;
+  }
+  .promise__text {
+    font-size: var(--text-sm);
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--color-foreground-50);
+    max-width: 26rem;
+  }
+  .on-dark .promise__text {
+    color: color-mix(in srgb, var(--color-contrast) 75%, transparent);
+  }
+
+  @media (max-width: 749px) {
+    .promises__eyebrow {
+      margin-bottom: var(--space-lg);
+    }
+    .promises__row {
+      grid-template-columns: 1fr;
+    }
+    .promise {
+      padding: var(--space-md) 0 0;
+    }
+    .promise + .promise {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--color-line);
+      margin-top: var(--space-md);
+    }
+    .on-dark .promise + .promise {
+      border-color: color-mix(in srgb, var(--color-contrast) 18%, transparent);
+    }
+    .promise__title {
+      font-size: var(--text-xl);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Promises",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The Odyssey standard"
+    },
+    {
+      "type": "checkbox",
+      "id": "dark",
+      "label": "Dark theme",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "promise",
+      "name": "Promise",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "One of a kind"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Every piece is unique. When it's gone, it's gone."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [
+    {
+      "name": "Promises",
+      "blocks": [
+        {
+          "type": "promise",
+          "settings": {
+            "title": "One of a kind",
+            "text": "Every piece is unique. When it's gone, it's gone forever."
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "title": "Artisan made",
+            "text": "Crafted by master makers in their homeland, never mass-produced."
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "title": "Worldwide delivery",
+            "text": "Complimentary, fully insured shipping across the globe."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

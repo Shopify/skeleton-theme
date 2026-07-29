@@ -1,0 +1,416 @@
+{% comment %}
+  Cinematic video storytelling section — built for telling collection and
+  brand stories. Two layouts:
+    • Overlay — full-bleed video with an editorial text block over a scrim.
+    • Split   — video on one side, a quiet text column on the other.
+  Video can autoplay muted on loop, or wait behind a poster until pressed.
+{% endcomment %}
+
+{% liquid
+  assign poster = section.settings.poster_url
+  if section.settings.poster_image != blank
+    assign poster = section.settings.poster_image | image_url: width: 2000
+  endif
+
+  assign has_video = false
+  if section.settings.video != blank or section.settings.video_url != blank or section.settings.video_mobile != blank or section.settings.video_mobile_url != blank
+    assign has_video = true
+  endif
+%}
+
+<section
+  class="vstory full-width vstory--{{ section.settings.layout }} vstory--media-{{ section.settings.media_position }} vstory--align-{{ section.settings.text_align }}{% if section.settings.dark %} on-dark{% endif %}"
+  style="--scrim: {{ section.settings.scrim_strength }}%;"
+>
+  <div class="vstory__grid">
+    <div class="vstory__media vstory--h-{{ section.settings.height }}" {% if has_video %}data-video-section{% endif %}>
+      {% if has_video %}
+        {% render 'responsive-bg-video',
+          classes: 'vstory__bg',
+          desktop_video: section.settings.video,
+          desktop_url: section.settings.video_url,
+          mobile_video: section.settings.video_mobile,
+          mobile_url: section.settings.video_mobile_url,
+          poster: poster,
+          autoplay: section.settings.autoplay
+        %}
+      {% else %}
+        <img class="vstory__bg" src="{{ poster }}" alt="{{ section.settings.heading | escape }}" loading="lazy" width="2000" height="1200">
+      {% endif %}
+
+      {% if section.settings.layout == 'overlay' %}
+        <div class="vstory__scrim"></div>
+      {% endif %}
+
+      {% if has_video and section.settings.show_controls %}
+        <div class="media-controls">
+          <button class="media-controls__btn" type="button" data-video-play data-state="{% if section.settings.autoplay %}playing{% else %}paused{% endif %}" aria-label="Play or pause video">
+            <svg class="media-controls__icon media-controls__icon--pause" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="7.5" y="6" width="2.5" height="12" fill="currentColor"/>
+              <rect x="14" y="6" width="2.5" height="12" fill="currentColor"/>
+            </svg>
+            <svg class="media-controls__icon media-controls__icon--play" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M8 5.5v13l11-6.5-11-6.5Z" fill="currentColor"/>
+            </svg>
+          </button>
+          {% if section.settings.autoplay %}
+            <button class="media-controls__btn" type="button" data-video-mute data-state="muted" aria-label="Mute or unmute video">
+              <svg class="media-controls__icon media-controls__icon--muted" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/>
+                <path d="M16.5 9.5l4 4m0-4l-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              <svg class="media-controls__icon media-controls__icon--unmuted" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/>
+                <path d="M16.5 8.5a5 5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+              </svg>
+            </button>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if section.settings.layout == 'overlay' %}
+        <div class="vstory__content vstory__content--overlay">
+          {% render 'vstory-copy', s: section.settings %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if section.settings.layout == 'split' %}
+      <div class="vstory__content vstory__content--split">
+        {% render 'vstory-copy', s: section.settings %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .vstory {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vstory__media {
+    position: relative;
+    overflow: hidden;
+  }
+  .vstory--h-standard { aspect-ratio: 16 / 9; }
+  .vstory--h-tall { aspect-ratio: 4 / 5; }
+  .vstory--h-cinema { aspect-ratio: 21 / 9; }
+  .vstory__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .vstory__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(14, 30, 51, calc(var(--scrim) / 100)) 0%,
+      rgba(14, 30, 51, calc(var(--scrim) / 100 * 0.35)) 40%,
+      transparent 72%
+    );
+    pointer-events: none;
+  }
+
+  .vstory__media .media-controls {
+    z-index: 4;
+  }
+
+  /* --- Copy block --- */
+  .vstory__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    color: var(--color-contrast);
+  }
+  .vstory__eyebrow {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin: 0;
+  }
+  .vstory__heading {
+    font-size: var(--text-3xl);
+    font-weight: 400;
+    line-height: 1;
+    margin: 0;
+  }
+  .vstory__heading em { display: block; }
+  .vstory__body {
+    font-size: var(--text-lg);
+    font-weight: 300;
+    line-height: 1.7;
+    max-width: 40ch;
+    color: color-mix(in srgb, var(--color-contrast) 85%, transparent);
+  }
+  .vstory__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+    margin-top: var(--space-2xs);
+  }
+  .vstory__text-link { color: inherit; }
+
+  /* --- Overlay layout --- */
+  .vstory--overlay .vstory__content--overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    justify-content: flex-end;
+    padding: clamp(1.75rem, 1rem + 4vw, 4.5rem) var(--page-inline);
+    pointer-events: none;
+  }
+  .vstory--overlay .vstory__content--overlay > * { pointer-events: auto; }
+  .vstory--overlay.vstory--align-center .vstory__content--overlay {
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+  }
+  .vstory--overlay .vstory__heading { font-size: var(--text-4xl); }
+  .vstory--overlay .vstory__body {
+    text-shadow: 0 1px 30px rgba(10, 22, 40, 0.3);
+  }
+
+  /* --- Split layout --- */
+  .vstory--split .vstory__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
+  .vstory--split .vstory__media {
+    height: 100%;
+    aspect-ratio: auto;
+    min-height: 34rem;
+  }
+  .vstory--split .vstory__content--split {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: clamp(2.5rem, 1.5rem + 5vw, 6rem);
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+  .vstory--split.on-dark .vstory__content--split {
+    background: var(--color-navy);
+    color: var(--color-contrast);
+  }
+  .vstory--split .vstory__body {
+    color: var(--color-foreground-50);
+  }
+  .vstory--split.on-dark .vstory__body {
+    color: color-mix(in srgb, var(--color-contrast) 80%, transparent);
+  }
+  .vstory--split.vstory--media-right .vstory__media { order: 2; }
+  .vstory--split.vstory--media-right .vstory__content--split { order: 1; }
+
+  .vstory--split .vstory__eyebrow { color: var(--color-accent); }
+  .vstory--split.on-dark .vstory__eyebrow { color: var(--color-accent-soft); }
+
+  @media (max-width: 989px) {
+    .vstory--split .vstory__grid {
+      grid-template-columns: 1fr;
+    }
+    .vstory--split .vstory__media,
+    .vstory--split.vstory--media-right .vstory__media {
+      order: 0;
+      min-height: 0;
+      aspect-ratio: 4 / 3;
+    }
+    .vstory--split .vstory__content--split,
+    .vstory--split.vstory--media-right .vstory__content--split {
+      order: 1;
+    }
+    .vstory--tall { aspect-ratio: 3 / 4; }
+    .vstory--cinema { aspect-ratio: 16 / 9; }
+  }
+
+  @media (max-width: 749px) {
+    .vstory--overlay .vstory__heading { font-size: var(--text-3xl); }
+    .vstory__body { font-size: var(--text-base); }
+    .vstory--overlay .vstory__content--overlay {
+      padding-inline: var(--page-margin);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Video story",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "overlay", "label": "Full-bleed (text over video)" },
+        { "value": "split", "label": "Split (video + text)" }
+      ],
+      "default": "overlay"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Video shape (full-bleed)",
+      "options": [
+        { "value": "cinema", "label": "Cinematic (21:9)" },
+        { "value": "standard", "label": "Widescreen (16:9)" },
+        { "value": "tall", "label": "Portrait (4:5)" }
+      ],
+      "default": "cinema"
+    },
+    {
+      "type": "select",
+      "id": "media_position",
+      "label": "Video side (split layout)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment (full-bleed)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "dark",
+      "label": "Dark text panel (split layout)",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Desktop video (upload)",
+      "info": "Upload or pick a Shopify-hosted video. Takes priority over the URL below."
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Desktop video URL (mp4)",
+      "info": "Used only if no uploaded desktop video is set.",
+      "default": "https://assets.mixkit.co/videos/preview/mixkit-tropical-beach-with-palm-trees-and-clear-water-1564-large.mp4"
+    },
+    {
+      "type": "video",
+      "id": "video_mobile",
+      "label": "Mobile video (upload)",
+      "info": "Optional. Shown on phones instead of the desktop video. Falls back to the desktop video when empty."
+    },
+    {
+      "type": "text",
+      "id": "video_mobile_url",
+      "label": "Mobile video URL (mp4)",
+      "info": "Used only if no uploaded mobile video is set."
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_image",
+      "label": "Poster / fallback image"
+    },
+    {
+      "type": "text",
+      "id": "poster_url",
+      "label": "Poster image URL (fallback)",
+      "default": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=80"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay (muted, looping)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_controls",
+      "label": "Show video controls",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "scrim_strength",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "label": "Scrim strength (full-bleed)",
+      "default": 55
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Oceania — Chapter One"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Born of the"
+    },
+    {
+      "type": "text",
+      "id": "heading_italic",
+      "label": "Heading (italic line)",
+      "default": "South Pacific"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body",
+      "default": "<p>Follow the tide to where each piece began — the hands, the heritage and the horizon behind the Oceania collection.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Explore Oceania"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Text link label"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Text link URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video story"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,661 @@
+{% comment %}
+  Editorial "journal chapter" story section.
+
+  Full-bleed with generous internal padding. A giant ghost chapter numeral
+  sits behind the layout; a vertical meta label runs along the visual;
+  the imagery pairs a jewel with the place it came from (main + inset);
+  the content column closes with an optional hairline stats row.
+{% endcomment %}
+
+{% liquid
+  assign img_main = section.settings.image_url
+  if section.settings.image != blank
+    assign img_main = section.settings.image | image_url: width: 1600
+  endif
+
+  assign img_alt = section.settings.image_2_url
+  if section.settings.image_2 != blank
+    assign img_alt = section.settings.image_2 | image_url: width: 900
+  endif
+
+  assign has_stats = false
+  if section.settings.stat_1_value != blank or section.settings.stat_2_value != blank or section.settings.stat_3_value != blank
+    assign has_stats = true
+  endif
+%}
+
+<section class="story full-width section-spacing{% if section.settings.dark %} on-dark{% endif %} story--media-{{ section.settings.media_position }}">
+  {% if section.settings.chapter != blank %}
+    <span class="story__ghost" aria-hidden="true">{{ section.settings.chapter }}</span>
+  {% endif %}
+
+  <div class="story__inner">
+    <div class="story__visual" data-reveal>
+      {% if section.settings.vertical_label != blank %}
+        <span class="meta-label story__vertical">{{ section.settings.vertical_label }}</span>
+      {% endif %}
+
+      <div class="story__media">
+        <div class="story__frame" aria-hidden="true"></div>
+
+        <div class="story__images">
+          <div class="story__main">
+            <img src="{{ img_main }}" alt="{{ section.settings.heading | escape }}" loading="lazy" width="1600" height="2000">
+          </div>
+
+          {% if img_alt != blank %}
+            <div class="story__inset" data-reveal style="--reveal-delay: 0.25s">
+              <img src="{{ img_alt }}" alt="" loading="lazy" width="900" height="720">
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if section.settings.visual_caption != blank %}
+        <p class="meta-label story__caption">{{ section.settings.visual_caption }}</p>
+      {% endif %}
+    </div>
+
+    <div class="story__content">
+      {% if section.settings.eyebrow != blank %}
+        <p class="eyebrow eyebrow--rule" data-reveal>{{ section.settings.eyebrow }}</p>
+      {% endif %}
+
+      <h2 class="story__heading" data-reveal style="--reveal-delay: 0.1s">
+        {{ section.settings.heading }}
+        {% if section.settings.heading_italic != blank %}
+          <em>{{ section.settings.heading_italic }}</em>
+        {% endif %}
+      </h2>
+
+      {% if section.settings.body != blank %}
+        <div class="story__body" data-reveal style="--reveal-delay: 0.2s">{{ section.settings.body }}</div>
+      {% endif %}
+
+      {% if has_stats %}
+        <div class="story__stats" data-reveal style="--reveal-delay: 0.3s">
+          {% if section.settings.stat_1_value != blank %}
+            <div class="story__stat">
+              <span class="story__stat-value">{{ section.settings.stat_1_value }}</span>
+              <span class="meta-label">{{ section.settings.stat_1_label }}</span>
+            </div>
+          {% endif %}
+          {% if section.settings.stat_2_value != blank %}
+            <div class="story__stat">
+              <span class="story__stat-value">{{ section.settings.stat_2_value }}</span>
+              <span class="meta-label">{{ section.settings.stat_2_label }}</span>
+            </div>
+          {% endif %}
+          {% if section.settings.stat_3_value != blank %}
+            <div class="story__stat">
+              <span class="story__stat-value">{{ section.settings.stat_3_value }}</span>
+              <span class="meta-label">{{ section.settings.stat_3_label }}</span>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if section.settings.button_label != blank %}
+        <a class="link-underline story__link" data-reveal style="--reveal-delay: 0.4s" href="{{ section.settings.button_url | default: '#' }}">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .story {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Giant ghost chapter numeral */
+  .story__ghost {
+    position: absolute;
+    top: 0.02em;
+    right: 2vw;
+    font-family: var(--font-heading--family);
+    font-style: italic;
+    font-size: clamp(14rem, 30vw, 34rem);
+    line-height: 0.8;
+    color: var(--color-foreground);
+    opacity: 0.045;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+  .story--media-right .story__ghost {
+    right: auto;
+    left: 2vw;
+  }
+  .on-dark .story__ghost {
+    color: var(--color-contrast);
+    opacity: 0.05;
+  }
+
+  .story__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-md);
+    align-items: center;
+    padding-inline: var(--page-inline);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .story__visual,
+  .story__content {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .story__media {
+    position: static;
+    width: 100%;
+  }
+
+  .story__images {
+    position: relative;
+    width: 100%;
+    overflow: visible;
+  }
+
+  .story__visual {
+    grid-column: 1 / span 6;
+    position: relative;
+    padding: 1.5rem 3.5rem 4.5rem 2.75rem;
+    overflow: hidden;
+  }
+  .story__content {
+    grid-column: 8 / span 5;
+  }
+  .story--media-right .story__visual {
+    grid-column: 7 / span 6;
+    order: 2;
+    padding: 1.5rem 2.75rem 4.5rem 3.5rem;
+  }
+  .story--media-right .story__content {
+    grid-column: 1 / span 5;
+    order: 1;
+  }
+
+  /* Vertical meta label along the visual's outer edge */
+  .story__vertical {
+    position: absolute;
+    top: 1.5rem;
+    left: 0.5rem;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    letter-spacing: 3px;
+    color: var(--color-foreground-50);
+  }
+  .story--media-right .story__vertical {
+    left: auto;
+    right: 0.5rem;
+    transform: none;
+  }
+  .on-dark .story__vertical {
+    color: color-mix(in srgb, var(--color-contrast) 55%, transparent);
+  }
+
+  /* Offset hairline frame — positioned against the full visual column */
+  .story__frame {
+    position: absolute;
+    inset: 0 2rem 3rem 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
+    transform: translate(1.5rem, 1.5rem);
+    pointer-events: none;
+  }
+  .story--media-right .story__frame {
+    inset: 0 1.25rem 3rem 2rem;
+    transform: translate(-1.5rem, 1.5rem);
+  }
+
+  .story__main {
+    overflow: hidden;
+  }
+  .story__main img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    transition: transform 1.6s var(--ease);
+  }
+  .story__visual:hover .story__main img {
+    transform: scale(1.04);
+  }
+
+  /* Inset: flush bottom-right of the main image */
+  .story__inset {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 54%;
+    max-width: 15.5rem;
+    border: 6px solid var(--color-background);
+    box-shadow: 0 34px 70px -34px rgba(10, 22, 40, 0.6);
+  }
+  .on-dark .story__inset {
+    border-color: var(--color-navy);
+  }
+  .story--media-right .story__inset {
+    right: auto;
+    left: 0;
+  }
+  .story__inset img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 5 / 4;
+    object-fit: cover;
+  }
+
+  /*
+    Caption sits inside the hairline frame, just above its bottom edge.
+    Frame bottom line lands 1.5rem from the visual's bottom (3rem inset
+    minus 1.5rem translate); frame left edge lands at 2.75rem.
+  */
+  .story__caption {
+    position: absolute;
+    left: 4.25rem;
+    bottom: 2.6rem;
+    color: var(--color-foreground-50);
+  }
+  .story--media-right .story__caption {
+    left: auto;
+    right: 4.25rem;
+  }
+  .on-dark .story__caption {
+    color: color-mix(in srgb, var(--color-contrast) 55%, transparent);
+  }
+
+  .story__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .story__heading {
+    font-weight: 400;
+    max-width: 100%;
+  }
+  .story__heading em {
+    display: block;
+    padding-left: 1.5em;
+  }
+  .story__body {
+    color: var(--color-foreground-50);
+    font-size: var(--text-lg);
+    font-weight: 300;
+    line-height: 1.75;
+    max-width: 30rem;
+    width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
+  .story__body p {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+  .on-dark .story__body {
+    color: color-mix(in srgb, var(--color-contrast) 78%, transparent);
+  }
+
+  /* Stats ledger row */
+  .story__stats {
+    display: flex;
+    gap: var(--space-lg);
+    border-top: 1px solid var(--color-line);
+    padding-top: var(--space-md);
+    margin-top: var(--space-2xs);
+    width: 100%;
+  }
+  .on-dark .story__stats {
+    border-color: color-mix(in srgb, var(--color-contrast) 18%, transparent);
+  }
+  .story__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .story__stat + .story__stat {
+    padding-left: var(--space-lg);
+    border-left: 1px solid var(--color-line);
+  }
+  .story__stat .meta-label {
+    overflow-wrap: anywhere;
+  }
+  .on-dark .story__stat + .story__stat {
+    border-color: color-mix(in srgb, var(--color-contrast) 18%, transparent);
+  }
+  .story__stat-value {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-2xl);
+    line-height: 1;
+  }
+  .story__stat .meta-label {
+    color: var(--color-foreground-50);
+  }
+  .on-dark .story__stat .meta-label {
+    color: color-mix(in srgb, var(--color-contrast) 55%, transparent);
+  }
+
+  .story__link {
+    margin-top: var(--space-2xs);
+  }
+
+  @media (max-width: 989px) {
+    .story {
+      overflow-x: clip;
+    }
+
+    .story__inner {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      padding-inline: var(--page-margin);
+    }
+
+    .story__visual,
+    .story--media-right .story__visual {
+      order: 0;
+      width: 100%;
+      max-width: 100%;
+      position: relative;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      padding: 0.75rem 1.35rem 0.85rem 0.85rem;
+    }
+    .story--media-right .story__visual {
+      padding: 0.75rem 0.85rem 0.85rem 1.35rem;
+    }
+
+    .story__media {
+      position: relative;
+      padding-bottom: 0;
+    }
+
+    .story__content,
+    .story--media-right .story__content {
+      order: 1;
+      width: 100%;
+      max-width: 100%;
+      padding: 0;
+    }
+
+    /* Faint chapter numeral — desktop detail, mobile-safe */
+    .story__ghost {
+      display: block;
+      font-size: clamp(5.5rem, 26vw, 9rem);
+      top: -0.15em;
+      right: 0;
+      opacity: 0.04;
+    }
+    .story--media-right .story__ghost {
+      left: 0;
+      right: auto;
+    }
+
+    .story__vertical {
+      display: none;
+    }
+
+    /* Frame hugs the image — left edge aligned, caption sits below */
+    .story__frame,
+    .story--media-right .story__frame {
+      display: block;
+      inset: 0;
+      transform: none;
+    }
+
+    .story__images {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    /* Inset: pinned to bottom-right corner of main image */
+    .story__inset,
+    .story--media-right .story__inset {
+      right: 0;
+      left: auto;
+      bottom: 0;
+      width: 42%;
+      max-width: 9rem;
+      border-width: 5px;
+      box-shadow: 0 20px 44px -22px rgba(10, 22, 40, 0.45);
+    }
+    .story--media-right .story__inset {
+      right: auto;
+      left: 0;
+    }
+
+    /* Caption below the frame — readable, not over the photo */
+    .story__caption,
+    .story--media-right .story__caption {
+      position: static;
+      margin: 0;
+      padding: 0 0.15rem;
+      font-size: 0.62rem;
+      letter-spacing: 1.75px;
+      line-height: 1.45;
+      overflow-wrap: break-word;
+      text-align: left;
+    }
+
+    .story__heading {
+      font-size: var(--text-2xl);
+    }
+    .story__heading em {
+      padding-left: 0.35em;
+    }
+
+    .story__body {
+      max-width: 100%;
+      font-size: var(--text-base);
+    }
+
+    .story__content .eyebrow {
+      max-width: 100%;
+    }
+
+    .story__stats {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      width: 100%;
+    }
+    .story__stat {
+      padding: var(--space-sm) 0;
+      width: 100%;
+    }
+    .story__stat + .story__stat {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--color-line);
+    }
+    .on-dark .story__stat + .story__stat {
+      border-color: color-mix(in srgb, var(--color-contrast) 18%, transparent);
+    }
+    .story__stat-value {
+      font-size: var(--text-xl);
+    }
+
+    .story__link {
+      max-width: 100%;
+      overflow-wrap: break-word;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Story",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Chapter"
+    },
+    {
+      "type": "text",
+      "id": "chapter",
+      "label": "Ghost numeral",
+      "info": "Oversized numeral rendered behind the layout.",
+      "default": "01"
+    },
+    {
+      "type": "text",
+      "id": "vertical_label",
+      "label": "Vertical label",
+      "default": "The Odyssey Journal — Chapter 01"
+    },
+    {
+      "type": "header",
+      "content": "Visual"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Main image (the jewel)"
+    },
+    {
+      "type": "text",
+      "id": "image_url",
+      "label": "Main image URL (fallback)",
+      "default": "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=1600&q=80"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Inset image (the place)"
+    },
+    {
+      "type": "text",
+      "id": "image_2_url",
+      "label": "Inset image URL (fallback)",
+      "default": "https://images.unsplash.com/photo-1468413253725-0d5181091126?auto=format&fit=crop&w=900&q=80"
+    },
+    {
+      "type": "text",
+      "id": "visual_caption",
+      "label": "Caption",
+      "default": "Gold work — hand finished, one of one"
+    },
+    {
+      "type": "select",
+      "id": "media_position",
+      "label": "Visual position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "dark",
+      "label": "Dark theme",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Our philosophy"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Every jewel"
+    },
+    {
+      "type": "text",
+      "id": "heading_italic",
+      "label": "Heading (italic)",
+      "default": "tells a story"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Body",
+      "default": "<p>We travel to the far corners of the world to work directly with master artisans. Each piece we bring home is one of a kind — shaped by the hands, heritage and horizon of the place it came from. When it's gone, it's gone.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Stats"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_value",
+      "label": "Stat 1 value",
+      "default": "07"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_label",
+      "label": "Stat 1 label",
+      "default": "Regions"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_value",
+      "label": "Stat 2 value",
+      "default": "1/1"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_label",
+      "label": "Stat 2 label",
+      "default": "Every piece unique"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_value",
+      "label": "Stat 3 value"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_label",
+      "label": "Stat 3 label"
+    },
+    {
+      "type": "header",
+      "content": "Link"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Link label",
+      "default": "Read our story"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Story"
+    }
+  ]
+}
+{% endschema %}

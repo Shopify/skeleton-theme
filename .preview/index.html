@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OJ preview harness</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,700;1,400&family=Jost:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-primary--family: Jost, sans-serif;
+  --font-primary--style: normal;
+  --font-primary--weight: 400;
+  --font-heading--family: Cormorant, serif;
+  --font-heading--style: normal;
+  --font-heading--weight: 400;
+  --tracking-heading: 0px;
+  --tracking-eyebrow: 3px;
+  --text-xs: 0.75rem; --text-sm: 0.875rem; --text-base: 1rem; --text-lg: 1.125rem;
+  --text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --text-2xl: clamp(1.6rem, 1.3rem + 1.4vw, 2.25rem);
+  --text-3xl: clamp(2rem, 1.5rem + 2.4vw, 3.25rem);
+  --text-4xl: clamp(2.6rem, 1.8rem + 4vw, 5rem);
+  --text-hero: clamp(3rem, 2rem + 6vw, 7rem);
+  --page-width: 110rem;
+  --page-margin: 32px;
+  --space-2xs: 0.5rem; --space-xs: 0.75rem; --space-sm: 1rem; --space-md: 1.5rem;
+  --space-lg: 2.5rem; --space-xl: 4rem; --space-2xl: 6rem; --space-3xl: 9rem;
+  --section-spacing: clamp(4rem, 2rem + 7vw, 9rem);
+  --color-background: #FAF7F2; --color-foreground: #12263F;
+  --color-navy: #0E1E33; --color-accent: #B76E79; --color-accent-soft: #E7CFC9;
+  --color-contrast: #FAF7F2;
+  --color-foreground-50: color-mix(in srgb, var(--color-foreground) 50%, transparent);
+  --color-foreground-12: color-mix(in srgb, var(--color-foreground) 12%, transparent);
+  --color-line: color-mix(in srgb, var(--color-foreground) 14%, transparent);
+  --style-border-radius-inputs: 0px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration: 0.6s;
+}
+@media (max-width: 749px) { :root { --page-margin: 20px; } }
+</style>
+<link rel="stylesheet" href="../assets/critical.css">
+<link rel="stylesheet" href="sections.css">
+<style>
+/* header {% style %} equivalent */
+#shopify-section-header { display: block; position: sticky; top: -2.5rem; z-index: 100; width: 100%; margin-bottom: calc(-1 * (var(--hdr-bar-height) + 2.5rem)); }
+#shopify-section-header > * { grid-column: unset; }
+</style>
+<script src="../assets/theme.js" defer></script>
+<script>
+window.__audit = function () {
+  var vw = document.documentElement.clientWidth;
+  var out = [];
+  var els = document.querySelectorAll('body *');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    var r = el.getBoundingClientRect();
+    if (r.width > 0 && (r.right > vw + 1 || r.left < -1)) {
+      var cls = (typeof el.className === 'string' && el.className)
+        ? el.className.trim().split(/\s+/).slice(0, 3).join('.')
+        : el.tagName;
+      out.push(el.tagName.toLowerCase() + '.' + cls +
+        ' L=' + Math.round(r.left) + ' R=' + Math.round(r.right) + ' W=' + Math.round(r.width));
+    }
+  }
+  return 'viewport=' + vw + ' scrollW=' + document.documentElement.scrollWidth + '\n' + out.join('\n');
+};
+</script>
+</head>
+<body>
+
+<div id="shopify-section-header" class="shopify-section">
+  <div class="hdr hdr--overlay" data-header data-scrolled="false">
+    <p class="hdr__announcement">Complimentary worldwide shipping — Every jewel tells a story</p>
+    <div class="hdr__bar">
+      <div class="hdr__side hdr__side--left">
+        <button class="hdr__burger" data-menu-toggle aria-label="Open menu"><span></span><span></span></button>
+        <nav class="hdr__nav">
+          <a class="hdr__nav-link" href="#">Home</a>
+          <a class="hdr__nav-link" href="#">Catalog</a>
+          <a class="hdr__nav-link" href="#">Contact</a>
+        </nav>
+      </div>
+      <a class="hdr__brand" href="#"><span class="hdr__wordmark">Odyssey Jewels</span></a>
+      <div class="hdr__side hdr__side--right">
+        <a class="hdr__icon" href="#" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><circle cx="11" cy="11" r="7.25" stroke="currentColor"/><path d="m20.5 20.5-4-4" stroke="currentColor" stroke-linecap="round"/></svg></a>
+        <a class="hdr__icon hdr__cart" href="#" aria-label="Cart"><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M5 8h14l-1.1 11.05a1.5 1.5 0 0 1-1.5 1.45H7.6a1.5 1.5 0 0 1-1.5-1.45L5 8Z" stroke="currentColor"/><path d="M8.5 10.5V6.75a3.5 3.5 0 0 1 7 0v3.75" stroke="currentColor" stroke-linecap="round"/></svg></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="shopify-section-hero" class="shopify-section">
+<section class="hero full-width" style="--overlay: 20%;">
+  <div class="hero__media">
+    <img class="hero__bg" src="https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=1200&q=60" alt="" width="2400" height="1350">
+    <div class="hero__overlay"></div>
+  </div>
+  <div class="hero__content">
+    <p class="eyebrow eyebrow--rule hero__eyebrow" data-reveal>Region N° 001 — Oceania</p>
+    <h1 class="hero__heading" data-reveal>Travel the World, <em>Collect the World</em></h1>
+    <p class="hero__sub measure" data-reveal>Rare, one-of-a-kind treasures gathered from artisans across the globe. Every jewel tells a story.</p>
+    <div class="hero__actions" data-reveal>
+      <a class="button button--on-dark" href="#">Explore the collection</a>
+      <a class="link-underline hero__text-link" href="#">Our story</a>
+    </div>
+  </div>
+  <div class="hero__base full-width">
+    <span class="meta-label hero__scroll-label"><span class="hero__scroll-line"><span></span></span>Scroll to explore</span>
+    <span class="meta-label">17.6797° S, 149.4068° W — South Pacific</span>
+  </div>
+</section>
+</div>
+
+<div id="shopify-section-marquee" class="shopify-section">
+<section class="marquee full-width" style="--speed: 45s;">
+  <div class="marquee__track">
+    <div class="marquee__group">
+      <span class="marquee__item marquee__item--serif">Oceania</span><span class="marquee__sep">&#10022;</span>
+      <span class="marquee__item marquee__item--sans">Every jewel tells a story</span><span class="marquee__sep">&#10022;</span>
+      <span class="marquee__item marquee__item--serif">Asia</span><span class="marquee__sep">&#10022;</span>
+      <span class="marquee__item marquee__item--sans">One of a kind</span><span class="marquee__sep">&#10022;</span>
+      <span class="marquee__item marquee__item--serif">The Founders Collection</span><span class="marquee__sep">&#10022;</span>
+      <span class="marquee__item marquee__item--sans">Artisan made</span><span class="marquee__sep">&#10022;</span>
+    </div>
+    <div class="marquee__group" aria-hidden="true">
+      <span class="marquee__item marquee__item--serif">Oceania</span><span class="marquee__sep">&#10022;</span>
+      <span class="marquee__item marquee__item--sans">Every jewel tells a story</span><span class="marquee__sep">&#10022;</span>
+      <span class="marquee__item marquee__item--serif">Asia</span><span class="marquee__sep">&#10022;</span>
+      <span class="marquee__item marquee__item--sans">One of a kind</span><span class="marquee__sep">&#10022;</span>
+      <span class="marquee__item marquee__item--serif">The Founders Collection</span><span class="marquee__sep">&#10022;</span>
+      <span class="marquee__item marquee__item--sans">Artisan made</span><span class="marquee__sep">&#10022;</span>
+    </div>
+  </div>
+</section>
+</div>
+
+<div id="shopify-section-regions" class="shopify-section">
+<section class="regions section-spacing">
+  <div class="regions__head">
+    <div>
+      <p class="eyebrow eyebrow--rule" data-reveal>The regions</p>
+      <h2 class="regions__heading" data-reveal>Where in the world <em>will you begin?</em></h2>
+    </div>
+    <a class="link-underline regions__all" data-reveal href="#">All regions</a>
+  </div>
+  <div class="regions__grid">
+    <a class="region-card" href="#" data-reveal>
+      <div class="region-card__media">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60" alt="Oceania" width="1400" height="1680">
+        <div class="region-card__shade"></div>
+        <span class="meta-label region-card__index">N&deg; 01</span>
+        <span class="region-card__status">Available now</span>
+        <div class="region-card__body">
+          <h3 class="region-card__title">Oceania</h3>
+          <p class="region-card__subtitle">Treasures of the South Pacific</p>
+        </div>
+      </div>
+      <div class="region-card__foot">
+        <span class="meta-label">First drop — 200 pieces</span>
+        <span class="region-card__cta">Discover <svg viewBox="0 0 24 24" width="14" height="14" fill="none"><path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+    <a class="region-card" href="#" data-reveal>
+      <div class="region-card__media">
+        <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=60" alt="Founders" width="1400" height="1680">
+        <div class="region-card__shade"></div>
+        <span class="meta-label region-card__index">N&deg; 02</span>
+        <span class="region-card__status">By invitation</span>
+        <div class="region-card__body">
+          <h3 class="region-card__title">The Founders Collection</h3>
+          <p class="region-card__subtitle">Rare pieces for our earliest collectors</p>
+        </div>
+      </div>
+      <div class="region-card__foot">
+        <span class="meta-label">Private access</span>
+        <span class="region-card__cta">Enquire <svg viewBox="0 0 24 24" width="14" height="14" fill="none"><path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+    <a class="region-card" href="#" data-reveal>
+      <div class="region-card__media">
+        <img src="https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=800&q=60" alt="Asia" width="1400" height="1680">
+        <div class="region-card__shade"></div>
+        <span class="meta-label region-card__index">N&deg; 03</span>
+        <span class="region-card__status">Coming soon</span>
+        <div class="region-card__body">
+          <h3 class="region-card__title">Asia</h3>
+          <p class="region-card__subtitle">Along the ancient trade routes</p>
+        </div>
+      </div>
+      <div class="region-card__foot">
+        <span class="meta-label">Region in progress</span>
+        <span class="region-card__cta">Join the waitlist <svg viewBox="0 0 24 24" width="14" height="14" fill="none"><path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </a>
+  </div>
+</section>
+</div>
+
+<div id="shopify-section-story" class="shopify-section">
+<section class="story full-width section-spacing story--media-left">
+  <span class="story__ghost">01</span>
+  <div class="story__inner">
+    <div class="story__visual" data-reveal>
+      <span class="meta-label story__vertical">The Odyssey Journal — Chapter 01</span>
+      <div class="story__frame"></div>
+      <div class="story__main"><img src="https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=900&q=60" alt="" width="1600" height="2000"></div>
+      <div class="story__inset" data-reveal><img src="https://images.unsplash.com/photo-1468413253725-0d5181091126?auto=format&fit=crop&w=500&q=60" alt="" width="900" height="720"></div>
+      <span class="meta-label story__caption">Gold work — hand finished, one of one</span>
+    </div>
+    <div class="story__content">
+      <p class="eyebrow eyebrow--rule" data-reveal>Our philosophy</p>
+      <h2 class="story__heading" data-reveal>Every jewel <em>tells a story</em></h2>
+      <div class="story__body" data-reveal><p>We travel to the far corners of the world to work directly with master artisans. Each piece we bring home is one of a kind — shaped by the hands, heritage and horizon of the place it came from. When it's gone, it's gone.</p></div>
+      <div class="story__stats" data-reveal>
+        <div class="story__stat"><span class="story__stat-value">07</span><span class="meta-label">Regions to explore</span></div>
+        <div class="story__stat"><span class="story__stat-value">1/1</span><span class="meta-label">Every piece unique</span></div>
+        <div class="story__stat"><span class="story__stat-value">200</span><span class="meta-label">Pieces in first drop</span></div>
+      </div>
+      <a class="link-underline story__link" data-reveal href="#">Read our story</a>
+    </div>
+  </div>
+</section>
+</div>
+
+<div id="shopify-section-featured" class="shopify-section">
+<section class="featured section-spacing">
+  <div class="featured__head">
+    <div>
+      <p class="eyebrow eyebrow--rule" data-reveal>The first drop</p>
+      <h2 class="featured__heading" data-reveal>Oceania <em>Collection</em></h2>
+    </div>
+    <div class="featured__controls" data-reveal>
+      <button class="featured__arrow" data-rail-prev aria-label="Previous"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M20 12H5m0 0 5.5-5.5M5 12l5.5 5.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="featured__arrow" data-rail-next aria-label="Next"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </div>
+  <div class="featured__rail-wrap full-width" data-rail-scope>
+    <div class="featured__rail" data-rail>
+      <a class="piece-card" href="#"><div class="piece-card__media"><img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=500&q=60" alt="" width="900" height="1125"><span class="piece-card__badge">One of a kind</span><span class="piece-card__view">View piece</span></div><div class="piece-card__info"><span class="meta-label piece-card__index">N&deg; 01</span><div><span class="piece-card__region">Oceania</span><h3 class="piece-card__title">Coral Tide Ring</h3><span class="piece-card__price">$1,200</span></div></div></a>
+      <a class="piece-card" href="#"><div class="piece-card__media"><img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=500&q=60" alt="" width="900" height="1125"><span class="piece-card__badge">One of a kind</span><span class="piece-card__view">View piece</span></div><div class="piece-card__info"><span class="meta-label piece-card__index">N&deg; 02</span><div><span class="piece-card__region">Oceania</span><h3 class="piece-card__title">Lagoon Pearl Pendant</h3><span class="piece-card__price">$980</span></div></div></a>
+      <a class="piece-card" href="#"><div class="piece-card__media"><img src="https://images.unsplash.com/photo-1611085583191-a3b181a88401?auto=format&fit=crop&w=500&q=60" alt="" width="900" height="1125"><span class="piece-card__badge">One of a kind</span><span class="piece-card__view">View piece</span></div><div class="piece-card__info"><span class="meta-label piece-card__index">N&deg; 03</span><div><span class="piece-card__region">Oceania</span><h3 class="piece-card__title">Reef Gold Bangle</h3><span class="piece-card__price">$1,540</span></div></div></a>
+      <a class="piece-card piece-card--end" href="#"><span class="piece-card__end-inner"><span class="piece-card__end-label">View the full collection</span><svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+    </div>
+    <div class="featured__progress"><span class="featured__progress-bar" data-rail-progress></span></div>
+  </div>
+</section>
+</div>
+
+<div id="shopify-section-story2" class="shopify-section">
+<section class="story full-width section-spacing on-dark story--media-right">
+  <span class="story__ghost">02</span>
+  <div class="story__inner">
+    <div class="story__visual" data-reveal>
+      <span class="meta-label story__vertical">The Odyssey Journal — Chapter 02</span>
+      <div class="story__frame"></div>
+      <div class="story__main"><img src="https://images.unsplash.com/photo-1599459183200-59c7687a0275?auto=format&fit=crop&w=900&q=60" alt="" width="1600" height="2000"></div>
+      <div class="story__inset" data-reveal><img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=60" alt="" width="900" height="720"></div>
+      <span class="meta-label story__caption">Layered gold — worn the island way</span>
+    </div>
+    <div class="story__content">
+      <p class="eyebrow eyebrow--rule" data-reveal>The makers</p>
+      <h2 class="story__heading" data-reveal>Meet the <em>artisans</em></h2>
+      <div class="story__body" data-reveal><p>Behind every treasure is a person and a place. We put their names, their cities and their craft at the heart of the story — because you're not just collecting jewellery, you're collecting the world.</p></div>
+      <div class="story__stats" data-reveal>
+        <div class="story__stat"><span class="story__stat-value">12</span><span class="meta-label">Master artisans</span></div>
+        <div class="story__stat"><span class="story__stat-value">05</span><span class="meta-label">Islands of Oceania</span></div>
+      </div>
+      <a class="link-underline story__link" data-reveal href="#">Meet the makers</a>
+    </div>
+  </div>
+</section>
+</div>
+
+<div id="shopify-section-promises" class="shopify-section">
+<section class="promises section-spacing">
+  <p class="eyebrow eyebrow--rule promises__eyebrow" data-reveal>The Odyssey standard</p>
+  <div class="promises__row">
+    <div class="promise" data-reveal><span class="meta-label promise__index">01</span><h3 class="promise__title">One of a kind</h3><p class="promise__text">Every piece is unique. When it's gone, it's gone forever.</p></div>
+    <div class="promise" data-reveal><span class="meta-label promise__index">02</span><h3 class="promise__title">Artisan made</h3><p class="promise__text">Crafted by master makers in their homeland, never mass-produced.</p></div>
+    <div class="promise" data-reveal><span class="meta-label promise__index">03</span><h3 class="promise__title">Worldwide delivery</h3><p class="promise__text">Complimentary, fully insured shipping across the globe.</p></div>
+  </div>
+</section>
+</div>
+
+<div id="shopify-section-cta" class="shopify-section">
+<section class="cta-banner full-width" style="--overlay: 45%;">
+  <div class="cta-banner__media">
+    <img class="cta-banner__bg" src="https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1200&q=60" alt="" width="2400" height="1200">
+    <div class="cta-banner__overlay"></div>
+  </div>
+  <div class="cta-banner__frame"></div>
+  <div class="cta-banner__content text-center">
+    <p class="eyebrow cta-banner__eyebrow" data-reveal>The odyssey begins</p>
+    <h2 class="cta-banner__heading" data-reveal>Begin your <em>collection</em></h2>
+    <p class="cta-banner__sub measure" data-reveal>The first region has landed. Claim a piece of Oceania before it's gone forever.</p>
+    <a class="button button--on-dark" data-reveal href="#">Shop the first drop</a>
+  </div>
+</section>
+</div>
+
+<div id="shopify-section-footer" class="shopify-section">
+<footer class="site-footer on-dark">
+  <div class="site-footer__inner full-width">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <p class="eyebrow eyebrow--rule">Travel the world, collect the world</p>
+        <p class="site-footer__blurb measure">One-of-a-kind treasures gathered from artisans across the globe. Each piece carries the story of where it came from.</p>
+        <div class="site-footer__newsletter">
+          <p class="site-footer__news-title">Explore the regions</p>
+          <div class="newsletter-field">
+            <input type="email" placeholder="Enter your email" aria-label="Email">
+            <button type="submit" class="newsletter-field__submit" aria-label="Subscribe"><svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M4 12h15m0 0-5.5-5.5M19 12l-5.5 5.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="site-footer__columns">
+        <div class="footer-col"><p class="footer-col__title">Explore</p><ul class="footer-col__list"><li><a href="#">Oceania</a></li><li><a href="#">The Founders Collection</a></li><li><a href="#">Our story</a></li></ul></div>
+        <div class="footer-col"><p class="footer-col__title">Support</p><ul class="footer-col__list"><li><a href="#">Shipping</a></li><li><a href="#">Returns &amp; repair</a></li><li><a href="#">Contact</a></li></ul></div>
+      </div>
+    </div>
+    <p class="site-footer__giant">Odyssey Jewels</p>
+    <div class="site-footer__bottom">
+      <p class="site-footer__copyright">&copy; 2026 Odyssey Jewels. All rights reserved.</p>
+      <span class="meta-label site-footer__coords">Charting all seven regions of the world</span>
+    </div>
+  </div>
+</footer>
+</div>
+
+</body>
+</html>

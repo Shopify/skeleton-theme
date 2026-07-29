@@ -1,0 +1,140 @@
+{% comment %}
+  Slow-scrolling destination ticker. Items alternate between serif italic
+  and small-caps sans, separated by a diamond glyph. Pauses on hover.
+{% endcomment %}
+
+<section class="marquee full-width{% if section.settings.dark %} on-dark{% endif %}" style="--speed: {{ section.settings.speed }}s;">
+  <div class="marquee__track" aria-hidden="false">
+    {% for i in (1..2) %}
+      <div class="marquee__group" {% if i == 2 %}aria-hidden="true"{% endif %}>
+        {% for block in section.blocks %}
+          <span
+            class="marquee__item {% cycle 'marquee__item--serif', 'marquee__item--sans' %}"
+            {{ block.shopify_attributes }}
+          >
+            {{ block.settings.text }}
+          </span>
+          <span class="marquee__sep" aria-hidden="true">&#10022;</span>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .marquee {
+    overflow: hidden;
+    border-block: 1px solid var(--color-line);
+    padding-block: 1.4rem;
+  }
+  .marquee.on-dark {
+    border-color: transparent;
+  }
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee-scroll var(--speed, 40s) linear infinite;
+  }
+  .marquee:hover .marquee__track {
+    animation-play-state: paused;
+  }
+  .marquee__group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .marquee__item {
+    white-space: nowrap;
+    padding-inline: 2.5rem;
+  }
+  .marquee__item--serif {
+    font-family: var(--font-heading--family);
+    font-style: italic;
+    font-size: var(--text-2xl);
+  }
+  .marquee__item--sans {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  .marquee__sep {
+    color: var(--color-accent);
+    font-size: 0.8rem;
+  }
+
+  @keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 749px) {
+    .marquee {
+      padding-block: 1rem;
+    }
+    .marquee__item {
+      padding-inline: 1.5rem;
+    }
+    .marquee__item--serif {
+      font-size: var(--text-xl);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Marquee",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "dark",
+      "label": "Dark theme",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 20,
+      "max": 90,
+      "step": 5,
+      "unit": "s",
+      "label": "Scroll duration",
+      "default": 45
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Oceania"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Marquee",
+      "blocks": [
+        { "type": "item", "settings": { "text": "Oceania" } },
+        { "type": "item", "settings": { "text": "Every jewel tells a story" } },
+        { "type": "item", "settings": { "text": "Asia" } },
+        { "type": "item", "settings": { "text": "One of a kind" } },
+        { "type": "item", "settings": { "text": "The Founders Collection" } },
+        { "type": "item", "settings": { "text": "Artisan made" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
