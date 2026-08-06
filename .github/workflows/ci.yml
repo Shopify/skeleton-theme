@@ -20,8 +20,8 @@ jobs:
             exit 1
           fi
 
-          if [ "$BASE" = "main" ] && [ "$HEAD" != "staging" ]; then
-            echo "PRs to main must come from staging. Got: $HEAD"
+          if [ "$BASE" = "main" ] && [ "$HEAD" != "staging" ] && [[ ! "$HEAD" =~ ^renovate/ ]]; then
+            echo "PRs to main must come from staging or renovate/*. Got: $HEAD"
             exit 1
           fi
 

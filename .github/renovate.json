@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "baseBranches": ["main"],
+  "labels": ["dependencies"],
+  "schedule": ["before 6am on monday"],
+  "dependencyDashboard": true,
+  "rangeStrategy": "bump",
+  "automerge": false,
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "groupName": "npm dependencies",
+      "automerge": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+      "automerge": false
+    }
+  ]
+}
