@@ -1,6 +1,8 @@
 <main class="collection-main">
   <h1>{{ collection.title }}</h1>
 
+  {% render 'filters' %}
+
   <div class="collection-products">
     {% paginate collection.products by 4 %}
       <div class="collection-products-grid">

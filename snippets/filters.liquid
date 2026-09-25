@@ -1,0 +1,216 @@
+{% if collection.filters != empty %}
+  {% assign active_filter_count = 0 %}
+  {% for filter in collection.filters %}
+    {% assign active_filter_count = active_filter_count | plus: filter.active_values.size %}
+  {% endfor %}
+
+  <form class="collection-filters" action="{{ collection.url }}" method="get">
+    <header class="collection-filters-header">
+      <h2 class="collection-filters-heading">Filter products</h2>
+
+      {% if active_filter_count > 0 %}
+        <a href="{{ collection.url }}" class="collection-filters-clear">Clear all</a>
+      {% endif %}
+    </header>
+
+    {% for filter in collection.filters %}
+      <details
+        class="collection-filter"
+        {% if filter.active_values.size > 0 %}
+          open
+        {% endif %}
+      >
+        <summary>
+          {{ filter.label }}
+          {% if filter.active_values.size > 0 %}
+            <span class="collection-filter-active-count">{{ filter.active_values.size }}</span>
+          {% endif %}
+        </summary>
+
+        <div class="collection-filter-content">
+          {% case filter.type %}
+            {% when 'list', 'boolean' %}
+              <ul class="collection-filter-values" role="list">
+                {% for filter_value in filter.values %}
+                  <li>
+                    <label class="collection-filter-value {% if filter_value.count == 0 and filter_value.active == false %}is-disabled{% endif %}">
+                      <input
+                        type="checkbox"
+                        name="{{ filter_value.param_name }}"
+                        value="{{ filter_value.value }}"
+                        {% if filter_value.active %}
+                          checked
+                        {% endif %}
+                        {% if filter_value.count == 0 and filter_value.active == false %}
+                          disabled
+                        {% endif %}
+                      >
+
+                      {% if filter_value.swatch != blank %}
+                        {% if filter_value.swatch.image != blank %}
+                          <span
+                            class="collection-filter-swatch"
+                            style="background-image: url('{{ filter_value.swatch.image | image_url: width: 32 }}');"
+                          ></span>
+                        {% elsif filter_value.swatch.color != blank %}
+                          <span
+                            class="collection-filter-swatch"
+                            style="background-color: {{ filter_value.swatch.color }};"
+                          ></span>
+                        {% endif %}
+                      {% endif %}
+
+                      <span>{{ filter_value.label }}</span>
+                      <span class="collection-filter-value-count">{{ filter_value.count }}</span>
+                    </label>
+                  </li>
+                {% endfor %}
+              </ul>
+
+            {% when 'price_range' %}
+              <div class="collection-filter-price-range">
+                <label>
+                  <span>From</span>
+                  <input
+                    type="number"
+                    name="{{ filter.min_value.param_name }}"
+                    value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                    min="0"
+                    max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                    placeholder="0"
+                  >
+                </label>
+
+                <label>
+                  <span>To</span>
+                  <input
+                    type="number"
+                    name="{{ filter.max_value.param_name }}"
+                    value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                    min="0"
+                    max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                    placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                  >
+                </label>
+              </div>
+          {% endcase %}
+        </div>
+      </details>
+    {% endfor %}
+
+    <button type="submit" class="collection-filters-apply button">Apply filters</button>
+  </form>
+{% endif %}
+
+{% stylesheet %}
+  .collection-filters {
+    display: flex;
+    gap: 1rem;
+    margin-block: 1.5rem;
+  }
+
+  .collection-filters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .collection-filters-heading {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  .collection-filters-clear {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  .collection-filter summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding-block: 0.875rem;
+  }
+
+  .collection-filter-active-count {
+    display: grid;
+    width: 1.5rem;
+    height: 1.5rem;
+    place-items: center;
+    border-radius: 50%;
+    background: currentColor;
+    color: white;
+    font-size: 0.75rem;
+  }
+
+  .collection-filter-content {
+    padding-bottom: 1rem;
+  }
+
+  .collection-filter-values {
+    display: grid;
+    gap: 0.625rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  .collection-filter-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .collection-filter-value.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .collection-filter-value input {
+    margin: 0;
+  }
+
+  .collection-filter-swatch {
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid;
+    border-radius: 50%;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .collection-filter-value-count {
+    margin-left: auto;
+    opacity: 0.7;
+  }
+
+  .collection-filter-price-range {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .collection-filter-price-range label {
+    display: grid;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+  }
+
+  .collection-filter-price-range input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid;
+    background: transparent;
+    color: inherit;
+  }
+
+  .collection-filters-apply {
+    justify-self: start;
+    padding: 0.625rem 1rem;
+    border: 1px solid;
+    color: white;
+    cursor: pointer;
+  }
+{% endstylesheet %}

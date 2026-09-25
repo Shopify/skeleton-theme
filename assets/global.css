@@ -255,7 +255,7 @@ h6 {
 
 /* --------------- Buttons --------------- */
 
-.btn {
+.button {
   padding: 0;
   border: none;
   appearance: none;
@@ -268,14 +268,14 @@ h6 {
   cursor: pointer;
 }
 
-.btn:disabled {
+.button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
 /* --------------- Utility Classes --------------- */
 
-.btn-reset {
+.button-reset {
   padding: 0;
   border: none;
   appearance: none;

@@ -2,7 +2,7 @@
   <div class="cart-drawer">
     <div class="cart-drawer-header">
       <h2>{{ 'cart.title' | t }}</h2>
-      <button class="cart-drawer-close btn-reset" aria-label="Close cart drawer">
+      <button class="cart-drawer-close button-reset" aria-label="Close cart drawer">
         {{ 'icon-close.svg' | inline_asset_content }}
       </button>
     </div>
@@ -76,7 +76,7 @@
                   </div>
                   <button
                     type="button"
-                    class="cart-drawer-item-remove btn-reset"
+                    class="cart-drawer-item-remove button-reset"
                     data-key="{{ item.key }}"
                     aria-label="Remove item"
                   >
@@ -119,7 +119,7 @@
           <span>{{ 'cart.subtotal' | t }}:</span> <span>{{ cart.total_price | money }}</span>
         {% endif %}
       </div>
-      <a href="/checkout" class="cart-drawer-btn btn">{{ 'cart.checkout' | t }}</a>
+      <a href="/checkout" class="cart-drawer-button button">{{ 'cart.checkout' | t }}</a>
     </div>
   </div>
 </div>
@@ -313,7 +313,7 @@
     justify-content: space-between;
   }
 
-  .cart-drawer-btn {
+  .cart-drawer-button {
     width: 100%;
     text-align: center;
   }
