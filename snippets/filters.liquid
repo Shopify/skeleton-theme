@@ -14,12 +14,7 @@
     </header>
 
     {% for filter in collection.filters %}
-      <details
-        class="collection-filter"
-        {% if filter.active_values.size > 0 %}
-          open
-        {% endif %}
-      >
+      <details class="collection-filter">
         <summary>
           {{ filter.label }}
           {% if filter.active_values.size > 0 %}
@@ -30,7 +25,7 @@
         <div class="collection-filter-content">
           {% case filter.type %}
             {% when 'list', 'boolean' %}
-              <ul class="collection-filter-values" role="list">
+              <ul class="collection-filter-values list-reset" role="list">
                 {% for filter_value in filter.values %}
                   <li>
                     <label class="collection-filter-value {% if filter_value.count == 0 and filter_value.active == false %}is-disabled{% endif %}">
@@ -76,7 +71,6 @@
                     name="{{ filter.min_value.param_name }}"
                     value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
                     min="0"
-                    max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
                     placeholder="0"
                   >
                 </label>
@@ -88,7 +82,6 @@
                     name="{{ filter.max_value.param_name }}"
                     value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
                     min="0"
-                    max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
                     placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
                   >
                 </label>
@@ -107,6 +100,8 @@
     display: flex;
     gap: 1rem;
     margin-block: 1.5rem;
+    position: relative;
+    z-index: 2;
   }
 
   .collection-filters-header {
@@ -124,6 +119,10 @@
   .collection-filters-clear {
     color: inherit;
     text-underline-offset: 0.2em;
+  }
+
+  .collection-filter {
+    position: relative;
   }
 
   .collection-filter summary {
@@ -146,7 +145,13 @@
   }
 
   .collection-filter-content {
-    padding-bottom: 1rem;
+    padding: 1rem;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: 35rem;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
   }
 
   .collection-filter-values {
@@ -214,3 +219,98 @@
     cursor: pointer;
   }
 {% endstylesheet %}
+
+{% javascript %}
+  // Close other filter groups when one is opened
+  const filterGroups = document.querySelectorAll('.collection-filter');
+
+  if (filterGroups.length) {
+    filterGroups.forEach((group) => {
+      group.addEventListener('toggle', () => {
+        if (!group.open) return;
+
+        filterGroups.forEach((otherGroup) => {
+          if (otherGroup !== group) {
+            otherGroup.removeAttribute('open');
+          }
+        });
+      });
+    });
+  }
+
+  // Update collection products via AJAX when filters change
+  const collectionFiltersForm = document.querySelector('.collection-filters');
+  const collectionProducts = document.querySelector('.collection-products');
+
+  if (collectionFiltersForm && collectionProducts) {
+    // Build the URL for the filtered collection based on the form data
+    const getFilteredCollectionUrl = (form) => {
+      const params = new URLSearchParams();
+      const formData = new FormData(form);
+
+      formData.forEach((value, key) => {
+        if (String(value).trim() !== '') {
+          params.append(key, String(value));
+        }
+      });
+
+      const url = new URL(form.action || window.location.href, window.location.origin);
+      url.search = params.toString();
+      return url.toString();
+    };
+
+    // Update the product grid
+    const updateCollectionProducts = async (url) => {
+      const response = await fetch(url, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Collection update failed: ${response.status}`);
+      }
+
+      const html = await response.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const nextCollectionProducts = doc.querySelector('.collection-products');
+
+      if (!nextCollectionProducts) {
+        return;
+      }
+
+      collectionProducts.innerHTML = nextCollectionProducts.innerHTML;
+      window.history.pushState({ path: url }, '', url);
+    };
+
+    // Listen for submit
+    collectionFiltersForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const url = getFilteredCollectionUrl(event.currentTarget);
+
+      updateCollectionProducts(url).catch((error) => {
+        console.error(error);
+        window.location.assign(event.currentTarget.action);
+      });
+    });
+
+    // Listen for change
+    collectionFiltersForm.addEventListener('change', (event) => {
+      if (!(event.target instanceof HTMLElement)) {
+        return;
+      }
+
+      if (!event.target.matches('input, select')) {
+        return;
+      }
+
+      const url = getFilteredCollectionUrl(event.currentTarget);
+
+      updateCollectionProducts(url).catch((error) => {
+        console.error(error);
+        window.location.assign(event.currentTarget.action);
+      });
+    });
+  }
+{% endjavascript %}
