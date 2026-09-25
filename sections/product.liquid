@@ -1,12 +1,20 @@
 <script defer src="{{ 'swiper-bundle.min.js' | asset_url }}"></script>
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 
+{% assign variant_images = product.images | where: 'attached_to_variant?', true %}
+{% assign other_images = product.images | reject: 'attached_to_variant?', true %}
+
 <div class="product-main">
   <div class="product-main-images">
     <div class="product-gallery swiper">
       <div class="swiper-wrapper">
-        {% for image in product.images %}
-          <div class="swiper-slide">
+        {% for image in variant_images %}
+          <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
+            {% render 'image', class: 'product-image', image: image %}
+          </div>
+        {% endfor %}
+        {% for image in other_images %}
+          <div class="swiper-slide" data-variant-ids="">
             {% render 'image', class: 'product-image', image: image %}
           </div>
         {% endfor %}
@@ -14,8 +22,17 @@
     </div>
     <div class="product-gallery-nav swiper">
       <div class="swiper-wrapper">
-        {% for image in product.images %}
-          <div class="swiper-slide" data-index="{{ forloop.index0 }}">
+        {% for image in variant_images %}
+          <div
+            class="swiper-slide"
+            data-index="{{ forloop.index0 }}"
+            data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}"
+          >
+            {% render 'image', class: 'product-image', image: image, width: 400, height: 400, crop: 'center' %}
+          </div>
+        {% endfor %}
+        {% for image in other_images %}
+          <div class="swiper-slide" data-index="{{ forloop.index0 | plus: variant_images.size }}" data-variant-ids="">
             {% render 'image', class: 'product-image', image: image, width: 400, height: 400, crop: 'center' %}
           </div>
         {% endfor %}
@@ -137,15 +154,16 @@
       watchSlidesProgress: true,
     });
 
-    // Gallery thumbnail navigation
-    document.querySelectorAll('.product-gallery-nav .swiper-slide').forEach((slide) => {
-      slide.addEventListener('click', function () {
-        const index = Number(this.dataset.index);
+    const gallerySlides = Array.from(document.querySelectorAll('.product-gallery .swiper-slide'));
+    const galleryNavSlides = Array.from(document.querySelectorAll('.product-gallery-nav .swiper-slide'));
+    const galleryNavWrapper = document.querySelector('.product-gallery-nav .swiper-wrapper');
 
-        if (!Number.isNaN(index)) {
-          gallery.slideTo(index);
-        }
-      });
+    galleryNavWrapper.addEventListener('click', (event) => {
+      const slide = event.target.closest('.swiper-slide');
+      if (!slide || !galleryNavWrapper.contains(slide)) return;
+
+      const index = Number(slide.dataset.index);
+      if (!Number.isNaN(index)) gallery.slideTo(index);
     });
 
     // Update price on variant change
@@ -235,6 +253,28 @@
       }
     }
 
+    function updateGalleryForVariant(selectedVariant) {
+      const selectedVariantId = Number(selectedVariant.id);
+      const matchingIndexes = gallerySlides.reduce((indexes, slide, index) => {
+        const variantIds = slide.dataset.variantIds.split(',').map(Number);
+        if (!slide.dataset.variantIds || variantIds.includes(selectedVariantId)) indexes.push(index);
+        return indexes;
+      }, []);
+      const matchingGallerySlides = matchingIndexes.map((index) => gallerySlides[index]);
+      const matchingGalleryNavSlides = matchingIndexes.map((index, activeIndex) => {
+        const slide = galleryNavSlides[index];
+        slide.dataset.index = String(activeIndex);
+        return slide;
+      });
+
+      galleryNav.removeAllSlides();
+      galleryNav.appendSlide(matchingGalleryNavSlides);
+      gallery.removeAllSlides();
+      gallery.appendSlide(matchingGallerySlides);
+      galleryNav.slideTo(0, 0);
+      gallery.slideTo(0, 0);
+    }
+
     function updateVariantUI() {
       if (!variantSelect) return;
 
@@ -245,6 +285,7 @@
       updateOptionAvailability();
       updateBuyButtonState(selectedVariant);
       updatePriceDisplay(selectedVariant);
+      updateGalleryForVariant(selectedVariant);
       updateURLWithVariant(selectedVariant.id);
     }
 
@@ -252,7 +293,7 @@
     if (variantSelect) {
       const initialVariantId = new URLSearchParams(window.location.search).get('variant');
 
-      if (initialVariantId) {
+      if (initialVariantId && productVariants.some((variant) => String(variant.id) === initialVariantId)) {
         variantSelect.value = String(initialVariantId);
       }
 

@@ -24,6 +24,7 @@
 - If you quickly update the quantity twice it fails
 - Form spam protection?
 - Go through all templates again
+- Clean up all code
 
 # Complex Functionality - create skills for
 
