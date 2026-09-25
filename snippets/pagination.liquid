@@ -1,0 +1,18 @@
+<nav class="pagination link-reset">
+  {{ paginate | default_pagination }}
+</nav>
+
+{% stylesheet %}
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin: 10rem 0;
+    gap: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .pagination .current {
+    text-decoration: underline;
+    text-underline-offset: 0.5rem;
+  }
+{% endstylesheet %}

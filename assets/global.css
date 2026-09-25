@@ -289,7 +289,8 @@ h6 {
   list-style: none;
 }
 
-.link-reset {
+.link-reset,
+.link-reset a {
   text-decoration: none;
   color: inherit;
 }
