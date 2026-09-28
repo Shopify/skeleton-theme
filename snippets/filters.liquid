@@ -1,108 +1,149 @@
-{% if collection.filters != empty %}
+{% if collection.filters != empty or collection.sort_options.size > 0 %}
   {% assign active_filter_count = 0 %}
   {% for filter in collection.filters %}
     {% assign active_filter_count = active_filter_count | plus: filter.active_values.size %}
   {% endfor %}
 
   <form class="collection-filters" action="{{ collection.url }}" method="get">
-    <header class="collection-filters-header">
-      <h2 class="collection-filters-heading">Filter:</h2>
+    {% if collection.filters != empty %}
+      <header class="collection-filters-header">
+        <h2 class="collection-filters-heading">Filter:</h2>
 
-      {% comment %}
-        {% if active_filter_count > 0 %}
-          <a href="{{ collection.url }}" class="collection-filters-clear">Clear all</a>
-        {% endif %}
-      {% endcomment %}
-    </header>
-
-    {% for filter in collection.filters %}
-      <details class="collection-filter">
-        <summary>
-          {{ filter.label }}
-          {{ 'icon-dropdown.svg' | inline_asset_content }}
-          {% if filter.active_values.size > 0 %}
-            <span class="collection-filter-active-count">{{ filter.active_values.size }}</span>
+        {% comment %}
+          {% if active_filter_count > 0 %}
+            <a href="{{ collection.url }}" class="collection-filters-clear">Clear all</a>
           {% endif %}
-        </summary>
+        {% endcomment %}
+      </header>
 
-        <div class="collection-filter-content">
-          {% case filter.type %}
-            {% when 'list', 'boolean' %}
-              <ul class="collection-filter-values list-reset" role="list">
-                {% for filter_value in filter.values %}
-                  <li>
-                    <label class="collection-filter-value {% if filter_value.count == 0 and filter_value.active == false %}is-disabled{% endif %}">
-                      <input
-                        type="checkbox"
-                        name="{{ filter_value.param_name }}"
-                        value="{{ filter_value.value }}"
-                        {% if filter_value.active %}
-                          checked
+      {% for filter in collection.filters %}
+        <details class="collection-filter">
+          <summary>
+            {{ filter.label }}
+            {{ 'icon-dropdown.svg' | inline_asset_content }}
+            {% if filter.active_values.size > 0 %}
+              <span class="collection-filter-active-count">{{ filter.active_values.size }}</span>
+            {% endif %}
+          </summary>
+
+          <div class="collection-filter-content">
+            {% case filter.type %}
+              {% when 'list', 'boolean' %}
+                <ul class="collection-filter-values list-reset" role="list">
+                  {% for filter_value in filter.values %}
+                    <li>
+                      <label class="collection-filter-value {% if filter_value.count == 0 and filter_value.active == false %}is-disabled{% endif %}">
+                        <input
+                          type="checkbox"
+                          name="{{ filter_value.param_name }}"
+                          value="{{ filter_value.value }}"
+                          {% if filter_value.active %}
+                            checked
+                          {% endif %}
+                          {% if filter_value.count == 0 and filter_value.active == false %}
+                            disabled
+                          {% endif %}
+                        >
+
+                        {% if filter_value.swatch != blank %}
+                          {% if filter_value.swatch.image != blank %}
+                            <span
+                              class="collection-filter-swatch"
+                              style="background-image: url('{{ filter_value.swatch.image | image_url: width: 32 }}');"
+                            ></span>
+                          {% elsif filter_value.swatch.color != blank %}
+                            <span
+                              class="collection-filter-swatch"
+                              style="background-color: {{ filter_value.swatch.color }};"
+                            ></span>
+                          {% endif %}
                         {% endif %}
-                        {% if filter_value.count == 0 and filter_value.active == false %}
-                          disabled
-                        {% endif %}
-                      >
 
-                      {% if filter_value.swatch != blank %}
-                        {% if filter_value.swatch.image != blank %}
-                          <span
-                            class="collection-filter-swatch"
-                            style="background-image: url('{{ filter_value.swatch.image | image_url: width: 32 }}');"
-                          ></span>
-                        {% elsif filter_value.swatch.color != blank %}
-                          <span
-                            class="collection-filter-swatch"
-                            style="background-color: {{ filter_value.swatch.color }};"
-                          ></span>
-                        {% endif %}
-                      {% endif %}
+                        <span>{{ filter_value.label }}</span>
+                        <span class="collection-filter-value-count">({{ filter_value.count }})</span>
+                      </label>
+                    </li>
+                  {% endfor %}
+                </ul>
 
-                      <span>{{ filter_value.label }}</span>
-                      <span class="collection-filter-value-count">({{ filter_value.count }})</span>
-                    </label>
-                  </li>
-                {% endfor %}
-              </ul>
+              {% when 'price_range' %}
+                <div class="collection-filter-price-range">
+                  <label>
+                    <span>From</span>
+                    <input
+                      type="number"
+                      name="{{ filter.min_value.param_name }}"
+                      value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                      min="0"
+                      placeholder="0"
+                    >
+                  </label>
 
-            {% when 'price_range' %}
-              <div class="collection-filter-price-range">
-                <label>
-                  <span>From</span>
-                  <input
-                    type="number"
-                    name="{{ filter.min_value.param_name }}"
-                    value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
-                    min="0"
-                    placeholder="0"
-                  >
-                </label>
-
-                <label>
-                  <span>To</span>
-                  <input
-                    type="number"
-                    name="{{ filter.max_value.param_name }}"
-                    value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
-                    min="0"
-                    placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
-                  >
-                </label>
-              </div>
-          {% endcase %}
-        </div>
-      </details>
-    {% endfor %}
+                  <label>
+                    <span>To</span>
+                    <input
+                      type="number"
+                      name="{{ filter.max_value.param_name }}"
+                      value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                      min="0"
+                      placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                    >
+                  </label>
+                </div>
+            {% endcase %}
+          </div>
+        </details>
+      {% endfor %}
+    {% endif %}
+    {% if collection.sort_options.size > 0 %}
+      <label class="collection-sort">
+        <span class="collection-sort-label">Sort by</span>
+        <select name="sort_by" aria-label="Sort by">
+          {% for option in collection.sort_options %}
+            <option
+              value="{{ option.value }}"
+              {% if option.value == collection.sort_by %}
+                selected
+              {% endif %}
+            >
+              {{ option.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </label>
+    {% endif %}
   </form>
 {% endif %}
 
 {% stylesheet %}
   .collection-filters {
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
     gap: 2rem;
     margin-block: 1.5rem;
     position: relative;
     z-index: 2;
+  }
+
+  .collection-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+    font-size: 1.4rem;
+  }
+
+  .collection-sort-label {
+    white-space: nowrap;
+  }
+
+  .collection-sort select {
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: inherit;
+    font: inherit;
   }
 
   .collection-filters-header {
