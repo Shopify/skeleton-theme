@@ -18,39 +18,14 @@
 
   <ul data-js="cart-page-items" class="space-y-3" {% if cart.item_count == 0 %}hidden{% endif %}>
     {% for item in cart.items %}
-      <li class="relative grid grid-cols-[80px_1fr] gap-3 border-b pb-3" data-line="{{ forloop.index }}">
-        <div data-js="cart-page-line-overlay" class="pointer-events-none absolute inset-0 z-10 hidden items-center justify-center bg-white/60">
-          <span class="h-5 w-5 rounded-full border-2 border-black/20 border-t-black animate-spin" aria-hidden="true"></span>
-        </div>
-        {% if item.image %}
-          <a href="{{ item.url }}" class="block h-20 w-20 overflow-hidden border">
-            {% render 'image', image: item.image, width: 160, class: 'h-full w-full object-cover' %}
-          </a>
-        {% endif %}
-
-        <div class="space-y-2">
-          <a href="{{ item.url }}" class="font-medium">{{ item.product.title }}</a>
-          {% if item.variant.title != 'Default Title' %}
-            <p class="text-sm opacity-70">{{ item.variant.title }}</p>
-          {% endif %}
-
-          <div class="flex items-center gap-2">
-            <button type="button" data-js="cart-page-dec" data-line="{{ forloop.index }}" class="h-8 w-8 border" aria-label="Decrease quantity">-</button>
-            <span data-js="cart-page-qty" class="min-w-6 text-center">{{ item.quantity }}</span>
-            <button type="button" data-js="cart-page-inc" data-line="{{ forloop.index }}" class="h-8 w-8 border" aria-label="Increase quantity">+</button>
-            <button type="button" data-js="cart-page-remove" data-line="{{ forloop.index }}" class="ml-auto underline">{{ 'cart.remove' | t }}</button>
-          </div>
-
-          <p>{{ item.final_line_price | money }}</p>
-        </div>
-      </li>
+      {% render 'cart-line-item', item: item, line_index: forloop.index, context: 'page' %}
     {% endfor %}
   </ul>
 
   <div data-js="cart-page-footer" class="space-y-3" {% if cart.item_count == 0 %}hidden{% endif %}>
     <p class="text-sm">{{ 'cart.subtotal' | t }}: <strong data-js="cart-page-subtotal">{{ cart.total_price | money }}</strong></p>
 
-    <form action="{{ routes.cart_url }}" method="post" class="space-y-3 border p-3">
+    <form action="{{ routes.cart_url }}" method="post" class="space-y-3 border p-3" data-js="cart-page-update-form">
       <label for="CartNote" class="block text-sm font-medium">{{ 'cart.note' | t }}</label>
       <textarea
         id="CartNote"
@@ -68,7 +43,7 @@
         class="w-full border px-3 py-2"
       >
 
-      <button type="submit" name="update" class="border px-3 py-2">{{ 'cart.update' | t }}</button>
+      <button type="submit" name="update" data-js="cart-page-update-submit" class="border px-3 py-2">{{ 'cart.update' | t }}</button>
     </form>
 
     <form action="{{ routes.cart_url }}" method="post">

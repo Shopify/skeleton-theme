@@ -1,0 +1,70 @@
+{% doc %}
+  Shared cart line-item row, rendered by both the cart page and cart drawer
+  so the markup only needs to be maintained in one place. Visual density and
+  `data-js` hook names are branched internally by `context`, keeping call
+  sites lightweight instead of passing every style class in as a prop.
+
+  @param {object} item - Cart line item
+  @param {number} line_index - 1-based line number (pass `forloop.index`)
+  @param {string} context - Either 'page' (cart page, larger) or 'drawer' (minicart, compact)
+{% enddoc %}
+
+{%- liquid
+  assign grid_class = 'grid-cols-[80px_1fr]'
+  assign spacing_class = 'pb-3'
+  assign box_class = 'h-20 w-20'
+  assign render_width = 160
+  assign title_class = 'font-medium'
+  assign variant_class = 'text-sm opacity-70'
+  assign qty_class = 'min-w-6 text-center'
+  assign price_class = ''
+  assign data_js_overlay = 'cart-page-line-overlay'
+  assign data_js_dec = 'cart-page-dec'
+  assign data_js_qty = 'cart-page-qty'
+  assign data_js_inc = 'cart-page-inc'
+  assign data_js_remove = 'cart-page-remove'
+
+  if context == 'drawer'
+    assign grid_class = 'grid-cols-[64px_1fr]'
+    assign spacing_class = 'py-3'
+    assign box_class = 'h-16 w-16'
+    assign render_width = 128
+    assign title_class = 'block text-sm font-medium'
+    assign variant_class = 'text-xs opacity-70'
+    assign qty_class = 'min-w-6 text-center text-sm'
+    assign price_class = 'text-sm'
+    assign data_js_overlay = 'cart-drawer-line-overlay'
+    assign data_js_dec = 'cart-qty-dec'
+    assign data_js_qty = 'cart-qty-value'
+    assign data_js_inc = 'cart-qty-inc'
+    assign data_js_remove = 'cart-remove'
+  endif
+-%}
+
+<li class="relative grid {{ grid_class }} gap-3 border-b {{ spacing_class }}" data-line="{{ line_index }}">
+  <div data-js="{{ data_js_overlay }}" class="pointer-events-none absolute inset-0 z-10 hidden items-center justify-center bg-white/60">
+    <span class="h-5 w-5 rounded-full border-2 border-black/20 border-t-black animate-spin" aria-hidden="true"></span>
+  </div>
+
+  {% if item.image %}
+    <a href="{{ item.url }}" class="block {{ box_class }} overflow-hidden border">
+      {% render 'image', image: item.image, width: render_width, class: 'h-full w-full object-cover' %}
+    </a>
+  {% endif %}
+
+  <div class="space-y-2">
+    <a href="{{ item.url }}" class="{{ title_class }}">{{ item.product.title }}</a>
+    {% if item.variant.title != 'Default Title' %}
+      <p class="{{ variant_class }}">{{ item.variant.title }}</p>
+    {% endif %}
+
+    <div class="flex items-center gap-2">
+      <button type="button" data-js="{{ data_js_dec }}" data-line="{{ line_index }}" class="h-8 w-8 border" aria-label="Decrease quantity">-</button>
+      <span data-js="{{ data_js_qty }}" class="{{ qty_class }}">{{ item.quantity }}</span>
+      <button type="button" data-js="{{ data_js_inc }}" data-line="{{ line_index }}" class="h-8 w-8 border" aria-label="Increase quantity">+</button>
+      <button type="button" data-js="{{ data_js_remove }}" data-line="{{ line_index }}" class="ml-auto underline">{{ 'cart.remove' | t }}</button>
+    </div>
+
+    <p class="{{ price_class }}">{{ item.final_line_price | money }}</p>
+  </div>
+</li>

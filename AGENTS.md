@@ -110,10 +110,13 @@ Current interaction ownership:
 
 ## Stable Data Contracts
 
-- Cart drawer: `cart-drawer`, `cart-open`, `cart-close`, `cart-items`, `cart-empty`, `cart-subtotal`
-- Cart page: `cart-page`, `cart-page-items`, `cart-page-empty`, `cart-page-footer`, `cart-page-subtotal`
-- Product: `product-form`, `option-value`, `thumbnail`, `add-to-cart`, `cart-status`
-- Collection: `collection-root`, `collection-controls`, `collection-products`, `collection-load-more`, `collection-quick-buy`
+Any PR introducing a new `data-js` hook must update this table in the same PR.
+
+- Cart drawer: `cart-drawer`, `cart-drawer-overlay`, `cart-drawer-panel`, `cart-open`, `cart-close`, `cart-items`, `cart-empty`, `cart-subtotal`, `cart-drawer-status`, `cart-drawer-error`, `cart-drawer-footer`, `cart-qty-dec`, `cart-qty-value`, `cart-qty-inc`, `cart-remove`, `cart-drawer-line-overlay`, `cart-count`
+- Cart page: `cart-page`, `cart-page-items`, `cart-page-empty`, `cart-page-footer`, `cart-page-subtotal`, `cart-page-status`, `cart-page-error`, `cart-page-dec`, `cart-page-qty`, `cart-page-inc`, `cart-page-remove`, `cart-page-line-overlay`, `cart-page-update-form`, `cart-page-update-submit`
+- Product: `product-form`, `product-data`, `variant-prices`, `variant-id`, `option-value`, `option-label`, `thumbnail`, `product-price`, `product-availability`, `add-to-cart`, `cart-status`
+- Collection (PLP root `collection-root`): `collection-controls`, `collection-products`, `collection-pagination-wrap`, `collection-load-more`, `collection-load-status`, `collection-status`, `collection-error`, `collection-sort`, `collection-clear`, `collection-filter-remove`, `collection-active-filters`, `collection-default-pagination`, `collection-filters-open`, `collection-filters-close`, `collection-filters-drawer`, `collection-filters-panel`, `collection-filters-overlay`, `collection-product-card`, `collection-quick-buy`
+- Product card (used inside `collection-product-card`, also on PLP grids): `card-price`, `card-variant-picker`, `card-option-value`, `card-product-data`, `card-variant-prices`
 - Search drawer: `search-drawer`, `search-open`, `search-close`, `search-drawer-input`, `search-drawer-groups`
 
 ## Theme Preview

@@ -1,3 +1,11 @@
+/**
+ * Cart drawer (minicart): hydrates `[data-js="cart-drawer"]` via a
+ * single-section fetch (`?section_id=cart-drawer`) every time it opens, and
+ * on qty/remove mutations swaps only the `cart-items`/`cart-empty`/
+ * `cart-subtotal` sub-targets via `applySectionReplace`. Listens for the
+ * global `cart:open`/`cart:updated` events so PDP/PLP add-to-cart flows can
+ * open and refresh it without a direct dependency.
+ */
 import { changeCartLine } from '../utils/cart';
 import { CART_OPEN_EVENT, CART_UPDATED_EVENT } from '../utils/cart-events';
 import { handleDialogKeyDown } from '../utils/dialog';

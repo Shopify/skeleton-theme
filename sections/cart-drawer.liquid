@@ -26,32 +26,7 @@
 
     <ul data-js="cart-items" class="mt-3 max-h-[calc(100vh-240px)] overflow-y-auto" {% if cart.item_count == 0 %}hidden{% endif %}>
       {% for item in cart.items %}
-        <li class="relative grid grid-cols-[64px_1fr] gap-3 border-b py-3" data-line="{{ forloop.index }}">
-          <div data-js="cart-drawer-line-overlay" class="pointer-events-none absolute inset-0 z-10 hidden items-center justify-center bg-white/60">
-            <span class="h-5 w-5 rounded-full border-2 border-black/20 border-t-black animate-spin" aria-hidden="true"></span>
-          </div>
-
-          {% if item.image %}
-            <a href="{{ item.url }}" class="block h-16 w-16 overflow-hidden border">
-              {% render 'image', image: item.image, width: 128, class: 'h-full w-full object-cover' %}
-            </a>
-          {% endif %}
-
-          <div class="space-y-2">
-            <a href="{{ item.url }}" class="block text-sm font-medium">{{ item.product.title }}</a>
-            {% if item.variant.title != 'Default Title' %}
-              <p class="text-xs opacity-70">{{ item.variant.title }}</p>
-            {% endif %}
-
-            <div class="flex items-center gap-2">
-              <button type="button" data-js="cart-qty-dec" data-line="{{ forloop.index }}" aria-label="Decrease quantity" class="h-8 w-8 border">-</button>
-              <span class="min-w-6 text-center text-sm" data-js="cart-qty-value">{{ item.quantity }}</span>
-              <button type="button" data-js="cart-qty-inc" data-line="{{ forloop.index }}" aria-label="Increase quantity" class="h-8 w-8 border">+</button>
-              <button type="button" data-js="cart-remove" data-line="{{ forloop.index }}" class="ml-auto text-sm underline">{{ 'cart.remove' | t }}</button>
-            </div>
-            <p class="text-sm">{{ item.final_line_price | money }}</p>
-          </div>
-        </li>
+        {% render 'cart-line-item', item: item, line_index: forloop.index, context: 'drawer' %}
       {% endfor %}
     </ul>
 

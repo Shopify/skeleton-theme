@@ -1,11 +1,16 @@
 {% doc %}
   Product-card quick-buy molecule.
 
-  Renders quick-buy CTA when possible, otherwise a product-page fallback link.
+  Renders quick-buy CTA when possible — immediately for single-variant
+  products, or disabled-until-selected when `show_variant_picker` is true and
+  `product-card-variant-picker` will enable/target it once a full option
+  selection resolves a variant. Otherwise renders a product-page fallback
+  link.
 
   @param {product} product - Product object
-  @param {variant} [quick_buy_variant] - Variant used for quick buy
+  @param {variant} [quick_buy_variant] - Variant used for quick buy (single-variant products)
   @param {boolean} [enable_quick_buy] - Enables quick-buy behavior
+  @param {boolean} [show_variant_picker] - True when an inline variant picker precedes this button
 {% enddoc %}
 
 {% if enable_quick_buy and quick_buy_variant %}
@@ -22,6 +27,26 @@
   >
     {{ 'collections.quick_buy' | t }}
   </button>
+{% elsif enable_quick_buy and show_variant_picker %}
+  <button
+    type="button"
+    data-js="collection-quick-buy"
+    data-variant-id=""
+    data-product-url="{{ product.url }}"
+    data-label-idle="{{ 'collections.quick_buy' | t | escape }}"
+    data-label-loading="{{ 'collections.quick_buy_loading' | t | escape }}"
+    data-label-success="{{ 'collections.quick_buy_success' | t | escape }}"
+    data-label-error="{{ 'collections.quick_buy_error' | t | escape }}"
+    disabled
+    aria-disabled="true"
+    class="border px-3 py-2"
+  >
+    {{ 'collections.quick_buy' | t }}
+  </button>
+  {% comment %} Without JS the option buttons can't resolve a variant, so give a working fallback. {% endcomment %}
+  <noscript>
+    <a href="{{ product.url }}" class="inline-flex border px-3 py-2">{{ 'collections.view_options' | t }}</a>
+  </noscript>
 {% else %}
   <a href="{{ product.url }}" class="inline-flex border px-3 py-2">{{ 'collections.view_options' | t }}</a>
 {% endif %}

@@ -1,6 +1,106 @@
+/**
+ * PLP (collection) progressive interactions: sort, filters (drawer + inline),
+ * pagination (load-more append + default-pagination replace), and quick-buy.
+ * Hydrates `[data-js="collection-root"]` via single-section fetch
+ * (`?section_id=`), swapping the whole root (sort/filters/products/pagination
+ * all change together) rather than named sub-targets. Pushes history state on
+ * every filter/sort/pagination change; quick-buy reuses the shared
+ * `cart:updated`/`cart:open` events so the cart drawer stays in sync.
+ */
 import { addToCart } from './utils/cart';
 import { emitCartOpen, emitCartUpdated } from './utils/cart-events';
 import { getDialogFocusables, handleDialogKeyDown } from './utils/dialog';
+import { fetchSingleSectionHtml, parseSectionRoot } from './utils/section-rendering';
+import { findVariantByOptions, getAvailableValues } from './utils/variant-picker';
+import type { ProductData } from './utils/variant-picker';
+
+interface CardVariantContext {
+  variants: ProductData['variants'];
+  prices: Record<string, string>;
+}
+
+const cardContexts = new WeakMap<HTMLElement, CardVariantContext>();
+const cardSelectedOptions = new WeakMap<HTMLElement, string[]>();
+
+function getCardContext(card: HTMLElement): CardVariantContext | null {
+  const cached = cardContexts.get(card);
+  if (cached) return cached;
+
+  const dataEl = card.querySelector<HTMLScriptElement>('[data-js="card-product-data"]');
+  const pricesEl = card.querySelector<HTMLScriptElement>('[data-js="card-variant-prices"]');
+  if (!dataEl?.textContent) return null;
+
+  try {
+    const productData = JSON.parse(dataEl.textContent) as ProductData;
+    const prices = pricesEl?.textContent ? (JSON.parse(pricesEl.textContent) as Record<string, string>) : {};
+    const context: CardVariantContext = { variants: productData.variants, prices };
+    cardContexts.set(card, context);
+    return context;
+  } catch {
+    return null;
+  }
+}
+
+function syncCardOptionButtons(card: HTMLElement, variants: ProductData['variants'], selectedOptions: string[]): void {
+  card.querySelectorAll<HTMLButtonElement>('[data-js="card-option-value"]').forEach((btn) => {
+    const position = Number(btn.dataset.optionPosition) - 1;
+    const value = btn.dataset.optionValue ?? '';
+    const available = getAvailableValues(variants, selectedOptions, position);
+
+    btn.setAttribute('aria-pressed', String(selectedOptions[position] === value));
+    const isAvailable = available.has(value);
+    btn.disabled = !isAvailable;
+    btn.setAttribute('aria-disabled', String(!isAvailable));
+  });
+}
+
+function syncCardPrice(
+  card: HTMLElement,
+  context: CardVariantContext,
+  variant: ProductData['variants'][number] | undefined,
+): void {
+  const priceEl = card.querySelector<HTMLElement>('[data-js="card-price"]');
+  if (!priceEl || !variant) return;
+  const formatted = context.prices[String(variant.id)];
+  if (formatted) priceEl.textContent = formatted;
+}
+
+function syncCardQuickBuyButton(card: HTMLElement, variant: ProductData['variants'][number] | undefined): void {
+  const button = card.querySelector<HTMLButtonElement>('[data-js="collection-quick-buy"]');
+  if (!button) return;
+
+  if (variant?.available) {
+    button.dataset.variantId = String(variant.id);
+    button.disabled = false;
+    button.setAttribute('aria-disabled', 'false');
+  } else {
+    button.dataset.variantId = '';
+    button.disabled = true;
+    button.setAttribute('aria-disabled', 'true');
+  }
+}
+
+/** Resolves the selected variant for a card's inline picker and syncs its price + quick-buy button. */
+function onCardOptionClick(button: HTMLButtonElement): void {
+  const card = button.closest<HTMLElement>('[data-js="collection-product-card"]');
+  if (!card) return;
+
+  const context = getCardContext(card);
+  if (!context) return;
+
+  const position = Number(button.dataset.optionPosition) - 1;
+  const value = button.dataset.optionValue ?? '';
+  if (position < 0 || !value) return;
+
+  const selectedOptions = cardSelectedOptions.get(card) ?? [];
+  selectedOptions[position] = value;
+  cardSelectedOptions.set(card, selectedOptions);
+
+  const variant = findVariantByOptions(context.variants, selectedOptions);
+  syncCardOptionButtons(card, context.variants, selectedOptions);
+  syncCardPrice(card, context, variant);
+  syncCardQuickBuyButton(card, variant);
+}
 
 const ROOT_SELECTOR = '[data-js="collection-root"]';
 
@@ -100,12 +200,6 @@ function toUrl(pathOrUrl: string): URL {
   return new URL(pathOrUrl, window.location.origin);
 }
 
-function buildSectionRequestUrl(targetUrl: URL, sectionId: string): string {
-  const requestUrl = new URL(targetUrl.toString());
-  requestUrl.searchParams.set('section_id', sectionId);
-  return `${requestUrl.pathname}${requestUrl.search}`;
-}
-
 function serializeControls(form: HTMLFormElement): URL {
   const actionUrl = toUrl(form.action || window.location.href);
   const params = new URLSearchParams();
@@ -120,11 +214,6 @@ function serializeControls(form: HTMLFormElement): URL {
 
   actionUrl.search = params.toString();
   return actionUrl;
-}
-
-function parseCollectionRoot(html: string): HTMLElement | null {
-  const parsed = new DOMParser().parseFromString(html, 'text/html');
-  return parsed.querySelector<HTMLElement>(ROOT_SELECTOR);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -181,23 +270,17 @@ document.addEventListener('DOMContentLoaded', () => {
     activeController?.abort();
     activeController = new AbortController();
 
-    const response = await fetch(buildSectionRequestUrl(targetUrl, activeView.sectionId), {
-      signal: activeController.signal,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-    });
+    const html = await fetchSingleSectionHtml(
+      activeView.sectionId,
+      `${targetUrl.pathname}${targetUrl.search}`,
+      activeController.signal,
+    );
 
-    if (!response.ok) {
-      throw new Error('Collection section request failed');
-    }
-
-    const html = await response.text();
     if (requestId !== activeRequestId) {
       throw new DOMException('Stale collection request', 'AbortError');
     }
 
-    const nextRoot = parseCollectionRoot(html);
+    const nextRoot = parseSectionRoot(html, ROOT_SELECTOR);
     if (!nextRoot) {
       throw new Error('Collection section parse failed');
     }
@@ -300,6 +383,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filtersOverlay) {
       event.preventDefault();
       closeFiltersDrawer();
+      return;
+    }
+
+    const cardOptionButton = target.closest<HTMLButtonElement>('[data-js="card-option-value"]');
+    if (cardOptionButton) {
+      event.preventDefault();
+      if (cardOptionButton.disabled) return;
+      onCardOptionClick(cardOptionButton);
       return;
     }
 

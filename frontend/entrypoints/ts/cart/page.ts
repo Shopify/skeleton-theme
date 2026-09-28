@@ -1,4 +1,13 @@
-import { changeCartLine } from '../utils/cart';
+/**
+ * Cart page (`/cart`): qty/remove mutations go through `cart/change.js` and
+ * note/order-reference updates through `cart/update.js`, both requesting only
+ * this page's own section id (`data-section-id`) and swapping the
+ * `cart-page-items`/`cart-page-empty`/`cart-page-footer` sub-targets via
+ * `applySectionReplace`. A shared `mutationId` counter guards against
+ * out-of-order responses across both mutation types, and a single-slot
+ * `queuedUpdate` coalesces rapid qty +/- clicks.
+ */
+import { changeCartLine, updateCart } from '../utils/cart';
 import {
   applySectionReplace,
   normalizeSectionsUrl,
@@ -146,6 +155,63 @@ export function initCartPage(): void {
     queuedUpdate = { line, quantity };
     void flushQueuedUpdates();
   };
+
+  const submitNote = async (form: HTMLFormElement): Promise<void> => {
+    const mutationId = ++latestMutationId;
+    const submitButton = form.querySelector<HTMLButtonElement>('[data-js="cart-page-update-submit"]');
+
+    isUpdating = true;
+    setBusy(true);
+    setError('');
+    if (submitButton) submitButton.disabled = true;
+
+    const formData = new FormData(form);
+    const note = String(formData.get('note') ?? '');
+    const attributes: Record<string, string> = {};
+
+    formData.forEach((value, key) => {
+      const match = /^attributes\[(.+)\]$/.exec(key);
+      if (match) {
+        attributes[match[1]] = String(value);
+      }
+    });
+
+    try {
+      const cart = await updateCart(note, attributes, {
+        sections: [sectionId],
+        sectionsUrl: sectionContextUrl,
+      });
+
+      const sectionUpdated = updateFromSectionResponse(cart.sections?.[sectionId]);
+
+      if (!sectionUpdated || mutationId !== latestMutationId) {
+        throw new Error('Cart section rendering failed');
+      }
+
+      updateCount(cart.item_count);
+      setStatus('Cart updated.');
+    } catch {
+      setError('Could not update your cart. Please try again.');
+      setStatus('Cart update failed.');
+      if (submitButton) submitButton.disabled = false;
+    } finally {
+      if (mutationId === latestMutationId) {
+        isUpdating = false;
+        setBusy(false);
+        if (queuedUpdate) {
+          void flushQueuedUpdates();
+        }
+      }
+    }
+  };
+
+  root.addEventListener('submit', (event) => {
+    const form = event.target as HTMLFormElement;
+    if (!form.matches('[data-js="cart-page-update-form"]')) return;
+
+    event.preventDefault();
+    void submitNote(form);
+  });
 
   root.addEventListener('click', (event) => {
     const target = event.target as HTMLElement;

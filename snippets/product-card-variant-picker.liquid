@@ -1,0 +1,47 @@
+{% doc %}
+  Compact inline variant picker for a collection product-card quick-buy flow.
+
+  Renders one button group per product option plus a `product | json` data
+  island and a pre-formatted variant-price map — the same data-island
+  convention `sections/product.liquid` uses for the PDP variant picker.
+  `frontend/entrypoints/ts/collection.ts` resolves the matching variant via
+  the shared `findVariantByOptions`/`getAvailableValues` helpers (from
+  `utils/variant-picker.ts`), then syncs this card's price and
+  enables/targets its `collection-quick-buy` button.
+
+  Must be rendered inside the same card as `product-card-quick-buy`, for a
+  product with more than one variant.
+
+  @param {product} product - Product object with multiple variants
+{% enddoc %}
+
+<div class="space-y-1" data-js="card-variant-picker">
+  {% for option in product.options_with_values %}
+    <div data-option-group="{{ option.position }}" class="flex flex-wrap gap-1">
+      {% for value in option.values %}
+        <button
+          type="button"
+          data-js="card-option-value"
+          data-option-position="{{ option.position }}"
+          data-option-value="{{ value }}"
+          aria-pressed="false"
+          class="border px-2 py-1 text-xs"
+        >
+          {{ value }}
+        </button>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+
+<script data-js="card-product-data" type="application/json">
+  {{ product | json }}
+</script>
+
+<script data-js="card-variant-prices" type="application/json">
+  {
+    {% for variant in product.variants %}
+      "{{ variant.id }}": "{{ variant.price | money }}"{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  }
+</script>

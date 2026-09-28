@@ -98,6 +98,50 @@ export async function changeCartLine(
 }
 
 /**
+ * Updates the cart's note and custom attributes via the Shopify AJAX Cart API.
+ *
+ * @param note       - The cart note text (empty string clears it).
+ * @param attributes - Custom cart attributes to set, e.g. `{ order_reference: '...' }`.
+ * @throws {Error} If the request fails or the API returns an error response.
+ */
+export async function updateCart(
+  note: string,
+  attributes: Record<string, string>,
+  options: CartChangeOptions = {},
+): Promise<CartResponse> {
+  const payload: {
+    note: string;
+    attributes: Record<string, string>;
+    sections?: string[] | string;
+    sections_url?: string;
+  } = { note, attributes };
+
+  if (options.sections) {
+    payload.sections = options.sections;
+  }
+
+  if (options.sectionsUrl) {
+    payload.sections_url = normalizeSectionsUrl(options.sectionsUrl);
+  }
+
+  const res = await fetch(`${window.Shopify.routes.root}cart/update.js`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    throw await parseCartError(res);
+  }
+
+  return (await res.json()) as CartResponse;
+}
+
+/**
  * Adds a variant to the cart via the Shopify AJAX Cart API.
  *
  * @param variantId - The variant ID to add.

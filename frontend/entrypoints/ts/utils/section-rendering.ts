@@ -54,12 +54,17 @@ export function normalizeSectionsUrl(url: string): string {
   return url.startsWith('/') ? url : `/${url}`;
 }
 
-export async function fetchSingleSectionHtml(sectionId: string, sectionsUrl: string): Promise<string> {
+export async function fetchSingleSectionHtml(
+  sectionId: string,
+  sectionsUrl: string,
+  signal?: AbortSignal,
+): Promise<string> {
   const normalizedUrl = normalizeSectionsUrl(sectionsUrl);
   const url = new URL(normalizedUrl, window.location.origin);
   url.searchParams.set('section_id', sectionId);
 
   const response = await fetch(url.pathname + url.search, {
+    signal,
     headers: {
       'X-Requested-With': 'XMLHttpRequest',
     },
@@ -70,4 +75,10 @@ export async function fetchSingleSectionHtml(sectionId: string, sectionsUrl: str
   }
 
   return response.text();
+}
+
+/** Parses `html` and returns the element matching `rootSelector`, or `null` if not found. */
+export function parseSectionRoot(html: string, rootSelector: string): HTMLElement | null {
+  const parsed = new DOMParser().parseFromString(html, 'text/html');
+  return parsed.querySelector<HTMLElement>(rootSelector);
 }

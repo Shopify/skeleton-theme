@@ -9,7 +9,7 @@
     "isEntry": true
   },
   "frontend/entrypoints/css/main.css": {
-    "file": "main-p59axD4l.css",
+    "file": "main-f8czZWiZ.css",
     "name": "main",
     "names": [
       "main.css"
@@ -63,7 +63,7 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/cart.ts": {
-    "file": "cart-B8ck3vl8.js",
+    "file": "cart-CZwOJOm9.js",
     "name": "cart",
     "src": "frontend/entrypoints/ts/cart.ts",
     "isEntry": true,
@@ -73,7 +73,7 @@
     ]
   },
   "frontend/entrypoints/ts/cart/drawer.ts": {
-    "file": "drawer-DtORmutN.js",
+    "file": "drawer-Bfjojzz5.js",
     "name": "drawer",
     "src": "frontend/entrypoints/ts/cart/drawer.ts",
     "isEntry": true,
@@ -86,7 +86,7 @@
     ]
   },
   "frontend/entrypoints/ts/cart/page.ts": {
-    "file": "page-CZlB3ydb.js",
+    "file": "page-Cq4ftzFW.js",
     "name": "page",
     "src": "frontend/entrypoints/ts/cart/page.ts",
     "isEntry": true,
@@ -96,15 +96,17 @@
     ]
   },
   "frontend/entrypoints/ts/collection.ts": {
-    "file": "collection-J4m2MzUO.js",
+    "file": "collection-DEj4vXIK.js",
     "name": "collection",
     "src": "frontend/entrypoints/ts/collection.ts",
     "isEntry": true,
     "imports": [
       "frontend/entrypoints/ts/utils/cart.ts",
+      "frontend/entrypoints/ts/utils/section-rendering.ts",
       "frontend/entrypoints/ts/utils/cart-events.ts",
       "frontend/entrypoints/ts/utils/dialog.ts",
-      "frontend/entrypoints/ts/utils/dialog.ts"
+      "frontend/entrypoints/ts/utils/dialog.ts",
+      "frontend/entrypoints/ts/utils/variant-picker.ts"
     ]
   },
   "frontend/entrypoints/ts/gift-card.ts": {
@@ -138,7 +140,7 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/product.ts": {
-    "file": "product-xBqlncBt.js",
+    "file": "product-BAqoY6Dr.js",
     "name": "product",
     "src": "frontend/entrypoints/ts/product.ts",
     "isEntry": true,
@@ -154,16 +156,16 @@
     ]
   },
   "frontend/entrypoints/ts/product/handlers.ts": {
-    "file": "handlers-BtYgqm1O.js",
+    "file": "handlers-3C3lhOo6.js",
     "name": "handlers",
     "src": "frontend/entrypoints/ts/product/handlers.ts",
     "isEntry": true,
     "imports": [
       "frontend/entrypoints/ts/utils/cart.ts",
       "frontend/entrypoints/ts/utils/cart-events.ts",
-      "frontend/entrypoints/ts/product/state.ts",
-      "frontend/entrypoints/ts/product/state.ts",
       "frontend/entrypoints/ts/utils/variant-picker.ts",
+      "frontend/entrypoints/ts/product/state.ts",
+      "frontend/entrypoints/ts/product/state.ts",
       "frontend/entrypoints/ts/product/sync.ts",
       "frontend/entrypoints/ts/product/sync.ts"
     ]
@@ -181,14 +183,14 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/product/sync.ts": {
-    "file": "sync-DYXvFdju.js",
+    "file": "sync-MV96fhr-.js",
     "name": "sync",
     "src": "frontend/entrypoints/ts/product/sync.ts",
     "isEntry": true,
     "imports": [
+      "frontend/entrypoints/ts/utils/variant-picker.ts",
       "frontend/entrypoints/ts/product/state.ts",
-      "frontend/entrypoints/ts/product/state.ts",
-      "frontend/entrypoints/ts/utils/variant-picker.ts"
+      "frontend/entrypoints/ts/product/state.ts"
     ]
   },
   "frontend/entrypoints/ts/search.ts": {
@@ -214,7 +216,7 @@
     ]
   },
   "frontend/entrypoints/ts/theme.ts": {
-    "file": "theme-C6XSdi1l.js",
+    "file": "theme-DzKAyuMw.js",
     "name": "theme",
     "src": "frontend/entrypoints/ts/theme.ts",
     "isEntry": true,
@@ -230,7 +232,7 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/utils/cart.ts": {
-    "file": "cart-D3XvhVwB.js",
+    "file": "cart-IEHIrKm1.js",
     "name": "cart",
     "src": "frontend/entrypoints/ts/utils/cart.ts",
     "isEntry": true
@@ -248,7 +250,7 @@
     "isEntry": true
   },
   "frontend/entrypoints/ts/utils/section-rendering.ts": {
-    "file": "section-rendering-Cp06r6eu.js",
+    "file": "section-rendering-CSxP4EY9.js",
     "name": "section-rendering",
     "src": "frontend/entrypoints/ts/utils/section-rendering.ts",
     "isEntry": true
