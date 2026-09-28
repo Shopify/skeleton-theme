@@ -69,24 +69,29 @@
                     </ul>
 
                   {% when 'price_range' %}
+                    {% assign product_price_min = collection.price_range.min | default: filter.range_min %}
+                    {% assign product_price_max = collection.price_range.max | default: filter.range_max %}
+
                     {% assign min_value = filter.min_value.value
                       | money_without_currency
                       | replace: ',', ''
-                      | default: '0'
+                      | default: product_price_min
+                      | money_without_currency
+                      | replace: ',', ''
                     %}
                     {% assign max_value = filter.max_value.value
                       | money_without_currency
                       | replace: ',', ''
-                      | default: filter.range_max
+                      | default: product_price_max
                       | money_without_currency
                       | replace: ',', ''
                     %}
-                    {% assign slider_min = filter.range_min
+                    {% assign slider_min = product_price_min
                       | money_without_currency
                       | replace: ',', ''
                       | default: '0'
                     %}
-                    {% assign slider_max = filter.range_max
+                    {% assign slider_max = product_price_max
                       | money_without_currency
                       | replace: ',', ''
                       | default: '100'
