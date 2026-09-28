@@ -6,17 +6,20 @@
 
   <form class="collection-filters" action="{{ collection.url }}" method="get">
     <header class="collection-filters-header">
-      <h2 class="collection-filters-heading">Filter products</h2>
+      <h2 class="collection-filters-heading">Filter:</h2>
 
-      {% if active_filter_count > 0 %}
-        <a href="{{ collection.url }}" class="collection-filters-clear">Clear all</a>
-      {% endif %}
+      {% comment %}
+        {% if active_filter_count > 0 %}
+          <a href="{{ collection.url }}" class="collection-filters-clear">Clear all</a>
+        {% endif %}
+      {% endcomment %}
     </header>
 
     {% for filter in collection.filters %}
       <details class="collection-filter">
         <summary>
           {{ filter.label }}
+          {{ 'icon-dropdown.svg' | inline_asset_content }}
           {% if filter.active_values.size > 0 %}
             <span class="collection-filter-active-count">{{ filter.active_values.size }}</span>
           {% endif %}
@@ -56,7 +59,7 @@
                       {% endif %}
 
                       <span>{{ filter_value.label }}</span>
-                      <span class="collection-filter-value-count">{{ filter_value.count }}</span>
+                      <span class="collection-filter-value-count">({{ filter_value.count }})</span>
                     </label>
                   </li>
                 {% endfor %}
@@ -90,15 +93,13 @@
         </div>
       </details>
     {% endfor %}
-
-    <button type="submit" class="collection-filters-apply button">Apply filters</button>
   </form>
 {% endif %}
 
 {% stylesheet %}
   .collection-filters {
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
     margin-block: 1.5rem;
     position: relative;
     z-index: 2;
@@ -113,7 +114,7 @@
 
   .collection-filters-heading {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.4rem;
   }
 
   .collection-filters-clear {
@@ -129,8 +130,18 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 0.5rem;
     cursor: pointer;
     padding-block: 0.875rem;
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  .collection-filter .icon-dropdown {
+    width: 1rem;
+    height: 0.6rem;
+    position: relative;
+    top: 0.1rem;
   }
 
   .collection-filter-active-count {
@@ -187,7 +198,6 @@
   }
 
   .collection-filter-value-count {
-    margin-left: auto;
     opacity: 0.7;
   }
 
