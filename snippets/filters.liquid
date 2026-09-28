@@ -26,9 +26,6 @@
               <summary>
                 {{ filter.label }}
                 {{ 'icon-dropdown.svg' | inline_asset_content }}
-                {% if filter.active_values.size > 0 %}
-                  <span class="collection-filter-active-count">{{ filter.active_values.size }}</span>
-                {% endif %}
               </summary>
 
               <div class="collection-filter-content">
@@ -37,7 +34,7 @@
                     <ul class="collection-filter-values list-reset" role="list">
                       {% for filter_value in filter.values %}
                         <li>
-                          <label class="collection-filter-value {% if filter_value.count == 0 and filter_value.active == false %}is-disabled{% endif %}">
+                          <label class="collection-filter-value {% if filter_value.count == 0 and filter_value.active == false %}is-disabled{% endif %} {% if filter_value.swatch != blank %}is-color-value{% endif %}">
                             <input
                               type="checkbox"
                               name="{{ filter_value.param_name }}"
@@ -64,7 +61,7 @@
                               {% endif %}
                             {% endif %}
 
-                            <span>{{ filter_value.label }}</span>
+                            <span class="collection-filter-value-label">{{ filter_value.label }}</span>
                             <span class="collection-filter-value-count">({{ filter_value.count }})</span>
                           </label>
                         </li>
@@ -101,6 +98,19 @@
           {% endfor %}
         {% endif %}
       </div>
+      {% assign has_active_filters = false %}
+      {% for filter in collection.filters %}
+        {% if filter.type == 'price_range' %}
+          {% if filter.min_value.value != blank %}
+            {% assign has_active_filters = true %}
+          {% elsif filter.max_value.value != blank %}
+            {% assign has_active_filters = true %}
+          {% endif %}
+        {% elsif filter.active_values.size > 0 %}
+          {% assign has_active_filters = true %}
+        {% endif %}
+      {% endfor %}
+
       <div class="collection-sort-wrap">
         {% if collection.sort_options.size > 0 %}
           <label class="collection-sort">
@@ -123,7 +133,42 @@
           <div class="collection-product-count">{{ visible_product_count }} of {{ total_product_count }} products</div>
         {% endif %}
       </div>
-      <div></div>
+      {% if has_active_filters %}
+        <div class="collection-active-filters-wrapper">
+          <div class="collection-active-filters" aria-label="Active filters">
+            {% for filter in collection.filters %}
+              {% if filter.type == 'price_range' %}
+                {% if filter.min_value.value != blank %}
+                  <a class="collection-active-filter" href="{{ filter.url_to_remove | default: collection.url }}">
+                    <span>
+                      {% if filter.max_value.value != blank %}
+                        {{ filter.min_value.value | money }} – {{ filter.max_value.value | money }}
+                      {% else %}
+                        {{ filter.min_value.value | money }}+
+                      {% endif %}
+                    </span>
+                    <span aria-hidden="true">×</span>
+                  </a>
+                {% elsif filter.max_value.value != blank %}
+                  <a class="collection-active-filter" href="{{ filter.url_to_remove | default: collection.url }}">
+                    <span>Up to {{ filter.max_value.value | money }}</span>
+                    <span aria-hidden="true">×</span>
+                  </a>
+                {% endif %}
+              {% else %}
+                {% for filter_value in filter.active_values %}
+                  <a class="collection-active-filter" href="{{ filter_value.url_to_remove | default: collection.url }}">
+                    <span>{{ filter_value.label }}</span>
+                    <span aria-hidden="true">×</span>
+                  </a>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <a class="collection-active-filters-clear" href="{{ collection.url }}">Remove all</a>
+        </div>
+      {% endif %}
     </form>
   {% endif %}
 </div>
@@ -133,15 +178,10 @@
     margin-block: 1.5rem;
   }
 
-  .collection-product-count {
-    margin: 0;
-    font-size: 1.6rem;
-    font-weight: 600;
-  }
-
   .collection-filters {
-    display: flex;
+    display: grid;
     align-items: center;
+    grid-template-columns: 1fr 1fr;
     justify-content: space-between;
   }
 
@@ -152,6 +192,44 @@
     gap: 2rem;
     position: relative;
     z-index: 2;
+  }
+
+  .collection-active-filters-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .collection-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .collection-active-filters-clear {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    white-space: nowrap;
+  }
+
+  .collection-active-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: inherit;
+    text-decoration: none;
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  .collection-active-filter span:last-child {
+    font-size: 1.6rem;
+    line-height: 1;
   }
 
   .collection-sort-wrap {
@@ -219,17 +297,6 @@
     top: 0.1rem;
   }
 
-  .collection-filter-active-count {
-    display: grid;
-    width: 1.5rem;
-    height: 1.5rem;
-    place-items: center;
-    border-radius: 50%;
-    background: currentColor;
-    color: white;
-    font-size: 0.75rem;
-  }
-
   .collection-filter-content {
     padding: 1rem;
     position: absolute;
@@ -264,12 +331,54 @@
   }
 
   .collection-filter-swatch {
-    width: 1rem;
-    height: 1rem;
-    border: 1px solid;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid var(--color-border);
     border-radius: 50%;
     background-position: center;
     background-size: cover;
+    display: inline-block;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .collection-filter-value.is-color-value {
+    justify-content: flex-start;
+  }
+
+  .collection-filter-value.is-color-value input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  .collection-filter-value.is-color-value .collection-filter-value-label,
+  .collection-filter-value.is-color-value .collection-filter-value-count {
+    display: block;
+    font-size: 1.1rem;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .collection-filter-value.is-color-value .collection-filter-value-count {
+    opacity: 0.7;
+  }
+
+  .collection-filter-value.is-color-value .collection-filter-swatch {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-color: rgba(0, 0, 0, 0.15);
+  }
+
+  .collection-filter-value.is-color-value input:checked + .collection-filter-swatch,
+  .collection-filter-value.is-color-value input:focus-visible + .collection-filter-swatch {
+    outline: 0.1rem solid var(--color-foreground);
+    outline-offset: 0.1rem;
+  }
+
+  .collection-filter-value.is-color-value input:disabled + .collection-filter-swatch {
+    opacity: 0.2;
   }
 
   .collection-filter-value-count {
@@ -306,11 +415,15 @@
 {% endstylesheet %}
 
 {% javascript %}
-  // Close other filter groups when one is opened
-  const filterGroups = document.querySelectorAll('.collection-filter');
+  const setupCollectionFilterInteractions = () => {
+    const filterGroups = document.querySelectorAll('.collection-filter');
 
-  if (filterGroups.length) {
     filterGroups.forEach((group) => {
+      if (group.dataset.collectionFilterBound === 'true') {
+        return;
+      }
+
+      group.dataset.collectionFilterBound = 'true';
       group.addEventListener('toggle', () => {
         if (!group.open) return;
 
@@ -321,14 +434,21 @@
         });
       });
     });
-  }
 
-  // Update collection products via AJAX when filters change
-  const collectionFiltersForm = document.querySelector('.collection-filters');
-  const collectionProducts = document.querySelector('.collection-products');
+    const collectionFiltersForm = document.querySelector('.collection-filters');
+    const collectionProducts = document.querySelector('.collection-products');
+    const collectionClearAllLink = document.querySelector('.collection-active-filters-clear');
 
-  if (collectionFiltersForm && collectionProducts) {
-    // Build the URL for the filtered collection based on the form data
+    if (!collectionFiltersForm || !collectionProducts) {
+      return;
+    }
+
+    if (collectionFiltersForm.dataset.collectionBound === 'true') {
+      return;
+    }
+
+    collectionFiltersForm.dataset.collectionBound = 'true';
+
     const getFilteredCollectionUrl = (form) => {
       const params = new URLSearchParams();
       const formData = new FormData(form);
@@ -344,43 +464,77 @@
       return url.toString();
     };
 
-    // Update the product grid
+    let activeCollectionRequest = null;
+
     const updateCollectionProducts = async (url) => {
-      const response = await fetch(url, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Collection update failed: ${response.status}`);
+      if (activeCollectionRequest) {
+        activeCollectionRequest.abort();
       }
 
-      const html = await response.text();
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      const nextCollectionProducts = doc.querySelector('.collection-products');
+      activeCollectionRequest = new AbortController();
 
-      if (!nextCollectionProducts) {
-        return;
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          signal: activeCollectionRequest.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Collection update failed: ${response.status}`);
+        }
+
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const nextCollectionProducts = doc.querySelector('.collection-products');
+        const nextActiveFiltersWrapper = doc.querySelector('.collection-active-filters-wrapper');
+
+        if (nextCollectionProducts) {
+          collectionProducts.innerHTML = nextCollectionProducts.innerHTML;
+        }
+
+        if (nextActiveFiltersWrapper) {
+          const currentActiveFiltersWrapper = document.querySelector('.collection-active-filters-wrapper');
+
+          if (currentActiveFiltersWrapper) {
+            currentActiveFiltersWrapper.replaceWith(nextActiveFiltersWrapper);
+          } else {
+            collectionFiltersForm.append(nextActiveFiltersWrapper);
+          }
+        } else {
+          const currentActiveFiltersWrapper = document.querySelector('.collection-active-filters-wrapper');
+
+          if (currentActiveFiltersWrapper) {
+            currentActiveFiltersWrapper.remove();
+          }
+        }
+
+        window.history.pushState({ path: url }, '', url);
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          return;
+        }
+
+        console.error(error);
+        window.location.assign(collectionFiltersForm.action);
+      } finally {
+        if (activeCollectionRequest && activeCollectionRequest.signal.aborted) {
+          activeCollectionRequest = null;
+        } else {
+          activeCollectionRequest = null;
+        }
       }
-
-      collectionProducts.innerHTML = nextCollectionProducts.innerHTML;
-      window.history.pushState({ path: url }, '', url);
     };
 
-    // Listen for submit
     collectionFiltersForm.addEventListener('submit', (event) => {
       event.preventDefault();
 
       const url = getFilteredCollectionUrl(event.currentTarget);
 
-      updateCollectionProducts(url).catch((error) => {
-        console.error(error);
-        window.location.assign(event.currentTarget.action);
-      });
+      updateCollectionProducts(url);
     });
 
-    // Listen for change
     collectionFiltersForm.addEventListener('change', (event) => {
       if (!(event.target instanceof HTMLElement)) {
         return;
@@ -392,10 +546,17 @@
 
       const url = getFilteredCollectionUrl(event.currentTarget);
 
-      updateCollectionProducts(url).catch((error) => {
-        console.error(error);
-        window.location.assign(event.currentTarget.action);
-      });
+      updateCollectionProducts(url);
     });
-  }
+
+    if (collectionClearAllLink) {
+      collectionClearAllLink.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        updateCollectionProducts(collectionClearAllLink.href);
+      });
+    }
+  };
+
+  setupCollectionFilterInteractions();
 {% endjavascript %}
