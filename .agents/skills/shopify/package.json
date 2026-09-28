@@ -1,0 +1,11 @@
+{
+  "name": "shopify",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "typescript": "5.9.3",
+    "@shopify/theme-check-common": "3.24.0",
+    "@shopify/theme-check-docs-updater": "3.24.0",
+    "@shopify/theme-check-node": "3.24.0"
+  }
+}
