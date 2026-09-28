@@ -69,28 +69,88 @@
                     </ul>
 
                   {% when 'price_range' %}
-                    <div class="collection-filter-price-range">
-                      <label>
-                        <span>From</span>
-                        <input
-                          type="number"
-                          name="{{ filter.min_value.param_name }}"
-                          value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
-                          min="0"
-                          placeholder="0"
-                        >
-                      </label>
+                    {% assign min_value = filter.min_value.value
+                      | money_without_currency
+                      | replace: ',', ''
+                      | default: '0'
+                    %}
+                    {% assign max_value = filter.max_value.value
+                      | money_without_currency
+                      | replace: ',', ''
+                      | default: filter.range_max
+                      | money_without_currency
+                      | replace: ',', ''
+                    %}
+                    {% assign slider_min = filter.range_min
+                      | money_without_currency
+                      | replace: ',', ''
+                      | default: '0'
+                    %}
+                    {% assign slider_max = filter.range_max
+                      | money_without_currency
+                      | replace: ',', ''
+                      | default: '100'
+                    %}
 
-                      <label>
-                        <span>To</span>
+                    <div
+                      class="collection-filter-price-range"
+                      data-range-min="{{ slider_min }}"
+                      data-range-max="{{ slider_max }}"
+                    >
+                      <div class="collection-filter-price-range-inputs">
+                        <label>
+                          <span>From</span>
+                          <input
+                            type="number"
+                            name="{{ filter.min_value.param_name }}"
+                            value="{{ min_value }}"
+                            min="{{ slider_min }}"
+                            max="{{ slider_max }}"
+                            placeholder="{{ slider_min }}"
+                            class="collection-price-input collection-price-input-min"
+                          >
+                        </label>
+
+                        <span class="collection-filter-price-range-separator">-</span>
+
+                        <label>
+                          <span>To</span>
+                          <input
+                            type="number"
+                            name="{{ filter.max_value.param_name }}"
+                            value="{{ max_value }}"
+                            min="{{ slider_min }}"
+                            max="{{ slider_max }}"
+                            placeholder="{{ slider_max }}"
+                            class="collection-price-input collection-price-input-max"
+                          >
+                        </label>
+                      </div>
+
+                      <div class="collection-price-slider">
+                        <div class="collection-price-track">
+                          <div class="collection-price-range-line"></div>
+                        </div>
+
                         <input
-                          type="number"
-                          name="{{ filter.max_value.param_name }}"
-                          value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
-                          min="0"
-                          placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                          type="range"
+                          min="{{ slider_min }}"
+                          max="{{ slider_max }}"
+                          value="{{ min_value }}"
+                          step="1"
+                          class="collection-price-range-slider collection-price-range-slider-min"
+                          aria-label="Minimum price"
                         >
-                      </label>
+                        <input
+                          type="range"
+                          min="{{ slider_min }}"
+                          max="{{ slider_max }}"
+                          value="{{ max_value }}"
+                          step="1"
+                          class="collection-price-range-slider collection-price-range-slider-max"
+                          aria-label="Maximum price"
+                        >
+                      </div>
                     </div>
                 {% endcase %}
               </div>
@@ -387,7 +447,13 @@
 
   .collection-filter-price-range {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .collection-filter-price-range-inputs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: end;
     gap: 0.75rem;
   }
 
@@ -397,12 +463,110 @@
     font-size: 0.875rem;
   }
 
-  .collection-filter-price-range input {
+  .collection-filter-price-range-separator {
+    display: grid;
+    place-items: center;
+    padding-bottom: 0.75rem;
+    font-size: 1.8rem;
+    line-height: 1;
+    opacity: 0.8;
+  }
+
+  .collection-filter-price-range input[type='number'] {
     width: 100%;
-    padding: 0.5rem;
-    border: 1px solid;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--color-border);
     background: transparent;
     color: inherit;
+    font: inherit;
+  }
+
+  .collection-price-slider {
+    position: relative;
+    height: 2.5rem;
+    display: grid;
+    align-items: center;
+  }
+
+  .collection-price-track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 0.25rem;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .collection-price-range-line {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--color-foreground);
+    transform-origin: left center;
+  }
+
+  .collection-price-range-slider {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background: transparent;
+    pointer-events: none;
+    -webkit-appearance: none;
+    appearance: none;
+    z-index: 1;
+  }
+
+  .collection-price-range-slider-max {
+    z-index: 2;
+  }
+
+  .collection-price-range-slider::-webkit-slider-runnable-track {
+    height: 0.25rem;
+    background: transparent;
+  }
+
+  .collection-price-range-slider::-moz-range-track {
+    height: 0.25rem;
+    background: transparent;
+  }
+
+  .collection-price-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-background);
+    background: var(--color-foreground);
+    margin-top: -0.625rem;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+    transform: translateX(-50%);
+  }
+
+  .collection-price-range-slider-max::-webkit-slider-thumb {
+    transform: translateX(50%);
+  }
+
+  .collection-price-range-slider::-moz-range-thumb {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-background);
+    background: var(--color-foreground);
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+    transform: translateX(-50%);
+  }
+
+  .collection-price-range-slider-max::-moz-range-thumb {
+    transform: translateX(50%);
   }
 
   .collection-filters-apply {
@@ -463,6 +627,84 @@
       url.search = params.toString();
       return url.toString();
     };
+
+    const syncPriceRangeSlider = (group) => {
+      const minInput = group.querySelector('.collection-price-input-min');
+      const maxInput = group.querySelector('.collection-price-input-max');
+      const minSlider = group.querySelector('.collection-price-range-slider-min');
+      const maxSlider = group.querySelector('.collection-price-range-slider-max');
+      const rangeLine = group.querySelector('.collection-price-range-line');
+
+      if (!minInput || !maxInput || !minSlider || !maxSlider || !rangeLine) {
+        return;
+      }
+
+      const min = Number(group.dataset.rangeMin || 0);
+      const max = Number(group.dataset.rangeMax || 100);
+
+      if (!minInput.value && !maxInput.value) {
+        minInput.value = min;
+        maxInput.value = max;
+      }
+
+      const minValue = Math.min(Number(minInput.value || min), Number(maxInput.value || max));
+      const maxValue = Math.max(Number(minInput.value || min), Number(maxInput.value || max));
+
+      const leftPercent = ((Math.min(Math.max(minValue, min), max) - min) / (max - min || 1)) * 100;
+      const rightPercent = ((Math.min(Math.max(maxValue, min), max) - min) / (max - min || 1)) * 100;
+
+      minSlider.value = Math.min(minValue, maxValue);
+      maxSlider.value = Math.max(minValue, maxValue);
+      minInput.value = minSlider.value;
+      maxInput.value = maxSlider.value;
+      rangeLine.style.left = `${leftPercent}%`;
+      rangeLine.style.width = `${Math.max(rightPercent - leftPercent, 0)}%`;
+    };
+
+    document.querySelectorAll('.collection-filter-price-range').forEach((group) => {
+      const minInput = group.querySelector('.collection-price-input-min');
+      const maxInput = group.querySelector('.collection-price-input-max');
+      const minSlider = group.querySelector('.collection-price-range-slider-min');
+      const maxSlider = group.querySelector('.collection-price-range-slider-max');
+
+      [minInput, maxInput].forEach((input) => {
+        input.addEventListener('input', () => {
+          const minValue = Number(minInput.value || 0);
+          const maxValue = Number(maxInput.value || 0);
+
+          if (minValue > maxValue) {
+            if (document.activeElement === minInput) {
+              maxInput.value = minInput.value;
+            } else {
+              minInput.value = maxInput.value;
+            }
+          }
+
+          syncPriceRangeSlider(group);
+        });
+      });
+
+      [minSlider, maxSlider].forEach((slider) => {
+        slider.addEventListener('input', () => {
+          const minValue = Number(minSlider.value || 0);
+          const maxValue = Number(maxSlider.value || 0);
+
+          if (minValue > maxValue) {
+            if (slider === minSlider) {
+              maxSlider.value = minSlider.value;
+            } else {
+              minSlider.value = maxSlider.value;
+            }
+          }
+
+          minInput.value = minSlider.value;
+          maxInput.value = maxSlider.value;
+          syncPriceRangeSlider(group);
+        });
+      });
+
+      syncPriceRangeSlider(group);
+    });
 
     let activeCollectionRequest = null;
 
