@@ -19,7 +19,7 @@ export function loadRecommendations(): void {
       const parsed = new DOMParser().parseFromString(html, 'text/html');
       const inner = parsed.querySelector('[data-js="product-recommendations-root"]');
       if (inner) {
-        container.innerHTML = inner.innerHTML;
+        container.replaceChildren(...inner.childNodes);
       }
     })
     .catch(() => {

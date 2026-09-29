@@ -1,19 +1,13 @@
-<div
+<dialog
   id="cart-drawer"
   data-js="cart-drawer"
   data-cart-url="{{ routes.cart_url }}"
   data-currency="{{ cart.currency.iso_code }}"
-  class="fixed inset-0 z-50"
-  hidden
-  aria-hidden="true"
+  aria-label="{{ 'cart.title' | t }}"
+  class="m-0 h-full max-h-none w-full max-w-none border-0 bg-transparent p-0 backdrop:bg-black/40"
 >
-  <div data-js="cart-drawer-overlay" class="absolute inset-0 bg-black/40" aria-hidden="true"></div>
-
   <aside
     data-js="cart-drawer-panel"
-    role="dialog"
-    aria-modal="true"
-    aria-label="{{ 'cart.title' | t }}"
     class="absolute right-0 top-0 h-full w-full max-w-md bg-white p-4 shadow-2xl"
   >
     <div class="flex items-center justify-between border-b pb-3">
@@ -46,7 +40,7 @@
       </form>
     </div>
   </aside>
-</div>
+</dialog>
 
 {% schema %}
 {

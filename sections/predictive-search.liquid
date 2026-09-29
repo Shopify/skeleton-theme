@@ -1,0 +1,74 @@
+{% comment %}
+  Predictive search results. `predictive_search` is only populated when this
+  section is fetched via the Predictive Search API with `section_id=predictive-search`
+  (Section Rendering API) — see `frontend/entrypoints/ts/utils/predictive-search.ts`.
+{% endcomment %}
+
+{%- liquid
+  assign has_results = false
+  if predictive_search.resources.products.size > 0 or predictive_search.resources.pages.size > 0 or predictive_search.resources.articles.size > 0
+    assign has_results = true
+  endif
+-%}
+
+<div data-js="predictive-search-results">
+  {%- if predictive_search.performed -%}
+    <div data-js="predictive-search-groups" class="space-y-4" {% unless has_results %}hidden{% endunless %}>
+      {%- if predictive_search.resources.products.size > 0 -%}
+        <section>
+          <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide opacity-70">{{ 'search.products' | t }}</h3>
+          <ul class="space-y-1">
+            {%- for product in predictive_search.resources.products -%}
+              <li>
+                <a href="{{ product.url }}" class="flex items-center gap-3 rounded border px-2 py-2 hover:bg-gray-50">
+                  {%- if product.featured_image -%}
+                    {% render 'image', image: product.featured_image, width: 80, class: 'h-10 w-10 flex-none object-cover' %}
+                  {%- endif -%}
+                  <span class="text-sm">{{ product.title | escape }}</span>
+                  <span class="ml-auto text-sm">{{ product.price | money }}</span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </section>
+      {%- endif -%}
+
+      {%- if predictive_search.resources.pages.size > 0 -%}
+        <section>
+          <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide opacity-70">{{ 'search.pages' | t }}</h3>
+          <ul class="space-y-1">
+            {%- for page in predictive_search.resources.pages -%}
+              <li>
+                <a href="{{ page.url }}" class="block rounded border px-2 py-2 text-sm hover:bg-gray-50">{{ page.title | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </section>
+      {%- endif -%}
+
+      {%- if predictive_search.resources.articles.size > 0 -%}
+        <section>
+          <h3 class="mb-2 text-xs font-semibold uppercase tracking-wide opacity-70">{{ 'search.articles' | t }}</h3>
+          <ul class="space-y-1">
+            {%- for article in predictive_search.resources.articles -%}
+              <li>
+                <a href="{{ article.url }}" class="block rounded border px-2 py-2 text-sm hover:bg-gray-50">{{ article.title | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </section>
+      {%- endif -%}
+    </div>
+
+    <p data-js="predictive-search-empty" class="text-sm opacity-70" {% if has_results %}hidden{% endif %}>
+      {{ 'search.no_quick_matches' | t }}
+    </p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Predictive search",
+  "settings": []
+}
+{% endschema %}

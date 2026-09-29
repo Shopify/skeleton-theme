@@ -1,17 +1,11 @@
-<div
+<dialog
   id="search-drawer"
   data-js="search-drawer"
-  class="fixed inset-0 z-50"
-  hidden
-  aria-hidden="true"
+  aria-label="{{ 'search.title' | t }}"
+  class="m-0 h-full max-h-none w-full max-w-none border-0 bg-transparent p-0 backdrop:bg-black/40"
 >
-  <div data-js="search-drawer-overlay" class="absolute inset-0 bg-black/40" aria-hidden="true"></div>
-
   <aside
     data-js="search-drawer-panel"
-    role="dialog"
-    aria-modal="true"
-    aria-label="{{ 'search.title' | t }}"
     class="absolute right-0 top-0 h-full w-full max-w-lg bg-white p-4 shadow-2xl"
   >
     <div class="flex items-center justify-between border-b pb-3">
@@ -48,7 +42,7 @@
       <div data-js="search-drawer-groups" class="space-y-4"></div>
     </section>
   </aside>
-</div>
+</dialog>
 
 {% schema %}
 {

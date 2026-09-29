@@ -71,6 +71,10 @@
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}",
     "searching": "Searching...",
-    "start_typing": "Start typing to see quick results."
+    "start_typing": "Start typing to see quick results.",
+    "products": "Products",
+    "pages": "Pages",
+    "articles": "Articles",
+    "no_quick_matches": "No quick matches. Press Enter for full results."
   }
 }

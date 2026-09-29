@@ -1,9 +1,3 @@
-declare global {
-  interface Window {
-    Shopify: { routes: { root: string } };
-  }
-}
-
 /** Structured error returned by the Shopify Cart API. */
 export interface CartError {
   description: string;

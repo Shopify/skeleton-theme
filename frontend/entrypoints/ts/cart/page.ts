@@ -30,9 +30,9 @@ export function initCartPage(): void {
 
   if (!itemsNode || !emptyNode || !footerNode || !subtotalNode || !status || !error || !sectionId) return;
 
-  let items: HTMLElement = itemsNode;
-  let empty: HTMLElement = emptyNode;
-  let footer: HTMLElement = footerNode;
+  const items = itemsNode;
+  const empty = emptyNode;
+  const footer = footerNode;
 
   let isUpdating = false;
   let latestMutationId = 0;
@@ -88,15 +88,6 @@ export function initCartPage(): void {
     ]);
 
     if (!result.ok) return false;
-
-    const nextItems = result.nodes.items;
-    const nextEmpty = result.nodes.empty;
-    const nextFooter = result.nodes.footer;
-    if (!nextItems || !nextEmpty || !nextFooter) return false;
-
-    items = nextItems;
-    empty = nextEmpty;
-    footer = nextFooter;
 
     return Boolean(footer.querySelector<HTMLElement>('[data-js="cart-page-subtotal"]'));
   };

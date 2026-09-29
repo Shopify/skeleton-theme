@@ -1,5 +1,5 @@
-import { createPredictiveResultItem, debounce, fetchPredictiveResults } from './utils/predictive-search';
-import type { PredictiveItem } from './utils/predictive-search';
+import { debounce, fetchPredictiveSearchHtml } from './utils/predictive-search';
+import { applySectionReplace } from './utils/section-rendering';
 
 export {};
 
@@ -9,10 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const input = root.querySelector<HTMLInputElement>('[data-js="search-input"]');
   const panel = root.querySelector<HTMLElement>('[data-js="predictive-results"]');
-  const list = root.querySelector<HTMLElement>('[data-js="predictive-list"]');
+  const groups = root.querySelector<HTMLElement>('[data-js="predictive-search-groups"]');
+  const empty = root.querySelector<HTMLElement>('[data-js="predictive-search-empty"]');
   const predictiveStatus = root.querySelector<HTMLElement>('[data-js="predictive-status"]');
   const searchStatus = root.querySelector<HTMLElement>('[data-js="search-status"]');
-  if (!input || !panel || !list || !predictiveStatus || !searchStatus) return;
+  if (!input || !panel || !groups || !empty || !predictiveStatus || !searchStatus) return;
 
   let currentController: AbortController | null = null;
 
@@ -34,23 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
     input.setAttribute('aria-expanded', 'true');
   };
 
-  const renderResults = (results: PredictiveItem[]): void => {
-    list.replaceChildren();
-
-    if (results.length === 0) {
-      setPredictiveStatus('No quick matches. Press Enter for full results.');
-      openPanel();
-      return;
-    }
-
-    const fragment = document.createDocumentFragment();
-    results.forEach((item) => {
-      fragment.appendChild(createPredictiveResultItem(item));
-    });
-    list.appendChild(fragment);
-
-    setPredictiveStatus(`${results.length} quick matches`);
-    openPanel();
+  const clearResults = (message: string): void => {
+    groups.hidden = true;
+    empty.hidden = false;
+    empty.textContent = message;
   };
 
   const fetchAndRender = async (term: string): Promise<void> => {
@@ -68,12 +56,20 @@ document.addEventListener('DOMContentLoaded', () => {
     openPanel();
 
     try {
-      const payload = await fetchPredictiveResults(term, currentController.signal);
-      const products = payload.resources?.results?.products ?? [];
-      const pages = payload.resources?.results?.pages ?? [];
-      const articles = payload.resources?.results?.articles ?? [];
+      const html = await fetchPredictiveSearchHtml(term, currentController.signal);
 
-      renderResults([...products, ...pages, ...articles].slice(0, 6));
+      const result = applySectionReplace(html, '[data-js="predictive-search-results"]', [
+        { key: 'groups', current: groups, selector: '[data-js="predictive-search-groups"]' },
+        { key: 'empty', current: empty, selector: '[data-js="predictive-search-empty"]', required: false },
+      ]);
+
+      if (!result.ok) {
+        throw new Error('Predictive search rendering failed');
+      }
+
+      const total = groups.querySelectorAll('li').length;
+      setPredictiveStatus(total > 0 ? `${total} quick matches` : 'No quick matches. Press Enter for full results.');
+      openPanel();
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return;
 
@@ -92,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   input.addEventListener('focus', () => {
-    if (list.children.length > 0) {
+    if (!groups.hidden) {
       openPanel();
     }
   });
@@ -104,4 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
       closePanel();
     }, 100);
   });
+
+  clearResults('Start typing to see quick results.');
 });

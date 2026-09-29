@@ -1,3 +1,5 @@
+import { morph } from './morph';
+
 export interface SectionReplaceTarget {
   key: string;
   current: HTMLElement;
@@ -7,7 +9,6 @@ export interface SectionReplaceTarget {
 
 export interface SectionReplaceResult {
   ok: boolean;
-  nodes: Record<string, HTMLElement>;
 }
 
 export function applySectionReplace(
@@ -16,14 +17,14 @@ export function applySectionReplace(
   targets: SectionReplaceTarget[],
 ): SectionReplaceResult {
   if (!sectionHtml) {
-    return { ok: false, nodes: {} };
+    return { ok: false };
   }
 
   const parsed = new DOMParser().parseFromString(sectionHtml, 'text/html');
   const nextRoot = parsed.querySelector<HTMLElement>(rootSelector);
 
   if (!nextRoot) {
-    return { ok: false, nodes: {} };
+    return { ok: false };
   }
 
   const nextNodes: Record<string, HTMLElement> = {};
@@ -31,7 +32,7 @@ export function applySectionReplace(
   for (const target of targets) {
     const nextNode = nextRoot.querySelector<HTMLElement>(target.selector);
     if (!nextNode && target.required !== false) {
-      return { ok: false, nodes: {} };
+      return { ok: false };
     }
 
     if (nextNode) {
@@ -42,11 +43,11 @@ export function applySectionReplace(
   for (const target of targets) {
     const nextNode = nextNodes[target.key];
     if (nextNode) {
-      target.current.replaceWith(nextNode);
+      morph(target.current, nextNode);
     }
   }
 
-  return { ok: true, nodes: nextNodes };
+  return { ok: true };
 }
 
 export function normalizeSectionsUrl(url: string): string {

@@ -1,49 +1,36 @@
 /**
  * Cart drawer (minicart): hydrates `[data-js="cart-drawer"]` via a
  * single-section fetch (`?section_id=cart-drawer`) every time it opens, and
- * on qty/remove mutations swaps only the `cart-items`/`cart-empty`/
- * `cart-subtotal` sub-targets via `applySectionReplace`. Listens for the
- * global `cart:open`/`cart:updated` events so PDP/PLP add-to-cart flows can
- * open and refresh it without a direct dependency.
+ * on qty/remove mutations morphs only the `cart-items`/`cart-empty`/
+ * `cart-subtotal` sub-targets in place via `applySectionReplace`. Configures
+ * the standard `Shopify.actions.openCart`/`updateCart` actions so PDP/PLP
+ * add-to-cart (and any external app/agent calling the same actions) open and
+ * refresh this drawer instead of falling back to a full page reload.
+ *
+ * Backed by the native `<dialog>` element: focus trap, ESC-to-close and
+ * focus restore on close are handled by the browser, not manual JS.
  */
 import { changeCartLine } from '../utils/cart';
-import { CART_OPEN_EVENT, CART_UPDATED_EVENT } from '../utils/cart-events';
-import { handleDialogKeyDown } from '../utils/dialog';
-import {
-  applySectionReplace,
-  fetchSingleSectionHtml,
-  normalizeSectionsUrl,
-} from '../utils/section-rendering';
+import { applySectionReplace, fetchSingleSectionHtml, normalizeSectionsUrl } from '../utils/section-rendering';
 
 export function initCartDrawer(): void {
-  const drawerRoot = document.querySelector<HTMLElement>('[data-js="cart-drawer"]');
+  const drawerRoot = document.querySelector<HTMLDialogElement>('[data-js="cart-drawer"]');
   if (!drawerRoot) return;
 
-  const overlayRoot = drawerRoot.querySelector<HTMLElement>('[data-js="cart-drawer-overlay"]');
   const panelRoot = drawerRoot.querySelector<HTMLElement>('[data-js="cart-drawer-panel"]');
   const closeButtonRoot = drawerRoot.querySelector<HTMLButtonElement>('[data-js="cart-close"]');
-  const itemsContainerRoot = drawerRoot.querySelector<HTMLElement>('[data-js="cart-items"]');
-  const emptyStateRoot = drawerRoot.querySelector<HTMLElement>('[data-js="cart-empty"]');
-  const subtotalRoot = drawerRoot.querySelector<HTMLElement>('[data-js="cart-subtotal"]');
+  const itemsContainer = drawerRoot.querySelector<HTMLElement>('[data-js="cart-items"]');
+  const emptyState = drawerRoot.querySelector<HTMLElement>('[data-js="cart-empty"]');
+  const subtotal = drawerRoot.querySelector<HTMLElement>('[data-js="cart-subtotal"]');
   const statusRoot = drawerRoot.querySelector<HTMLElement>('[data-js="cart-drawer-status"]');
   const errorRoot = drawerRoot.querySelector<HTMLElement>('[data-js="cart-drawer-error"]');
   const countNodes = document.querySelectorAll<HTMLElement>('[data-js="cart-count"]');
 
-  if (
-    !overlayRoot
-    || !panelRoot
-    || !closeButtonRoot
-    || !itemsContainerRoot
-    || !emptyStateRoot
-    || !subtotalRoot
-    || !statusRoot
-    || !errorRoot
-  ) {
+  if (!panelRoot || !closeButtonRoot || !itemsContainer || !emptyState || !subtotal || !statusRoot || !errorRoot) {
     return;
   }
 
   const drawer = drawerRoot;
-  const overlay = overlayRoot;
   const panel = panelRoot;
   const closeButton = closeButtonRoot;
   const status = statusRoot;
@@ -51,15 +38,9 @@ export function initCartDrawer(): void {
   const sectionContextUrl = normalizeSectionsUrl(window.location.pathname);
   const triggers = document.querySelectorAll<HTMLAnchorElement>('[data-js="cart-open"]');
 
-  let itemsContainer: HTMLElement = itemsContainerRoot;
-  let emptyState: HTMLElement = emptyStateRoot;
-  let subtotal: HTMLElement = subtotalRoot;
-
-  let isOpen = false;
   let isUpdating = false;
   let latestMutationId = 0;
   let queuedUpdate: { line: number; quantity: number } | null = null;
-  let lastFocused: HTMLElement | null = null;
 
   const setStatus = (message: string): void => {
     status.textContent = message;
@@ -84,12 +65,6 @@ export function initCartDrawer(): void {
       node.textContent = String(count);
       node.hidden = count < 1;
     });
-  };
-
-  const getCurrentCount = (): number => {
-    const firstCount = countNodes[0];
-    if (!firstCount) return 0;
-    return Number(firstCount.textContent ?? '0') || 0;
   };
 
   const countItemsFromDrawerMarkup = (): number => {
@@ -127,21 +102,8 @@ export function initCartDrawer(): void {
 
     if (!result.ok) return false;
 
-    const nextItems = result.nodes.items;
-    const nextEmpty = result.nodes.empty;
-    const nextSubtotal = result.nodes.subtotal;
-    if (!nextItems || !nextEmpty || !nextSubtotal) return false;
-
-    itemsContainer = nextItems;
-    emptyState = nextEmpty;
-    subtotal = nextSubtotal;
     updateCount(countItemsFromDrawerMarkup());
-
     return true;
-  };
-
-  const updateFromSectionResponse = (sectionHtml: string | null | undefined): boolean => {
-    return applyDrawerSectionMarkup(sectionHtml);
   };
 
   const refresh = async (): Promise<void> => {
@@ -172,7 +134,7 @@ export function initCartDrawer(): void {
         sectionsUrl: sectionContextUrl,
       });
 
-      const sectionUpdated = updateFromSectionResponse(cart.sections?.['cart-drawer']);
+      const sectionUpdated = applyDrawerSectionMarkup(cart.sections?.['cart-drawer']);
 
       if (!sectionUpdated || mutationId !== latestMutationId) {
         throw new Error('Drawer section rendering failed');
@@ -210,72 +172,50 @@ export function initCartDrawer(): void {
     void flushQueuedUpdates();
   };
 
-  const onKeyDown = (event: KeyboardEvent): void => {
-    if (!isOpen) return;
-    handleDialogKeyDown(event, panel, closeDrawer);
-  };
-
-  function openDrawer(trigger?: HTMLElement): void {
-    if (isOpen) return;
-    isOpen = true;
-    lastFocused = trigger ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
-
-    drawer.hidden = false;
-    drawer.setAttribute('aria-hidden', 'false');
+  function openDrawer(): void {
+    if (drawer.open) return;
     triggers.forEach(button => button.setAttribute('aria-expanded', 'true'));
     document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', onKeyDown);
-
-    closeButton.focus();
+    drawer.showModal();
     void refresh();
-  }
-
-  function closeDrawer(): void {
-    if (!isOpen) return;
-    isOpen = false;
-
-    drawer.hidden = true;
-    drawer.setAttribute('aria-hidden', 'true');
-    triggers.forEach(button => button.setAttribute('aria-expanded', 'false'));
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', onKeyDown);
-
-    if (lastFocused) {
-      lastFocused.focus();
-    }
   }
 
   triggers.forEach((trigger) => {
     trigger.addEventListener('click', (event) => {
       event.preventDefault();
-      openDrawer(trigger);
+      openDrawer();
     });
     trigger.setAttribute('aria-expanded', 'false');
   });
 
-  closeButton.addEventListener('click', closeDrawer);
-  overlay.addEventListener('click', closeDrawer);
+  closeButton.addEventListener('click', () => drawer.close());
 
-  window.addEventListener(CART_OPEN_EVENT, () => {
-    openDrawer();
+  drawer.addEventListener('close', () => {
+    triggers.forEach(button => button.setAttribute('aria-expanded', 'false'));
+    document.body.style.overflow = '';
   });
 
-  window.addEventListener(CART_UPDATED_EVENT, (event) => {
-    const customEvent = event as CustomEvent<{ itemCount?: number; itemCountDelta?: number; openDrawer?: boolean }>;
-    const detail = customEvent.detail;
+  if (window.Shopify?.actions) {
+    window.Shopify.actions.openCart.configure({
+      handler: async () => openDrawer(),
+    });
 
-    if (typeof detail?.itemCount === 'number') {
-      updateCount(detail.itemCount);
-    } else if (typeof detail?.itemCountDelta === 'number') {
-      updateCount(Math.max(0, getCurrentCount() + detail.itemCountDelta));
-    }
-
-    if (detail?.openDrawer) {
-      openDrawer();
-    }
-  });
+    window.Shopify.actions.updateCart.configure({
+      eventTarget: () => drawer,
+      handler: async (defaultHandler) => {
+        const result = await defaultHandler();
+        await refresh();
+        return result;
+      },
+    });
+  }
 
   drawer.addEventListener('click', (event) => {
+    if (event.target === drawer) {
+      drawer.close();
+      return;
+    }
+
     const target = event.target as HTMLElement;
     const actionButton = target.closest<HTMLButtonElement>(
       '[data-js="cart-qty-dec"], [data-js="cart-qty-inc"], [data-js="cart-remove"]',

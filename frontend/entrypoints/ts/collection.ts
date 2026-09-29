@@ -8,7 +8,6 @@
  * `cart:updated`/`cart:open` events so the cart drawer stays in sync.
  */
 import { addToCart } from './utils/cart';
-import { emitCartOpen, emitCartUpdated } from './utils/cart-events';
 import { getDialogFocusables, handleDialogKeyDown } from './utils/dialog';
 import { fetchSingleSectionHtml, parseSectionRoot } from './utils/section-rendering';
 import { findVariantByOptions, getAvailableValues } from './utils/variant-picker';
@@ -175,9 +174,12 @@ async function runQuickBuy(button: HTMLButtonElement, fallbackUrl: string): Prom
   button.textContent = loadingLabel;
 
   try {
-    await addToCart(variantId, 1);
-    emitCartUpdated({ itemCountDelta: 1 });
-    emitCartOpen();
+    if (window.Shopify?.actions) {
+      await window.Shopify.actions.updateCart({ lines: [{ merchandiseId: String(variantId), quantity: 1 }] });
+      await window.Shopify.actions.openCart();
+    } else {
+      await addToCart(variantId, 1);
+    }
 
     button.textContent = successLabel;
     window.setTimeout(() => {

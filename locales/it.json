@@ -71,6 +71,10 @@
     "no_results_html": "Nessun risultato per {{ terms }}",
     "results_for_html": "{{ count }} risultati per {{ terms }}",
     "searching": "Ricerca in corso...",
-    "start_typing": "Inizia a digitare per vedere i risultati rapidi."
+    "start_typing": "Inizia a digitare per vedere i risultati rapidi.",
+    "products": "Prodotti",
+    "pages": "Pagine",
+    "articles": "Articoli",
+    "no_quick_matches": "Nessun risultato rapido. Premi Invio per la ricerca completa."
   }
 }

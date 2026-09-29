@@ -106,18 +106,19 @@ Current interaction ownership:
 
 - Cart mutations use bundled section rendering (`sections`, `sections_url`).
 - Single section rendering (`?section_id=`) is used only where explicitly intended (e.g. drawer hydration).
+- PDP/PLP add-to-cart calls the standard `Shopify.actions.updateCart`/`openCart` (configured in `cart/drawer.ts`) instead of the raw AJAX Cart API, so external apps/agents calling the same actions get the same drawer UX. Internal drawer/cart-page qty/remove interactions stay on the direct AJAX Cart API.
 - Locale-aware routes use `window.Shopify.routes.root`.
 
 ## Stable Data Contracts
 
 Any PR introducing a new `data-js` hook must update this table in the same PR.
 
-- Cart drawer: `cart-drawer`, `cart-drawer-overlay`, `cart-drawer-panel`, `cart-open`, `cart-close`, `cart-items`, `cart-empty`, `cart-subtotal`, `cart-drawer-status`, `cart-drawer-error`, `cart-drawer-footer`, `cart-qty-dec`, `cart-qty-value`, `cart-qty-inc`, `cart-remove`, `cart-drawer-line-overlay`, `cart-count`
+- Cart drawer: `cart-drawer`, `cart-drawer-panel`, `cart-open`, `cart-close`, `cart-items`, `cart-empty`, `cart-subtotal`, `cart-drawer-status`, `cart-drawer-error`, `cart-drawer-footer`, `cart-qty-dec`, `cart-qty-value`, `cart-qty-inc`, `cart-remove`, `cart-drawer-line-overlay`, `cart-count`
 - Cart page: `cart-page`, `cart-page-items`, `cart-page-empty`, `cart-page-footer`, `cart-page-subtotal`, `cart-page-status`, `cart-page-error`, `cart-page-dec`, `cart-page-qty`, `cart-page-inc`, `cart-page-remove`, `cart-page-line-overlay`, `cart-page-update-form`, `cart-page-update-submit`
 - Product: `product-form`, `product-data`, `variant-prices`, `variant-id`, `option-value`, `option-label`, `thumbnail`, `product-price`, `product-availability`, `add-to-cart`, `cart-status`
 - Collection (PLP root `collection-root`): `collection-controls`, `collection-products`, `collection-pagination-wrap`, `collection-load-more`, `collection-load-status`, `collection-status`, `collection-error`, `collection-sort`, `collection-clear`, `collection-filter-remove`, `collection-active-filters`, `collection-default-pagination`, `collection-filters-open`, `collection-filters-close`, `collection-filters-drawer`, `collection-filters-panel`, `collection-filters-overlay`, `collection-product-card`, `collection-quick-buy`
 - Product card (used inside `collection-product-card`, also on PLP grids): `card-price`, `card-variant-picker`, `card-option-value`, `card-product-data`, `card-variant-prices`
-- Search drawer: `search-drawer`, `search-open`, `search-close`, `search-drawer-input`, `search-drawer-groups`
+- Search drawer: `search-drawer`, `search-drawer-panel`, `search-open`, `search-close`, `search-drawer-form`, `search-drawer-input`, `search-drawer-status`, `search-drawer-error`, `search-drawer-loader`, `search-drawer-empty`, `search-drawer-results`, `search-drawer-groups`
 
 ## Theme Preview
 

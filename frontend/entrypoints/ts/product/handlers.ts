@@ -1,6 +1,5 @@
 import { findVariantByOptions } from '../utils/variant-picker';
 import { addToCart } from '../utils/cart';
-import { emitCartOpen, emitCartUpdated } from '../utils/cart-events';
 import { state } from './state';
 import { syncDOM } from './sync';
 
@@ -86,9 +85,12 @@ export async function onAddToCart(e: Event): Promise<void> {
   syncDOM();
 
   try {
-    await addToCart(state.currentVariant.id, quantity);
-    emitCartUpdated({ itemCountDelta: quantity });
-    emitCartOpen();
+    if (window.Shopify?.actions) {
+      await window.Shopify.actions.updateCart({ lines: [{ merchandiseId: String(state.currentVariant.id), quantity }] });
+      await window.Shopify.actions.openCart();
+    } else {
+      await addToCart(state.currentVariant.id, quantity);
+    }
 
     state.cartState = 'success';
     syncDOM();
