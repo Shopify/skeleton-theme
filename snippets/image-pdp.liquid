@@ -17,7 +17,7 @@
   | append: margins
   | append: 'px)'
 %}
-
+loading: {{ loading }}
 {% render 'image',
   image: image,
   url: product.url,
@@ -25,5 +25,7 @@
   width: 1800,
   height: 1800,
   crop: 'center',
+  preload: preload,
+  loading: loading,
   sizes: sizes
 %}

@@ -3,6 +3,7 @@
 
 {% assign variant_images = product.images | where: 'attached_to_variant?', true %}
 {% assign other_images = product.images | reject: 'attached_to_variant?', true %}
+{% assign first_shown = false %}
 
 <div class="product-main">
   <div class="product-main-images">
@@ -10,12 +11,23 @@
       <div class="swiper-wrapper">
         {% for image in variant_images %}
           <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
-            {% render 'image-pdp', image: image %}
+            {% if first_shown -%}
+              {% render 'image-pdp', image: image %}
+            {% else -%}
+              gfds
+              {% render 'image-pdp', image: image, preload: true, loading: 'eager' %}
+              {% assign first_shown = true %}
+            {% endif %}
           </div>
         {% endfor %}
         {% for image in other_images %}
           <div class="swiper-slide" data-variant-ids="">
-            {% render 'image-pdp', image: image %}
+            {% if first_shown -%}
+              {% render 'image-pdp', image: image %}
+            {% else -%}
+              {% render 'image-pdp', image: image, preload: true, loading: 'eager' %}
+              {% assign first_shown = true %}
+            {% endif %}
           </div>
         {% endfor %}
       </div>

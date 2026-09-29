@@ -1,11 +1,12 @@
 # MVP 
 
-- Responsive images - need to take site width into account - preload pdp images (currently at Cart)
+- Preload pdp images
 - Make sure all section previews work
 - If you quickly update the quantity twice it fails - also, should wait to open cart until item added
 - Basic contact page
+- Scrap the image snippet?
 - Go through all templates again
-- Responsive cart drawer styles & mobile nave and better styles overall
+- Responsive cart drawer styles & mobile nav and better styles overall
 - Clean up all code
 - html validation
 - accessability

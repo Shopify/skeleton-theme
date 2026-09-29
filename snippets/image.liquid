@@ -14,6 +14,8 @@
   @param {number} [height] - The highest resolution height of the image to be rendered
   @param {string} [crop] - The crop position of the image
   @param {string} [sizes] - The sizes attribute for the responsive image
+  @param {string} [preload] - Whether the image should be preloaded
+  @param {string} [loading] - Loading strategy for the image
 
   @example
   {% render 'image', image: product.featured_image %}
@@ -46,7 +48,11 @@
     href="{{ url }}"
   {% endif %}
 >
-  {{ image | image_url: width: width, height: height, crop: crop | image_tag: sizes: sizes }}
+  {{
+    image
+    | image_url: width: width, height: height, crop: crop
+    | image_tag: sizes: sizes, preload: preload, loading: loading
+  }}
 </{{ wrapper }}>
 
 {% stylesheet %}
