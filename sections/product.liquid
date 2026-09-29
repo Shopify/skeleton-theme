@@ -10,15 +10,16 @@
     <div class="product-gallery swiper">
       <div class="swiper-wrapper">
         {% for image in variant_images %}
-          <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
-            {% if first_shown -%}
-              {% render 'image-pdp', image: image %}
-            {% else -%}
-              gfds
+          {% if product.selected_or_first_available_variant.featured_image.id == image.id %}
+            <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
               {% render 'image-pdp', image: image, preload: true, loading: 'eager' %}
               {% assign first_shown = true %}
-            {% endif %}
-          </div>
+            </div>
+          {% else %}
+            <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
+              {% render 'image-pdp', image: image %}
+            </div>
+          {% endif %}
         {% endfor %}
         {% for image in other_images %}
           <div class="swiper-slide" data-variant-ids="">

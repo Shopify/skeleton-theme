@@ -1,7 +1,5 @@
 # MVP 
 
-- Preload pdp images
-- Make sure all section previews work
 - If you quickly update the quantity twice it fails - also, should wait to open cart until item added
 - Basic contact page
 - Scrap the image snippet?
@@ -12,6 +10,7 @@
 - accessability
 - performance
 - translation files or not - make consistent throughout theme
+- Preload pdp images
 
 # Templates https://shopify.dev/docs/storefronts/themes/architecture/templates
 
@@ -44,6 +43,7 @@
 
 # Various
 
+- Make sure all section previews work
 - white
 - Add to cart errors should be show on page rather than in js alert
 - Potential global js - header.liquid
