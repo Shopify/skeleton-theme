@@ -4,7 +4,7 @@ This file is for any AI coding assistant (Claude, Codex, Cursor, etc.) working i
 
 ## Response Style
 
-- **All responses must be given using `/caveman` mode, in English.**
+- **All responses must be given using `/caveman ultra` mode, in English.**
 
 ## Goal
 
@@ -225,6 +225,10 @@ If the repo is **not private**, this is not enforced — work directly on a shar
 - Sections: `{page_type}.liquid` (e.g. `product.liquid`, `blog.liquid`)
 - Snippets: descriptive kebab-case name
 
+### Component Documentation
+
+Every snippet, block, and section must start with a LiquidDoc block (`{% doc %}...{% enddoc %}`) describing its purpose, `@param`s, and one `@example`. Follow the existing style in `snippets/image.liquid` and `blocks/group.liquid`. This currently covers `snippets/` and `blocks/` but not `sections/` — new or edited section files must add it too.
+
 ## Local Validation
 
 Run these before considering work complete:
@@ -297,3 +301,13 @@ For branches connected directly to a Shopify theme, generated assets must be com
 3. Preserve `data-js` hooks unless intentionally migrating both TS + Liquid.
 4. Run typecheck/build.
 5. Update docs/todo when architecture contracts change.
+
+## Skill Workflow for Non-Trivial Changes
+
+For changes bigger than a one-liner, use skills in this order — they operate at different stages, not all at once:
+
+1. **`/caveman ultra`** — always on (see Response Style above). Governs tone only, doesn't affect analysis depth.
+2. **`/junior-to-senior`** — before writing code, run this on the proposed plan/approach. It does adversarial codebase-grounded review and outputs a revised plan. Only proceed to implementation once this settles.
+3. **`/ponytail`** — while implementing the reviewed plan. Forces the minimal, YAGNI-compliant version (reuse > stdlib > native > deps > one-liner) instead of over-engineered output.
+
+`/grill-me` is currently broken (points to a non-existent `grilling` skill) and is excluded from this chain until fixed.
