@@ -72,7 +72,15 @@
                     >
                       −
                     </button>
-                    <span class="cart-drawer-item-quantity-value" aria-live="polite">{{ item.quantity }}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      class="cart-drawer-item-quantity-value"
+                      aria-live="polite"
+                      value="{{ item.quantity }}"
+                      inputmode="numeric"
+                    >
                     <button
                       type="button"
                       class="cart-drawer-item-qty-button"
@@ -271,8 +279,20 @@
   }
 
   .cart-drawer-item-quantity-value {
+    width: 4rem;
     min-width: 2rem;
     text-align: center;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  .cart-drawer-item-quantity-value::-webkit-outer-spin-button,
+  .cart-drawer-item-quantity-value::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 
   .cart-drawer-item-remove {
@@ -407,14 +427,21 @@
       queuedQuantityUpdates.clear();
 
       const body = new URLSearchParams();
+      const linePrices = [];
+
       queuedUpdates.forEach(([itemKey, quantity]) => {
         body.append(`updates[${itemKey}]`, String(quantity));
-      });
 
-      const linePrices = Array.from(document.querySelectorAll('.cart-drawer-item-line-price'));
-      linePrices.forEach((price) => {
-        price.classList.add('is-loading');
-        price.setAttribute('aria-busy', 'true');
+        const cartItem = document
+          .querySelector(`.cart-drawer-item [data-key="${itemKey}"]`)
+          ?.closest('.cart-drawer-item');
+        const linePrice = cartItem ? cartItem.querySelector('.cart-drawer-item-line-price') : null;
+
+        if (linePrice) {
+          linePrice.classList.add('is-loading');
+          linePrice.setAttribute('aria-busy', 'true');
+          linePrices.push(linePrice);
+        }
       });
 
       try {
@@ -497,14 +524,14 @@
         const quantityValue = quantityContainer
           ? quantityContainer.querySelector('.cart-drawer-item-quantity-value')
           : null;
-        const currentQuantity = quantityValue ? Number(quantityValue.textContent.trim()) : 0;
+        const currentQuantity = quantityValue ? Number(quantityValue.value || 0) : 0;
         const lastQueuedQuantity = queuedQuantityUpdates.has(itemKey)
           ? Number(queuedQuantityUpdates.get(itemKey))
           : currentQuantity;
         const updatedQuantity = Math.max(0, lastQueuedQuantity + delta);
 
         if (quantityValue) {
-          quantityValue.textContent = String(updatedQuantity);
+          quantityValue.value = String(updatedQuantity);
         }
 
         queuedQuantityUpdates.set(itemKey, updatedQuantity);
@@ -518,6 +545,37 @@
         }, 1000);
       });
     }
+
+    document.addEventListener('change', (event) => {
+      const quantityInput = event.target.closest('.cart-drawer-item-quantity-value');
+
+      if (!quantityInput) return;
+
+      const cartItem = quantityInput.closest('.cart-drawer-item');
+      const itemKey = cartItem ? cartItem.querySelector('[data-key]')?.dataset?.key : null;
+      if (!itemKey) return;
+
+      const parsedValue = Number(quantityInput.value || 0);
+      const updatedQuantity = Math.max(0, Number.isFinite(parsedValue) ? parsedValue : 0);
+      quantityInput.value = String(updatedQuantity);
+
+      const linePrice = cartItem ? cartItem.querySelector('.cart-drawer-item-line-price') : null;
+
+      if (linePrice) {
+        linePrice.classList.add('is-loading');
+        linePrice.setAttribute('aria-busy', 'true');
+      }
+
+      queuedQuantityUpdates.set(itemKey, updatedQuantity);
+
+      if (queuedQuantityTimer) {
+        clearTimeout(queuedQuantityTimer);
+      }
+
+      queuedQuantityTimer = setTimeout(() => {
+        flushQueuedQuantityUpdates();
+      }, 1000);
+    });
 
     // Ajax add to cart
     const productForm = document.querySelector('.product-form form');

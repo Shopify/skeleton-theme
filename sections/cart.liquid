@@ -65,7 +65,15 @@
                     >
                       −
                     </button>
-                    <span class="cart-item-quantity-value" aria-live="polite">{{ item.quantity }}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      class="cart-item-quantity-value"
+                      aria-live="polite"
+                      value="{{ item.quantity }}"
+                      inputmode="numeric"
+                    >
                     <button
                       type="button"
                       class="cart-item-qty-button"
@@ -256,8 +264,20 @@
   }
 
   .cart-item-quantity-value {
+    width: 4rem;
     min-width: 2rem;
     text-align: center;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  .cart-item-quantity-value::-webkit-outer-spin-button,
+  .cart-item-quantity-value::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 
   .cart-item-remove {
@@ -382,6 +402,57 @@
       }
     };
 
+    const queuedQuantityUpdates = new Map();
+    let queuedQuantityTimer = null;
+
+    const flushQueuedQuantityUpdates = async () => {
+      if (!queuedQuantityUpdates.size) return;
+
+      const queuedUpdates = Array.from(queuedQuantityUpdates.entries());
+      queuedQuantityUpdates.clear();
+
+      const body = new URLSearchParams();
+      const linePrices = [];
+
+      queuedUpdates.forEach(([itemKey, quantity]) => {
+        body.append(`updates[${itemKey}]`, String(quantity));
+
+        const row = document.querySelector(`.cart-table-row[data-key="${itemKey}"]`);
+        const linePrice = row ? row.querySelector('.cart-table-item-line-price') : null;
+
+        if (linePrice) {
+          linePrice.classList.add('is-loading');
+          linePrice.setAttribute('aria-busy', 'true');
+          linePrices.push(linePrice);
+        }
+      });
+
+      try {
+        const response = await fetch('/cart/update.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          },
+          body,
+        });
+
+        if (!response.ok) {
+          throw new Error('Unable to update quantities.');
+        }
+
+        await refreshCartSection();
+        await refreshCartCounts();
+      } catch (error) {
+        console.error(error);
+        alert('There was a problem updating the cart. Please try again.');
+      } finally {
+        linePrices.forEach((price) => {
+          price.classList.remove('is-loading');
+          price.removeAttribute('aria-busy');
+        });
+      }
+    };
+
     document.addEventListener('click', async (event) => {
       const removeButton = event.target.closest('.cart-item-remove');
 
@@ -435,40 +506,61 @@
       const linePrice = cartRow ? cartRow.querySelector('.cart-table-item-line-price') : null;
       const quantityContainer = button.closest('.cart-item-quantity');
       const quantityValue = quantityContainer ? quantityContainer.querySelector('.cart-item-quantity-value') : null;
-      const currentQuantity = quantityValue ? Number(quantityValue.textContent.trim()) : 0;
-      const updatedQuantity = Math.max(0, currentQuantity + delta);
+      const currentQuantity = quantityValue ? Number(quantityValue.value || 0) : 0;
+      const lastQueuedQuantity = queuedQuantityUpdates.has(itemKey)
+        ? Number(queuedQuantityUpdates.get(itemKey))
+        : currentQuantity;
+      const updatedQuantity = Math.max(0, lastQueuedQuantity + delta);
+
+      if (quantityValue) {
+        quantityValue.value = String(updatedQuantity);
+      }
 
       if (linePrice) {
         linePrice.classList.add('is-loading');
         linePrice.setAttribute('aria-busy', 'true');
       }
 
-      try {
-        const response = await fetch('/cart/change.js', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-          },
-          body: new URLSearchParams({
-            id: itemKey,
-            quantity: updatedQuantity,
-          }),
-        });
+      queuedQuantityUpdates.set(itemKey, updatedQuantity);
 
-        if (!response.ok) {
-          throw new Error('Unable to update quantity.');
-        }
-
-        await refreshCartSection();
-        await refreshCartCounts();
-      } catch (error) {
-        console.error(error);
-        if (linePrice) {
-          linePrice.classList.remove('is-loading');
-          linePrice.removeAttribute('aria-busy');
-        }
-        alert('There was a problem updating the quantity. Please try again.');
+      if (queuedQuantityTimer) {
+        clearTimeout(queuedQuantityTimer);
       }
+
+      queuedQuantityTimer = setTimeout(() => {
+        flushQueuedQuantityUpdates();
+      }, 1000);
+    });
+
+    document.addEventListener('change', (event) => {
+      const quantityInput = event.target.closest('.cart-item-quantity-value');
+
+      if (!quantityInput) return;
+
+      const cartRow = quantityInput.closest('.cart-table-row');
+      const itemKey = cartRow ? cartRow.dataset.key : null;
+      if (!itemKey) return;
+
+      const parsedValue = Number(quantityInput.value || 0);
+      const updatedQuantity = Math.max(0, Number.isFinite(parsedValue) ? parsedValue : 0);
+      quantityInput.value = String(updatedQuantity);
+
+      const linePrice = cartRow ? cartRow.querySelector('.cart-table-item-line-price') : null;
+
+      if (linePrice) {
+        linePrice.classList.add('is-loading');
+        linePrice.setAttribute('aria-busy', 'true');
+      }
+
+      queuedQuantityUpdates.set(itemKey, updatedQuantity);
+
+      if (queuedQuantityTimer) {
+        clearTimeout(queuedQuantityTimer);
+      }
+
+      queuedQuantityTimer = setTimeout(() => {
+        flushQueuedQuantityUpdates();
+      }, 1000);
     });
   });
 {% endjavascript %}
