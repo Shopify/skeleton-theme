@@ -7,13 +7,7 @@
     {% for collection in collections %}
       <a class="collection-card link-reset" href="{{ collection.url }}">
         {% if collection.featured_image %}
-          {% render 'image',
-            class: 'collection-card-image',
-            image: collection.featured_image,
-            width: 600,
-            height: 600,
-            crop: 'center'
-          %}
+          {% render 'image-collection', image: collection.featured_image, class: 'collection-card-image' %}
         {% endif %}
 
         <div class="collection-card-content">
@@ -31,8 +25,19 @@
 {% stylesheet %}
   .collections {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
+  }
+
+  @media (min-width: 576px) {
+    .collections {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .collections {
+      grid-template-columns: repeat(4, 1fr);
+    }
   }
 
   .collection-card {

@@ -2,7 +2,7 @@
   <article class="article-wrap">
     {% if article.image %}
       <div class="article-image">
-        {{ article.image | image_url: width: 1000, height: 500 | image_tag }}
+        {% render 'image-article', image: article.image %}
       </div>
     {% endif %}
 

@@ -1,0 +1,14 @@
+{% assign margins = settings.min_page_margin | times: 2 %}
+{% assign full_width = settings.max_page_width | minus: margins %}
+
+{% assign sizes = '(min-width: '
+  | append: settings.max_page_width
+  | append: ') '
+  | append: full_width
+  | append: 'px, '
+  | append: 'calc(100vw - '
+  | append: margins
+  | append: 'px)'
+%}
+
+{% render 'image', image: image, class: 'article-image', width: 2500, height: 1250, crop: 'center', sizes: sizes %}

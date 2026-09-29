@@ -6,7 +6,7 @@
       {% for article in blog.articles %}
         <article class="blog-grid-article">
           {% if article.image %}
-            {{ article.image | image_url: width: 1000 | image_tag | link_to: article.url }}
+            {% render 'image-blog', image: article.image, url: article.url %}
           {% endif %}
           <h2>
             {{ article.title | link_to: article.url }}
@@ -31,8 +31,14 @@
 {% stylesheet %}
   .blog-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
     margin-top: 1rem;
+  }
+
+  @media (min-width: 576px) {
+    .blog-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   .blog-grid-article {

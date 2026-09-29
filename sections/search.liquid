@@ -31,7 +31,7 @@
             <div class="search-result search-result-{{ result.object_type }}">
               {% assign featured_image = result.featured_image | default: result.image %}
               {% if featured_image %}
-                {% render 'image', class: 'search-result-image', image: featured_image, url: result.url, width: 400 %}
+                {% render 'image-collection', image: featured_image, url: result.url, class: 'search-result-image' %}
               {% else %}
                 <div class="search-result-image-holder"></div>
               {% endif %}
@@ -79,8 +79,19 @@
 
   .search-results {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
+  }
+
+  @media (min-width: 576px) {
+    .search-results {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .search-results {
+      grid-template-columns: repeat(4, 1fr);
+    }
   }
 
   .search-result {
@@ -90,6 +101,7 @@
 
   .search-result-image-holder {
     background: var(--color-border);
+    padding-top: 100%;
   }
 
   .search-result-content {

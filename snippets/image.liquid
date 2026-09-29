@@ -13,6 +13,7 @@
   @param {number} [width] - The highest resolution width of the image to be rendered
   @param {number} [height] - The highest resolution height of the image to be rendered
   @param {string} [crop] - The crop position of the image
+  @param {string} [sizes] - The sizes attribute for the responsive image
 
   @example
   {% render 'image', image: product.featured_image %}
@@ -45,7 +46,7 @@
     href="{{ url }}"
   {% endif %}
 >
-  {{ image | image_url: width: width, height: height, crop: crop | image_tag }}
+  {{ image | image_url: width: width, height: height, crop: crop | image_tag: sizes: sizes }}
 </{{ wrapper }}>
 
 {% stylesheet %}

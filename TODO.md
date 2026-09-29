@@ -1,10 +1,8 @@
 # MVP 
 
-- Add filters to collection page
-- Compare at prices
-- Responsive images (article, blog) - need to take site width into account - preload pdp images
+- Responsive images - need to take site width into account - preload pdp images (currently at Cart)
 - Make sure all section previews work
-- If you quickly update the quantity twice it fails
+- If you quickly update the quantity twice it fails - also, should wait to open cart until item added
 - Basic contact page
 - Go through all templates again
 - Responsive cart drawer styles & mobile nave and better styles overall
@@ -33,11 +31,11 @@
 - Cart drawer (should css/js go in global?)
 - Mobile menu
 - Announcement bar
+- Category filtering
 
 # Complex Functionality - create skills for
 
 - Color swatches
-- Category filtering
 - Predictive search
 - Multiple currencies/markets
 - Subscription app support

@@ -10,12 +10,12 @@
       <div class="swiper-wrapper">
         {% for image in variant_images %}
           <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
-            {% render 'image', class: 'product-image', image: image %}
+            {% render 'image-pdp', image: image %}
           </div>
         {% endfor %}
         {% for image in other_images %}
           <div class="swiper-slide" data-variant-ids="">
-            {% render 'image', class: 'product-image', image: image %}
+            {% render 'image-pdp', image: image %}
           </div>
         {% endfor %}
       </div>
@@ -28,12 +28,26 @@
             data-index="{{ forloop.index0 }}"
             data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}"
           >
-            {% render 'image', class: 'product-image', image: image, width: 400, height: 400, crop: 'center' %}
+            {% render 'image',
+              class: 'product-image',
+              image: image,
+              width: 400,
+              height: 400,
+              crop: 'center',
+              sizes: '100px'
+            %}
           </div>
         {% endfor %}
         {% for image in other_images %}
           <div class="swiper-slide" data-index="{{ forloop.index0 | plus: variant_images.size }}" data-variant-ids="">
-            {% render 'image', class: 'product-image', image: image, width: 400, height: 400, crop: 'center' %}
+            {% render 'image',
+              class: 'product-image',
+              image: image,
+              width: 400,
+              height: 400,
+              crop: 'center',
+              sizes: '100px'
+            %}
           </div>
         {% endfor %}
       </div>
@@ -96,10 +110,12 @@
 </div>
 
 {% stylesheet %}
-  .product-main {
-    display: grid;
-    grid-template-columns: repeat(2, 50%);
-    gap: 2rem;
+  @media (min-width: 768px) {
+    .product-main {
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: repeat(2, 50%);
+    }
   }
 
   .shopify-product-form {
@@ -116,12 +132,6 @@
   .product-price-compare {
     text-decoration: line-through;
     opacity: 0.6;
-  }
-
-  .product-gallery .product-image > img {
-    width: auto;
-    max-height: 60rem;
-    margin: 0 auto;
   }
 
   .product-gallery-nav {

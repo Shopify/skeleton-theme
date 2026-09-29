@@ -9,19 +9,15 @@
         {% for product in collection.products %}
           <div class="collection-product">
             {% if product.featured_image %}
-              {% render 'image',
-                image: product.featured_image,
-                url: product.url,
-                width: 1000,
-                height: 1000,
-                crop: 'center'
-              %}
+              {% render 'image-collection', image: product.featured_image, url: product.url %}
             {% endif %}
             <div class="collection-product-content">
               <h2 class="collection-product-title">
                 <a href="{{ product.url }}" class="link-reset">{{ product.title | escape }}</a>
               </h2>
-              <div>{{ product.price | money }}</div>
+              <div>
+                {% render 'price', product: product %}
+              </div>
             </div>
           </div>
         {% endfor %}
@@ -35,8 +31,19 @@
 {% stylesheet %}
   .collection-products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
+  }
+
+  @media (min-width: 576px) {
+    .collection-products-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .collection-products-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
   }
 
   .collection-product {

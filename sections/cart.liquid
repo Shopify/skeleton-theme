@@ -15,7 +15,14 @@
           {% for item in cart.items %}
             <tr class="cart-table-row" data-key="{{ item.key }}">
               <td class="cart-table-image">
-                {% render 'image', image: item.image, url: item.url %}
+                {% render 'image',
+                  image: item.image,
+                  url: item.url,
+                  width: 400,
+                  height: 400,
+                  crop: 'center',
+                  sizes: '90px'
+                %}
               </td>
               <td class="cart-table-product">
                 <p>{{ item.product.title }}</p>
