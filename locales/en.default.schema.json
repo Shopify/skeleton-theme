@@ -4,6 +4,7 @@
     "article": "Article",
     "block": "Block",
     "blog": "Blog",
+    "buy_button": "Buy button",
     "cart": "Cart",
     "cart_drawer": "Cart drawer",
     "collection": "Collection",
@@ -15,6 +16,7 @@
     "contact": "Contact",
     "content": "Content",
     "custom_section": "Custom section",
+    "description": "Description",
     "fonts": "Fonts",
     "footer": "Footer",
     "group": "Group",
@@ -23,8 +25,10 @@
     "main": "Main",
     "page": "Page",
     "password": "Password",
+    "price": "Price",
     "primary": "Primary",
     "product": "Product",
+    "quantity": "Quantity",
     "row": "Row",
     "search": "Search",
     "secondary": "Secondary",
@@ -33,7 +37,9 @@
     "sidebar": "Sidebar",
     "text": "Text",
     "theme": "Theme",
-    "typography": "Typography"
+    "title": "Title",
+    "typography": "Typography",
+    "variant_selector": "Variant selector"
   },
   "labels": {
     "alignment": "Alignment",
@@ -77,6 +83,6 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
   }
 }

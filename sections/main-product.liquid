@@ -196,7 +196,11 @@
 <script type="application/json" id="product-data">
   {
     "variants": {{ product.variants | json }},
-    "moneyFormat": {{ shop.money_format | json }}
+    "moneyFormat": {{ shop.money_format | json }},
+    "labels": {
+      "addToCart": {{ 'product.add_to_cart' | t | json }},
+      "soldOut": {{ 'product.sold_out' | t | json }}
+    }
   }
 </script>
 
@@ -231,7 +235,9 @@
 
     // Update price on variant change
     const productDataEl = document.getElementById('product-data');
-    const productData = productDataEl ? JSON.parse(productDataEl.textContent) : { variants: [], moneyFormat: '$' };
+    const productData = productDataEl
+      ? JSON.parse(productDataEl.textContent)
+      : { variants: [], moneyFormat: '$', labels: { addToCart: 'Add to cart', soldOut: 'Sold out' } };
     const productVariants = productData.variants || [];
 
     const variantSelect = document.querySelector('.product-form .product-variant-select');
@@ -296,7 +302,7 @@
       if (!buyButton) return;
 
       const isAvailable = !!selectedVariant && selectedVariant.available !== false;
-      const label = isAvailable ? 'Add to cart' : 'Sold out';
+      const label = isAvailable ? productData.labels.addToCart : productData.labels.soldOut;
 
       buyButton.disabled = !isAvailable;
       buyButton.setAttribute('aria-disabled', String(!isAvailable));
@@ -407,32 +413,32 @@
     },
     {
       "type": "title",
-      "name": "Title",
+      "name": "t:general.title",
       "limit": 1
     },
     {
       "type": "description",
-      "name": "Description",
+      "name": "t:general.description",
       "limit": 1
     },
     {
       "type": "price",
-      "name": "Price",
+      "name": "t:general.price",
       "limit": 1
     },
     {
       "type": "quantity",
-      "name": "Quantity",
+      "name": "t:general.quantity",
       "limit": 1
     },
     {
       "type": "buy_button",
-      "name": "Buy Button",
+      "name": "t:general.buy_button",
       "limit": 1
     },
     {
       "type": "variant_selector",
-      "name": "Variant Selector",
+      "name": "t:general.variant_selector",
       "limit": 1
     }
   ]
