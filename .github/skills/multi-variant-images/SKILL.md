@@ -62,7 +62,7 @@ Example structure:
           data-image-index="{{ forloop.index0 }}"
           {% if variant.id != selected_variant.id %}hidden{% endif %}
         >
-          {% render 'image', class: 'product-image', image: image %}
+          {% render 'image-pdp', image: image %}
         </div>
       {% endfor %}
     {% endfor %}

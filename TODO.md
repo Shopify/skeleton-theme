@@ -1,9 +1,9 @@
 # MVP 
 
-- Preload pdp images and scrap image snippet
 - Responsive cart drawer styles & mobile nav and better styles overall
 - translation files or not - make consistent throughout theme
 - accessability
+- videos in pdp gallery
 
 - Go through all templates again
 - Clean up all code

@@ -10,7 +10,7 @@
 {
   "sections": {
     "main": {
-      "type": "blog",
+      "type": "main-blog",
       "settings": {}
     }
   },

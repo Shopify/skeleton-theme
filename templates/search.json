@@ -10,7 +10,7 @@
 {
   "sections": {
     "main": {
-      "type": "search",
+      "type": "main-search",
       "settings": {}
     }
   },

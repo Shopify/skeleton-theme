@@ -18,14 +18,10 @@
   | append: 'px)'
 %}
 
-{% render 'image',
-  image: image,
-  url: product.url,
-  class: 'product-image',
-  width: 1800,
-  height: 1800,
-  crop: 'center',
-  preload: preload,
-  loading: loading,
-  sizes: sizes
-%}
+<div class="product-image">
+  {{
+    image
+    | image_url: width: 1800, height: 1800, crop: 'center'
+    | image_tag: sizes: sizes, preload: preload, loading: loading
+  }}
+</div>
