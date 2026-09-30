@@ -25,6 +25,9 @@
     "total": "Estimated total",
     "update": "Update"
   },
+  "contact": {
+    "title": "Contact Us"
+  },
   "customers": {
     "login": {
       "email": "Email",

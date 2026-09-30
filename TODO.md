@@ -1,6 +1,5 @@
 # MVP 
 
-- If you quickly update the quantity twice it fails - also, should wait to open cart until item added
 - Basic contact page
 - Scrap the image snippet?
 - Go through all templates again
