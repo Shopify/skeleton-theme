@@ -18,12 +18,6 @@
   | append: 'px)'
 %}
 
-{% render 'image',
-  image: image,
-  url: product.url,
-  class: 'blog-article-image',
-  width: 1500,
-  height: 1500,
-  crop: 'center',
-  sizes: sizes
-%}
+<a class="blog-article-image" href="{{ product.url }}">
+  {{ image | image_url: width: 1500, height: 1500, crop: 'center' | image_tag: sizes: sizes }}
+</a>

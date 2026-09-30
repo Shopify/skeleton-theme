@@ -9,7 +9,7 @@
     {% endif %}
 
     <div class="form-group">
-      <input type="text" name="contact[name]" id="name" class="form-group-input" placeholder="Name">
+      <input type="text" name="contact[name]" id="name" class="form-group-input" placeholder="Name" required>
       <label for="name" class="form-group-label">Name</label>
     </div>
 
@@ -19,12 +19,12 @@
     </div>
 
     <div class="form-group">
-      <input type="email" name="contact[email]" id="email" class="form-group-input" placeholder="Email">
+      <input type="email" name="contact[email]" id="email" class="form-group-input" placeholder="Email" required>
       <label for="email" class="form-group-label">Email</label>
     </div>
 
     <div class="form-group">
-      <textarea name="contact[body]" id="message" class="form-group-input" placeholder="Message"></textarea>
+      <textarea name="contact[body]" id="message" class="form-group-input" placeholder="Message" required></textarea>
       <label for="message" class="form-group-label">Message</label>
     </div>
 
@@ -38,6 +38,11 @@
   .contact-form {
     display: grid;
     gap: 1rem;
+  }
+
+  .contact-main .errors ul {
+    margin: 0 0 2rem;
+    padding: 0 0 0 1.5rem;
   }
 {% endstylesheet %}
 

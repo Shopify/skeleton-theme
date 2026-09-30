@@ -4,7 +4,7 @@
   {% render 'filters' %}
 
   <div class="collection-products">
-    {% paginate collection.products by 4 %}
+    {% paginate collection.products by 20 %}
       <div class="collection-products-grid">
         {% for product in collection.products %}
           <div class="collection-product">

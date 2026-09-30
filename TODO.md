@@ -1,15 +1,14 @@
 # MVP 
 
-- Basic contact page
-- Scrap the image snippet?
-- Go through all templates again
+- Preload pdp images and scrap image snippet
 - Responsive cart drawer styles & mobile nav and better styles overall
+- translation files or not - make consistent throughout theme
+- accessability
+
+- Go through all templates again
 - Clean up all code
 - html validation
-- accessability
 - performance
-- translation files or not - make consistent throughout theme
-- Preload pdp images
 
 # Templates https://shopify.dev/docs/storefronts/themes/architecture/templates
 

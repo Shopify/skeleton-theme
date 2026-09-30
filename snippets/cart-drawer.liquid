@@ -13,14 +13,13 @@
           {% for item in cart.items %}
             <li class="cart-drawer-item">
               {% if item.image %}
-                {% render 'image',
-                  image: item.image,
-                  url: item.url,
-                  width: 400,
-                  height: 400,
-                  crop: 'center',
-                  sizes: '102px'
-                %}
+                <a href="{{ item.url }}">
+                  {{
+                    item.image
+                    | image_url: width: 400, height: 400, crop: 'center'
+                    | image_tag: sizes: '102px', loading: 'lazy'
+                  }}
+                </a>
               {% endif %}
 
               <div class="cart-drawer-item-meta">
