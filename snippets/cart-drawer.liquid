@@ -135,6 +135,7 @@
           <span>{{ 'cart.subtotal' | t }}:</span> <span>{{ cart.total_price | money }}</span>
         {% endif %}
       </div>
+      <div class="cart-drawer-footer-note">{{ 'cart.calculate' | t }}</div>
       <a href="/checkout" class="cart-drawer-button button">{{ 'cart.checkout' | t }}</a>
     </div>
   </div>
@@ -339,6 +340,10 @@
   .cart-drawer-footer-totals {
     display: flex;
     justify-content: space-between;
+  }
+
+  .cart-drawer-footer-note {
+    font-size: 1.4rem;
   }
 
   .cart-drawer-button {
