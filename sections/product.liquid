@@ -3,32 +3,19 @@
 
 {% assign variant_images = product.images | where: 'attached_to_variant?', true %}
 {% assign other_images = product.images | reject: 'attached_to_variant?', true %}
-{% assign first_shown = false %}
 
 <div class="product-main">
   <div class="product-main-images">
     <div class="product-gallery swiper">
       <div class="swiper-wrapper">
         {% for image in variant_images %}
-          {% if product.selected_or_first_available_variant.featured_image.id == image.id %}
-            <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
-              {% render 'image-pdp', image: image, preload: true, loading: 'eager' %}
-              {% assign first_shown = true %}
-            </div>
-          {% else %}
-            <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
-              {% render 'image-pdp', image: image %}
-            </div>
-          {% endif %}
+          <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
+            {% render 'image-pdp', image: image %}
+          </div>
         {% endfor %}
         {% for image in other_images %}
           <div class="swiper-slide" data-variant-ids="">
-            {% if first_shown -%}
-              {% render 'image-pdp', image: image %}
-            {% else -%}
-              {% render 'image-pdp', image: image, preload: true, loading: 'eager' %}
-              {% assign first_shown = true %}
-            {% endif %}
+            {% render 'image-pdp', image: image %}
           </div>
         {% endfor %}
       </div>
