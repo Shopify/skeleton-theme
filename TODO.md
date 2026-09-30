@@ -1,6 +1,5 @@
 # MVP 
 
-- Mobile test
 - better styles overall
 - translation files or not - make consistent throughout theme
 - accessability

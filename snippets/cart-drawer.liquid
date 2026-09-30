@@ -387,9 +387,14 @@
     });
 
     // Update cart drawer contents asynchronously
+    const fetchOptions = {
+      cache: 'no-store',
+      credentials: 'same-origin',
+    };
+
     const refreshCartDrawer = async () => {
       try {
-        const response = await fetch('/?sections=cart-drawer');
+        const response = await fetch('/?sections=cart-drawer', fetchOptions);
         if (!response.ok) throw new Error('Unable to refresh cart drawer.');
 
         const data = await response.json();
@@ -417,7 +422,7 @@
     // Update cart count asynchronously
     const refreshCartCounts = async () => {
       try {
-        const response = await fetch('/cart.js');
+        const response = await fetch('/cart.js', fetchOptions);
         if (!response.ok) throw new Error('Unable to refresh cart count.');
 
         const cart = await response.json();
@@ -441,6 +446,19 @@
     const cartDrawerContents = document.querySelector('.cart-drawer-contents');
     const queuedQuantityUpdates = new Map();
     let queuedQuantityTimer = null;
+
+    const queueQuantityUpdate = (itemKey, nextQuantity) => {
+      const normalizedQuantity = Math.max(0, Number.isFinite(nextQuantity) ? Number(nextQuantity) : 0);
+      queuedQuantityUpdates.set(itemKey, normalizedQuantity);
+
+      if (queuedQuantityTimer) {
+        clearTimeout(queuedQuantityTimer);
+      }
+
+      queuedQuantityTimer = setTimeout(() => {
+        flushQueuedQuantityUpdates();
+      }, 1000);
+    };
 
     const flushQueuedQuantityUpdates = async () => {
       if (!queuedQuantityUpdates.size) return;
@@ -468,6 +486,7 @@
 
       try {
         const response = await fetch('/cart/update.js', {
+          ...fetchOptions,
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -508,6 +527,7 @@
 
           try {
             const response = await fetch('/cart/change.js', {
+              ...fetchOptions,
               method: 'POST',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -556,15 +576,7 @@
           quantityValue.value = String(updatedQuantity);
         }
 
-        queuedQuantityUpdates.set(itemKey, updatedQuantity);
-
-        if (queuedQuantityTimer) {
-          clearTimeout(queuedQuantityTimer);
-        }
-
-        queuedQuantityTimer = setTimeout(() => {
-          flushQueuedQuantityUpdates();
-        }, 1000);
+        queueQuantityUpdate(itemKey, updatedQuantity);
       });
     }
 
@@ -588,15 +600,7 @@
         linePrice.setAttribute('aria-busy', 'true');
       }
 
-      queuedQuantityUpdates.set(itemKey, updatedQuantity);
-
-      if (queuedQuantityTimer) {
-        clearTimeout(queuedQuantityTimer);
-      }
-
-      queuedQuantityTimer = setTimeout(() => {
-        flushQueuedQuantityUpdates();
-      }, 1000);
+      queueQuantityUpdate(itemKey, updatedQuantity);
     });
 
     // Ajax add to cart
@@ -629,6 +633,7 @@
             ],
           };
           const response = await fetch('/cart/add.js', {
+            ...fetchOptions,
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

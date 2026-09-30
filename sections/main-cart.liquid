@@ -352,52 +352,53 @@
 
 {% javascript %}
   document.addEventListener('DOMContentLoaded', () => {
-    const refreshCartSection = async () => {
-      try {
-        const response = await fetch('/?sections=cart');
-        if (!response.ok) throw new Error('Unable to refresh cart section.');
+    const fetchOptions = {
+      cache: 'no-store',
+      credentials: 'same-origin',
+    };
 
-        const data = await response.json();
-        const sectionHtml = data.cart;
+    const applyCartSectionHtml = (sections) => {
+      const sectionHtml = sections ? sections['main-cart'] : null;
+      if (!sectionHtml) return;
 
-        if (!sectionHtml) return;
+      const parser = new DOMParser();
+      const parsedHtml = parser.parseFromString(sectionHtml, 'text/html');
+      const cartMain = parsedHtml.querySelector('.cart-main');
+      const cartMainTarget = document.querySelector('.cart-main');
 
-        const parser = new DOMParser();
-        const parsedHtml = parser.parseFromString(sectionHtml, 'text/html');
-        const cartMain = parsedHtml.querySelector('.cart-main');
-        const cartMainTarget = document.querySelector('.cart-main');
-
-        if (cartMain && cartMainTarget) {
-          cartMainTarget.innerHTML = cartMain.innerHTML;
-        }
-      } catch (error) {
-        console.error(error);
+      if (cartMain && cartMainTarget) {
+        cartMainTarget.innerHTML = cartMain.innerHTML;
       }
     };
 
-    const refreshCartCounts = async () => {
-      try {
-        const response = await fetch('/cart.js');
-        if (!response.ok) throw new Error('Unable to refresh cart count.');
+    const applyCartCounts = (cart) => {
+      const updateTargets = document.querySelectorAll('.cart-item-count');
 
-        const cart = await response.json();
-        const updateTargets = document.querySelectorAll('.cart-item-count');
-
-        updateTargets.forEach((target) => {
-          target.textContent = cart.item_count;
-          if (cart.item_count > 0) {
-            target.classList.remove('hidden');
-          } else {
-            target.classList.add('hidden');
-          }
-        });
-      } catch (error) {
-        console.error(error);
-      }
+      updateTargets.forEach((target) => {
+        target.textContent = cart.item_count;
+        if (cart.item_count > 0) {
+          target.classList.remove('hidden');
+        } else {
+          target.classList.add('hidden');
+        }
+      });
     };
 
     const queuedQuantityUpdates = new Map();
     let queuedQuantityTimer = null;
+
+    const queueQuantityUpdate = (itemKey, nextQuantity) => {
+      const normalizedQuantity = Math.max(0, Number.isFinite(nextQuantity) ? Number(nextQuantity) : 0);
+      queuedQuantityUpdates.set(itemKey, normalizedQuantity);
+
+      if (queuedQuantityTimer) {
+        clearTimeout(queuedQuantityTimer);
+      }
+
+      queuedQuantityTimer = setTimeout(() => {
+        flushQueuedQuantityUpdates();
+      }, 1000);
+    };
 
     const flushQueuedQuantityUpdates = async () => {
       if (!queuedQuantityUpdates.size) return;
@@ -421,8 +422,11 @@
         }
       });
 
+      body.append('sections', 'main-cart');
+
       try {
         const response = await fetch('/cart/update.js', {
+          ...fetchOptions,
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -434,8 +438,9 @@
           throw new Error('Unable to update quantities.');
         }
 
-        await refreshCartSection();
-        await refreshCartCounts();
+        const cart = await response.json();
+        applyCartSectionHtml(cart.sections);
+        applyCartCounts(cart);
       } catch (error) {
         console.error(error);
         alert('There was a problem updating the cart. Please try again.');
@@ -462,6 +467,7 @@
 
         try {
           const response = await fetch('/cart/change.js', {
+            ...fetchOptions,
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -469,6 +475,7 @@
             body: new URLSearchParams({
               id: itemKey,
               quantity: 0,
+              sections: 'main-cart',
             }),
           });
 
@@ -476,8 +483,9 @@
             throw new Error('Unable to remove item.');
           }
 
-          await refreshCartSection();
-          await refreshCartCounts();
+          const cart = await response.json();
+          applyCartSectionHtml(cart.sections);
+          applyCartCounts(cart);
         } catch (error) {
           console.error(error);
           if (linePrice) {
@@ -515,15 +523,7 @@
         linePrice.setAttribute('aria-busy', 'true');
       }
 
-      queuedQuantityUpdates.set(itemKey, updatedQuantity);
-
-      if (queuedQuantityTimer) {
-        clearTimeout(queuedQuantityTimer);
-      }
-
-      queuedQuantityTimer = setTimeout(() => {
-        flushQueuedQuantityUpdates();
-      }, 1000);
+      queueQuantityUpdate(itemKey, updatedQuantity);
     });
 
     document.addEventListener('change', (event) => {
@@ -546,15 +546,7 @@
         linePrice.setAttribute('aria-busy', 'true');
       }
 
-      queuedQuantityUpdates.set(itemKey, updatedQuantity);
-
-      if (queuedQuantityTimer) {
-        clearTimeout(queuedQuantityTimer);
-      }
-
-      queuedQuantityTimer = setTimeout(() => {
-        flushQueuedQuantityUpdates();
-      }, 1000);
+      queueQuantityUpdate(itemKey, updatedQuantity);
     });
   });
 {% endjavascript %}
