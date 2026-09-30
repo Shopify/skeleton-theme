@@ -1,6 +1,8 @@
 # MVP 
 
-- Responsive cart drawer styles & mobile nav and better styles overall
+- Mobile nav 
+- Mobile test
+- better styles overall
 - translation files or not - make consistent throughout theme
 - accessability
 - videos in pdp gallery
