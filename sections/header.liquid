@@ -7,14 +7,30 @@
 -%}
 
 <header class="site-header">
-  <{{ head_tag }}>
+  <{{ head_tag }} class="site-header-title">
     {{ shop.name | link_to: routes.root_url }}
   </{{ head_tag }}>
 
   <nav class="site-nav" aria-label="Main navigation" aria-hidden="false">
     <ul class="site-nav-menu list-reset">
       {% for link in section.settings.menu.links %}
-        <li>{{ link.title | link_to: link.url }}</li>
+        {% if link.links != blank %}
+          <li class="site-nav-item has-submenu">
+            <details class="site-nav-details">
+              <summary class="site-nav-summary">
+                {{ link.title }}
+                {{ 'icon-dropdown.svg' | inline_asset_content }}
+              </summary>
+              <ul class="site-nav-submenu">
+                {% for child_link in link.links %}
+                  <li>{{ child_link.title | link_to: child_link.url }}</li>
+                {% endfor %}
+              </ul>
+            </details>
+          </li>
+        {% else %}
+          <li>{{ link.title | link_to: link.url }}</li>
+        {% endif %}
       {% endfor %}
     </ul>
   </nav>

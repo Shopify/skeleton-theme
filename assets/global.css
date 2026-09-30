@@ -125,7 +125,7 @@ h6 {
   z-index: 2;
 }
 
-.site-header h1 {
+.site-header-title {
   margin: 0;
 }
 
@@ -133,30 +133,6 @@ h6 {
   position: relative;
   text-decoration: none;
   color: var(--color-foreground);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.site-header a sup {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-  max-width: var(--page-margin);
-  font-size: 1rem;
-  background: var(--color-foreground);
-  color: white;
-  border-radius: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-}
-
-.site-header svg {
-  width: 3rem;
 }
 
 @media (max-width: 767px) {
@@ -170,6 +146,8 @@ h6 {
     visibility: hidden;
     transform: translate(-100%);
     padding: 0 var(--page-margin);
+    font-size: 2rem;
+    overflow-y: auto;
   }
 
   .site-nav.anim-ready {
@@ -194,6 +172,36 @@ h6 {
   display: none;
 }
 
+.site-header-icons a {
+  position: relative;
+  text-decoration: none;
+  color: var(--color-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-header-icons a sup {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  max-width: var(--page-margin);
+  font-size: 1rem;
+  background: var(--color-foreground);
+  color: white;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+}
+
+.site-header-icons svg {
+  width: 3rem;
+}
+
 .site-nav-menu {
   flex-direction: column;
   align-items: flex-start;
@@ -205,11 +213,58 @@ h6 {
   }
 }
 
+.site-nav-details {
+  position: relative;
+}
+
+.site-nav-summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.site-nav-summary::-webkit-details-marker {
+  display: none;
+}
+
+.site-nav-summary .icon-dropdown {
+  width: 1rem;
+  position: relative;
+  top: 0.1rem;
+}
+
+.site-nav-details[open] .icon-dropdown {
+  transform: rotate(180deg);
+}
+
+.site-nav-submenu {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-left: 1rem;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .site-nav-submenu {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    left: 0;
+    min-width: 16rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-background);
+    border: 0.1rem solid var(--color-border);
+  }
+}
+
 .site-nav-toggle {
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--color-foreground);
 }
 
 @media (min-width: 768px) {
