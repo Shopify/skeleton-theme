@@ -22,6 +22,7 @@
     "calculate": "Taxes, discounts and shipping calculated at checkout.",
     "checkout": "Checkout",
     "close_drawer": "Close cart drawer",
+    "continue_shopping": "Continue shopping",
     "decrease_quantity_html": "Decrease quantity for {{ product }}",
     "empty": "Your cart is empty.",
     "increase_quantity_html": "Increase quantity for {{ product }}",

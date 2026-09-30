@@ -322,6 +322,9 @@ h6 {
 /* --------------- Buttons --------------- */
 
 .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0;
   border: none;
   appearance: none;

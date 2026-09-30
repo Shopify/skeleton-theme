@@ -1,14 +1,14 @@
 <div class="cart-drawer-container">
   <div class="cart-drawer">
     <div class="cart-drawer-header">
-      <h2>{{ 'cart.title' | t }}</h2>
+      <h2 class="cart-drawer-header-heading">{{ 'cart.title' | t }}</h2>
       <button class="cart-drawer-close button-reset" aria-label="{{ 'cart.close_drawer' | t }}">
         {{ 'icon-close.svg' | inline_asset_content }}
       </button>
     </div>
 
-    <div class="cart-drawer-contents">
-      {% if cart.item_count > 0 %}
+    {% if cart.item_count > 0 %}
+      <div class="cart-drawer-contents">
         <ul class="cart-drawer-items list-reset">
           {% for item in cart.items %}
             <li class="cart-drawer-item">
@@ -79,6 +79,7 @@
                       aria-live="polite"
                       value="{{ item.quantity }}"
                       inputmode="numeric"
+                      aria-label="{{ 'cart.quantity' | t }}"
                     >
                     <button
                       type="button"
@@ -113,31 +114,38 @@
             </li>
           {%- endfor %}
         </ul>
-      {% else %}
-        <p>{{ 'cart.empty' | t }}</p>
-      {% endif %}
-    </div>
-    <div class="cart-drawer-footer">
-      <div>
-        {% if cart.cart_level_discount_applications.size > 0 %}
-          <ul class="cart-drawer-footer-discounts list-reset">
-            {% for discount_application in cart.cart_level_discount_applications %}
-              <li class="cart-drawer-footer-discount">
-                {{ 'icon-discount.svg' | inline_asset_content }}
-                {{ discount_application.title }} (-{{ discount_application.total_allocated_amount | money }})
-              </li>
-            {% endfor %}
-          </ul>
-        {% endif %}
       </div>
-      <div class="cart-drawer-footer-totals">
-        {% if cart.item_count > 0 %}
-          <span>{{ 'cart.subtotal' | t }}:</span> <span>{{ cart.total_price | money }}</span>
-        {% endif %}
+      <div class="cart-drawer-footer">
+        <div>
+          {% if cart.cart_level_discount_applications.size > 0 %}
+            <ul class="cart-drawer-footer-discounts list-reset">
+              {% for discount_application in cart.cart_level_discount_applications %}
+                <li class="cart-drawer-footer-discount">
+                  {{ 'icon-discount.svg' | inline_asset_content }}
+                  {{ discount_application.title }} (-{{ discount_application.total_allocated_amount | money }})
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+        <div class="cart-drawer-footer-totals">
+          {% if cart.item_count > 0 %}
+            <span>{{ 'cart.subtotal' | t }}:</span> <span>{{ cart.total_price | money }}</span>
+          {% endif %}
+        </div>
+        <div class="cart-drawer-footer-note">{{ 'cart.calculate' | t }}</div>
+        <a href="/checkout" class="cart-drawer-button button">{{ 'cart.checkout' | t }}</a>
       </div>
-      <div class="cart-drawer-footer-note">{{ 'cart.calculate' | t }}</div>
-      <a href="/checkout" class="cart-drawer-button button">{{ 'cart.checkout' | t }}</a>
-    </div>
+    {% else %}
+      <div class="cart-drawer-empty">
+        <p class="cart-drawer-empty-heading">{{ 'cart.empty' | t }}</p>
+        <div>
+          <a href="{{ routes.all_products_collection_url }}" class="cart-drawer-empty-button button">
+            {{- 'cart.continue_shopping' | t -}}
+          </a>
+        </div>
+      </div>
+    {% endif %}
   </div>
 </div>
 
@@ -187,6 +195,10 @@
     align-items: center;
     padding: 1rem 0;
     border-bottom: 0.1rem solid rgba(0, 0, 0, 0.2);
+  }
+
+  .cart-drawer-header-heading {
+    margin: 0;
   }
 
   .cart-drawer-contents {
@@ -345,6 +357,21 @@
     to {
       transform: rotate(360deg);
     }
+  }
+
+  .cart-drawer-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-align: center;
+    flex-grow: 1;
+  }
+
+  .cart-drawer-empty-heading {
+    font-size: 3rem;
+    font-weight: bold;
   }
 
   .cart-drawer-footer {

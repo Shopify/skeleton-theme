@@ -1,10 +1,8 @@
 # MVP 
 
 - better styles overall
-- translation files or not - make consistent throughout theme
 - accessability
 - videos in pdp gallery
-- empty cart
 
 - Go through all templates again
 - Clean up all code
