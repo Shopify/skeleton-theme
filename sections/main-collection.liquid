@@ -4,7 +4,7 @@
   {% render 'filters' %}
 
   <div class="collection-products">
-    {% paginate collection.products by 20 %}
+    {% paginate collection.products by 4 %}
       <div class="collection-products-grid">
         {% for product in collection.products %}
           <div class="collection-product">
@@ -23,7 +23,9 @@
         {% endfor %}
       </div>
 
-      {% render 'pagination', paginate: paginate %}
+      {% if paginate.pages > 1 %}
+        {% render 'pagination', paginate: paginate %}
+      {% endif %}
     {% endpaginate %}
   </div>
 </main>

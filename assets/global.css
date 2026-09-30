@@ -135,33 +135,6 @@ h6 {
   color: var(--color-foreground);
 }
 
-@media (max-width: 767px) {
-  .site-nav {
-    position: absolute;
-    left: calc(-1 * var(--page-margin));
-    top: 100%;
-    background: var(--color-background);
-    width: calc(100% + (2 * var(--page-margin)));
-    height: calc(100vh - 50px);
-    visibility: hidden;
-    transform: translate(-100%);
-    padding: 0 var(--page-margin);
-    font-size: 2rem;
-    overflow-y: auto;
-  }
-
-  .site-nav.anim-ready {
-    transition:
-      transform 0.2s ease,
-      visibility 0.2s ease;
-  }
-
-  .site-nav.open {
-    visibility: visible;
-    transform: translate(0);
-  }
-}
-
 .site-nav-menu,
 .site-header-icons {
   display: flex;
@@ -200,6 +173,35 @@ h6 {
 
 .site-header-icons svg {
   width: 3rem;
+}
+
+/* --------------- Site Nav --------------- */
+
+@media (max-width: 767px) {
+  .site-nav {
+    position: absolute;
+    left: calc(-1 * var(--page-margin));
+    top: 100%;
+    background: var(--color-background);
+    width: calc(100% + (2 * var(--page-margin)));
+    height: calc(100vh - 50px);
+    visibility: hidden;
+    transform: translate(-100%);
+    padding: 0 var(--page-margin);
+    font-size: 2rem;
+    overflow-y: auto;
+  }
+
+  .site-nav.anim-ready {
+    transition:
+      transform 0.2s ease,
+      visibility 0.2s ease;
+  }
+
+  .site-nav.open {
+    visibility: visible;
+    transform: translate(0);
+  }
 }
 
 .site-nav-menu {
@@ -294,7 +296,16 @@ h6 {
 .site-footer {
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
   margin-top: 2rem;
+}
+
+@media (min-width: 768px) {
+  .site-footer {
+    flex-direction: row;
+  }
 }
 
 .site-footer a {
@@ -407,6 +418,7 @@ h6 {
 .form-group-input {
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-inputs);
+  background: var(--color-background);
   padding: 1.5rem 1.5rem 0.5rem;
   width: 100%;
 }
