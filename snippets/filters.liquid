@@ -10,17 +10,20 @@
 
     <details class="collection-toolbar-details">
       <summary class="hide-md">
-        <div class="collection-toolbar-toggle">{{ 'icon-filter.svg' | inline_asset_content }} Filter &amp; Sort:</div>
+        <div class="collection-toolbar-toggle">
+          {{ 'icon-filter.svg' | inline_asset_content }}
+          {{ 'filters.filter_and_sort' | t }}
+        </div>
       </summary>
       <div class="collection-toolbar-content">
         <form class="collection-filters" action="{{ collection.url }}" method="get">
-          <button type="button" class="collection-toolbar-close hide-md" aria-label="Close filters">
+          <button type="button" class="collection-toolbar-close hide-md" aria-label="{{ 'filters.close' | t }}">
             {{ 'icon-close.svg' | inline_asset_content }}
           </button>
           <div class="collection-filters-wrap">
             {% if collection.filters != empty %}
               <header class="collection-filters-header">
-                <h2 class="collection-filters-heading">Filter:</h2>
+                <h2 class="collection-filters-heading">{{ 'filters.filter' | t }}</h2>
               </header>
 
               {% for filter in collection.filters %}
@@ -94,7 +97,7 @@
                         >
                           <div class="collection-filter-price-range-inputs">
                             <label>
-                              <span>From</span>
+                              <span>{{ 'filters.from' | t }}</span>
                               <input
                                 type="number"
                                 name="{{ filter.min_value.param_name }}"
@@ -109,7 +112,7 @@
                             <span class="collection-filter-price-range-separator">-</span>
 
                             <label>
-                              <span>To</span>
+                              <span>{{ 'filters.to' | t }}</span>
                               <input
                                 type="number"
                                 name="{{ filter.max_value.param_name }}"
@@ -134,7 +137,7 @@
                               value="{{ min_value }}"
                               step="1"
                               class="collection-price-range-slider collection-price-range-slider-min"
-                              aria-label="Minimum price"
+                              aria-label="{{ 'filters.min_price' | t }}"
                             >
                             <input
                               type="range"
@@ -143,7 +146,7 @@
                               value="{{ max_value }}"
                               step="1"
                               class="collection-price-range-slider collection-price-range-slider-max"
-                              aria-label="Maximum price"
+                              aria-label="{{ 'filters.max_price' | t }}"
                             >
                           </div>
                         </div>
@@ -169,8 +172,8 @@
           <div class="collection-sort-wrap">
             {% if collection.sort_options.size > 0 %}
               <label class="collection-sort">
-                <span class="collection-sort-label">Sort by</span>
-                <select name="sort_by" aria-label="Sort by">
+                <span class="collection-sort-label">{{ 'filters.sort_by' | t }}</span>
+                <select name="sort_by" aria-label="{{ 'filters.sort_by' | t }}">
                   {% for option in collection.sort_options %}
                     <option
                       value="{{ option.value }}"
@@ -186,13 +189,13 @@
             {% endif %}
             {% if visible_product_count > 0 %}
               <div class="collection-product-count hide-sm">
-                {{ visible_product_count }} of {{ total_product_count }} products
+                {{ 'filters.product_count_html' | t: count: visible_product_count, total: total_product_count }}
               </div>
             {% endif %}
           </div>
           {% if has_active_filters %}
             <div class="collection-active-filters-wrapper">
-              <div class="collection-active-filters" aria-label="Active filters">
+              <div class="collection-active-filters" aria-label="{{ 'filters.active_filters' | t }}">
                 {% for filter in collection.filters %}
                   {% if filter.type == 'price_range' %}
                     {% if filter.min_value.value != blank %}
@@ -207,8 +210,9 @@
                         <span aria-hidden="true">×</span>
                       </a>
                     {% elsif filter.max_value.value != blank %}
+                      {% assign max_price_formatted = filter.max_value.value | money %}
                       <a class="collection-active-filter" href="{{ filter.url_to_remove | default: collection.url }}">
-                        <span>Up to {{ filter.max_value.value | money }}</span>
+                        <span>{{ 'filters.up_to_html' | t: price: max_price_formatted }}</span>
                         <span aria-hidden="true">×</span>
                       </a>
                     {% endif %}
@@ -226,7 +230,7 @@
                 {% endfor %}
               </div>
 
-              <a class="collection-active-filters-clear" href="{{ collection.url }}">Remove all</a>
+              <a class="collection-active-filters-clear" href="{{ collection.url }}">{{ 'filters.remove_all' | t }}</a>
             </div>
           {%- endif %}
         </form>
@@ -236,7 +240,9 @@
 </div>
 
 {% if visible_product_count > 0 %}
-  <div class="collection-product-count hide-md">{{ visible_product_count }} of {{ total_product_count }} products</div>
+  <div class="collection-product-count hide-md">
+    {{ 'filters.product_count_html' | t: count: visible_product_count, total: total_product_count }}
+  </div>
 {% endif %}
 
 {% stylesheet %}

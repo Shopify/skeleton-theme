@@ -120,16 +120,16 @@
                 <div class="product-buy-button-wrap">
                   <button
                     type="submit"
-                    value="Add to cart"
+                    value="{{ 'product.add_to_cart' | t }}"
                     class="product-buy-button button"
                     {% if product.selected_or_first_available_variant.available == false %}
                       disabled
                     {% endif %}
                   >
                     {% if product.selected_or_first_available_variant.available == false %}
-                      Sold out
+                      {{ 'product.sold_out' | t }}
                     {% else %}
-                      Add to cart
+                      {{ 'product.add_to_cart' | t }}
                     {% endif %}
                   </button>
                 </div>

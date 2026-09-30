@@ -2,7 +2,7 @@
   <div class="cart-drawer">
     <div class="cart-drawer-header">
       <h2>{{ 'cart.title' | t }}</h2>
-      <button class="cart-drawer-close button-reset" aria-label="Close cart drawer">
+      <button class="cart-drawer-close button-reset" aria-label="{{ 'cart.close_drawer' | t }}">
         {{ 'icon-close.svg' | inline_asset_content }}
       </button>
     </div>
@@ -60,14 +60,14 @@
                 <div class="cart-drawer-item-actions">
                   <div
                     class="cart-drawer-item-quantity"
-                    aria-label="Quantity selector for {{ item.product.title | escape }}"
+                    aria-label="{{ 'cart.quantity_selector_html' | t: product: item.product.title | escape }}"
                   >
                     <button
                       type="button"
                       class="cart-drawer-item-qty-button"
                       data-delta="-1"
                       data-key="{{ item.key }}"
-                      aria-label="Decrease quantity for {{ item.product.title | escape }}"
+                      aria-label="{{ 'cart.decrease_quantity_html' | t: product: item.product.title | escape }}"
                     >
                       −
                     </button>
@@ -85,7 +85,7 @@
                       class="cart-drawer-item-qty-button"
                       data-delta="1"
                       data-key="{{ item.key }}"
-                      aria-label="Increase quantity for {{ item.product.title | escape }}"
+                      aria-label="{{ 'cart.increase_quantity_html' | t: product: item.product.title | escape }}"
                     >
                       +
                     </button>
@@ -94,7 +94,7 @@
                     type="button"
                     class="cart-drawer-item-remove button-reset"
                     data-key="{{ item.key }}"
-                    aria-label="Remove item"
+                    aria-label="{{ 'cart.remove_item' | t }}"
                   >
                     {{ 'icon-trash.svg' | inline_asset_content }}
                   </button>

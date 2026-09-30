@@ -56,13 +56,16 @@
               </td>
               <td class="cart-table-actions">
                 <div class="cart-item-actions">
-                  <div class="cart-item-quantity" aria-label="Quantity selector for {{ item.product.title | escape }}">
+                  <div
+                    class="cart-item-quantity"
+                    aria-label="{{ 'cart.quantity_selector_html' | t: product: item.product.title | escape }}"
+                  >
                     <button
                       type="button"
                       class="cart-item-qty-button"
                       data-delta="-1"
                       data-key="{{ item.key }}"
-                      aria-label="Decrease quantity for {{ item.product.title | escape }}"
+                      aria-label="{{ 'cart.decrease_quantity_html' | t: product: item.product.title | escape }}"
                     >
                       −
                     </button>
@@ -80,7 +83,7 @@
                       class="cart-item-qty-button"
                       data-delta="1"
                       data-key="{{ item.key }}"
-                      aria-label="Increase quantity for {{ item.product.title | escape }}"
+                      aria-label="{{ 'cart.increase_quantity_html' | t: product: item.product.title | escape }}"
                     >
                       +
                     </button>
@@ -89,7 +92,7 @@
                     type="button"
                     class="cart-item-remove button-reset"
                     data-key="{{ item.key }}"
-                    aria-label="Remove item"
+                    aria-label="{{ 'cart.remove_item' | t }}"
                   >
                     {{ 'icon-trash.svg' | inline_asset_content }}
                   </button>

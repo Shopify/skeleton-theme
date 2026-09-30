@@ -11,7 +11,7 @@
     {{ shop.name | link_to: routes.root_url }}
   </{{ head_tag }}>
 
-  <nav class="site-nav" aria-label="Main navigation" aria-hidden="false">
+  <nav class="site-nav" aria-label="{{ 'general.main_navigation' | t }}" aria-hidden="false">
     <ul class="site-nav-menu list-reset">
       {% for link in section.settings.menu.links %}
         {% if link.links != blank %}
@@ -41,7 +41,7 @@
       type="button"
       aria-expanded="false"
       aria-controls="site-nav-menu"
-      aria-label="Toggle navigation"
+      aria-label="{{ 'general.toggle_navigation' | t }}"
     >
       {{ 'icon-menu.svg' | inline_asset_content }}
       {{ 'icon-close.svg' | inline_asset_content }}
