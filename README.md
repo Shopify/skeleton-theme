@@ -5,7 +5,10 @@
   Shopify Skeleton Theme
 </h1>
 
-A minimal, carefully structured Shopify theme designed to help you quickly get started. Designed with modularity, maintainability, and Shopify's best practices in mind.
+A minimal Shopify theme built on block-first composition. Templates compose each
+page directly from blocks, snippets, and inline markup — no sections, no JSON
+templates. It's designed to stay lean and to be edited by coding agents as
+readily as by people.
 
 <p align="center">
   <a href="./LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
@@ -46,108 +49,141 @@ shopify theme dev
 
 ```bash
 .
-├── assets          # Stores static assets (CSS, JS, images, fonts, etc.)
-├── blocks          # Reusable, nestable, customizable UI components
+├── assets          # CSS, JavaScript, and other static assets
+├── blocks          # Reusable, customizable UI components
 ├── config          # Global theme settings and customization options
-├── layout          # Top-level wrappers for pages (layout templates)
+├── layout          # Top-level page wrappers
 ├── locales         # Translation files for theme internationalization
-├── sections        # Modular full-width page components
 ├── snippets        # Reusable Liquid code or HTML fragments
-└── templates       # Templates combining sections to define page structures
+└── templates       # Liquid composition roots, one per page type
 ```
 
 To learn more, refer to the [theme architecture documentation](https://shopify.dev/docs/storefronts/themes/architecture).
 
+## Block-first composition
+
+Every page is composed from blocks. The composition flows in one direction:
+
+```
+templates/*.liquid → {% block 'container' %} → blocks / snippets / inline markup
+```
+
 ### Templates
 
-[Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) control what's rendered on each type of page in a theme.
+[Templates](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types)
+control what's rendered on each type of page. In this theme they are Liquid
+files (`templates/*.liquid`), not JSON. Each template is a composition root:
+it wraps its page content in one or more `container` blocks — one per vertical
+slice — and composes blocks, snippets, and inline markup inside them. The layout
+renders `content_for_layout` in a plain `<main>` and reserves the `container`
+block for the header and footer only.
 
-The Skeleton Theme scaffolds [JSON templates](https://shopify.dev/docs/storefronts/themes/architecture/templates/json-templates) to make it easy for merchants to customize their store.
+For example, `templates/index.liquid` wraps the `hello-world` block in a
+container:
 
-None of the template types are required, and not all of them are included in the Skeleton Theme. Refer to the [template types reference](https://shopify.dev/docs/storefronts/themes/architecture/templates#template-types) for a full list.
-
-### Sections
-
-[Sections](https://shopify.dev/docs/storefronts/themes/architecture/sections) are Liquid files that allow you to create reusable modules of content that can be customized by merchants. They can also include blocks which allow merchants to add, remove, and reorder content within a section.
-
-Sections are made customizable by including a `{% schema %}` in the body. For more information, refer to the [section schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/sections/section-schema).
+```liquid
+{% block 'container' %}
+  {% block 'hello-world' %}
+    {% block 'liquid-tips', tips: ['hello_world.liquid_tips_1', 'hello_world.liquid_tips_2', 'hello_world.liquid_tips_3'] %}{% endblock %}
+  {% endblock %}
+{% endblock %}
+```
 
 ### Blocks
 
-[Blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks) let developers create flexible layouts by breaking down sections into smaller, reusable pieces of Liquid. Each block has its own set of settings, and can be added, removed, and reordered within a section.
+[Blocks](https://shopify.dev/docs/storefronts/themes/architecture/blocks) are
+the theme's building units. Each block is a single file in `blocks/`, opens with
+a `{% doc %}` header describing its parameters, and ends with a `{% schema %}`
+(no `presets`). A block renders caller-supplied content through
+`{{ content }}` and keeps `{{ block.shopify_attributes }}` on its root
+element for theme-editor support. Self-contained blocks can omit the content
+outlet and accept an empty body.
 
-Blocks are made customizable by including a `{% schema %}` in the body. For more information, refer to the [block schema documentation](https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/schema).
+Executable `{% block %}` calls belong only in `layout/` and `templates/`.
+Nested calls stay in the caller-owned body, rather than in block or snippet
+implementations. The body renders in the caller's scope before the block
+implementation; it cannot read that block's settings or local assignments.
 
-## Schemas
+Pass all parameters as plain named arguments:
 
-When developing components defined by schema settings, we recommend these guidelines to simplify your code:
+```liquid
+{% block 'container', alignment: 'center', tag: 'div' %}
+  {{ page.content }}
+{% endblock %}
+```
 
-- **Single property settings**: For settings that correspond to a single CSS property, use CSS variables:
+Every argument is a plain variable inside the block. Since the container
+schema declares `alignment`, that argument also sets
+`block.settings.alignment`: both reads return `center`. The `tag` argument
+has no matching schema setting, so it is only the variable `tag`. `class`
+is likewise an ordinary parameter with no special platform behavior.
 
-  ```liquid
-  <div class="collection" style="--gap: {{ block.settings.gap }}px">
-    ...
-  </div>
+LiquidDoc documents parameters; it does not declare, validate, or bind them.
+Use schema settings for merchant-editable controls, and document whether body
+content is required (`@param {string} content`) or optional
+(`@param {string} [content]`). Prefer body content for display-only text and
+markup; use parameters for data or choices that affect how a block renders.
+Inline literal arrays, such as the `tips` list above, are supported by the
+block tag; render and partial tags do not accept inline literal arrays.
 
-  {% stylesheet %}
-    .collection {
-      gap: var(--gap);
-    }
-  {% endstylesheet %}
+The `container` block owns a page region's outer layout element. Each template
+wraps its content in one or more `container` blocks, and `layout/theme.liquid`
+wraps the `header` and `footer` blocks in their own containers while rendering
+`content_for_layout` in a plain `<main>`. `blocks/hello-world.liquid` is the
+theme's starter demo block.
 
-  {% schema %}
-  {
-    "settings": [{
-      "type": "range",
-      "label": "gap",
-      "id": "gap",
-      "min": 0,
-      "max": 100,
-      "unit": "px",
-      "default": 0,
-    }]
-  }
-  {% endschema %}
-  ```
+## Non-negotiables
 
-- **Multiple property settings**: For settings that control multiple CSS properties, use CSS classes:
+This theme deliberately excludes the section-based model. When editing it:
 
-  ```liquid
-  <div class="collection {{ block.settings.layout }}">
-    ...
-  </div>
+- No `sections/` directory, and no `{% section %}` / `{% sections %}` tags.
+- No JSON templates and no schema `presets`.
+- No Liquid-embedded assets: keep all CSS and JavaScript in `assets/` rather
+  `{% stylesheet %}` / `{% javascript %}` blocks.
+- Compose pages from blocks and inline markup, not single-use page sections.
+- Invoke blocks only in layouts and templates; render caller bodies with
+  `{{ content }}` inside block implementations.
 
-  {% stylesheet %}
-    .collection--full-width {
-      /* multiple styles */
-    }
-    .collection--narrow {
-      /* multiple styles */
-    }
-  {% endstylesheet %}
+[`AGENTS.md`](./AGENTS.md) is the source of truth for the theme's dialect and the
+full set of rules coding agents follow.
 
-  {% schema %}
-  {
-    "settings": [{
-      "type": "select",
-      "id": "layout",
-      "label": "layout",
-      "values": [
-        { "value": "collection--full-width", "label": "t:options.full" },
-        { "value": "collection--narrow", "label": "t:options.narrow" }
-      ]
-    }]
-  }
-  {% endschema %}
-  ```
+## CSS and JavaScript
 
-## CSS & JavaScript
+All theme CSS and JavaScript live in [`assets/`](./assets/), rather than being
+embedded in Liquid. This keeps blocks focused on markup without requiring
+assets to live in a single file.
 
-For CSS and JavaScript, we recommend using the [`{% stylesheet %}`](https://shopify.dev/docs/api/liquid/tags#stylesheet) and [`{% javascript %}`](https://shopify.dev/docs/api/liquid/tags/javascript) tags. They can be included multiple times, but the code will only appear once.
+## Partial updates
 
-### `critical.css`
+Partials mark named regions of server-rendered HTML that JavaScript can update
+without a full page reload. Wrap only the content that changes. In this theme,
+`blocks/liquid-tips.liquid` wraps the tip sentence in
+`{% partial 'liquid-tip' %}...{% endpartial %}`, and
+`assets/liquid-tips.js` updates it with:
 
-The Skeleton Theme explicitly separates essential CSS necessary for every page into a dedicated `critical.css` file.
+```js
+import { partials } from '@shopify/partial-rendering';
+
+await partials.refresh('liquid-tip');
+```
+
+The Liquid region name and JavaScript target must match. `refresh()` fetches
+and applies updates from the current page URL. Use `fetch()` followed by
+`apply()` for control over the request or when the update appears, and fetch
+related regions together. Build URLs from the current page URL or Liquid
+`routes.*` so requests preserve locale and market routing.
+
+`apply()` preserves focus, text selection, form values, and scroll position.
+If the server corrects a form value, such as a cart quantity, explicitly update
+the control after applying the partial; the returned markup alone does not
+replace its preserved value. Cancel stale requests, provide loading feedback
+and accessible announcements, and restore transient state such as open
+disclosures. Read URL state from `window.location.search` for shared links
+and browser navigation.
+
+The partial tag currently requires `shop.features.agentic_editor_enabled?`
+and StorefrontRenderer; otherwise the storefront raises
+`Unknown tag 'partial'`.
 
 ## Contributing
 

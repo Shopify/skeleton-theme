@@ -47,18 +47,3 @@
 >
   {{ image | image_url: width: width, height: height, crop: crop | image_tag }}
 </{{ wrapper }}>
-
-{% stylesheet %}
-  .image {
-    display: block;
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    height: auto;
-  }
-
-  .image > img {
-    width: 100%;
-    height: auto;
-  }
-{% endstylesheet %}
