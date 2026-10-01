@@ -275,7 +275,8 @@ h6 {
   }
 }
 
-.site-nav-toggle .icon-hamburger {
+.site-nav-toggle .icon-hamburger,
+.site-nav-toggle .icon-close {
   width: 2.5rem;
 }
 

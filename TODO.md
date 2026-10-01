@@ -1,13 +1,16 @@
 # MVP 
 
+- notification bar
+- Quick add on collection pages 
 - better styles overall
 - accessability
+- Look at recent pull request
 
 - Go through all templates again
 - Clean up all code - particularly cart and pdp js
 - html validation
 - performance
-- Look at recent pull request
+- Review all Dawn settings to see what we might want
 
 # Templates https://shopify.dev/docs/storefronts/themes/architecture/templates
 
@@ -41,19 +44,13 @@
 # Various
 
 - Make sure all section previews work
-- white
 - Add to cart errors should be show on page rather than in js alert
 - Potential global js - header.liquid
 - Replace icons with consistent library
-- Discount codes support in carts
-- Quick add on collection pages 
-- Review all Dawn settings to see what we might want
 - Theme Blocks https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/quick-start?framework=liquid (deal with custom-section.liquid & blocks folder)
 - Modify readme
 - Work on performance https://shopify.dev/docs/storefronts/themes/best-practices
 - html validation
-- Custom solution for product gallery instead of swiper?
 - Remove comments from main layout file?
 - Themecheck workflow not working
-- Decide whether or not to use the main layout grid in critical.css
 - Work on accessability https://shopify.dev/docs/storefronts/themes/best-practices
