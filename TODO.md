@@ -1,6 +1,5 @@
 # MVP 
 
-- media in pdp gallery
 - better styles overall
 - accessability
 

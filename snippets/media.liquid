@@ -17,7 +17,9 @@
     </div>
   {% when 'model' %}
     <div class="swiper-slide" data-variant-ids="">
-      {{ media | model_viewer_tag }}
+      <div class="product-gallery-model">
+        {{ media | model_viewer_tag }}
+      </div>
     </div>
   {% else %}
     <div class="swiper-slide" data-variant-ids="">

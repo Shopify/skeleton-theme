@@ -163,13 +163,15 @@
     opacity: 0.6;
   }
 
-  .product-gallery-video {
+  .product-gallery-video,
+  .product-gallery-model {
     padding-top: 100%;
     position: relative;
   }
 
   .product-gallery-video video,
-  .product-gallery-video iframe {
+  .product-gallery-video iframe,
+  .product-gallery-model model-viewer {
     position: absolute;
     top: 0;
     left: 0;
@@ -210,6 +212,27 @@
       spaceBetween: 12,
       watchSlidesProgress: true,
     });
+
+    function pauseGalleryVideos() {
+      document.querySelectorAll('.product-gallery .swiper-slide video').forEach((video) => {
+        if (!video.paused) {
+          video.pause();
+        }
+      });
+
+      document.querySelectorAll('.product-gallery .swiper-slide iframe').forEach((frame) => {
+        if (!frame.src) return;
+
+        try {
+          frame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: [] }), '*');
+          frame.contentWindow?.postMessage(JSON.stringify({ method: 'pause' }), '*');
+        } catch (error) {
+          // Ignore cross-origin iframe controls if the player does not expose a window.
+        }
+      });
+    }
+
+    gallery.on('slideChange', pauseGalleryVideos);
 
     Array.from(document.querySelectorAll('.product-gallery-nav .swiper-slide')).forEach((slide, index) => {
       slide.dataset.index = String(index);
