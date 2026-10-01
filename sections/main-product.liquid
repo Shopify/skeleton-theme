@@ -323,7 +323,7 @@
       gallery.slideTo(0, 0);
     }
 
-    function updateVariantUI() {
+    function updateVariantUI(syncUrl = true) {
       if (!variantSelect) return;
 
       const selectedVariant = productVariants.find((variant) => Number(variant.id) === Number(variantSelect.value));
@@ -334,19 +334,25 @@
       updateBuyButtonState(selectedVariant);
       updatePriceDisplay(selectedVariant);
       updateGalleryForVariant(selectedVariant);
-      updateURLWithVariant(selectedVariant.id);
+
+      if (syncUrl) {
+        updateURLWithVariant(selectedVariant.id);
+      }
     }
 
     // Initialize variant selection based on URL parameter
     if (variantSelect) {
       const initialVariantId = new URLSearchParams(window.location.search).get('variant');
+      const hasVariantInUrl = Boolean(
+        initialVariantId && productVariants.some((variant) => String(variant.id) === initialVariantId)
+      );
 
-      if (initialVariantId && productVariants.some((variant) => String(variant.id) === initialVariantId)) {
+      if (hasVariantInUrl) {
         variantSelect.value = String(initialVariantId);
       }
 
-      updateVariantUI();
-      variantSelect.addEventListener('change', updateVariantUI);
+      updateVariantUI(hasVariantInUrl);
+      variantSelect.addEventListener('change', () => updateVariantUI(true));
     }
 
     // Update variant based on selected options
@@ -370,7 +376,7 @@
 
       variantSelect.value = String(matchingVariant.id);
       updateURLWithVariant(matchingVariant.id);
-      updateVariantUI();
+      updateVariantUI(false);
     }
 
     document.querySelectorAll('.product-option-input').forEach((input) => {
