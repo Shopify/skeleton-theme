@@ -42,44 +42,60 @@
         {% endfor %}
       </div>
     </div>
-    <div class="product-gallery-nav swiper">
-      <div class="swiper-wrapper">
-        {% if selected_variant.image != blank %}
-          <div class="swiper-slide" data-variant-ids="{{ selected_variant.image.variants | map: 'id' | join: ',' }}">
-            {{
-              selected_variant.image
-              | image_url: width: 400, height: 400, crop: 'center'
-              | image_tag: sizes: '100px', loading: 'eager'
-            }}
-          </div>
-        {% endif %}
-        {% for image in variant_images %}
-          {% unless image.id == selected_variant.image.id %}
-            <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
-              <div class="product-image">
-                {{
-                  image
-                  | image_url: width: 400, height: 400, crop: 'center'
-                  | image_tag: sizes: '100px', loading: 'eager'
-                }}
-              </div>
+    <div class="product-gallery-nav-wrap">
+      <button
+        type="button"
+        class="product-gallery-nav-button product-gallery-nav-button-prev"
+        aria-label="Previous thumbnail"
+      >
+        ←
+      </button>
+      <div class="product-gallery-nav swiper">
+        <div class="swiper-wrapper">
+          {% if selected_variant.image != blank %}
+            <div class="swiper-slide" data-variant-ids="{{ selected_variant.image.variants | map: 'id' | join: ',' }}">
+              {{
+                selected_variant.image
+                | image_url: width: 400, height: 400, crop: 'center'
+                | image_tag: sizes: '100px', loading: 'eager'
+              }}
             </div>
-          {% endunless %}
-        {% endfor %}
-        {% for media in product.media %}
-          {% unless variant_images contains media %}
-            <div class="swiper-slide" data-variant-ids="">
-              <div class="product-image">
-                {{
-                  media.preview_image
-                  | image_url: width: 400, height: 400, crop: 'center'
-                  | image_tag: sizes: '100px', loading: 'eager'
-                }}
+          {% endif %}
+          {% for image in variant_images %}
+            {% unless image.id == selected_variant.image.id %}
+              <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
+                <div class="product-image">
+                  {{
+                    image
+                    | image_url: width: 400, height: 400, crop: 'center'
+                    | image_tag: sizes: '100px', loading: 'eager'
+                  }}
+                </div>
               </div>
-            </div>
-          {% endunless %}
-        {% endfor %}
+            {% endunless %}
+          {% endfor %}
+          {% for media in product.media %}
+            {% unless variant_images contains media %}
+              <div class="swiper-slide" data-variant-ids="">
+                <div class="product-image">
+                  {{
+                    media.preview_image
+                    | image_url: width: 400, height: 400, crop: 'center'
+                    | image_tag: sizes: '100px', loading: 'eager'
+                  }}
+                </div>
+              </div>
+            {% endunless %}
+          {% endfor %}
+        </div>
       </div>
+      <button
+        type="button"
+        class="product-gallery-nav-button product-gallery-nav-button-next"
+        aria-label="Next thumbnail"
+      >
+        →
+      </button>
     </div>
   </div>
   <div>
@@ -179,13 +195,48 @@
     height: 100%;
   }
 
-  .product-gallery-nav {
+  .product-gallery-nav-wrap {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
     margin-top: 1rem;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .product-gallery-nav {
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
   }
 
   .product-gallery-nav .swiper-slide {
     width: 10rem;
     cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .product-gallery-nav-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    min-width: 2.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #fff;
+    color: #111;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1;
+    z-index: 1;
+  }
+
+  .product-gallery-nav-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 {% endstylesheet %}
 
@@ -211,6 +262,10 @@
       slidesPerView: 'auto',
       spaceBetween: 12,
       watchSlidesProgress: true,
+      navigation: {
+        nextEl: '.product-gallery-nav-button-next',
+        prevEl: '.product-gallery-nav-button-prev',
+      },
     });
 
     function pauseGalleryVideos() {
