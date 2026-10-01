@@ -29,17 +29,16 @@
             </div>
           {% endunless %}
         {% endfor %}
-
-        {% for image in other_images %}
-          <div class="swiper-slide" data-variant-ids="">
+        {% for media in product.media %}
+          {% unless variant_images contains media %}
             {% if first_shown %}
               {% assign loading = 'lazy' %}
             {% else %}
               {% assign loading = 'eager' %}
               {% assign first_shown = true %}
             {% endif %}
-            {% render 'image-pdp', image: image, loading: loading %}
-          </div>
+            {% render 'media', media: media, loading: loading %}
+          {% endunless %}
         {% endfor %}
       </div>
     </div>
@@ -67,16 +66,18 @@
             </div>
           {% endunless %}
         {% endfor %}
-        {% for image in other_images %}
-          <div class="swiper-slide" data-variant-ids="">
-            <div class="product-image">
-              {{
-                image
-                | image_url: width: 400, height: 400, crop: 'center'
-                | image_tag: sizes: '100px', loading: 'eager'
-              }}
+        {% for media in product.media %}
+          {% unless variant_images contains media %}
+            <div class="swiper-slide" data-variant-ids="">
+              <div class="product-image">
+                {{
+                  media.preview_image
+                  | image_url: width: 400, height: 400, crop: 'center'
+                  | image_tag: sizes: '100px', loading: 'eager'
+                }}
+              </div>
             </div>
-          </div>
+          {% endunless %}
         {% endfor %}
       </div>
     </div>
@@ -160,6 +161,20 @@
   .product-price-compare {
     text-decoration: line-through;
     opacity: 0.6;
+  }
+
+  .product-gallery-video {
+    padding-top: 100%;
+    position: relative;
+  }
+
+  .product-gallery-video video,
+  .product-gallery-video iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 
   .product-gallery-nav {

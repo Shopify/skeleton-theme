@@ -1,0 +1,26 @@
+{% case media.media_type %}
+  {% when 'image' %}
+    <div class="swiper-slide" data-variant-ids="">
+      {% render 'image-pdp', image: media, loading: loading %}
+    </div>
+  {% when 'external_video' %}
+    <div class="swiper-slide" data-variant-ids="">
+      <div class="product-gallery-video">
+        {{ media | external_video_tag }}
+      </div>
+    </div>
+  {% when 'video' %}
+    <div class="swiper-slide" data-variant-ids="">
+      <div class="product-gallery-video">
+        {{ media | video_tag: controls: true }}
+      </div>
+    </div>
+  {% when 'model' %}
+    <div class="swiper-slide" data-variant-ids="">
+      {{ media | model_viewer_tag }}
+    </div>
+  {% else %}
+    <div class="swiper-slide" data-variant-ids="">
+      {{ media | media_tag }}
+    </div>
+{% endcase %}

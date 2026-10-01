@@ -1,13 +1,14 @@
 # MVP 
 
-- media in pdp gallery - url shouldn't update on initial page load
+- media in pdp gallery
 - better styles overall
 - accessability
 
 - Go through all templates again
-- Clean up all code
+- Clean up all code - particularly cart and pdp js
 - html validation
 - performance
+- Look at recent pull request
 
 # Templates https://shopify.dev/docs/storefronts/themes/architecture/templates
 
