@@ -1,8 +1,8 @@
 # MVP 
 
+- media in pdp gallery - url shouldn't update on initial page load
 - better styles overall
 - accessability
-- videos in pdp gallery
 
 - Go through all templates again
 - Clean up all code

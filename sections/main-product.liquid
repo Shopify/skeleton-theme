@@ -1,41 +1,23 @@
 <script defer src="{{ 'swiper-bundle.min.js' | asset_url }}"></script>
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 
-{% assign selected_variant = product.selected_or_first_available_variant %}
-{% assign selected_variant_image_id = null %}
-{% for image in product.images %}
-  {% if image.attached_to_variant? %}
-    {% assign is_selected_variant_image = false %}
-    {% for variant in image.variants %}
-      {% if variant.id == selected_variant.id %}
-        {% assign is_selected_variant_image = true %}
-      {% endif %}
-    {% endfor %}
-
-    {% if is_selected_variant_image %}
-      {% assign selected_variant_image_id = image.id %}
-      {% break %}
-    {% endif %}
-  {% endif %}
-{% endfor %}
-
+{% assign variant_images = product.images | where: 'attached_to_variant?', true %}
 {% assign other_images = product.images | reject: 'attached_to_variant?', true %}
+{% assign selected_variant = product.selected_or_first_available_variant %}
 {% assign first_shown = false %}
 
 <div class="product-main">
   <div class="product-main-images">
     <div class="product-gallery swiper">
       <div class="swiper-wrapper">
-        {% for image in product.images %}
-          {% if image.attached_to_variant? and image.id == selected_variant_image_id %}
-            <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
-              {% assign first_shown = true %}
-              {% render 'image-pdp', image: image, preload: true %}
-            </div>
-          {% endif %}
-        {% endfor %}
-        {% for image in product.images %}
-          {% if image.attached_to_variant? and image.id != selected_variant_image_id %}
+        {% if selected_variant.image != blank %}
+          {% assign first_shown = true %}
+          <div class="swiper-slide" data-variant-ids="{{ selected_variant.image.variants | map: 'id' | join: ',' }}">
+            {% render 'image-pdp', image: selected_variant.image, preload: true %}
+          </div>
+        {% endif %}
+        {% for image in variant_images %}
+          {% unless image.id == selected_variant.image.id %}
             <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
               {% if first_shown %}
                 {% assign loading = 'lazy' %}
@@ -45,8 +27,9 @@
               {% endif %}
               {% render 'image-pdp', image: image, loading: loading %}
             </div>
-          {% endif %}
+          {% endunless %}
         {% endfor %}
+
         {% for image in other_images %}
           <div class="swiper-slide" data-variant-ids="">
             {% if first_shown %}
@@ -62,8 +45,17 @@
     </div>
     <div class="product-gallery-nav swiper">
       <div class="swiper-wrapper">
-        {% for image in product.images %}
-          {% if image.attached_to_variant? and image.id == selected_variant_image_id %}
+        {% if selected_variant.image != blank %}
+          <div class="swiper-slide" data-variant-ids="{{ selected_variant.image.variants | map: 'id' | join: ',' }}">
+            {{
+              selected_variant.image
+              | image_url: width: 400, height: 400, crop: 'center'
+              | image_tag: sizes: '100px', loading: 'eager'
+            }}
+          </div>
+        {% endif %}
+        {% for image in variant_images %}
+          {% unless image.id == selected_variant.image.id %}
             <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
               <div class="product-image">
                 {{
@@ -73,20 +65,7 @@
                 }}
               </div>
             </div>
-          {% endif %}
-        {% endfor %}
-        {% for image in product.images %}
-          {% if image.attached_to_variant? and image.id != selected_variant_image_id %}
-            <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
-              <div class="product-image">
-                {{
-                  image
-                  | image_url: width: 400, height: 400, crop: 'center'
-                  | image_tag: sizes: '100px', loading: 'lazy'
-                }}
-              </div>
-            </div>
-          {% endif %}
+          {% endunless %}
         {% endfor %}
         {% for image in other_images %}
           <div class="swiper-slide" data-variant-ids="">
