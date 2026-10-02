@@ -248,6 +248,7 @@
 {% stylesheet %}
   .collection-toolbar {
     margin-block: 1.5rem;
+    color: rgba(0, 0, 0, 0.7);
   }
 
   .collection-filters {
@@ -451,6 +452,19 @@
     height: 0.6rem;
     position: relative;
     top: 0.1rem;
+  }
+
+  .collection-filter-content {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.98);
+    transform-origin: top center;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    will-change: opacity, transform;
+  }
+
+  .collection-filter[open] .collection-filter-content {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 
   @media (min-width: 768px) {
