@@ -50,5 +50,4 @@
 - Work on performance https://shopify.dev/docs/storefronts/themes/best-practices - - defer css - use assets instead of inline? - https://shopify.dev/docs/storefronts/themes/best-practices/performance/defer-non-critical-resources
 - html validation
 - Remove comments from main layout file?
-- Themecheck workflow not working
 - Work on accessability https://shopify.dev/docs/storefronts/themes/best-practices
