@@ -420,6 +420,7 @@ h6 {
 }
 
 .form-group-label {
+  pointer-events: none;
   position: absolute;
   left: 1.5rem;
   top: 1rem;

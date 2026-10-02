@@ -66,11 +66,18 @@
                                   {% endif %}
                                 {% endif %}
 
+                                {% unless filter_value.swatch != blank %}
+                                  <span class="fancy-checkbox">
+                                    {{- 'icon-square.svg' | inline_asset_content -}}
+                                    {{- 'icon-checkmark.svg' | inline_asset_content -}}
+                                  </span>
+                                {% endunless %}
+
                                 <span class="collection-filter-value-label">{{ filter_value.label }}</span>
                                 <span class="collection-filter-value-count">({{ filter_value.count }})</span>
                               </label>
                             </li>
-                          {% endfor %}
+                          {%- endfor %}
                         </ul>
 
                       {% when 'price_range' %}
@@ -90,14 +97,9 @@
                           | default: '100'
                         %}
 
-                        <div
-                          class="collection-filter-price-range"
-                          data-range-min="{{ slider_min }}"
-                          data-range-max="{{ slider_max }}"
-                        >
+                        <div class="collection-filter-price-range">
                           <div class="collection-filter-price-range-inputs">
-                            <label>
-                              <span>{{ 'filters.from' | t }}</span>
+                            <div class="form-group">
                               <input
                                 type="number"
                                 name="{{ filter.min_value.param_name }}"
@@ -105,14 +107,16 @@
                                 min="{{ slider_min }}"
                                 max="{{ slider_max }}"
                                 placeholder="{{ slider_min }}"
-                                class="collection-price-input collection-price-input-min"
+                                class="collection-price-input collection-price-input-min form-group-input"
                               >
-                            </label>
+                              <label for="{{ filter.min_value.param_name }}" class="form-group-label">
+                                {{- 'filters.from' | t -}}
+                              </label>
+                            </div>
 
                             <span class="collection-filter-price-range-separator">-</span>
 
-                            <label>
-                              <span>{{ 'filters.to' | t }}</span>
+                            <div class="form-group">
                               <input
                                 type="number"
                                 name="{{ filter.max_value.param_name }}"
@@ -120,34 +124,12 @@
                                 min="{{ slider_min }}"
                                 max="{{ slider_max }}"
                                 placeholder="{{ slider_max }}"
-                                class="collection-price-input collection-price-input-max"
+                                class="collection-price-input collection-price-input-max form-group-input"
                               >
-                            </label>
-                          </div>
-
-                          <div class="collection-price-slider">
-                            <div class="collection-price-track">
-                              <div class="collection-price-range-line"></div>
+                              <label for="{{ filter.max_value.param_name }}" class="form-group-label">
+                                {{- 'filters.to' | t -}}
+                              </label>
                             </div>
-
-                            <input
-                              type="range"
-                              min="{{ slider_min }}"
-                              max="{{ slider_max }}"
-                              value="{{ min_value }}"
-                              step="1"
-                              class="collection-price-range-slider collection-price-range-slider-min"
-                              aria-label="{{ 'filters.min_price' | t }}"
-                            >
-                            <input
-                              type="range"
-                              min="{{ slider_min }}"
-                              max="{{ slider_max }}"
-                              value="{{ max_value }}"
-                              step="1"
-                              class="collection-price-range-slider collection-price-range-slider-max"
-                              aria-label="{{ 'filters.max_price' | t }}"
-                            >
                           </div>
                         </div>
                     {% endcase %}
@@ -365,6 +347,7 @@
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     border: 1px solid var(--color-border);
+    border-radius: 2.6rem;
     background: transparent;
     color: inherit;
     text-decoration: none;
@@ -397,10 +380,14 @@
 
   .collection-sort select {
     padding: 0.65rem 1rem;
-    border: 1px solid var(--color-border);
+    border: none;
     background: transparent;
     color: inherit;
     font: inherit;
+  }
+
+  .collection-sort select:focus {
+    outline: 0.2rem solid var(--color-border);
   }
 
   .collection-filters-header {
@@ -473,6 +460,8 @@
       left: 0;
       top: 100%;
       width: 35rem;
+      max-height: 55rem;
+      overflow-y: auto;
       padding: 1rem;
       background: var(--color-background);
       border: 1px solid var(--color-border);
@@ -481,7 +470,7 @@
 
   .collection-filter-values {
     display: grid;
-    gap: 0.625rem;
+    gap: 1.5rem;
     margin: 0;
     padding: 0;
   }
@@ -502,7 +491,47 @@
     margin: 0;
   }
 
-  .collection-filter-swatch {
+  .collection-filter-value:not(.is-color-value) input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  .collection-filter-value:not(.is-color-value) .fancy-checkbox {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    flex-shrink: 0;
+    color: var(--color-foreground);
+  }
+
+  .collection-filter-value:not(.is-color-value) .fancy-checkbox .icon-square,
+  .collection-filter-value:not(.is-color-value) .fancy-checkbox .icon-checkmark {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .collection-filter-value:not(.is-color-value) .fancy-checkbox .icon-checkmark {
+    position: absolute;
+    inset: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .collection-filter-value:not(.is-color-value) input:checked + .fancy-checkbox .icon-checkmark,
+  .collection-filter-value:not(.is-color-value) input:focus-visible + .fancy-checkbox .icon-checkmark {
+    opacity: 1;
+  }
+
+  .collection-filter-value .collection-filter-swatch {
     width: 1.75rem;
     height: 1.75rem;
     border: 1px solid var(--color-border);
@@ -525,21 +554,20 @@
     height: 0;
   }
 
+  .collection-filter-value-label {
+    font-size: 1.4rem;
+    line-height: 1.2;
+  }
+
   .collection-filter-value.is-color-value .collection-filter-value-label,
   .collection-filter-value.is-color-value .collection-filter-value-count {
     display: block;
-    font-size: 1.1rem;
-    line-height: 1.2;
     text-align: center;
   }
 
-  .collection-filter-value.is-color-value .collection-filter-value-count {
-    opacity: 0.7;
-  }
-
   .collection-filter-value.is-color-value .collection-filter-swatch {
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-color: rgba(0, 0, 0, 0.15);
   }
 
@@ -551,10 +579,6 @@
 
   .collection-filter-value.is-color-value input:disabled + .collection-filter-swatch {
     opacity: 0.2;
-  }
-
-  .collection-filter-value-count {
-    opacity: 0.7;
   }
 
   .collection-filter-price-range {
@@ -569,12 +593,6 @@
     gap: 0.75rem;
   }
 
-  .collection-filter-price-range label {
-    display: grid;
-    gap: 0.375rem;
-    font-size: 0.875rem;
-  }
-
   .collection-filter-price-range-separator {
     display: grid;
     place-items: center;
@@ -582,103 +600,6 @@
     font-size: 1.8rem;
     line-height: 1;
     opacity: 0.8;
-  }
-
-  .collection-filter-price-range input[type='number'] {
-    width: 100%;
-    padding: 0.75rem 0.875rem;
-    border: 1px solid var(--color-border);
-    background: transparent;
-    color: inherit;
-    font: inherit;
-  }
-
-  .collection-price-slider {
-    position: relative;
-    height: 2.5rem;
-    display: grid;
-    align-items: center;
-  }
-
-  .collection-price-track {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 0.25rem;
-    transform: translateY(-50%);
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.2);
-  }
-
-  .collection-price-range-line {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: var(--color-foreground);
-    transform-origin: left center;
-  }
-
-  .collection-price-range-slider {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    background: transparent;
-    pointer-events: none;
-    -webkit-appearance: none;
-    appearance: none;
-    z-index: 1;
-  }
-
-  .collection-price-range-slider-max {
-    z-index: 2;
-  }
-
-  .collection-price-range-slider::-webkit-slider-runnable-track {
-    height: 0.25rem;
-    background: transparent;
-  }
-
-  .collection-price-range-slider::-moz-range-track {
-    height: 0.25rem;
-    background: transparent;
-  }
-
-  .collection-price-range-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
-    border: 2px solid var(--color-background);
-    background: var(--color-foreground);
-    margin-top: -0.625rem;
-    pointer-events: auto;
-    cursor: pointer;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
-    transform: translateX(-50%);
-  }
-
-  .collection-price-range-slider-max::-webkit-slider-thumb {
-    transform: translateX(50%);
-  }
-
-  .collection-price-range-slider::-moz-range-thumb {
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
-    border: 2px solid var(--color-background);
-    background: var(--color-foreground);
-    pointer-events: auto;
-    cursor: pointer;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
-    transform: translateX(-50%);
-  }
-
-  .collection-price-range-slider-max::-moz-range-thumb {
-    transform: translateX(50%);
   }
 
   .collection-filters-apply {
@@ -717,45 +638,6 @@
       });
     });
 
-    const syncPriceRangeSlider = (group) => {
-      const minInput = group.querySelector('.collection-price-input-min');
-      const maxInput = group.querySelector('.collection-price-input-max');
-      const minSlider = group.querySelector('.collection-price-range-slider-min');
-      const maxSlider = group.querySelector('.collection-price-range-slider-max');
-      const rangeLine = group.querySelector('.collection-price-range-line');
-
-      if (!minInput || !maxInput || !minSlider || !maxSlider || !rangeLine) {
-        return;
-      }
-
-      const min = Number(group.dataset.rangeMin || 0);
-      const max = Number(group.dataset.rangeMax || 100);
-      const hasSelection = String(minInput.value).trim() !== '' || String(maxInput.value).trim() !== '';
-
-      if (!hasSelection) {
-        minSlider.value = min;
-        maxSlider.value = max;
-        minInput.value = '';
-        maxInput.value = '';
-        rangeLine.style.left = '0%';
-        rangeLine.style.width = '100%';
-        return;
-      }
-
-      const minValue = Math.min(Number(minInput.value || min), Number(maxInput.value || max));
-      const maxValue = Math.max(Number(minInput.value || min), Number(maxInput.value || max));
-
-      const leftPercent = ((Math.min(Math.max(minValue, min), max) - min) / (max - min || 1)) * 100;
-      const rightPercent = ((Math.min(Math.max(maxValue, min), max) - min) / (max - min || 1)) * 100;
-
-      minSlider.value = Math.min(minValue, maxValue);
-      maxSlider.value = Math.max(minValue, maxValue);
-      minInput.value = minSlider.value;
-      maxInput.value = maxSlider.value;
-      rangeLine.style.left = `${leftPercent}%`;
-      rangeLine.style.width = `${Math.max(rightPercent - leftPercent, 0)}%`;
-    };
-
     const bindPriceRangeGroup = (group) => {
       if (!group || group.dataset.priceRangeBound === 'true') {
         return;
@@ -765,10 +647,8 @@
 
       const minInput = group.querySelector('.collection-price-input-min');
       const maxInput = group.querySelector('.collection-price-input-max');
-      const minSlider = group.querySelector('.collection-price-range-slider-min');
-      const maxSlider = group.querySelector('.collection-price-range-slider-max');
 
-      if (!minInput || !maxInput || !minSlider || !maxSlider) {
+      if (!minInput || !maxInput) {
         return;
       }
 
@@ -784,31 +664,8 @@
               minInput.value = maxInput.value;
             }
           }
-
-          syncPriceRangeSlider(group);
         });
       });
-
-      [minSlider, maxSlider].forEach((slider) => {
-        slider.addEventListener('input', () => {
-          const minValue = Number(minSlider.value || 0);
-          const maxValue = Number(maxSlider.value || 0);
-
-          if (minValue > maxValue) {
-            if (slider === minSlider) {
-              maxSlider.value = minSlider.value;
-            } else {
-              minSlider.value = maxSlider.value;
-            }
-          }
-
-          minInput.value = minSlider.value;
-          maxInput.value = maxSlider.value;
-          syncPriceRangeSlider(group);
-        });
-      });
-
-      syncPriceRangeSlider(group);
     };
 
     document.querySelectorAll('.collection-filter-price-range').forEach((group) => {
@@ -830,9 +687,46 @@
       return url.toString();
     };
 
+    const syncFilterFormState = (url) => {
+      const form = document.querySelector('.collection-filters');
+
+      if (!form) {
+        return;
+      }
+
+      const searchParams = new URL(url, window.location.origin).searchParams;
+
+      form.querySelectorAll('input, select').forEach((field) => {
+        const name = field.name;
+
+        if (!name) {
+          return;
+        }
+
+        if (field instanceof HTMLInputElement && field.type === 'checkbox') {
+          const values = searchParams.getAll(name);
+          field.checked = values.includes(field.value);
+          return;
+        }
+
+        if (field instanceof HTMLInputElement && (field.type === 'number' || field.type === 'range')) {
+          const value = searchParams.get(name);
+          field.value = value ?? '';
+          return;
+        }
+
+        if (field instanceof HTMLSelectElement) {
+          const value = searchParams.get(name);
+          field.value = value ?? '';
+        }
+      });
+    };
+
     let activeCollectionRequest = null;
 
-    const updateCollectionProducts = async (url) => {
+    const updateCollectionProducts = async (url, options = {}) => {
+      const { reloadFilterBar = false } = options;
+
       if (activeCollectionRequest) {
         activeCollectionRequest.abort();
       }
@@ -860,7 +754,7 @@
         const currentCollectionFilters = document.querySelector('.collection-filters');
         const currentProductCounts = document.querySelectorAll('.collection-product-count');
 
-        if (nextCollectionFilters && currentCollectionFilters) {
+        if (reloadFilterBar && nextCollectionFilters && currentCollectionFilters) {
           currentCollectionFilters.replaceWith(nextCollectionFilters);
         }
 
@@ -907,6 +801,7 @@
           }
         }
 
+        syncFilterFormState(url);
         setupCollectionFilterInteractions();
         window.history.pushState({ path: url }, '', url);
       } catch (error) {
@@ -971,11 +866,19 @@
         return;
       }
 
+      const clickedInsideFilter = event.target.closest('.collection-filter, .collection-toolbar-details');
+
+      if (!clickedInsideFilter) {
+        document.querySelectorAll('.collection-filter[open]').forEach((group) => {
+          group.removeAttribute('open');
+        });
+      }
+
       const activeFilterLink = event.target.closest('.collection-active-filter');
 
       if (activeFilterLink) {
         event.preventDefault();
-        updateCollectionProducts(activeFilterLink.href);
+        updateCollectionProducts(activeFilterLink.href, { reloadFilterBar: true });
         return;
       }
 
@@ -986,7 +889,7 @@
       }
 
       event.preventDefault();
-      updateCollectionProducts(clearLink.href);
+      updateCollectionProducts(clearLink.href, { reloadFilterBar: true });
     });
   };
 
