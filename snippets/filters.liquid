@@ -586,6 +586,17 @@
     gap: 1rem;
   }
 
+  .collection-price-input {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  .collection-price-input::-webkit-outer-spin-button,
+  .collection-price-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
   .collection-filter-price-range-inputs {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -654,13 +665,24 @@
 
       [minInput, maxInput].forEach((input) => {
         input.addEventListener('input', () => {
-          const minValue = Number(minInput.value || 0);
-          const maxValue = Number(maxInput.value || 0);
+          const minText = minInput.value.trim();
+          const maxText = maxInput.value.trim();
+
+          if (minText === '' || maxText === '') {
+            return;
+          }
+
+          const minValue = Number(minText);
+          const maxValue = Number(maxText);
+
+          if (Number.isNaN(minValue) || Number.isNaN(maxValue)) {
+            return;
+          }
 
           if (minValue > maxValue) {
             if (document.activeElement === minInput) {
               maxInput.value = minInput.value;
-            } else {
+            } else if (document.activeElement === maxInput) {
               minInput.value = maxInput.value;
             }
           }

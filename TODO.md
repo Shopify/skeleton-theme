@@ -1,5 +1,6 @@
 # MVP 
 
+- Filter styles
 - Quick add on collection pages 
 - better styles overall
 - accessability
