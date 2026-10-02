@@ -2,7 +2,6 @@
 {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
 
 {% assign variant_images = product.images | where: 'attached_to_variant?', true %}
-{% assign other_images = product.images | reject: 'attached_to_variant?', true %}
 {% assign selected_variant = product.selected_or_first_available_variant %}
 {% assign first_shown = false %}
 
