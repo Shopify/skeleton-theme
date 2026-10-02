@@ -1,10 +1,8 @@
 # MVP 
 
-- notification bar
 - Quick add on collection pages 
 - better styles overall
 - accessability
-- Look at recent pull request
 
 - Go through all templates again
 - Clean up all code - particularly cart and pdp js
@@ -49,7 +47,7 @@
 - Replace icons with consistent library
 - Theme Blocks https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/quick-start?framework=liquid (deal with custom-section.liquid & blocks folder)
 - Modify readme
-- Work on performance https://shopify.dev/docs/storefronts/themes/best-practices
+- Work on performance https://shopify.dev/docs/storefronts/themes/best-practices - - defer css - use assets instead of inline? - https://shopify.dev/docs/storefronts/themes/best-practices/performance/defer-non-critical-resources
 - html validation
 - Remove comments from main layout file?
 - Themecheck workflow not working

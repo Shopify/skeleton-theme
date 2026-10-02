@@ -1,0 +1,186 @@
+{%- if section.blocks.size > 0 -%}
+  <div
+    class="announcement-bar full-width contained"
+    role="region"
+    aria-live="polite"
+    aria-label="Announcement bar"
+    data-rotate-speed="{{ section.settings.rotate_speed | default: 5 | times: 1000 }}"
+    data-autoplay="{{ section.settings.autoplay }}"
+  >
+    <div class="container">
+      <div class="announcement-bar-track">
+        {% for block in section.blocks %}
+          {% if block.settings.text != blank %}
+            <div
+              class="announcement-bar-item{% if forloop.first %} is-active{% endif %}"
+              {% if forloop.first %}
+                aria-hidden="false"
+              {% else %}
+                aria-hidden="true"
+              {% endif %}
+              {{ block.shopify_attributes }}
+            >
+              {% if block.settings.link != blank %}
+                <a href="{{ block.settings.link }}">{{ block.settings.text | escape }}</a>
+              {% else %}
+                <span>{{ block.settings.text | escape }}</span>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% style %}
+  .announcement-bar {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    text-align: center;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    padding: 1rem;
+  }
+
+  .announcement-bar-track {
+    position: relative;
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .announcement-bar-item {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+    padding: 0.75rem 1rem;
+  }
+
+  .announcement-bar-item.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .announcement-bar-item a,
+  .announcement-bar-item span {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .announcement-bar-item a:hover,
+  .announcement-bar-item a:focus {
+    text-decoration: underline;
+  }
+{% endstyle %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const announcementBars = document.querySelectorAll('.announcement-bar');
+
+    announcementBars.forEach((bar) => {
+      const items = Array.from(bar.querySelectorAll('.announcement-bar-item'));
+      const shouldAutoplay = bar.dataset.autoplay === 'true';
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (items.length < 2 || !shouldAutoplay || prefersReducedMotion) {
+        if (items.length) {
+          items.forEach((item, index) => {
+            item.classList.toggle('is-active', index === 0);
+            item.setAttribute('aria-hidden', index === 0 ? 'false' : 'true');
+          });
+        }
+        return;
+      }
+
+      const rotateSpeed = Number(bar.dataset.rotateSpeed) || 5000;
+      let activeIndex = 0;
+
+      const showItem = (index) => {
+        items.forEach((item, itemIndex) => {
+          const isActive = itemIndex === index;
+          item.classList.toggle('is-active', isActive);
+          item.setAttribute('aria-hidden', String(!isActive));
+        });
+      };
+
+      showItem(activeIndex);
+
+      setInterval(() => {
+        activeIndex = (activeIndex + 1) % items.length;
+        showItem(activeIndex);
+      }, rotateSpeed);
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate announcements",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "rotate_speed",
+      "label": "Rotation speed (seconds)",
+      "min": 3,
+      "max": 15,
+      "step": 1,
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "Announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free shipping over $50"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar",
+      "blocks": [
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping over $50"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "New arrivals now in stock"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

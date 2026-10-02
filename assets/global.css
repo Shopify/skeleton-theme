@@ -103,6 +103,15 @@ body {
   grid-column: 1 / -1;
 }
 
+.shopify-section > .full-width.contained {
+  display: grid;
+  grid-template-columns: var(--content-grid);
+}
+
+.full-width .container {
+  grid-column: 2;
+}
+
 /* --------------- Headings --------------- */
 h1,
 h2,
