@@ -469,15 +469,14 @@
         }
 
         try {
-          const response = await fetch('/cart/change.js', {
+          const response = await fetch('/cart/update.js', {
             ...fetchOptions,
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             },
             body: new URLSearchParams({
-              id: itemKey,
-              quantity: 0,
+              [`updates[${itemKey}]`]: 0,
               sections: 'main-cart',
             }),
           });

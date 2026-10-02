@@ -403,19 +403,30 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Close cart drawer when clicking outside of it
-    document.querySelector('.cart-drawer-container').addEventListener('click', (e) => {
-      if (e.target === document.querySelector('.cart-drawer-container')) {
-        document.querySelector('.cart-drawer-container').classList.remove('active');
-        document.querySelector('body').classList.remove('overflow-hidden');
+    const cartDrawerContainer = document.querySelector('.cart-drawer-container');
+    const cartDrawer = cartDrawerContainer ? cartDrawerContainer.querySelector('.cart-drawer') : null;
+
+    const closeCartDrawer = () => {
+      if (cartDrawerContainer) {
+        cartDrawerContainer.classList.remove('active');
       }
-    });
+      document.body.classList.remove('overflow-hidden');
+    };
+
+    // Close cart drawer when clicking outside of it
+    if (cartDrawerContainer) {
+      cartDrawerContainer.addEventListener('click', (event) => {
+        if (event.target === cartDrawerContainer) {
+          closeCartDrawer();
+        }
+      });
+    }
 
     // Close button
-    document.querySelector('.cart-drawer-close').addEventListener('click', () => {
-      document.querySelector('.cart-drawer-container').classList.remove('active');
-      document.querySelector('body').classList.remove('overflow-hidden');
-    });
+    const closeButton = document.querySelector('.cart-drawer-close');
+    if (closeButton) {
+      closeButton.addEventListener('click', closeCartDrawer);
+    }
 
     // Update cart drawer contents asynchronously
     const fetchOptions = {
@@ -431,19 +442,28 @@
         const data = await response.json();
         const sectionHtml = data['cart-drawer'];
 
+        if (!sectionHtml || !cartDrawerContainer) return;
+
         const parser = new DOMParser();
         const parsedHtml = parser.parseFromString(sectionHtml, 'text/html');
-        const cartContents = parsedHtml.querySelector('.cart-drawer-contents');
-        const cartContentsTarget = document.querySelector('.cart-drawer-contents');
-        const cartFooter = parsedHtml.querySelector('.cart-drawer-footer');
-        const cartFooterTarget = document.querySelector('.cart-drawer-footer');
+        const refreshedDrawer = parsedHtml.querySelector('.cart-drawer-container');
 
-        if (cartContents && cartContentsTarget) {
-          cartContentsTarget.innerHTML = cartContents.innerHTML;
+        if (refreshedDrawer) {
+          cartDrawerContainer.innerHTML = refreshedDrawer.innerHTML;
+          const refreshedCloseButton = cartDrawerContainer.querySelector('.cart-drawer-close');
+          if (refreshedCloseButton) {
+            refreshedCloseButton.addEventListener('click', closeCartDrawer);
+          }
+          return;
         }
 
-        if (cartFooter && cartFooterTarget) {
-          cartFooterTarget.innerHTML = cartFooter.innerHTML;
+        const refreshedCartDrawer = parsedHtml.querySelector('.cart-drawer');
+        if (refreshedCartDrawer && cartDrawer) {
+          cartDrawer.innerHTML = refreshedCartDrawer.innerHTML;
+          const refreshedCloseButton = cartDrawer.querySelector('.cart-drawer-close');
+          if (refreshedCloseButton) {
+            refreshedCloseButton.addEventListener('click', closeCartDrawer);
+          }
         }
       } catch (error) {
         console.error(error);
@@ -542,8 +562,8 @@
       }
     };
 
-    if (cartDrawerContents) {
-      cartDrawerContents.addEventListener('click', async (event) => {
+    if (cartDrawerContainer) {
+      cartDrawerContainer.addEventListener('click', async (event) => {
         const removeButton = event.target.closest('.cart-drawer-item-remove');
 
         if (removeButton) {
@@ -557,15 +577,14 @@
           }
 
           try {
-            const response = await fetch('/cart/change.js', {
+            const response = await fetch('/cart/update.js', {
               ...fetchOptions,
               method: 'POST',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
               },
               body: new URLSearchParams({
-                id: itemKey,
-                quantity: 0,
+                [`updates[${itemKey}]`]: 0,
               }),
             });
 
