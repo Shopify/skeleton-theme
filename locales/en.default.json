@@ -44,7 +44,11 @@
       "other": "{{ count }} products"
     },
     "sort_by": "Sort by",
-    "title": "Collections"
+    "title": "Collections",
+    "price_from": "From",
+    "price_to": "To",
+    "remove_filter": "Remove filter",
+    "clear_all": "Clear all"
   },
   "customers": {
     "login": {
@@ -94,7 +98,8 @@
       "pores": "Pores & breakouts",
       "ageing": "Fine lines",
       "barrier": "Barrier repair",
-      "dullness": "Uneven texture"
+      "dullness": "Uneven texture",
+      "tone": "Uneven tone"
     },
     "collection": {
       "eyebrow": "The serums",
@@ -145,7 +150,12 @@
       "snail": "Snail Recovery",
       "snail_avoid": "Patch test first if you are allergic to mollusks or shellfish.",
       "rice": "Rice Essence",
-      "note": "Always patch test new products. Daily sunscreen is essential when using vitamin C or retinol."
+      "note": "Always patch test new products. Daily sunscreen is essential when using vitamin C or retinol.",
+      "rice_note": "Contains fragrance; patch test if your skin is sensitive.",
+      "barrier": "Barrier Support",
+      "barrier_note": "Contains salicylic acid; patch test first and stop if irritation occurs.",
+      "clarifying": "Whitening + Clarifying",
+      "clarifying_note": "Apply before moisturizer; follow with sunscreen in the daytime."
     },
     "promises": {
       "origin_title": "Korean formulated",
@@ -190,7 +200,9 @@
       "directions": "Directions",
       "ingredients": "Full ingredients",
       "caution": "Caution"
-    }
+    },
+    "routine_am": "AM",
+    "routine_pm": "PM"
   },
   "search": {
     "title": "Search",

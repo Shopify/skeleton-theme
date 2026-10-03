@@ -22,7 +22,11 @@
   </nav>
 
   <div class="product">
-    <div class="product__gallery">
+    {%- assign image_count = 0 -%}
+    {%- for media in product.media -%}
+      {%- if media.media_type == 'image' -%}{%- assign image_count = image_count | plus: 1 -%}{%- endif -%}
+    {%- endfor -%}
+    <div class="product__gallery{% if image_count <= 2 %} product__gallery--stacked{% endif %}" data-gallery>
       {%- for media in product.media -%}
         {%- if media.media_type == 'image' -%}
           <div class="product__media{% if forloop.first %} product__media--first{% endif %}">
@@ -39,6 +43,14 @@
         </div>
       {%- endfor -%}
     </div>
+
+    {%- if image_count > 1 -%}
+      <div class="product__dots" data-gallery-dots aria-hidden="true">
+        {%- for i in (1..image_count) -%}
+          <span class="product__dot{% if forloop.first %} is-active{% endif %}"></span>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
 
     <div class="product__info">
       {%- if subtitle != blank -%}

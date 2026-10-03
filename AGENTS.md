@@ -82,6 +82,11 @@ errors in the Liquid instead of adding configuration exceptions.
 - Product pages read optional `custom.*` metafields: `subtitle`,
   `key_ingredient`, `when_to_use`, `format`, `directions`, `ingredients`,
   `caution`. `Ingredient_*` product tags are the fallback for key ingredients.
+  Product cards derive AM/PM routine badges from `when_to_use` by matching
+  the whole words "AM" and "PM".
+- To check that Liquid will upload before merging, zip the theme folders,
+  upload the zip with `stagedUploadsCreate`, and create a `DEVELOPMENT`
+  theme with `themeCreate`; any file missing from the new theme was rejected.
 
 ## Theme map
 
@@ -89,7 +94,8 @@ errors in the Liquid instead of adding configuration exceptions.
 templates/            *.liquid page structure (no JSON templates)
 layout/               theme.liquid document shell, password.liquid
 snippets/             announcement-bar, header, footer, cart-drawer, cart-drawer-content,
-                      product-grid, product-card, price, image, meta-tags, css-variables
+                      collection-filters, product-grid, product-card, price, image,
+                      meta-tags, css-variables
 assets/               CSS, JavaScript, and other static assets
 config/               settings_schema.json (all merchant controls), settings_data.json (theme styles)
 ```

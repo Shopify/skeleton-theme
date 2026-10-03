@@ -41,7 +41,8 @@
       <li><a href="{{ routes.search_url }}?q=vitamin+c&type=product">{{ 'home.concerns.brightening' | t }}</a></li>
       <li><a href="{{ routes.search_url }}?q=niacinamide&type=product">{{ 'home.concerns.pores' | t }}</a></li>
       <li><a href="{{ routes.search_url }}?q=retinol&type=product">{{ 'home.concerns.ageing' | t }}</a></li>
-      <li><a href="{{ routes.search_url }}?q=snail&type=product">{{ 'home.concerns.barrier' | t }}</a></li>
+      <li><a href="{{ routes.search_url }}?q=barrier&type=product">{{ 'home.concerns.barrier' | t }}</a></li>
+      <li><a href="{{ routes.search_url }}?q=clarifying&type=product">{{ 'home.concerns.tone' | t }}</a></li>
       <li><a href="{{ routes.search_url }}?q=rice&type=product">{{ 'home.concerns.dullness' | t }}</a></li>
     </ul>
   </nav>
@@ -152,7 +153,17 @@
           <tr>
             <th scope="row">{{ 'home.pairing.rice' | t }}</th>
             <td>{{ 'home.pairing.am_pm' | t }}</td>
-            <td>{{ 'home.pairing.none' | t }}</td>
+            <td>{{ 'home.pairing.rice_note' | t }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ 'home.pairing.barrier' | t }}</th>
+            <td>{{ 'home.pairing.am_pm' | t }}</td>
+            <td>{{ 'home.pairing.barrier_note' | t }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ 'home.pairing.clarifying' | t }}</th>
+            <td>{{ 'home.pairing.am_pm' | t }}</td>
+            <td>{{ 'home.pairing.clarifying_note' | t }}</td>
           </tr>
         </tbody>
       </table>
