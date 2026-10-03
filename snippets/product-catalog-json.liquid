@@ -1,7 +1,7 @@
 {% doc %}
   Outputs a small JSON catalogue of the store's products, plus the
   translated strings the interactive features need, for assets/routine.js
-  (skin quiz, routine builder, "Your routine", recently viewed). Prices and
+  (skin quiz, "Your routine", recently viewed). Prices and
   text are formatted here by Liquid so the script never formats money.
 
   Routine data comes from product metafields: `custom.when_to_use` (AM/PM),
@@ -63,17 +63,6 @@
     "strings": {
       "am": {{ 'routine.am' | t | json }},
       "pm": {{ 'routine.pm' | t | json }},
-      "cleanse": {{ 'routine.step_cleanse' | t | json }},
-      "moisturize": {{ 'routine.step_moisturize' | t | json }},
-      "spf": {{ 'routine.step_spf' | t | json }},
-      "emptySlot": {{ 'routine.empty_slot' | t | json }},
-      "conflictMoved": {{ 'routine.conflict_moved' | t | json }},
-      "conflictSplit": {{ 'routine.conflict_split' | t | json }},
-      "conflictAlternate": {{ 'routine.conflict_alternate' | t | json }},
-      "addRoutine": {{ 'routine.add_routine' | t | json }},
-      "adding": {{ 'routine.adding' | t | json }},
-      "added": {{ 'routine.added' | t | json }},
-      "copied": {{ 'routine.copied' | t | json }},
       "match": {{ 'routine.your_match' | t | json }},
       "fragranceFree": {{ 'routine.fragrance_free' | t | json }},
       "patchTest": {{ 'routine.patch_test' | t | json }},

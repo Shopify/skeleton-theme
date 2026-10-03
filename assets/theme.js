@@ -347,3 +347,71 @@ document.addEventListener("click", (event) => {
     if (!facet.contains(event.target)) facet.open = false;
   });
 });
+
+/*
+ * Home page product showcase: the serum links become tabs that swap the
+ * colour panel in place. Without this script each link opens its product.
+ */
+document.querySelectorAll("[data-showcase]").forEach((showcase) => {
+  const list = showcase.querySelector("[data-showcase-tabs]");
+  const tabs = [...showcase.querySelectorAll("[data-showcase-tab]")];
+  const panels = [...showcase.querySelectorAll("[data-showcase-panel]")];
+  if (!list || tabs.length < 2) return;
+
+  list.setAttribute("role", "tablist");
+  panels.forEach((panel) => panel.setAttribute("role", "tabpanel"));
+
+  const select = (index, focus = false) => {
+    tabs.forEach((tab, i) => {
+      const selected = i === index;
+      tab.setAttribute("aria-selected", String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      if (selected && focus) tab.focus();
+    });
+    panels.forEach((panel, i) => {
+      const wasHidden = panel.hidden;
+      panel.hidden = i !== index;
+      if (!panel.hidden && wasHidden) {
+        panel.classList.remove("is-entering");
+        void panel.offsetWidth;
+        panel.classList.add("is-entering");
+      }
+    });
+    showcase.style.setProperty(
+      "--showcase-active",
+      panels[index].style.getPropertyValue("--showcase-color"),
+    );
+  };
+
+  tabs.forEach((tab, index) => {
+    tab.setAttribute("role", "tab");
+    tab.removeAttribute("aria-current");
+    tab.addEventListener("click", (event) => {
+      event.preventDefault();
+      select(index);
+    });
+  });
+
+  list.addEventListener("keydown", (event) => {
+    const current = tabs.indexOf(document.activeElement);
+    if (current === -1) return;
+    const keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+    let next;
+    if (event.key in keys) next = (current + keys[event.key] + tabs.length) % tabs.length;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    select(next, true);
+  });
+
+  /* Size pills update the big price. */
+  showcase.addEventListener("change", (event) => {
+    const option = event.target;
+    if (option.name !== "id" || !option.dataset.price) return;
+    const price = option.closest("[data-showcase-panel]")?.querySelector("[data-showcase-price]");
+    if (price) price.textContent = option.dataset.price;
+  });
+
+  select(0);
+});

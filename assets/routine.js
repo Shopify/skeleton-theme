@@ -1,7 +1,8 @@
 /*
- * Interactive routine features: the skin quiz, the routine builder, the
- * "Your routine" section for returning visitors, "Your match" badges on
- * product cards, and recently viewed products.
+ * Interactive routine features: the Skin Lab quiz, "add to my routine"
+ * toggles on product cards, the "Your routine" section for returning
+ * visitors, "Your match" badges on product cards, and recently viewed
+ * products.
  *
  * Product data and translated strings come from the JSON catalogue that
  * snippets/product-catalog-json.liquid renders, so this file never formats
@@ -116,222 +117,17 @@
     return item;
   };
 
-  /* ---------- routine logic ---------- */
+  /* ---------- clash check (used by the quiz) ---------- */
 
   const clashes = (a, b) => a.conflicts.includes(b.handle) || b.conflicts.includes(a.handle);
 
-  const TIMES = ["am", "pm"];
-  const OTHER = { am: "pm", pm: "am" };
-  const titles = (list) => list.map((product) => product.title).join(", ");
-
-  /*
-   * Place each serum in the morning and/or evening routine so that no two
-   * clashing serums share a routine:
-   * 1. Serums that only belong to one time of day go first.
-   * 2. Each flexible serum (AM & PM) takes every slot where nothing clashes.
-   * 3. If it fits nowhere but the serums blocking a slot are themselves
-   *    flexible and also used in the other slot, they give that slot up.
-   * 4. Only when none of that works is it listed under "alternate days".
-   * Each routine is then listed in layering order.
-   */
-  const planRoutine = (handles) => {
-    const picked = known(handles)
-      .map((handle) => byHandle.get(handle))
-      .sort((a, b) => a.layer - b.layer);
-
-    const slotsOf = (product) =>
-      product.am === product.pm ? TIMES : TIMES.filter((time) => product[time]);
-    const placed = { am: [], pm: [] };
-    const alternate = [];
-    const notes = [];
-    const blockers = (product, time) => placed[time].filter((other) => clashes(product, other));
-
-    const single = picked.filter((product) => slotsOf(product).length === 1);
-    const flexible = picked.filter((product) => slotsOf(product).length === 2);
-
-    single.forEach((product) => {
-      const [time] = slotsOf(product);
-      const blocking = blockers(product, time);
-      if (blocking.length) {
-        notes.push(format(strings.conflictAlternate, { first: product.title, second: titles(blocking) }));
-      }
-      placed[time].push(product);
-    });
-
-    flexible.forEach((product) => {
-      const open = TIMES.filter((time) => !blockers(product, time).length);
-
-      if (open.length === 2) {
-        TIMES.forEach((time) => placed[time].push(product));
-        return;
-      }
-
-      if (open.length === 1) {
-        const [time] = open;
-        placed[time].push(product);
-        notes.push(
-          format(strings.conflictMoved, {
-            moved: product.title,
-            time: strings[time],
-            other: titles(blockers(product, OTHER[time])),
-          }),
-        );
-        return;
-      }
-
-      /* No open slot: try freeing one from flexible serums that also sit in the other slot. */
-      const freeable = TIMES.find((time) =>
-        blockers(product, time).every(
-          (other) => slotsOf(other).length === 2 && placed[OTHER[time]].includes(other),
-        ),
-      );
-      if (freeable) {
-        const moved = blockers(product, freeable);
-        placed[freeable] = placed[freeable].filter((other) => !moved.includes(other));
-        placed[freeable].push(product);
-        notes.push(
-          format(strings.conflictSplit, {
-            first: titles(moved),
-            first_time: strings[OTHER[freeable]],
-            second: product.title,
-            second_time: strings[freeable],
-          }),
-        );
-        return;
-      }
-
-      /* Fits in neither routine: list it separately for alternate days. */
-      notes.push(
-        format(strings.conflictAlternate, {
-          first: product.title,
-          second: titles([...new Set([...blockers(product, "am"), ...blockers(product, "pm")])]),
-        }),
-      );
-      alternate.push(product);
-    });
-
-    const byLayer = (a, b) => a.layer - b.layer;
-    return { am: placed.am.sort(byLayer), pm: placed.pm.sort(byLayer), alternate, notes };
-  };
-
-  /* ---------- routine builder ---------- */
-
-  const builder = document.querySelector("[data-routine-builder]");
-  let setBuilderSelection = () => {};
-
-  if (builder) {
-    const picker = builder.querySelector("[data-builder-picker]");
-    const amList = builder.querySelector("[data-builder-am]");
-    const pmList = builder.querySelector("[data-builder-pm]");
-    const notesList = builder.querySelector("[data-builder-notes]");
-    const alternateBox = builder.querySelector("[data-builder-alternate]");
-    const alternateList = alternateBox?.querySelector("ul");
-    const addButton = builder.querySelector("[data-builder-add]");
-    const shareButton = builder.querySelector("[data-builder-share]");
-    const clearButton = builder.querySelector("[data-builder-clear]");
-    const status = builder.querySelector("[data-builder-status]");
-    const table = document.querySelector("[data-pairing-table]");
-
-    const fromUrl = new URLSearchParams(window.location.search).get("routine");
-    let selection = known(
-      fromUrl ? fromUrl.split(",") : read(KEYS.routine, read(KEYS.quiz, {}).picks || []),
-    );
-
-    const chips = products
-      .filter((product) => product.am || product.pm || product.layer)
-      .map((product) => {
-        const chip = element("button", "builder__chip");
-        chip.type = "button";
-        chip.dataset.handle = product.handle;
-        chip.append(element("span", "builder__chip-title", product.title), routineBadges(product));
-        chip.addEventListener("click", () => {
-          selection = selection.includes(product.handle)
-            ? selection.filter((handle) => handle !== product.handle)
-            : [...selection, product.handle];
-          render();
-        });
-        picker.append(chip);
-        return chip;
-      });
-
-    const step = (text, className) => element("li", `builder__step ${className || ""}`.trim(), text);
-
-    const serumStep = (product) => {
-      const item = element("li", "builder__step builder__step--serum");
-      const link = element("a", "", product.title);
-      link.href = product.url;
-      item.append(link);
-      if (product.claim) item.append(element("span", "builder__step-claim", product.claim));
-      return item;
-    };
-
-    const fill = (list, serums, time) => {
-      list.replaceChildren(step(strings.cleanse, "builder__step--base"));
-      if (serums.length) {
-        serums.forEach((product) => list.append(serumStep(product)));
-      } else {
-        list.append(step(strings.emptySlot, "builder__step--empty"));
-      }
-      list.append(step(strings.moisturize, "builder__step--base"));
-      if (time === "am") list.append(step(strings.spf, "builder__step--base builder__step--spf"));
-    };
-
-    const render = () => {
-      chips.forEach((chip) => chip.setAttribute("aria-pressed", String(selection.includes(chip.dataset.handle))));
-      const plan = planRoutine(selection);
-      fill(amList, plan.am, "am");
-      fill(pmList, plan.pm, "pm");
-      notesList.replaceChildren(...plan.notes.map((note) => element("li", "builder__note", note)));
-      if (alternateBox) {
-        alternateList.replaceChildren(...plan.alternate.map(serumStep));
-        alternateBox.hidden = plan.alternate.length === 0;
-      }
-      addButton.disabled = selection.length === 0;
-      status.textContent = "";
-      write(KEYS.routine, selection);
-      syncToggles();
-    };
-
-    addButton.addEventListener("click", async () => {
-      addButton.setAttribute("aria-busy", "true");
-      addButton.textContent = strings.adding;
-      const added = await addToBag(selection);
-      addButton.removeAttribute("aria-busy");
-      addButton.textContent = strings.addRoutine;
-      if (added) status.textContent = strings.added;
-    });
-
-    shareButton.addEventListener("click", async () => {
-      const url = new URL(window.location.href);
-      url.search = "";
-      url.hash = "regimen";
-      if (selection.length) url.searchParams.set("routine", selection.join(","));
-      try {
-        await navigator.clipboard.writeText(url.toString());
-        status.textContent = strings.copied;
-      } catch {
-        status.textContent = url.toString();
-      }
-    });
-
-    clearButton.addEventListener("click", () => {
-      selection = [];
-      render();
-    });
-
-    setBuilderSelection = (handles) => {
-      selection = known(handles);
-      render();
-    };
-
-    builder.hidden = false;
-    if (table) table.open = false;
-    render();
-  }
-
   /* ---------- "add to my routine" toggles on product cards ---------- */
 
-  /* Reflect the saved routine on every card toggle (they start hidden without JS). */
+  /*
+   * Serums saved from a card's flask button join the quiz matches in the
+   * "Your routine" section. Reflect the saved list on every toggle (they
+   * start hidden without JS).
+   */
   function syncToggles() {
     const saved = known(read(KEYS.routine, []));
     document.querySelectorAll("[data-routine-toggle]").forEach((button) => {
@@ -349,8 +145,8 @@
     const saved = known(read(KEYS.routine, []));
     const updated = saved.includes(handle) ? saved.filter((item) => item !== handle) : [...saved, handle];
     write(KEYS.routine, updated);
-    setBuilderSelection(updated);
     syncToggles();
+    personalize();
 
     button.classList.remove("is-popping");
     void button.offsetWidth;
@@ -622,7 +418,6 @@
       orbit.querySelectorAll(".is-launched").forEach((orb) => orb.classList.remove("is-launched"));
 
       write(KEYS.quiz, answers);
-      setBuilderSelection(answers.picks);
       showResult(answers);
       result.focus({ preventScroll: true });
       result.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest" });
@@ -734,6 +529,7 @@
   function personalize() {
     const saved = read(KEYS.quiz, null);
     const picks = known(saved?.picks);
+    const routine = known([...picks, ...read(KEYS.routine, [])]);
 
     document.querySelectorAll(".product-card[data-product-handle]").forEach((card) => {
       const media = card.querySelector(".product-card__media");
@@ -745,16 +541,16 @@
 
     const section = document.querySelector("[data-personal]");
     if (!section) return;
-    if (!picks.length) {
+    if (!routine.length) {
       section.hidden = true;
       return;
     }
     const summary = section.querySelector("[data-personal-summary]");
-    const label = concernLabel(saved.concern);
-    if (summary && label) summary.textContent = label;
+    const label = saved ? concernLabel(saved.concern) : "";
+    if (summary) summary.textContent = label;
     section
       .querySelector("[data-personal-list]")
-      .replaceChildren(...picks.map((handle) => miniCard(byHandle.get(handle))));
+      .replaceChildren(...routine.map((handle) => miniCard(byHandle.get(handle))));
     section.hidden = false;
   }
 

@@ -1,0 +1,244 @@
+{% doc %}
+  Renders the home page product showcase: a row of tabs, one per serum, and
+  a large rounded panel for each one tinted with its Skin Lab element colour
+  (from its first `custom.concerns` value). Each panel shows the serum's
+  name in display type, its size, a large product photo over a giant
+  element code, AM/PM and size pills, a link to the full product page, and
+  a glassy bar with the claim, price, quantity and "Add to bag".
+
+  Without JavaScript the first panel shows and every tab links to its
+  product page. assets/theme.js turns the links into an ARIA tablist.
+
+  @param {collection} [collection] - Collection to show. Default: all products.
+  @param {number} [limit] - Maximum number of serums. Default: 6.
+
+  @example
+  {% render 'product-showcase', collection: settings.home_collection, limit: 6 %}
+{% enddoc %}
+
+{%- liquid
+  assign limit = limit | default: 6
+  assign source = collection | default: collections.all
+-%}
+
+<div class="showcase" data-showcase>
+  <div class="showcase__header">
+    <div>
+      <p class="eyebrow">{{ 'home.showcase.eyebrow' | t }}</p>
+      <h2 class="section-title">{{ 'home.showcase.title' | t }}</h2>
+    </div>
+
+    <nav class="showcase__tabs" aria-label="{{ 'home.showcase.tabs_label' | t }}" data-showcase-tabs>
+      {%- for product in source.products limit: limit -%}
+        {%- liquid
+          assign element = product.metafields.custom.concerns.value.first
+          assign short_title = product.title | remove: ' Serum'
+        -%}
+        <a
+          class="showcase__tab"
+          href="{{ product.url }}"
+          id="ShowcaseTab-{{ product.id }}"
+          aria-controls="ShowcasePanel-{{ product.id }}"
+          {% if forloop.first %}
+            aria-current="true"
+          {% endif %}
+          data-showcase-tab
+        >
+          {%- if element != blank -%}
+            <span class="showcase__tab-symbol" aria-hidden="true">
+              {%- case element -%}
+                {%- when 'hydration' -%}{{ 'quiz.symbol_hydration' | t }}
+                {%- when 'brightness' -%}{{ 'quiz.symbol_brightness' | t }}
+                {%- when 'dark_spots' -%}{{ 'quiz.symbol_dark_spots' | t }}
+                {%- when 'pores' -%}{{ 'quiz.symbol_pores' | t }}
+                {%- when 'fine_lines' -%}{{ 'quiz.symbol_fine_lines' | t }}
+                {%- when 'barrier' -%}{{ 'quiz.symbol_barrier' | t }}
+                {%- when 'tone' -%}{{ 'quiz.symbol_tone' | t }}
+                {%- when 'texture' -%}{{ 'quiz.symbol_texture' | t }}
+              {%- endcase -%}
+            </span>
+          {%- endif -%}
+          {{ short_title }}
+        </a>
+      {%- endfor -%}
+    </nav>
+  </div>
+
+  {%- for product in source.products limit: limit -%}
+    {%- liquid
+      assign variant = product.selected_or_first_available_variant
+      assign element = product.metafields.custom.concerns.value.first
+      assign short_title = product.title | remove: ' Serum'
+
+      case element
+        when 'hydration'
+          assign element_color = '#5DB3E6'
+        when 'brightness'
+          assign element_color = '#F4E604'
+        when 'dark_spots'
+          assign element_color = '#F0954A'
+        when 'pores'
+          assign element_color = '#6BC48C'
+        when 'fine_lines'
+          assign element_color = '#E0475A'
+        when 'barrier'
+          assign element_color = '#F29BC0'
+        when 'tone'
+          assign element_color = '#B9A6F0'
+        when 'texture'
+          assign element_color = '#9ED6C4'
+        else
+          assign element_color = settings.accent_color
+      endcase
+
+      assign routine_words = product.metafields.custom.when_to_use.value | upcase | replace: ',', ' ' | replace: '·', ' ' | replace: '&', ' ' | split: ' '
+      assign routine_am = false
+      assign routine_pm = false
+      if routine_words contains 'AM'
+        assign routine_am = true
+      endif
+      if routine_words contains 'PM'
+        assign routine_pm = true
+      endif
+
+      assign claim = product.metafields.custom.format.value | default: product.metafields.custom.subtitle.value
+      if claim == blank
+        assign claim = product.description | strip_html | truncatewords: 18
+      endif
+    -%}
+
+    <article
+      class="showcase__panel"
+      id="ShowcasePanel-{{ product.id }}"
+      aria-labelledby="ShowcaseTab-{{ product.id }}"
+      style="--showcase-color: {{ element_color }};"
+      data-showcase-panel
+      {% unless forloop.first %}
+        hidden
+      {% endunless %}
+    >
+      <span class="showcase__watermark" aria-hidden="true">
+        {%- case element -%}
+          {%- when 'hydration' -%}{{ 'quiz.symbol_hydration' | t }}
+          {%- when 'brightness' -%}{{ 'quiz.symbol_brightness' | t }}
+          {%- when 'dark_spots' -%}{{ 'quiz.symbol_dark_spots' | t }}
+          {%- when 'pores' -%}{{ 'quiz.symbol_pores' | t }}
+          {%- when 'fine_lines' -%}{{ 'quiz.symbol_fine_lines' | t }}
+          {%- when 'barrier' -%}{{ 'quiz.symbol_barrier' | t }}
+          {%- when 'tone' -%}{{ 'quiz.symbol_tone' | t }}
+          {%- when 'texture' -%}{{ 'quiz.symbol_texture' | t }}
+        {%- endcase -%}
+      </span>
+
+      <div class="showcase__intro">
+        <h3 class="showcase__title">
+          <a href="{{ product.url }}">{{ short_title }}</a>
+        </h3>
+        <p class="showcase__size">
+          {%- if variant.title != 'Default Title' -%}
+            {{ variant.title }} ·
+          {% endif -%}
+          {{ product.metafields.custom.subtitle.value | default: product.type }}
+        </p>
+      </div>
+
+      <div class="showcase__media">
+        {%- if product.featured_image -%}
+          {{
+            product.featured_image
+            | image_url: width: 1400
+            | image_tag:
+              loading: 'lazy',
+              widths: '500, 800, 1100, 1400',
+              sizes: '(min-width: 990px) 46vw, 90vw',
+              alt: product.featured_image.alt
+          }}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'showcase__placeholder' }}
+        {%- endif -%}
+      </div>
+
+      {% form 'product', product, class: 'showcase__form' %}
+        <div class="showcase__options">
+          {%- if routine_am or routine_pm -%}
+            <p class="showcase__times">
+              {%- if routine_am -%}
+                <span class="showcase__chip">{{ 'products.routine_am' | t }}</span>
+              {%- endif -%}
+              {%- if routine_pm -%}
+                <span class="showcase__chip">{{ 'products.routine_pm' | t }}</span>
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+
+          {%- if product.has_only_default_variant -%}
+            <input type="hidden" name="id" value="{{ variant.id }}">
+          {%- else -%}
+            <fieldset class="showcase__sizes">
+              <legend class="visually-hidden">{{ product.options.first }}</legend>
+              {%- for option_variant in product.variants -%}
+                <label class="showcase__size-pill">
+                  <input
+                    type="radio"
+                    name="id"
+                    value="{{ option_variant.id }}"
+                    data-price="{{ option_variant.price | money }}"
+                    {% if option_variant.id == variant.id %}
+                      checked
+                    {% endif %}
+                    {% unless option_variant.available %}
+                      disabled
+                    {% endunless %}
+                  >
+                  <span>{{ option_variant.title }}</span>
+                </label>
+              {%- endfor -%}
+            </fieldset>
+          {%- endif -%}
+
+          <a class="showcase__info" href="{{ product.url }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5.5M12 7.6v.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            {{ 'home.showcase.info' | t }}
+          </a>
+        </div>
+
+        <div class="showcase__bar">
+          <p class="showcase__claim">
+            {%- assign key_ingredient = product.metafields.custom.key_ingredient.value -%}
+            {%- if key_ingredient != blank -%}
+              <strong>{{ key_ingredient }}</strong>
+            {%- endif -%}
+            {{ claim }}
+          </p>
+
+          <p class="showcase__price" data-showcase-price>{{ variant.price | money }}</p>
+
+          <div class="showcase__buy">
+            <label class="visually-hidden" for="ShowcaseQuantity-{{ product.id }}">{{ 'products.quantity' | t }}</label>
+            <div class="showcase__quantity">
+              <button type="button" data-quantity-step="-1" aria-label="{{ 'products.decrease_quantity' | t }}">&minus;</button>
+              <input
+                id="ShowcaseQuantity-{{ product.id }}"
+                type="number"
+                name="quantity"
+                min="1"
+                value="1"
+                inputmode="numeric"
+              >
+              <button type="button" data-quantity-step="1" aria-label="{{ 'products.increase_quantity' | t }}">+</button>
+            </div>
+
+            <button type="submit" class="showcase__add" {% unless variant.available %}disabled{% endunless %}>
+              {%- if variant.available -%}
+                {{ 'products.add_to_bag' | t }}
+              {%- else -%}
+                {{ 'products.sold_out' | t }}
+              {%- endif -%}
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      {% endform %}
+    </article>
+  {%- endfor -%}
+</div>

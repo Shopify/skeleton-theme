@@ -89,7 +89,6 @@
       "title": "Illuminate your skin's true potential.",
       "text": "Serums built on powerful, clearly labelled actives. Brighten, hydrate, and rejuvenate with formulas that fit seamlessly into your routine.",
       "primary_cta": "Shop serums",
-      "secondary_cta": "Build your routine",
       "quiz_cta": "Find your serum"
     },
     "concerns": {
@@ -165,6 +164,12 @@
       "inci_body": "Every product lists its full ingredients, so you always know what you're putting on your skin.",
       "directions_title": "Clear directions",
       "directions_body": "Morning, night, or both: each serum tells you exactly when and how to use it."
+    },
+    "showcase": {
+      "eyebrow": "The formulas",
+      "title": "Find the one your skin is asking for.",
+      "tabs_label": "Serums",
+      "info": "Overview, directions & caution"
     }
   },
   "password": {
@@ -225,28 +230,11 @@
     }
   },
   "routine": {
-    "title": "Build your routine",
-    "intro": "Choose the serums you use. We'll put them in layering order for morning and evening and keep apart any that shouldn't be used together.",
-    "pick_label": "Choose serums",
     "am": "AM",
     "pm": "PM",
-    "step_cleanse": "Cleanse & tone",
-    "step_moisturize": "Moisturize",
-    "step_spf": "Sunscreen (SPF)",
-    "empty_slot": "No serum in this routine yet.",
-    "conflict_moved": "[moved] goes in your [time] routine only, so it isn't layered with [other].",
-    "conflict_alternate": "[first] shouldn't be layered with [second]. Use them on alternate days.",
-    "add_routine": "Add routine to bag",
-    "adding": "Adding…",
-    "added": "Your routine is in the bag.",
-    "share": "Copy routine link",
-    "copied": "Link copied. Anyone with it sees this routine.",
-    "clear": "Clear",
     "your_match": "Your match",
     "fragrance_free": "Fragrance-free",
-    "patch_test": "Sensitive skin: patch test each serum before adding it to your routine.",
-    "conflict_split": "[first] stays in your [first_time] routine and [second] goes in your [second_time] routine, so they aren't layered together.",
-    "alternate_title": "On alternate days"
+    "patch_test": "Sensitive skin: patch test each serum before adding it to your routine."
   },
   "quiz": {
     "eyebrow": "The Skin Lab",
@@ -304,7 +292,6 @@
   "personal": {
     "eyebrow": "Welcome back",
     "title": "Your routine",
-    "open_builder": "Open routine builder",
     "retake": "Retake the quiz",
     "recently_viewed": "Recently viewed"
   }
