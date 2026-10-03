@@ -35,21 +35,21 @@
   <body class="template-{{ request.page_type | handle }}">
     <a class="skip-link" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
 
-    {% block 'announcement-bar' %}{% endblock %}
+    {% render 'announcement-bar' %}
 
-    {% block 'container', tag: 'div', class: 'site-header-wrapper' %}
-      {% block 'header' -%}{%- endblock %}
-    {% endblock %}
+    <div class="block-container site-header-wrapper">
+      {% render 'header' %}
+    </div>
 
     <main id="MainContent" tabindex="-1">
       {{ content_for_layout }}
     </main>
 
-    {% block 'container', tag: 'div', class: 'site-footer-wrapper' %}
-      {% block 'footer' -%}{%- endblock %}
-    {% endblock %}
+    <div class="block-container site-footer-wrapper">
+      {% render 'footer' %}
+    </div>
 
-    {% block 'cart-drawer' %}{% endblock %}
+    {% render 'cart-drawer' %}
 
     <script src="{{ 'theme.js' | asset_url }}" defer></script>
   </body>

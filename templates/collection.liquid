@@ -1,4 +1,4 @@
-{% block 'container' %}
+<section class="block-container">
   {% paginate collection.products by 24 %}
     <div class="page-header">
       <p class="eyebrow">{{ 'collections.eyebrow' | t }}</p>
@@ -45,4 +45,4 @@
       </nav>
     {%- endif -%}
   {% endpaginate %}
-{% endblock %}
+</section>

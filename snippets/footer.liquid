@@ -1,12 +1,14 @@
 {% doc %}
   Renders the storefront footer: newsletter sign-up, two menu columns,
-  the stacked brand logo, payment icons, and the copyright line. Composed
-  directly in layout/theme.liquid so it appears on every page.
+  the stacked brand logo, payment icons, and the copyright line. Rendered
+  from layout/theme.liquid so it appears on every page; menus and payment
+  icons come from Theme settings > Footer.
 
-  Self-contained: callers leave the body empty.
+  @example
+  {% render 'footer' %}
 {% enddoc %}
 
-<footer class="site-footer full-width" {{ block.shopify_attributes }}>
+<footer class="site-footer full-width">
   <div class="site-footer__inner">
     <div class="site-footer__newsletter">
       <h2 class="site-footer__heading">{{ 'footer.newsletter_title' | t }}</h2>
@@ -39,9 +41,9 @@
     {% for menu in (1..2) %}
       {%- liquid
         if forloop.first
-          assign footer_menu = block.settings.menu
+          assign footer_menu = settings.footer_menu
         else
-          assign footer_menu = block.settings.menu_secondary
+          assign footer_menu = settings.footer_menu_secondary
         endif
       -%}
       {% if footer_menu.links.size > 0 %}
@@ -70,7 +72,7 @@
       {{ shop.name | link_to: routes.root_url }}
     </p>
 
-    {% if block.settings.show_payment_icons %}
+    {% if settings.show_payment_icons %}
       <ul class="site-footer__payment" aria-label="{{ 'footer.payment_methods' | t }}">
         {% for type in shop.enabled_payment_types %}
           <li>{{ type | payment_type_svg_tag }}</li>
@@ -79,29 +81,3 @@
     {% endif %}
   </div>
 </footer>
-
-{% schema %}
-{
-  "name": "t:general.footer",
-  "settings": [
-    {
-      "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu",
-      "default": "main-menu"
-    },
-    {
-      "type": "link_list",
-      "id": "menu_secondary",
-      "label": "t:labels.menu_secondary",
-      "default": "footer"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_payment_icons",
-      "label": "t:labels.show_payment_icons",
-      "default": true
-    }
-  ]
-}
-{% endschema %}

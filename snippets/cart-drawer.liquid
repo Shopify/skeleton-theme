@@ -4,10 +4,8 @@
   contents from templates/cart.drawer.liquid. Without JavaScript the bag
   link and product forms fall back to the full cart page.
 
-  Self-contained: callers leave the body empty.
-
   @example
-  {% block 'cart-drawer' %}{% endblock %}
+  {% render 'cart-drawer' %}
 {% enddoc %}
 
 <dialog
@@ -19,16 +17,8 @@
   data-cart-change-url="{{ routes.cart_change_url }}"
   data-error-message="{{ 'cart.error' | t | escape }}"
   scroll-lock
-  {{ block.shopify_attributes }}
 >
   <div class="cart-drawer__content" data-cart-drawer-content>
     {% render 'cart-drawer-content' %}
   </div>
 </dialog>
-
-{% schema %}
-{
-  "name": "t:general.cart_drawer",
-  "settings": []
-}
-{% endschema %}

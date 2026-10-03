@@ -154,5 +154,94 @@
         "default": 4
       }
     ]
+  },
+  {
+    "name": "t:general.announcement_bar",
+    "settings": [
+      {
+        "type": "text",
+        "id": "announcement_message",
+        "label": "t:labels.message",
+        "info": "t:info.announcement_message"
+      },
+      {
+        "type": "url",
+        "id": "announcement_link",
+        "label": "t:labels.link"
+      }
+    ]
+  },
+  {
+    "name": "t:general.header",
+    "settings": [
+      {
+        "type": "link_list",
+        "id": "header_menu",
+        "label": "t:labels.menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "link_list",
+        "id": "customer_account_menu",
+        "label": "t:labels.customer_account_menu",
+        "default": "customer-account-main-menu"
+      }
+    ]
+  },
+  {
+    "name": "t:general.home_page",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "hero_image",
+        "label": "t:labels.hero_image",
+        "info": "t:info.hero_image"
+      },
+      {
+        "type": "select",
+        "id": "hero_text_tone",
+        "label": "t:labels.text_tone",
+        "options": [
+          {
+            "value": "light",
+            "label": "t:options.tone.light"
+          },
+          {
+            "value": "dark",
+            "label": "t:options.tone.dark"
+          }
+        ],
+        "default": "light"
+      },
+      {
+        "type": "collection",
+        "id": "home_collection",
+        "label": "t:labels.home_collection",
+        "info": "t:info.home_collection"
+      }
+    ]
+  },
+  {
+    "name": "t:general.footer",
+    "settings": [
+      {
+        "type": "link_list",
+        "id": "footer_menu",
+        "label": "t:labels.menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "link_list",
+        "id": "footer_menu_secondary",
+        "label": "t:labels.menu_secondary",
+        "default": "footer"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_payment_icons",
+        "label": "t:labels.show_payment_icons",
+        "default": true
+      }
+    ]
   }
 ]

@@ -7,27 +7,24 @@
     "blog": "Blog",
     "brand": "Brand",
     "cart": "Cart",
-    "cart_drawer": "Cart drawer",
     "collection": "Collection",
     "collection_card": "Collection card",
     "collections": "Collections",
     "collections_grid": "Collections grid",
     "colors": "Colors",
     "column": "Column",
-    "container": "Container",
     "content": "Content",
     "fonts": "Fonts",
     "footer": "Footer",
     "group": "Group",
     "header": "Header",
-    "hero": "Hero",
+    "home_page": "Home page",
     "layout": "Layout",
     "main": "Main",
     "page": "Page",
     "password": "Password",
     "primary": "Primary",
     "product": "Product",
-    "product_grid": "Product grid",
     "row": "Row",
     "search": "Search",
     "secondary": "Secondary",
@@ -39,10 +36,8 @@
   "labels": {
     "accent": "Accent (tan)",
     "accent_foreground": "Text on accent",
-    "alignment": "Alignment",
     "background": "Background",
     "body_font": "Body font (Montserrat)",
-    "collection": "Collection",
     "custom_heading_font_url": "Brand heading font file URL",
     "customer_account_menu": "Customer account menu",
     "favicon": "Favicon",
@@ -50,7 +45,8 @@
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
     "heading_font": "Heading font",
-    "image": "Image",
+    "hero_image": "Hero image",
+    "home_collection": "Featured serums collection",
     "input_corner_radius": "Input corner radius",
     "layout_direction": "Layout direction",
     "link": "Link",
@@ -70,11 +66,6 @@
     "text_tone": "Text colour"
   },
   "options": {
-    "alignment": {
-      "left": "Left",
-      "center": "Center",
-      "right": "Right"
-    },
     "direction": {
       "horizontal": "Horizontal",
       "vertical": "Vertical"
@@ -94,6 +85,9 @@
   },
   "info": {
     "colors": "Brand palette: black primary, cream and white secondary, tan accent. Switch to the 'Packaging 2026' theme style to preview the new packaging colours.",
-    "custom_heading_font_url": "Optional. Upload the licensed Alifira .woff2 to Content > Files and paste its URL here. It replaces the heading font above."
+    "custom_heading_font_url": "Optional. Upload the licensed Alifira .woff2 to Content > Files and paste its URL here. It replaces the heading font above.",
+    "announcement_message": "Leave blank to show the default message.",
+    "hero_image": "Without an image, the hero shows the logo mark on the surface colour.",
+    "home_collection": "Leave blank to show all products."
   }
 }
