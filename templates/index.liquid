@@ -1,3 +1,5 @@
+{{ 'skin-lab.css' | asset_url | stylesheet_tag }}
+
 <section class="block-container block-container--flush">
   <div
     class="hero full-width hero--{{ settings.hero_text_tone }}{% if settings.hero_image %} hero--has-image{% endif %}"
@@ -77,78 +79,204 @@
   %}
 </section>
 
-<section class="block-container tone-accent quiz-section" id="quiz">
-  <div class="quiz" data-quiz hidden>
-    <div class="quiz__intro">
+<section class="block-container tone-inverse skin-lab-section" id="quiz">
+  <div
+    class="skin-lab"
+    data-quiz
+    data-label-added="{{ 'quiz.lab_added' | t | escape }}"
+    data-label-empty="{{ 'quiz.lab_empty' | t | escape }}"
+    data-label-brewing="{{ 'quiz.lab_brewing' | t | escape }}"
+    data-label-ready="{{ 'quiz.lab_ready' | t | escape }}"
+    data-label-targets="{{ 'quiz.lab_targets' | t | escape }}"
+    data-label-support="{{ 'quiz.lab_support' | t | escape }}"
+    data-label-compatible="{{ 'quiz.lab_compatible' | t | escape }}"
+    hidden
+  >
+    <div class="skin-lab__intro">
       <p class="eyebrow">{{ 'quiz.eyebrow' | t }}</p>
       <h2 class="section-title">{{ 'quiz.title' | t }}</h2>
       <p>{{ 'quiz.intro' | t }}</p>
     </div>
 
-    <form class="quiz__form" data-quiz-form novalidate>
-      <fieldset class="quiz__step" data-quiz-step>
-        <legend class="quiz__question">
-          <span class="quiz__count">1 / 3</span>
-          {{ 'quiz.q_concern' | t }}
-        </legend>
-        <div class="quiz__options">
-          <label class="quiz__option"><input type="radio" name="concern" value="hydration" required><span>{{ 'quiz.concern_hydration' | t }}</span></label>
-          <label class="quiz__option"><input type="radio" name="concern" value="brightness"><span>{{ 'quiz.concern_brightness' | t }}</span></label>
-          <label class="quiz__option"><input type="radio" name="concern" value="dark_spots"><span>{{ 'quiz.concern_dark_spots' | t }}</span></label>
-          <label class="quiz__option"><input type="radio" name="concern" value="pores"><span>{{ 'quiz.concern_pores' | t }}</span></label>
-          <label class="quiz__option"><input type="radio" name="concern" value="fine_lines"><span>{{ 'quiz.concern_fine_lines' | t }}</span></label>
-          <label class="quiz__option"><input type="radio" name="concern" value="barrier"><span>{{ 'quiz.concern_barrier' | t }}</span></label>
-          <label class="quiz__option"><input type="radio" name="concern" value="tone"><span>{{ 'quiz.concern_tone' | t }}</span></label>
-          <label class="quiz__option"><input type="radio" name="concern" value="texture"><span>{{ 'quiz.concern_texture' | t }}</span></label>
+    <div class="skin-lab__bench">
+      <div class="skin-lab__stage" data-lab-stage>
+        <svg class="skin-lab__bonds" data-lab-bonds aria-hidden="true"></svg>
+
+        <div class="skin-lab__flask" data-lab-flask aria-hidden="true">
+          <div class="skin-lab__liquid" data-lab-liquid>
+            <span class="skin-lab__layer" data-lab-layer></span>
+            <span class="skin-lab__layer" data-lab-layer></span>
+            <span class="skin-lab__layer" data-lab-layer></span>
+            <i></i><i></i><i></i><i></i><i></i>
+          </div>
+          {%- if settings.logo_mark -%}
+            {{ settings.logo_mark | image_url: width: 240 | image_tag: alt: '', class: 'skin-lab__mark', loading: 'lazy' }}
+          {%- endif -%}
+          <span class="skin-lab__ring"></span>
+          <span class="skin-lab__burst" data-lab-burst></span>
         </div>
-      </fieldset>
+        <div class="skin-lab__particles" data-lab-particles aria-hidden="true"></div>
 
-      <fieldset class="quiz__step" data-quiz-step hidden>
-        <legend class="quiz__question">
-          <span class="quiz__count">2 / 3</span>
-          {{ 'quiz.q_sensitive' | t }}
-        </legend>
-        <div class="quiz__options">
-          <label class="quiz__option"><input type="radio" name="sensitive" value="yes" required><span>{{ 'quiz.sensitive_yes' | t }}</span></label>
-          <label class="quiz__option"><input type="radio" name="sensitive" value="no"><span>{{ 'quiz.sensitive_no' | t }}</span></label>
-        </div>
-      </fieldset>
+        <form class="skin-lab__form" data-quiz-form novalidate>
+          <fieldset class="skin-lab__step" data-quiz-step>
+            <legend class="skin-lab__question">
+              <span class="skin-lab__count">1 / 3</span>
+              {{ 'quiz.q_concern' | t }}
+            </legend>
+            <div class="skin-lab__orbs skin-lab__orbs--8">
+            <label class="skin-lab__orb" style="--orb-color: #5DB3E6; --i: 0; --n: 8;">
+              <input type="radio" name="concern" value="hydration" required>
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_hydration' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.concern_hydration' | t }}</span>
+              </span>
+            </label>
+            <label class="skin-lab__orb" style="--orb-color: #F4E604; --i: 1; --n: 8;">
+              <input type="radio" name="concern" value="brightness">
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_brightness' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.concern_brightness' | t }}</span>
+              </span>
+            </label>
+            <label class="skin-lab__orb" style="--orb-color: #F0954A; --i: 2; --n: 8;">
+              <input type="radio" name="concern" value="dark_spots">
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_dark_spots' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.concern_dark_spots' | t }}</span>
+              </span>
+            </label>
+            <label class="skin-lab__orb" style="--orb-color: #6BC48C; --i: 3; --n: 8;">
+              <input type="radio" name="concern" value="pores">
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_pores' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.concern_pores' | t }}</span>
+              </span>
+            </label>
+            <label class="skin-lab__orb" style="--orb-color: #E0475A; --i: 4; --n: 8;">
+              <input type="radio" name="concern" value="fine_lines">
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_fine_lines' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.concern_fine_lines' | t }}</span>
+              </span>
+            </label>
+            <label class="skin-lab__orb" style="--orb-color: #F29BC0; --i: 5; --n: 8;">
+              <input type="radio" name="concern" value="barrier">
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_barrier' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.concern_barrier' | t }}</span>
+              </span>
+            </label>
+            <label class="skin-lab__orb" style="--orb-color: #B9A6F0; --i: 6; --n: 8;">
+              <input type="radio" name="concern" value="tone">
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_tone' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.concern_tone' | t }}</span>
+              </span>
+            </label>
+            <label class="skin-lab__orb" style="--orb-color: #9ED6C4; --i: 7; --n: 8;">
+              <input type="radio" name="concern" value="texture">
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_texture' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.concern_texture' | t }}</span>
+              </span>
+            </label>
+            </div>
+          </fieldset>
 
-      <fieldset class="quiz__step" data-quiz-step hidden>
-        <legend class="quiz__question">
-          <span class="quiz__count">3 / 3</span>
-          {{ 'quiz.q_time' | t }}
-        </legend>
-        <div class="quiz__options">
-          <label class="quiz__option"><input type="radio" name="time" value="am" required><span>{{ 'quiz.time_am' | t }}</span></label>
-          <label class="quiz__option"><input type="radio" name="time" value="pm"><span>{{ 'quiz.time_pm' | t }}</span></label>
-          <label class="quiz__option"><input type="radio" name="time" value="both"><span>{{ 'quiz.time_both' | t }}</span></label>
-        </div>
-      </fieldset>
+          <fieldset class="skin-lab__step" data-quiz-step hidden>
+            <legend class="skin-lab__question">
+              <span class="skin-lab__count">2 / 3</span>
+              {{ 'quiz.q_sensitive' | t }}
+            </legend>
+            <div class="skin-lab__orbs skin-lab__orbs--2">
+            <label class="skin-lab__orb" style="--orb-color: #F29BC0; --i: 0; --n: 2;">
+              <input type="radio" name="sensitive" value="yes" required>
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_sensitive_yes' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.sensitive_yes' | t }}</span>
+              </span>
+            </label>
+            <label class="skin-lab__orb" style="--orb-color: #6BC48C; --i: 1; --n: 2;">
+              <input type="radio" name="sensitive" value="no">
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_sensitive_no' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.sensitive_no' | t }}</span>
+              </span>
+            </label>
+            </div>
+          </fieldset>
 
-      <p class="quiz__error" role="alert" data-quiz-error hidden>{{ 'quiz.choose_one' | t }}</p>
+          <fieldset class="skin-lab__step" data-quiz-step hidden>
+            <legend class="skin-lab__question">
+              <span class="skin-lab__count">3 / 3</span>
+              {{ 'quiz.q_time' | t }}
+            </legend>
+            <div class="skin-lab__orbs skin-lab__orbs--3">
+            <label class="skin-lab__orb" style="--orb-color: #F4E604; --i: 0; --n: 3;">
+              <input type="radio" name="time" value="am" required>
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_time_am' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.time_am' | t }}</span>
+              </span>
+            </label>
+            <label class="skin-lab__orb" style="--orb-color: #7B7FD6; --i: 1; --n: 3;">
+              <input type="radio" name="time" value="pm">
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_time_pm' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.time_pm' | t }}</span>
+              </span>
+            </label>
+            <label class="skin-lab__orb" style="--orb-color: #DFAB52; --i: 2; --n: 3;">
+              <input type="radio" name="time" value="both">
+              <span class="skin-lab__tile">
+                <span class="skin-lab__symbol">{{ 'quiz.symbol_time_both' | t }}</span>
+                <span class="skin-lab__name">{{ 'quiz.time_both' | t }}</span>
+              </span>
+            </label>
+            </div>
+          </fieldset>
 
-      <div class="quiz__nav">
-        <button type="button" class="button button--outline" data-quiz-back hidden>{{ 'quiz.back' | t }}</button>
-        <button type="submit" class="button" data-quiz-next data-label-next="{{ 'quiz.next' | t }}" data-label-finish="{{ 'quiz.finish' | t }}">
-          {{- 'quiz.next' | t -}}
-        </button>
+          <p class="skin-lab__error" role="alert" data-quiz-error hidden>{{ 'quiz.choose_one' | t }}</p>
+
+          <div class="skin-lab__nav">
+            <button type="button" class="link-button" data-quiz-back hidden>{{ 'quiz.back' | t }}</button>
+            <button type="submit" class="button button--small" data-quiz-next data-label-next="{{ 'quiz.next' | t }}" data-label-finish="{{ 'quiz.finish' | t }}">
+              {{- 'quiz.next' | t -}}
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
 
-    <div class="quiz__result" data-quiz-result hidden tabindex="-1">
-      <h3 class="quiz__result-title">{{ 'quiz.result_title' | t }}</h3>
-      <p class="quiz__result-note" data-quiz-note></p>
+      <aside class="skin-lab__notes" aria-labelledby="SkinLabNotesTitle">
+        <h3 class="skin-lab__notes-title" id="SkinLabNotesTitle">{{ 'quiz.lab_notes' | t }}</h3>
+        <p class="skin-lab__status" role="status" data-lab-status>{{ 'quiz.lab_empty' | t }}</p>
+        <p class="skin-lab__formula-label">{{ 'quiz.lab_formula' | t }}</p>
+        <ol class="skin-lab__formula" role="list" data-lab-formula></ol>
+      </aside>
+    </div>
+
+    <div class="skin-lab__result" data-quiz-result hidden tabindex="-1">
+      <div class="skin-lab__result-header">
+        <div>
+          <p class="eyebrow">{{ 'quiz.result_eyebrow' | t }}</p>
+          <h3 class="skin-lab__result-title">
+            {{ 'quiz.result_title' | t }}
+            <span class="skin-lab__code" data-lab-code></span>
+          </h3>
+        </div>
+        <button type="button" class="link-button" data-quiz-restart>{{ 'quiz.restart' | t }}</button>
+      </div>
+      <p class="skin-lab__result-note" data-quiz-note></p>
       <ul class="mini-grid" role="list" data-quiz-list></ul>
+      <p class="skin-lab__check" data-lab-check></p>
       <div class="button-row">
         <button type="button" class="button" data-quiz-add>{{ 'quiz.add_all' | t }}</button>
         <a class="button button--outline" href="#regimen">{{ 'quiz.see_routine' | t }}</a>
-        <button type="button" class="link-button" data-quiz-restart>{{ 'quiz.restart' | t }}</button>
       </div>
     </div>
   </div>
   <noscript>
-    <div class="quiz__intro">
+    <div class="skin-lab__intro">
       <h2 class="section-title">{{ 'quiz.title' | t }}</h2>
       <p>{{ 'quiz.no_script' | t }}</p>
       <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'home.hero.primary_cta' | t }}</a>
