@@ -1,0 +1,37 @@
+{% doc %}
+  Renders a product or variant price, with the compare-at price struck
+  through when the item is on sale and a "From" prefix when variants vary.
+
+  @param {product} [product] - Product whose price range is shown
+  @param {variant} [variant] - Variant to price instead of the product
+
+  @example
+  {% render 'price', product: product %}
+  {% render 'price', variant: product.selected_or_first_available_variant %}
+{% enddoc %}
+
+{%- liquid
+  if variant
+    assign price = variant.price
+    assign compare_at = variant.compare_at_price
+    assign varies = false
+  else
+    assign price = product.price
+    assign compare_at = product.compare_at_price
+    assign varies = product.price_varies
+  endif
+-%}
+
+<span class="price" data-price>
+  {%- if compare_at > price -%}
+    <span class="visually-hidden">{{ 'products.sale_price' | t }}</span>
+    <span class="price__sale">{{ price | money }}</span>
+    <span class="visually-hidden">{{ 'products.regular_price' | t }}</span>
+    <s class="price__compare">{{ compare_at | money }}</s>
+  {%- elsif varies -%}
+    {%- assign price_formatted = price | money -%}
+    {{ 'products.price_from' | t: price: price_formatted }}
+  {%- else -%}
+    {{ price | money }}
+  {%- endif -%}
+</span>

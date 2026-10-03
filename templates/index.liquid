@@ -1,5 +1,152 @@
-{% block 'container' %}
-  {% block 'hello-world' %}
-    {% block 'liquid-tips', tips: ['hello_world.liquid_tips_1', 'hello_world.liquid_tips_2', 'hello_world.liquid_tips_3'] %}{% endblock %}
+{% block 'container', class: 'block-container--flush' %}
+  {% block 'hero' %}
+    <p class="eyebrow">{{ 'home.hero.eyebrow' | t }}</p>
+    <h1 class="hero__title">{{ 'home.hero.title' | t }}</h1>
+    <p class="hero__text">{{ 'home.hero.text' | t }}</p>
+    <div class="button-row">
+      <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'home.hero.primary_cta' | t }}</a>
+      <a class="button button--outline" href="#regimen">{{ 'home.hero.secondary_cta' | t }}</a>
+    </div>
   {% endblock %}
+{% endblock %}
+
+{% block 'container', class: 'concerns-strip' %}
+  <nav class="concerns" aria-label="{{ 'home.concerns.label' | t }}">
+    <p class="concerns__label">{{ 'home.concerns.label' | t }}</p>
+    <ul role="list">
+      <li><a href="{{ routes.search_url }}?q=hyaluronic&type=product">{{ 'home.concerns.hydration' | t }}</a></li>
+      <li><a href="{{ routes.search_url }}?q=vitamin+c&type=product">{{ 'home.concerns.brightening' | t }}</a></li>
+      <li><a href="{{ routes.search_url }}?q=niacinamide&type=product">{{ 'home.concerns.pores' | t }}</a></li>
+      <li><a href="{{ routes.search_url }}?q=retinol&type=product">{{ 'home.concerns.ageing' | t }}</a></li>
+      <li><a href="{{ routes.search_url }}?q=snail&type=product">{{ 'home.concerns.barrier' | t }}</a></li>
+      <li><a href="{{ routes.search_url }}?q=rice&type=product">{{ 'home.concerns.dullness' | t }}</a></li>
+    </ul>
+  </nav>
+{% endblock %}
+
+{% block 'container' %}
+  {% block 'product-grid', limit: 8 %}
+    <div>
+      <p class="eyebrow">{{ 'home.collection.eyebrow' | t }}</p>
+      <h2 class="section-title">{{ 'home.collection.title' | t }}</h2>
+    </div>
+    <a class="link-arrow" href="{{ routes.all_products_collection_url }}">{{ 'home.collection.view_all' | t }}</a>
+  {% endblock %}
+{% endblock %}
+
+{% block 'container', class: 'tone-surface' %}
+  <div class="brand-story">
+    <div class="clover" aria-hidden="true">
+      <span class="clover__label">{{ 'home.story.shape_label' | t }}</span>
+    </div>
+    <div class="brand-story__copy">
+      <p class="eyebrow">{{ 'home.story.eyebrow' | t }}</p>
+      <h2 class="section-title">{{ 'home.story.title' | t }}</h2>
+      <p>{{ 'home.story.body' | t }}</p>
+      <ul class="pillars" role="list">
+        <li>{{ 'home.story.pillar_powerful' | t }}</li>
+        <li>{{ 'home.story.pillar_potential' | t }}</li>
+        <li>{{ 'home.story.pillar_hydrate' | t }}</li>
+        <li>{{ 'home.story.pillar_empower' | t }}</li>
+        <li>{{ 'home.story.pillar_rejuvenate' | t }}</li>
+        <li>{{ 'home.story.pillar_natural' | t }}</li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}
+
+{% block 'container' %}
+  <div class="regimen" id="regimen">
+    <div class="regimen__intro">
+      <p class="eyebrow">{{ 'home.regimen.eyebrow' | t }}</p>
+      <h2 class="section-title">{{ 'home.regimen.title' | t }}</h2>
+      <p>{{ 'home.regimen.body' | t }}</p>
+    </div>
+
+    <ol class="regimen__steps" role="list">
+      <li>
+        <span class="regimen__number">01</span>
+        <h3>{{ 'home.regimen.step_1_title' | t }}</h3>
+        <p>{{ 'home.regimen.step_1_body' | t }}</p>
+      </li>
+      <li>
+        <span class="regimen__number">02</span>
+        <h3>{{ 'home.regimen.step_2_title' | t }}</h3>
+        <p>{{ 'home.regimen.step_2_body' | t }}</p>
+      </li>
+      <li>
+        <span class="regimen__number">03</span>
+        <h3>{{ 'home.regimen.step_3_title' | t }}</h3>
+        <p>{{ 'home.regimen.step_3_body' | t }}</p>
+      </li>
+      <li>
+        <span class="regimen__number">04</span>
+        <h3>{{ 'home.regimen.step_4_title' | t }}</h3>
+        <p>{{ 'home.regimen.step_4_body' | t }}</p>
+      </li>
+    </ol>
+
+    <div class="pairing">
+      <h3 class="pairing__title">{{ 'home.pairing.title' | t }}</h3>
+      <table class="pairing__table">
+        <thead>
+          <tr>
+            <th scope="col">{{ 'home.pairing.col_serum' | t }}</th>
+            <th scope="col">{{ 'home.pairing.col_when' | t }}</th>
+            <th scope="col">{{ 'home.pairing.col_avoid' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">{{ 'home.pairing.vitamin_c' | t }}</th>
+            <td>{{ 'home.pairing.am' | t }}</td>
+            <td>{{ 'home.pairing.vitamin_c_avoid' | t }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ 'home.pairing.retinol' | t }}</th>
+            <td>{{ 'home.pairing.pm' | t }}</td>
+            <td>{{ 'home.pairing.retinol_avoid' | t }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ 'home.pairing.niacinamide' | t }}</th>
+            <td>{{ 'home.pairing.am_pm' | t }}</td>
+            <td>{{ 'home.pairing.niacinamide_avoid' | t }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ 'home.pairing.hyaluronic' | t }}</th>
+            <td>{{ 'home.pairing.am_pm' | t }}</td>
+            <td>{{ 'home.pairing.none' | t }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ 'home.pairing.snail' | t }}</th>
+            <td>{{ 'home.pairing.am_pm' | t }}</td>
+            <td>{{ 'home.pairing.snail_avoid' | t }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{{ 'home.pairing.rice' | t }}</th>
+            <td>{{ 'home.pairing.am_pm' | t }}</td>
+            <td>{{ 'home.pairing.none' | t }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="pairing__note">{{ 'home.pairing.note' | t }}</p>
+    </div>
+  </div>
+{% endblock %}
+
+{% block 'container', class: 'tone-inverse' %}
+  <ul class="promises" role="list">
+    <li>
+      <h3>{{ 'home.promises.origin_title' | t }}</h3>
+      <p>{{ 'home.promises.origin_body' | t }}</p>
+    </li>
+    <li>
+      <h3>{{ 'home.promises.inci_title' | t }}</h3>
+      <p>{{ 'home.promises.inci_body' | t }}</p>
+    </li>
+    <li>
+      <h3>{{ 'home.promises.directions_title' | t }}</h3>
+      <p>{{ 'home.promises.directions_body' | t }}</p>
+    </li>
+  </ul>
 {% endblock %}

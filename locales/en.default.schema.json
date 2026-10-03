@@ -1,13 +1,15 @@
 {
   "general": {
     "404": "Not found",
+    "announcement_bar": "Announcement bar",
     "article": "Article",
     "block": "Block",
     "blog": "Blog",
+    "brand": "Brand",
     "cart": "Cart",
     "collection": "Collection",
-    "collections": "Collections",
     "collection_card": "Collection card",
+    "collections": "Collections",
     "collections_grid": "Collections grid",
     "colors": "Colors",
     "column": "Column",
@@ -17,14 +19,14 @@
     "footer": "Footer",
     "group": "Group",
     "header": "Header",
-    "hello_world": "Hello world",
+    "hero": "Hero",
     "layout": "Layout",
-    "liquid_tips": "Liquid tips",
     "main": "Main",
     "page": "Page",
     "password": "Password",
     "primary": "Primary",
     "product": "Product",
+    "product_grid": "Product grid",
     "row": "Row",
     "search": "Search",
     "secondary": "Secondary",
@@ -34,19 +36,37 @@
     "typography": "Typography"
   },
   "labels": {
+    "accent": "Accent (tan)",
+    "accent_foreground": "Text on accent",
     "alignment": "Alignment",
     "background": "Background",
+    "body_font": "Body font (Montserrat)",
+    "collection": "Collection",
+    "custom_heading_font_url": "Brand heading font file URL",
+    "customer_account_menu": "Customer account menu",
+    "favicon": "Favicon",
     "foreground": "Foreground",
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
+    "heading_font": "Heading font",
+    "image": "Image",
     "input_corner_radius": "Input corner radius",
     "layout_direction": "Layout direction",
+    "link": "Link",
+    "logo": "Primary logo",
+    "logo_height": "Header logo height",
+    "logo_mark": "Logo mark (g)",
+    "logo_stacked": "Secondary (stacked) logo",
     "menu": "Menu",
-    "customer_account_menu": "Customer account menu",
+    "menu_secondary": "Secondary menu",
+    "message": "Message",
     "padding": "Padding",
     "page_margin": "Page margin",
     "page_width": "Page width",
-    "show_payment_icons": "Show payment icons"
+    "product_tile": "Product image background",
+    "show_payment_icons": "Show payment icons",
+    "surface": "Surface (cream)",
+    "text_tone": "Text colour"
   },
   "options": {
     "alignment": {
@@ -65,6 +85,14 @@
     "size": {
       "large": "Large",
       "small": "Small"
+    },
+    "tone": {
+      "light": "Light",
+      "dark": "Dark"
     }
+  },
+  "info": {
+    "colors": "Brand palette: black primary, cream and white secondary, tan accent. Switch to the 'Packaging 2026' theme style to preview the new packaging colours.",
+    "custom_heading_font_url": "Optional. Upload the licensed Alifira .woff2 to Content > Files and paste its URL here. It replaces the heading font above."
   }
 }

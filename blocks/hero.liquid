@@ -1,0 +1,74 @@
+{% doc %}
+  Renders a full-bleed hero banner. With an image, the image fills the
+  banner behind a soft scrim and the caller's copy sits on top. Without an
+  image, the banner falls back to the brand surface tone with the
+  oversized "g" logo mark, echoing the packaging.
+
+  @param {string} content - Hero copy and calls to action, supplied by the caller.
+  @param {string} [image_loading] - 'eager' (default) or 'lazy'.
+
+  @example
+  {% block 'hero' %}
+    <h1>...</h1>
+    <a class="button" href="{{ routes.all_products_collection_url }}">...</a>
+  {% endblock %}
+{% enddoc %}
+
+{%- assign image_loading = image_loading | default: 'eager' -%}
+
+<div
+  class="hero full-width hero--{{ block.settings.text_tone }}{% if block.settings.image %} hero--has-image{% endif %}"
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.image -%}
+    <div class="hero__media">
+      {{
+        block.settings.image
+        | image_url: width: 2400
+        | image_tag:
+          loading: image_loading,
+          fetchpriority: 'high',
+          widths: '750, 1100, 1500, 1800, 2400',
+          sizes: '100vw',
+          alt: block.settings.image.alt
+      }}
+    </div>
+  {%- elsif settings.logo_mark -%}
+    <div class="hero__mark" aria-hidden="true">
+      {{ settings.logo_mark | image_url: width: 900 | image_tag: alt: '', loading: image_loading }}
+    </div>
+  {%- endif -%}
+
+  <div class="hero__content">
+    {{ content }}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:general.hero",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:labels.image"
+    },
+    {
+      "type": "select",
+      "id": "text_tone",
+      "label": "t:labels.text_tone",
+      "options": [
+        {
+          "value": "light",
+          "label": "t:options.tone.light"
+        },
+        {
+          "value": "dark",
+          "label": "t:options.tone.dark"
+        }
+      ],
+      "default": "light"
+    }
+  ]
+}
+{% endschema %}

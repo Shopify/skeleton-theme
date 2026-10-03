@@ -1,18 +1,38 @@
 {% style %}
-  {% # Loads all font variantions with display: swap %}
+  {% # Loads all font variations with display: swap %}
   {{ settings.type_primary_font | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {{ settings.type_primary_font | font_modify: 'weight', '600' | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {{ settings.type_heading_font | font_face: font_display: 'swap' }}
+  {{ settings.type_heading_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+
+  {% # Optional licensed brand display face (Alifira) uploaded to Content > Files %}
+  {%- if settings.custom_heading_font_url != blank -%}
+    @font-face {
+      font-family: 'Glow Verve Display';
+      src: url('{{ settings.custom_heading_font_url }}');
+      font-display: swap;
+    }
+  {%- endif -%}
 
   :root {
     --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
     --font-primary--style: {{ settings.type_primary_font.style }};
     --font-primary--weight: {{ settings.type_primary_font.weight }};
+    --font-heading--family: {% if settings.custom_heading_font_url != blank %}'Glow Verve Display', {% endif %}{{ settings.type_heading_font.family }}, {{ settings.type_heading_font.fallback_families }};
+    --font-heading--weight: {{ settings.type_heading_font.weight }};
     --page-width: {{ settings.max_page_width }};
     --page-margin: {{ settings.min_page_margin }}px;
     --color-background: {{ settings.background_color }};
     --color-foreground: {{ settings.foreground_color }};
+    --color-foreground-muted: {{ settings.foreground_color | color_mix: settings.background_color, 62 }};
+    --color-border: {{ settings.foreground_color | color_mix: settings.background_color, 14 }};
+    --color-surface: {{ settings.surface_color }};
+    --color-accent: {{ settings.accent_color }};
+    --color-accent-foreground: {{ settings.accent_foreground_color }};
+    --color-tile: {{ settings.product_tile_color }};
+    --logo-height: {{ settings.logo_height }}px;
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
   }
 {% endstyle %}

@@ -1,4 +1,4 @@
-# Skeleton Theme Agent Guide
+# Glow Verve Theme Agent Guide
 
 A minimal Shopify theme that defines page structure directly in Liquid. This
 file lists the repository conventions that aren't obvious from an individual
@@ -72,8 +72,8 @@ to use `block.settings.<id>` for schema-backed controls in block implementations
 `{% doc %}` documents parameters; it does not declare, validate, or bind them.
 A parameter documented only in LiquidDoc is read as a plain variable and does
 not become a schema setting. Use `{% schema %}` for merchant-editable controls.
-Inline literal arrays are supported in `{% block %}` arguments, as shown by
-`tips` in `templates/index.liquid`; `{% render %}` and `{% partial %}` do not
+Inline literal arrays are supported in `{% block %}` arguments;
+`{% render %}` and `{% partial %}` do not
 accept inline literal arrays.
 
 The content between `{% block %}` and `{% endblock %}` is available inside the
@@ -99,10 +99,8 @@ Partials name inline regions of server-rendered HTML. JavaScript can request a
 region by name and replace the matching region in the DOM. The name in the
 Liquid template and the name in JavaScript must match.
 
-The `liquid-tips` block is the theme's canonical partial-refresh example: its
-tip sentence lives in a `{% partial 'liquid-tip' %}` region, and
-`assets/liquid-tips.js` calls `partials.refresh("liquid-tip")` to swap in a
-fresh server-rendered tip. Import `partials` from
+No block currently uses a partial (the starter `liquid-tips` example was
+removed). When adding one, import `partials` from
 `@shopify/partial-rendering`. Use `refresh()` to fetch and apply regions from
 the current page URL, or `fetch()` followed by `apply()` when you need control
 over the request URL, method, body, or when the update appears. Fetch related
@@ -143,15 +141,31 @@ Skeleton keeps `.theme-check.yml` as a pristine
 `extends: theme-check:recommended` with **zero overrides**. Fix Theme Check
 errors in the Liquid instead of adding configuration exceptions.
 
-Current blocks: `container`, `hello-world`, `header`, `footer`,
-`liquid-tips`.
+Current blocks: `container`, `announcement-bar`, `header`, `footer`, `hero`,
+`product-grid`.
+
+## Glow Verve brand conventions
+
+- Colours are theme settings (`background`, `foreground`, `surface`, `accent`,
+  `product_tile`) exposed as `--color-*` tokens in `snippets/css-variables.liquid`.
+  Never hardcode brand colours in CSS; the palette is changing with the new
+  packaging. `config/settings_data.json` ships two theme styles: "Brand
+  guidelines" (cream `#F7EBCD`, tan `#DFAB52`, black) and "Packaging 2026"
+  (yellow `#F4E604`).
+- Logos come from `settings.logo`, `settings.logo_mark` and
+  `settings.logo_stacked` (images in Content > Files). Never alter them.
+- Headings use `--font-heading--family` (Alifira when its file URL is set,
+  otherwise the heading font picker); body copy uses Montserrat.
+- Product pages read optional `custom.*` metafields: `subtitle`,
+  `key_ingredient`, `when_to_use`, `format`, `directions`, `ingredients`,
+  `caution`. `Ingredient_*` product tags are the fallback for key ingredients.
 
 ## Theme map
 
 ```
-blocks/               container, hello-world, header, footer, liquid-tips
+blocks/               container, announcement-bar, header, footer, hero, product-grid
 templates/            *.liquid page structure (no JSON templates)
 layout/               theme.liquid document shell: header/footer container blocks + <main>
-snippets/             internal utilities (css-variables, image, meta-tags)
+snippets/             internal utilities (css-variables, image, meta-tags, price, product-card)
 assets/               CSS, JavaScript, and other static assets
 ```

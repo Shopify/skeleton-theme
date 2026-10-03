@@ -8,5 +8,31 @@
  * ------------------------------------------------------------
  */
 {
-  "current": {}
+  "current": "Brand guidelines",
+  "presets": {
+    "Brand guidelines": {
+      "logo": "shopify://shop_images/Gold_Logo.png",
+      "logo_mark": "shopify://shop_images/Gold_Mark.png",
+      "logo_stacked": "shopify://shop_images/Gold_Stacked.png",
+      "favicon": "shopify://shop_images/Gold_Mark.png",
+      "background_color": "#FFFFFF",
+      "foreground_color": "#000000",
+      "surface_color": "#F7EBCD",
+      "accent_color": "#DFAB52",
+      "accent_foreground_color": "#000000",
+      "product_tile_color": "#F5F3EE"
+    },
+    "Packaging 2026": {
+      "logo": "shopify://shop_images/Gold_Logo.png",
+      "logo_mark": "shopify://shop_images/Gold_Mark.png",
+      "logo_stacked": "shopify://shop_images/Gold_Stacked.png",
+      "favicon": "shopify://shop_images/Gold_Mark.png",
+      "background_color": "#FFFFFF",
+      "foreground_color": "#000000",
+      "surface_color": "#FBF8D9",
+      "accent_color": "#F4E604",
+      "accent_foreground_color": "#000000",
+      "product_tile_color": "#F6F5F0"
+    }
+  }
 }

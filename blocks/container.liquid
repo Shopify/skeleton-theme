@@ -3,7 +3,10 @@
   composes its page through a container block: the block owns the outer
   layout element and renders the composed body via {{ content }}.
 
+  @param {string} content - Composed page content rendered inside the wrapper.
   @param {string} [tag] - HTML element for the wrapper. Default: 'section'.
+  @param {string} [class] - Extra classes for the wrapper, e.g. a background
+    tone such as 'tone-surface' or spacing such as 'block-container--flush'.
 
   @example Default section wrapper
   {% block 'container' %}
@@ -12,14 +15,14 @@
   {% endblock %}
 
   @example Override the wrapper element
-  {% block 'container', tag: 'div' %}
+  {% block 'container', tag: 'div', class: 'tone-surface' %}
     ...
   {% endblock %}
 {% enddoc %}
 
 {%- assign tag = tag | default: 'section' -%}
 
-<{{ tag }} class="block-container" style="--text-align: {{ block.settings.alignment }};" {{ block.shopify_attributes }}>
+<{{ tag }} class="block-container {{ class }}" style="--text-align: {{ block.settings.alignment }};" {{ block.shopify_attributes }}>
   {{ content }}
 </{{ tag }}>
 

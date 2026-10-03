@@ -1,28 +1,48 @@
 {% block 'container' %}
-  <h1>{{ collection.title }}</h1>
+  {% paginate collection.products by 24 %}
+    <div class="page-header">
+      <p class="eyebrow">{{ 'collections.eyebrow' | t }}</p>
+      <h1 class="page-title">{{ collection.title }}</h1>
+      {%- if collection.description != blank -%}
+        <div class="page-header__description rte">{{ collection.description }}</div>
+      {%- endif -%}
+    </div>
 
-  <div class="collection-products">
-    {% paginate collection.products by 20 %}
-      {% for product in collection.products %}
-        <div class="collection-product">
-          {% if product.featured_image %}
-            {% render 'image',
-              class: 'collection-product__image',
-              image: product.featured_image,
-              url: product.url,
-              width: 400,
-              height: 400,
-              crop: 'center'
-            %}
-          {% endif %}
-          <div class="collection-product__content">
-            <p>{{ product.title | escape | link_to: product.url }}</p>
-            <p>{{ product.price | money }}</p>
-          </div>
-        </div>
-      {% endfor %}
+    <div class="collection-toolbar">
+      <p class="collection-toolbar__count">{{ 'collections.product_count' | t: count: collection.products_count }}</p>
 
-      {{ paginate | default_pagination }}
-    {% endpaginate %}
-  </div>
+      <form class="collection-toolbar__sort" method="get" data-auto-submit>
+        <label for="SortBy">{{ 'collections.sort_by' | t }}</label>
+        {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+        <select id="SortBy" name="sort_by">
+          {%- for option in collection.sort_options -%}
+            <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>{{ option.name }}</option>
+          {%- endfor -%}
+        </select>
+        <noscript><button type="submit" class="button button--small">{{ 'collections.apply' | t }}</button></noscript>
+      </form>
+    </div>
+
+    {%- if collection.products.size > 0 -%}
+      <ul class="product-grid" role="list">
+        {%- for product in collection.products -%}
+          <li>
+            {%- if forloop.index <= 4 -%}
+              {% render 'product-card', product: product, image_loading: 'eager' %}
+            {%- else -%}
+              {% render 'product-card', product: product %}
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <p class="empty-state">{{ 'collections.empty' | t }}</p>
+    {%- endif -%}
+
+    {%- if paginate.pages > 1 -%}
+      <nav class="pagination" aria-label="{{ 'general.pagination' | t }}">
+        {{ paginate | default_pagination }}
+      </nav>
+    {%- endif -%}
+  {% endpaginate %}
 {% endblock %}
