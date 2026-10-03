@@ -1649,7 +1649,7 @@ select:focus {
 
 .predictive-result:hover,
 .predictive-result:focus-visible {
-  background-color: var(--color-tile);
+  background-color: var(--color-surface);
 }
 
 .predictive-result__media {

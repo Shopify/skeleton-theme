@@ -20,7 +20,7 @@
       "surface_color": "#F7EBCD",
       "accent_color": "#DFAB52",
       "accent_foreground_color": "#000000",
-      "product_tile_color": "#F5F3EE"
+      "product_tile_color": "#FFFFFF"
     },
     "Packaging 2026": {
       "logo": "shopify://shop_images/Gold_Logo.png",
@@ -32,7 +32,7 @@
       "surface_color": "#FBF8D9",
       "accent_color": "#F4E604",
       "accent_foreground_color": "#000000",
-      "product_tile_color": "#F6F5F0"
+      "product_tile_color": "#FFFFFF"
     }
   }
 }
