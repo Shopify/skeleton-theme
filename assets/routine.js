@@ -1,8 +1,7 @@
 /*
  * Interactive routine features: the Skin Lab quiz, "add to my routine"
- * toggles on product cards, the "Your routine" section for returning
- * visitors, "Your match" badges on product cards, and recently viewed
- * products.
+ * toggles on product cards, "Your match" badges on product cards, and
+ * recently viewed products.
  *
  * Product data and translated strings come from the JSON catalogue that
  * snippets/product-catalog-json.liquid renders, so this file never formats
@@ -79,7 +78,7 @@
     return wrap;
   };
 
-  /* Compact product card used by the quiz result, "Your routine", and recently viewed. */
+  /* Compact product card used by the quiz result and recently viewed. */
   const miniCard = (product, { note } = {}) => {
     const item = element("li", "mini-card");
 
@@ -124,9 +123,8 @@
   /* ---------- "add to my routine" toggles on product cards ---------- */
 
   /*
-   * Serums saved from a card's flask button join the quiz matches in the
-   * "Your routine" section. Reflect the saved list on every toggle (they
-   * start hidden without JS).
+   * Serums saved from a card's flask button. Reflect the saved list on
+   * every toggle (they start hidden without JS).
    */
   function syncToggles() {
     const saved = known(read(KEYS.routine, []));
@@ -146,7 +144,6 @@
     const updated = saved.includes(handle) ? saved.filter((item) => item !== handle) : [...saved, handle];
     write(KEYS.routine, updated);
     syncToggles();
-    personalize();
 
     button.classList.remove("is-popping");
     void button.offsetWidth;
@@ -524,12 +521,11 @@
     quiz.hidden = false;
   }
 
-  /* ---------- personalization ---------- */
+  /* ---------- "Your match" badges ---------- */
 
   function personalize() {
     const saved = read(KEYS.quiz, null);
     const picks = known(saved?.picks);
-    const routine = known([...picks, ...read(KEYS.routine, [])]);
 
     document.querySelectorAll(".product-card[data-product-handle]").forEach((card) => {
       const media = card.querySelector(".product-card__media");
@@ -538,20 +534,6 @@
       if (isMatch && !existing && media) media.append(element("span", "badge badge--match", strings.match));
       if (!isMatch && existing) existing.remove();
     });
-
-    const section = document.querySelector("[data-personal]");
-    if (!section) return;
-    if (!routine.length) {
-      section.hidden = true;
-      return;
-    }
-    const summary = section.querySelector("[data-personal-summary]");
-    const label = saved ? concernLabel(saved.concern) : "";
-    if (summary) summary.textContent = label;
-    section
-      .querySelector("[data-personal-list]")
-      .replaceChildren(...routine.map((handle) => miniCard(byHandle.get(handle))));
-    section.hidden = false;
   }
 
   personalize();
