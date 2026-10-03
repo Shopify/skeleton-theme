@@ -289,6 +289,7 @@
       addButton.disabled = selection.length === 0;
       status.textContent = "";
       write(KEYS.routine, selection);
+      syncToggles();
     };
 
     addButton.addEventListener("click", async () => {
@@ -327,6 +328,36 @@
     if (table) table.open = false;
     render();
   }
+
+  /* ---------- "add to my routine" toggles on product cards ---------- */
+
+  /* Reflect the saved routine on every card toggle (they start hidden without JS). */
+  function syncToggles() {
+    const saved = known(read(KEYS.routine, []));
+    document.querySelectorAll("[data-routine-toggle]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(saved.includes(button.dataset.routineToggle)));
+      button.hidden = false;
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-routine-toggle]");
+    if (!button) return;
+    event.preventDefault();
+
+    const handle = button.dataset.routineToggle;
+    const saved = known(read(KEYS.routine, []));
+    const updated = saved.includes(handle) ? saved.filter((item) => item !== handle) : [...saved, handle];
+    write(KEYS.routine, updated);
+    setBuilderSelection(updated);
+    syncToggles();
+
+    button.classList.remove("is-popping");
+    void button.offsetWidth;
+    button.classList.add("is-popping");
+  });
+
+  syncToggles();
 
   /* ---------- recommendations ---------- */
 

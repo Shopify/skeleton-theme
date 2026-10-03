@@ -205,7 +205,9 @@
       "caution": "Caution"
     },
     "routine_am": "AM",
-    "routine_pm": "PM"
+    "routine_pm": "PM",
+    "percent_off": "{{ percent }}% off",
+    "add_to_routine": "Add to my routine"
   },
   "search": {
     "title": "Search",

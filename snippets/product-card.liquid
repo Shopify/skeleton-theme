@@ -1,8 +1,10 @@
 {% doc %}
-  Renders a clinical-style product tile: image on a neutral tile (the
-  second product image fades in on hover), AM/PM routine badges from the
-  `custom.when_to_use` metafield, the claim line, title, size, price, and
-  a one-tap "Add to bag" form when the product has a single variant.
+  Renders a product card: a header strip tinted with the serum's Skin Lab
+  element colour (from its first `custom.concerns` value) showing the
+  element code and AM/PM icons, or a "% off" badge when on sale; an inset
+  photo (the second image fades in on hover, with a 1 / 2 counter) with an
+  "add to my routine" toggle; key-ingredient and fragrance-free pills; the
+  claim, title, price and a one-tap "Add to bag" button.
 
   The claim line reads the `custom.subtitle` metafield first, then falls
   back to the first `Ingredient_*` tag so tiles still read well before
@@ -34,6 +36,41 @@
     assign routine_pm = true
   endif
 
+  assign element = product.metafields.custom.concerns.value.first
+  case element
+    when 'hydration'
+      assign element_color = '#5DB3E6'
+    when 'brightness'
+      assign element_color = '#F4E604'
+    when 'dark_spots'
+      assign element_color = '#F0954A'
+    when 'pores'
+      assign element_color = '#6BC48C'
+    when 'fine_lines'
+      assign element_color = '#E0475A'
+    when 'barrier'
+      assign element_color = '#F29BC0'
+    when 'tone'
+      assign element_color = '#B9A6F0'
+    when 'texture'
+      assign element_color = '#9ED6C4'
+    else
+      assign element_color = settings.accent_color
+  endcase
+
+  assign discount = 0
+  if product.compare_at_price > product.price
+    assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price
+  endif
+
+  assign inci = product.metafields.custom.ingredients.value | upcase
+  assign fragrance_free = false
+  if inci != blank
+    unless inci contains 'FRAGRANCE' or inci contains 'PARFUM'
+      assign fragrance_free = true
+    endunless
+  endif
+
   assign claim = product.metafields.custom.subtitle.value
   if claim == blank
     for tag in product.tags
@@ -45,77 +82,161 @@
   endif
 -%}
 
-<article class="product-card" data-product-handle="{{ product.handle }}">
-  <a class="product-card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
-    {%- if product.featured_image -%}
-      {{
-        product.featured_image
-        | image_url: width: 800
-        | image_tag:
-          loading: image_loading,
-          widths: '300, 400, 600, 800',
-          sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
-          alt: product.featured_image.alt
-      }}
-      {%- if secondary_image -%}
+<article
+  class="product-card"
+  data-product-handle="{{ product.handle }}"
+  style="--element-color: {{ element_color }};"
+>
+  <div class="product-card__strip">
+    {%- if discount > 0 -%}
+      <span class="product-card__offer">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 1.5l2.4 2.1 3.2-.3.8 3.1 2.8 1.6-1.2 3 1.2 3-2.8 1.6-.8 3.1-3.2-.3L12 22.5l-2.4-2.1-3.2.3-.8-3.1-2.8-1.6 1.2-3-1.2-3 2.8-1.6.8-3.1 3.2.3z"/><path d="M9 15l6-6M9.5 9.5h.01M14.5 14.5h.01" stroke="var(--element-strip-bg, #fff)" stroke-width="2" stroke-linecap="round"/></svg>
+        {{ 'products.percent_off' | t: percent: discount }}
+      </span>
+    {%- elsif element != blank -%}
+      <span class="product-card__element" aria-hidden="true">
+        {%- case element -%}
+          {%- when 'hydration' -%}{{ 'quiz.symbol_hydration' | t }}
+          {%- when 'brightness' -%}{{ 'quiz.symbol_brightness' | t }}
+          {%- when 'dark_spots' -%}{{ 'quiz.symbol_dark_spots' | t }}
+          {%- when 'pores' -%}{{ 'quiz.symbol_pores' | t }}
+          {%- when 'fine_lines' -%}{{ 'quiz.symbol_fine_lines' | t }}
+          {%- when 'barrier' -%}{{ 'quiz.symbol_barrier' | t }}
+          {%- when 'tone' -%}{{ 'quiz.symbol_tone' | t }}
+          {%- when 'texture' -%}{{ 'quiz.symbol_texture' | t }}
+        {%- endcase -%}
+      </span>
+      {%- if claim != blank -%}
+        <span class="product-card__strip-claim">{{ claim }}</span>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if routine_am or routine_pm -%}
+      <span class="product-card__routine">
+        {%- if routine_am -%}
+          <span class="product-card__time" title="{{ 'products.routine_am' | t }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>{{ 'products.routine_am' | t }}</span>
+          </span>
+        {%- endif -%}
+        {%- if routine_pm -%}
+          <span class="product-card__time product-card__time--pm" title="{{ 'products.routine_pm' | t }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+            <span>{{ 'products.routine_pm' | t }}</span>
+          </span>
+        {%- endif -%}
+      </span>
+    {%- endif -%}
+  </div>
+
+  <div class="product-card__media{% if secondary_image %} has-secondary{% endif %}">
+    <a class="product-card__image-link" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+      {%- if product.featured_image -%}
         {{
-          secondary_image
+          product.featured_image
           | image_url: width: 800
           | image_tag:
-            loading: 'lazy',
+            loading: image_loading,
             widths: '300, 400, 600, 800',
             sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
-            alt: '',
-            class: 'product-card__image--secondary'
+            alt: product.featured_image.alt
         }}
+        {%- if secondary_image -%}
+          {{
+            secondary_image
+            | image_url: width: 800
+            | image_tag:
+              loading: 'lazy',
+              widths: '300, 400, 600, 800',
+              sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+              alt: '',
+              class: 'product-card__image--secondary'
+          }}
+        {%- endif -%}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder' }}
       {%- endif -%}
-    {%- else -%}
-      {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder' }}
+    </a>
+
+    <button
+      type="button"
+      class="product-card__save"
+      data-routine-toggle="{{ product.handle }}"
+      aria-pressed="false"
+      aria-label="{{ 'products.add_to_routine' | t }}: {{ product.title | escape }}"
+      hidden
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 3h6M10 3v5.2L5.2 17.4A2.4 2.4 0 0 0 7.3 21h9.4a2.4 2.4 0 0 0 2.1-3.6L14 8.2V3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path class="product-card__save-fill" d="M7.6 14h8.8l2 3.6a1.4 1.4 0 0 1-1.2 2.1H6.8a1.4 1.4 0 0 1-1.2-2.1z"/></svg>
+    </button>
+
+    {%- if product.images.size > 1 -%}
+      <span class="product-card__counter" aria-hidden="true">
+        <span class="product-card__counter-first">1</span><span class="product-card__counter-second">2</span>&nbsp;/&nbsp;{{ product.images.size }}
+      </span>
     {%- endif -%}
 
     {%- unless product.available -%}
       <span class="badge">{{ 'products.sold_out' | t }}</span>
     {%- endunless -%}
-
-    {%- if routine_am or routine_pm -%}
-      <span class="routine-badges">
-        {%- if routine_am -%}
-          <span class="routine-badge routine-badge--am">{{ 'products.routine_am' | t }}</span>
-        {%- endif -%}
-        {%- if routine_pm -%}
-          <span class="routine-badge routine-badge--pm">{{ 'products.routine_pm' | t }}</span>
-        {%- endif -%}
-      </span>
-    {%- endif -%}
-  </a>
+  </div>
 
   <div class="product-card__body">
-    {%- if claim != blank -%}
-      <p class="product-card__claim">{{ claim }}</p>
+    {%- assign key_ingredient = product.metafields.custom.key_ingredient.value -%}
+    {%- if key_ingredient != blank or fragrance_free -%}
+      <ul class="product-card__pills" role="list">
+        {%- if key_ingredient != blank -%}
+          <li class="product-card__pill">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="var(--element-color)" d="M12 2.5s6.5 7.2 6.5 11.5a6.5 6.5 0 0 1-13 0C5.5 9.7 12 2.5 12 2.5z"/></svg>
+            {{ key_ingredient }}
+          </li>
+        {%- endif -%}
+        {%- if fragrance_free -%}
+          <li class="product-card__pill">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#4CAF6E" d="M20 3.5C9 3.5 4 9 4 15.5c0 1.6.4 3 1 4l1.4-1.4C8 12.6 12 9.6 16 8c-3.6 2.2-6.6 5.4-8.4 10.4 1.1.6 2.4.9 3.9.9 6.6 0 9.5-6.4 8.5-15.8z"/></svg>
+            {{ 'routine.fragrance_free' | t }}
+          </li>
+        {%- endif -%}
+      </ul>
     {%- endif -%}
+
     <h3 class="product-card__title">
       <a href="{{ product.url }}">{{ product.title }}</a>
     </h3>
-    <p class="product-card__meta">
-      {%- if product.has_only_default_variant == false and product.variants.size == 1 -%}
-        <span>{{ variant.title }}</span>
-      {%- endif -%}
-      {% render 'price', product: product %}
-    </p>
   </div>
 
-  {%- if product.variants.size == 1 -%}
-    {% form 'product', product, class: 'product-card__form' %}
-      <input type="hidden" name="id" value="{{ variant.id }}">
-      <button type="submit" class="button button--outline button--full" {% unless variant.available %}disabled{% endunless %}>
-        {%- if variant.available -%}
-          {{ 'products.add_to_bag' | t }}
+  <div class="product-card__footer">
+    <div class="product-card__pricing">
+      {%- if product.compare_at_price > product.price -%}
+        <s class="product-card__compare">{{ product.compare_at_price | money }}</s>
+      {%- elsif variant.title != 'Default Title' -%}
+        <span class="product-card__size">{{ variant.title }}</span>
+      {%- endif -%}
+      <span class="product-card__price">
+        {%- if product.price_varies -%}
+          {%- assign price_formatted = product.price | money -%}
+          {{ 'products.price_from' | t: price: price_formatted }}
         {%- else -%}
-          {{ 'products.sold_out' | t }}
+          {{ product.price | money }}
         {%- endif -%}
-      </button>
-    {% endform %}
-  {%- else -%}
-    <a class="button button--outline button--full" href="{{ product.url }}">{{ 'products.choose_options' | t }}</a>
-  {%- endif -%}
+      </span>
+    </div>
+
+    {%- if product.variants.size == 1 -%}
+      {% form 'product', product, class: 'product-card__form' %}
+        <input type="hidden" name="id" value="{{ variant.id }}">
+        <button type="submit" class="product-card__add" {% unless variant.available %}disabled{% endunless %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 8h14l-1 12.5H6L5 8Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span>
+            {%- if variant.available -%}
+              {{ 'products.add_to_bag' | t }}
+            {%- else -%}
+              {{ 'products.sold_out' | t }}
+            {%- endif -%}
+          </span>
+        </button>
+      {% endform %}
+    {%- else -%}
+      <a class="product-card__add" href="{{ product.url }}">{{ 'products.choose_options' | t }}</a>
+    {%- endif -%}
+  </div>
 </article>
