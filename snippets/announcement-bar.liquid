@@ -1,0 +1,23 @@
+{% doc %}
+  Renders the thin announcement strip above the header (shipping offers,
+  launch news). Merchants edit the message in Theme settings > Announcement bar;
+  when it is blank, the translated default message is shown.
+
+  @example
+  {% render 'announcement-bar' %}
+{% enddoc %}
+
+{%- liquid
+  assign message = settings.announcement_message
+  if message == blank
+    assign message = 'announcement.default' | t
+  endif
+-%}
+
+<div class="announcement-bar" role="region" aria-label="{{ 'announcement.label' | t }}">
+  {%- if settings.announcement_link != blank -%}
+    <a href="{{ settings.announcement_link }}">{{ message }}</a>
+  {%- else -%}
+    <p>{{ message }}</p>
+  {%- endif -%}
+</div>

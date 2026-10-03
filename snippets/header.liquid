@@ -1,20 +1,21 @@
 {% doc %}
   Renders the storefront header: brand logo, main menu, search, customer
-  account entry, and bag link. Composed directly in layout/theme.liquid so
-  it wraps every page. On small screens the menu collapses into a
+  account entry, and bag link. Rendered from layout/theme.liquid so it wraps
+  every page; menus come from Theme settings > Header. On small screens the menu collapses into a
   <details> drawer that needs no JavaScript.
 
-  Self-contained: callers leave the body empty.
+  @example
+  {% render 'header' %}
 {% enddoc %}
 
-<header class="site-header" {{ block.shopify_attributes }}>
+<header class="site-header">
   <details class="site-header__drawer" scroll-lock>
     <summary class="site-header__menu-toggle" aria-label="{{ 'header.menu' | t }}">
       <span class="hamburger" aria-hidden="true"></span>
     </summary>
     <nav class="site-header__drawer-nav" aria-label="{{ 'header.menu' | t }}">
       <ul>
-        {% for link in block.settings.menu.links %}
+        {% for link in settings.header_menu.links %}
           <li>
             <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
           </li>
@@ -41,7 +42,7 @@
 
   <nav class="site-header__nav" aria-label="{{ 'header.menu' | t }}">
     <ul>
-      {% for link in block.settings.menu.links %}
+      {% for link in settings.header_menu.links %}
         <li>
           <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
         </li>
@@ -73,7 +74,7 @@
     </details>
 
     {% if shop.customer_accounts_enabled %}
-      <shopify-account class="site-header__icon" menu="{{ block.settings.customer_account_menu }}">
+      <shopify-account class="site-header__icon" menu="{{ settings.customer_account_menu }}">
         {{ 'icon-account.svg' | inline_asset_content }}
       </shopify-account>
     {% endif %}
@@ -85,23 +86,3 @@
     </a>
   </div>
 </header>
-
-{% schema %}
-{
-  "name": "t:general.header",
-  "settings": [
-    {
-      "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu",
-      "default": "main-menu"
-    },
-    {
-      "type": "link_list",
-      "id": "customer_account_menu",
-      "label": "t:labels.customer_account_menu",
-      "default": "customer-account-main-menu"
-    }
-  ]
-}
-{% endschema %}

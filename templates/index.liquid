@@ -1,16 +1,39 @@
-{% block 'container', class: 'block-container--flush' %}
-  {% block 'hero' %}
-    <p class="eyebrow">{{ 'home.hero.eyebrow' | t }}</p>
-    <h1 class="hero__title">{{ 'home.hero.title' | t }}</h1>
-    <p class="hero__text">{{ 'home.hero.text' | t }}</p>
-    <div class="button-row">
-      <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'home.hero.primary_cta' | t }}</a>
-      <a class="button button--outline" href="#regimen">{{ 'home.hero.secondary_cta' | t }}</a>
-    </div>
-  {% endblock %}
-{% endblock %}
+<section class="block-container block-container--flush">
+  <div
+    class="hero full-width hero--{{ settings.hero_text_tone }}{% if settings.hero_image %} hero--has-image{% endif %}"
+  >
+    {%- if settings.hero_image -%}
+      <div class="hero__media">
+        {{
+          settings.hero_image
+          | image_url: width: 2400
+          | image_tag:
+            loading: 'eager',
+            fetchpriority: 'high',
+            widths: '750, 1100, 1500, 1800, 2400',
+            sizes: '100vw',
+            alt: settings.hero_image.alt
+        }}
+      </div>
+    {%- elsif settings.logo_mark -%}
+      <div class="hero__mark" aria-hidden="true">
+        {{ settings.logo_mark | image_url: width: 900 | image_tag: alt: '', loading: 'eager' }}
+      </div>
+    {%- endif -%}
 
-{% block 'container', class: 'concerns-strip' %}
+    <div class="hero__content">
+      <p class="eyebrow">{{ 'home.hero.eyebrow' | t }}</p>
+      <h1 class="hero__title">{{ 'home.hero.title' | t }}</h1>
+      <p class="hero__text">{{ 'home.hero.text' | t }}</p>
+      <div class="button-row">
+        <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'home.hero.primary_cta' | t }}</a>
+        <a class="button button--outline" href="#regimen">{{ 'home.hero.secondary_cta' | t }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block-container concerns-strip">
   <nav class="concerns" aria-label="{{ 'home.concerns.label' | t }}">
     <p class="concerns__label">{{ 'home.concerns.label' | t }}</p>
     <ul role="list">
@@ -22,19 +45,23 @@
       <li><a href="{{ routes.search_url }}?q=rice&type=product">{{ 'home.concerns.dullness' | t }}</a></li>
     </ul>
   </nav>
-{% endblock %}
+</section>
 
-{% block 'container' %}
-  {% block 'product-grid', limit: 8 %}
-    <div>
-      <p class="eyebrow">{{ 'home.collection.eyebrow' | t }}</p>
-      <h2 class="section-title">{{ 'home.collection.title' | t }}</h2>
-    </div>
-    <a class="link-arrow" href="{{ routes.all_products_collection_url }}">{{ 'home.collection.view_all' | t }}</a>
-  {% endblock %}
-{% endblock %}
+<section class="block-container">
+  {%- liquid
+    assign grid_eyebrow = 'home.collection.eyebrow' | t
+    assign grid_heading = 'home.collection.title' | t
+  -%}
+  {% render 'product-grid',
+    collection: settings.home_collection,
+    limit: 8,
+    eyebrow: grid_eyebrow,
+    heading: grid_heading,
+    show_view_all: true
+  %}
+</section>
 
-{% block 'container', class: 'tone-surface' %}
+<section class="block-container tone-surface">
   <div class="brand-story">
     <div class="clover" aria-hidden="true">
       <span class="clover__label">{{ 'home.story.shape_label' | t }}</span>
@@ -53,9 +80,9 @@
       </ul>
     </div>
   </div>
-{% endblock %}
+</section>
 
-{% block 'container' %}
+<section class="block-container">
   <div class="regimen" id="regimen">
     <div class="regimen__intro">
       <p class="eyebrow">{{ 'home.regimen.eyebrow' | t }}</p>
@@ -132,9 +159,9 @@
       <p class="pairing__note">{{ 'home.pairing.note' | t }}</p>
     </div>
   </div>
-{% endblock %}
+</section>
 
-{% block 'container', class: 'tone-inverse' %}
+<section class="block-container tone-inverse">
   <ul class="promises" role="list">
     <li>
       <h3>{{ 'home.promises.origin_title' | t }}</h3>
@@ -149,4 +176,4 @@
       <p>{{ 'home.promises.directions_body' | t }}</p>
     </li>
   </ul>
-{% endblock %}
+</section>

@@ -1,0 +1,47 @@
+{% doc %}
+  Renders a heading row and a grid of product cards from one collection.
+  Falls back to the whole catalogue when no collection is passed.
+
+  @param {collection} [collection] - Collection to show. Default: all products.
+  @param {number} [limit] - Maximum number of products to show. Default: 8.
+  @param {string} [exclude] - Handle of a product to leave out (e.g. the current product).
+  @param {string} [eyebrow] - Small label above the heading.
+  @param {string} [heading] - Section heading.
+  @param {boolean} [show_view_all] - Show a "View all" link to the full catalogue.
+
+  @example
+  {% render 'product-grid', collection: settings.home_collection, heading: heading, limit: 4 %}
+{% enddoc %}
+
+{%- liquid
+  assign limit = limit | default: 8
+  assign source = collection | default: collections.all
+  assign shown = 0
+-%}
+
+<div class="product-grid-block">
+  {%- if heading != blank or show_view_all -%}
+    <div class="product-grid-block__header">
+      <div>
+        {%- if eyebrow != blank -%}
+          <p class="eyebrow">{{ eyebrow }}</p>
+        {%- endif -%}
+        {%- if heading != blank -%}
+          <h2 class="section-title">{{ heading }}</h2>
+        {%- endif -%}
+      </div>
+      {%- if show_view_all -%}
+        <a class="link-arrow" href="{{ routes.all_products_collection_url }}">{{ 'home.collection.view_all' | t }}</a>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <ul class="product-grid" role="list">
+    {%- for product in source.products -%}
+      {%- if product.handle == exclude -%}{%- continue -%}{%- endif -%}
+      {%- if shown >= limit -%}{%- break -%}{%- endif -%}
+      <li>{% render 'product-card', product: product %}</li>
+      {%- assign shown = shown | plus: 1 -%}
+    {%- endfor -%}
+  </ul>
+</div>
