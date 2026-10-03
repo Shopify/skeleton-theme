@@ -94,8 +94,8 @@ errors in the Liquid instead of adding configuration exceptions.
   ingredients lab. Orb colours are fixed design tokens in the template, not
   brand settings. Tap/click pours an orb in immediately; keyboard users move
   with arrow keys and confirm with Next. Honour `prefers-reduced-motion`.
-- Interactive features (skin quiz, routine builder, "Your routine", "Your
-  match" badges, recently viewed) live in `assets/routine.js`. It reads the
+- Interactive features (skin quiz, "add to my routine" card toggles, "Your
+  routine", "Your match" badges, recently viewed) live in `assets/routine.js`. It reads the
   JSON catalogue from `snippets/product-catalog-json.liquid`, which takes its
   routine data from the `custom.concerns`, `custom.layer_order` and
   `custom.conflicts_with` metafields. Personal state stays in the visitor's
@@ -112,7 +112,7 @@ errors in the Liquid instead of adding configuration exceptions.
 templates/            *.liquid page structure (no JSON templates)
 layout/               theme.liquid document shell, password.liquid
 snippets/             announcement-bar, header, footer, cart-drawer, cart-drawer-content,
-                      collection-filters, product-grid, product-card, product-catalog-json,
+                      collection-filters, product-grid, product-card, product-showcase, product-catalog-json,
                       price, image, meta-tags, css-variables
 assets/               CSS, JavaScript, and other static assets
 config/               settings_schema.json (all merchant controls), settings_data.json (theme styles)

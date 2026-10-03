@@ -1,4 +1,5 @@
 {{ 'skin-lab.css' | asset_url | stylesheet_tag }}
+{{ 'showcase.css' | asset_url | stylesheet_tag }}
 
 <section class="block-container block-container--flush">
   <div
@@ -50,6 +51,10 @@
   </nav>
 </section>
 
+<section class="block-container">
+  {% render 'product-showcase', collection: settings.home_collection, limit: 6 %}
+</section>
+
 <section class="block-container personal" data-personal hidden>
   <div class="personal__header">
     <div>
@@ -58,7 +63,6 @@
       <p class="personal__summary" data-personal-summary></p>
     </div>
     <div class="button-row">
-      <a class="button button--outline" href="#regimen">{{ 'personal.open_builder' | t }}</a>
       <a class="link-button" href="#quiz" data-quiz-restart>{{ 'personal.retake' | t }}</a>
     </div>
   </div>
@@ -271,7 +275,6 @@
       <p class="skin-lab__check" data-lab-check></p>
       <div class="button-row">
         <button type="button" class="button" data-quiz-add>{{ 'quiz.add_all' | t }}</button>
-        <a class="button button--outline" href="#regimen">{{ 'quiz.see_routine' | t }}</a>
       </div>
     </div>
   </div>
@@ -336,37 +339,8 @@
       </li>
     </ol>
 
-    <div class="builder" data-routine-builder hidden>
-      <h3 class="pairing__title">{{ 'routine.title' | t }}</h3>
-      <p class="builder__intro">{{ 'routine.intro' | t }}</p>
-      <div class="builder__picker" role="group" aria-label="{{ 'routine.pick_label' | t }}" data-builder-picker></div>
-
-      <div class="builder__output" aria-live="polite">
-        <div class="builder__col">
-          <h4 class="builder__heading">{{ 'routine.am' | t }}</h4>
-          <ol class="builder__steps" data-builder-am></ol>
-        </div>
-        <div class="builder__col builder__col--pm">
-          <h4 class="builder__heading">{{ 'routine.pm' | t }}</h4>
-          <ol class="builder__steps" data-builder-pm></ol>
-        </div>
-      </div>
-      <div class="builder__alternate" data-builder-alternate hidden>
-        <h4 class="builder__heading">{{ 'routine.alternate_title' | t }}</h4>
-        <ul class="builder__steps" role="list"></ul>
-      </div>
-      <ul class="builder__notes" role="list" data-builder-notes></ul>
-
-      <div class="button-row">
-        <button type="button" class="button" data-builder-add disabled>{{ 'routine.add_routine' | t }}</button>
-        <button type="button" class="button button--outline" data-builder-share>{{ 'routine.share' | t }}</button>
-        <button type="button" class="link-button" data-builder-clear>{{ 'routine.clear' | t }}</button>
-      </div>
-      <p class="builder__status" role="status" data-builder-status></p>
-    </div>
-
-    <details class="pairing" open data-pairing-table>
-      <summary class="pairing__title">{{ 'home.pairing.title' | t }}</summary>
+    <div class="pairing">
+      <h3 class="pairing__title">{{ 'home.pairing.title' | t }}</h3>
       <table class="pairing__table">
         <thead>
           <tr>
@@ -419,7 +393,7 @@
         </tbody>
       </table>
       <p class="pairing__note">{{ 'home.pairing.note' | t }}</p>
-    </details>
+    </div>
   </div>
 </section>
 
