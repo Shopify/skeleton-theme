@@ -55,20 +55,6 @@
   {% render 'product-showcase', collection: settings.home_collection, limit: 6 %}
 </section>
 
-<section class="block-container personal" data-personal hidden>
-  <div class="personal__header">
-    <div>
-      <p class="eyebrow">{{ 'personal.eyebrow' | t }}</p>
-      <h2 class="section-title">{{ 'personal.title' | t }}</h2>
-      <p class="personal__summary" data-personal-summary></p>
-    </div>
-    <div class="button-row">
-      <a class="link-button" href="#quiz" data-quiz-restart>{{ 'personal.retake' | t }}</a>
-    </div>
-  </div>
-  <ul class="mini-grid" role="list" data-personal-list></ul>
-</section>
-
 <section class="block-container">
   {%- liquid
     assign grid_eyebrow = 'home.collection.eyebrow' | t

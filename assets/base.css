@@ -2261,7 +2261,7 @@ select:focus {
   font-size: 0.6875rem;
 }
 
-/** Your routine (returning visitors) and recently viewed */
+/** Recently viewed */
 .personal__header {
   display: flex;
   flex-wrap: wrap;
@@ -2271,12 +2271,6 @@ select:focus {
   margin-block-end: var(--space-xl);
 }
 
-.personal__summary {
-  margin-block-start: var(--space-xs);
-  color: var(--color-foreground-muted);
-}
-
-.personal .mini-card,
 [data-recently-viewed] .mini-card {
   padding: 0;
 }
