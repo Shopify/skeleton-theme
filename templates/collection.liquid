@@ -8,20 +8,7 @@
       {%- endif -%}
     </div>
 
-    <div class="collection-toolbar">
-      <p class="collection-toolbar__count">{{ 'collections.product_count' | t: count: collection.products_count }}</p>
-
-      <form class="collection-toolbar__sort" method="get" data-auto-submit>
-        <label for="SortBy">{{ 'collections.sort_by' | t }}</label>
-        {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
-        <select id="SortBy" name="sort_by">
-          {%- for option in collection.sort_options -%}
-            <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>{{ option.name }}</option>
-          {%- endfor -%}
-        </select>
-        <noscript><button type="submit" class="button button--small">{{ 'collections.apply' | t }}</button></noscript>
-      </form>
-    </div>
+    {% render 'collection-filters', results: collection, count: collection.products_count %}
 
     {%- if collection.products.size > 0 -%}
       <ul class="product-grid" role="list">

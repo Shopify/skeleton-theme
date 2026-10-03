@@ -1,7 +1,8 @@
 {% doc %}
-  Renders a clinical-style product tile: image on a neutral tile, the
-  product's claim line, title, size, price, and a one-tap "Add to bag"
-  form when the product has a single available variant.
+  Renders a clinical-style product tile: image on a neutral tile (the
+  second product image fades in on hover), AM/PM routine badges from the
+  `custom.when_to_use` metafield, the claim line, title, size, price, and
+  a one-tap "Add to bag" form when the product has a single variant.
 
   The claim line reads the `custom.subtitle` metafield first, then falls
   back to the first `Ingredient_*` tag so tiles still read well before
@@ -17,6 +18,22 @@
 {%- liquid
   assign image_loading = image_loading | default: 'lazy'
   assign variant = product.selected_or_first_available_variant
+  assign secondary_image = product.images[1]
+
+  comment
+    Routine badges: match AM / PM as whole words in the "When to use"
+    metafield so values like "AM & PM, on damp skin" read correctly.
+  endcomment
+  assign routine_words = product.metafields.custom.when_to_use.value | upcase | replace: ',', ' ' | replace: '·', ' ' | replace: '&', ' ' | split: ' '
+  assign routine_am = false
+  assign routine_pm = false
+  if routine_words contains 'AM'
+    assign routine_am = true
+  endif
+  if routine_words contains 'PM'
+    assign routine_pm = true
+  endif
+
   assign claim = product.metafields.custom.subtitle.value
   if claim == blank
     for tag in product.tags
@@ -40,6 +57,18 @@
           sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
           alt: product.featured_image.alt
       }}
+      {%- if secondary_image -%}
+        {{
+          secondary_image
+          | image_url: width: 800
+          | image_tag:
+            loading: 'lazy',
+            widths: '300, 400, 600, 800',
+            sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+            alt: '',
+            class: 'product-card__image--secondary'
+        }}
+      {%- endif -%}
     {%- else -%}
       {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder' }}
     {%- endif -%}
@@ -47,6 +76,17 @@
     {%- unless product.available -%}
       <span class="badge">{{ 'products.sold_out' | t }}</span>
     {%- endunless -%}
+
+    {%- if routine_am or routine_pm -%}
+      <span class="routine-badges">
+        {%- if routine_am -%}
+          <span class="routine-badge routine-badge--am">{{ 'products.routine_am' | t }}</span>
+        {%- endif -%}
+        {%- if routine_pm -%}
+          <span class="routine-badge routine-badge--pm">{{ 'products.routine_pm' | t }}</span>
+        {%- endif -%}
+      </span>
+    {%- endif -%}
   </a>
 
   <div class="product-card__body">

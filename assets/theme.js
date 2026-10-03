@@ -49,7 +49,13 @@ document.querySelectorAll("[data-product-form]").forEach((form) => {
 
 /* Submit sort forms as soon as the selection changes. */
 document.querySelectorAll("[data-auto-submit]").forEach((form) => {
-  form.addEventListener("change", () => form.submit());
+  form.addEventListener("change", () => {
+    /* Leave blank fields (such as an empty price box) out of the URL. */
+    form.querySelectorAll("input").forEach((input) => {
+      if (input.value === "") input.disabled = true;
+    });
+    form.submit();
+  });
 });
 
 /*
@@ -303,3 +309,34 @@ if (stickyBar && mainButton && "IntersectionObserver" in window) {
     stickyBar.classList.toggle("is-visible", past);
   }).observe(mainButton);
 }
+
+/* Mobile product gallery: keep the dot indicator in step with the swipe position. */
+document.querySelectorAll("[data-gallery]").forEach((gallery) => {
+  const dots = gallery.parentElement.querySelectorAll("[data-gallery-dots] > *");
+  if (dots.length < 2) return;
+
+  let frame;
+  gallery.addEventListener("scroll", () => {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      const slide = gallery.firstElementChild?.getBoundingClientRect().width || 1;
+      const index = Math.round(gallery.scrollLeft / slide);
+      dots.forEach((dot, i) => dot.classList.toggle("is-active", i === index));
+    });
+  }, { passive: true });
+});
+
+/* Filter dropdowns: only one open at a time; clicking outside closes them. */
+document.addEventListener("toggle", (event) => {
+  const facet = event.target;
+  if (!facet.matches?.("[data-facet]") || !facet.open) return;
+  document.querySelectorAll("[data-facet][open]").forEach((other) => {
+    if (other !== facet) other.open = false;
+  });
+}, true);
+
+document.addEventListener("click", (event) => {
+  document.querySelectorAll("[data-facet][open]").forEach((facet) => {
+    if (!facet.contains(event.target)) facet.open = false;
+  });
+});
