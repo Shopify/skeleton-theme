@@ -112,7 +112,7 @@ errors in the Liquid instead of adding configuration exceptions.
 templates/            *.liquid page structure (no JSON templates)
 layout/               theme.liquid document shell, password.liquid
 snippets/             announcement-bar, header, footer, cart-drawer, cart-drawer-content,
-                      collection-filters, product-grid, product-card, product-catalog-json,
+                      collection-filters, product-grid, product-card, product-showcase, product-catalog-json,
                       price, image, meta-tags, css-variables
 assets/               CSS, JavaScript, and other static assets
 config/               settings_schema.json (all merchant controls), settings_data.json (theme styles)
