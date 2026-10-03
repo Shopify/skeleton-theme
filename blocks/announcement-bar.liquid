@@ -1,0 +1,43 @@
+{% doc %}
+  Renders the thin announcement strip above the header (shipping offers,
+  launch news). Merchants edit the message in the theme editor; when it is
+  blank, the translated default message is shown.
+
+  Self-contained: callers leave the body empty.
+
+  @example
+  {% block 'announcement-bar' %}{% endblock %}
+{% enddoc %}
+
+{%- liquid
+  assign message = block.settings.message
+  if message == blank
+    assign message = 'announcement.default' | t
+  endif
+-%}
+
+<div class="announcement-bar" role="region" aria-label="{{ 'announcement.label' | t }}" {{ block.shopify_attributes }}>
+  {%- if block.settings.link != blank -%}
+    <a href="{{ block.settings.link }}">{{ message }}</a>
+  {%- else -%}
+    <p>{{ message }}</p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:general.announcement_bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "message",
+      "label": "t:labels.message"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:labels.link"
+    }
+  ]
+}
+{% endschema %}

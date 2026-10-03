@@ -1,0 +1,50 @@
+{% doc %}
+  Renders a heading row and a grid of product cards from one collection.
+  Merchants pick the collection in the theme editor; when none is chosen
+  the grid shows the whole catalogue.
+
+  @param {string} [content] - Heading copy shown above the grid, supplied by the caller.
+  @param {number} [limit] - Maximum number of products to show. Default: 8.
+  @param {string} [exclude] - Handle of a product to leave out (e.g. the current product).
+
+  @example
+  {% block 'product-grid', limit: 4 %}
+    <h2>...</h2>
+  {% endblock %}
+{% enddoc %}
+
+{%- liquid
+  assign limit = limit | default: 8
+  assign source = block.settings.collection | default: collections.all
+  assign shown = 0
+-%}
+
+<div class="product-grid-block" {{ block.shopify_attributes }}>
+  {%- if content != blank -%}
+    <div class="product-grid-block__header">
+      {{ content }}
+    </div>
+  {%- endif -%}
+
+  <ul class="product-grid" role="list">
+    {%- for product in source.products -%}
+      {%- if product.handle == exclude -%}{%- continue -%}{%- endif -%}
+      {%- if shown >= limit -%}{%- break -%}{%- endif -%}
+      <li>{% render 'product-card', product: product %}</li>
+      {%- assign shown = shown | plus: 1 -%}
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "t:general.product_grid",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:labels.collection"
+    }
+  ]
+}
+{% endschema %}

@@ -1,33 +1,87 @@
 {% doc %}
-  Renders the theme's storefront header: shop title, main menu,
-  customer account entry, and cart link. Composed directly in
-  layout/theme.liquid so it wraps every page.
+  Renders the storefront header: brand logo, main menu, search, customer
+  account entry, and bag link. Composed directly in layout/theme.liquid so
+  it wraps every page. On small screens the menu collapses into a
+  <details> drawer that needs no JavaScript.
+
+  Self-contained: callers leave the body empty.
 {% enddoc %}
 
-<header {{ block.shopify_attributes }}>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+<header class="site-header" {{ block.shopify_attributes }}>
+  <details class="site-header__drawer" scroll-lock>
+    <summary class="site-header__menu-toggle" aria-label="{{ 'header.menu' | t }}">
+      <span class="hamburger" aria-hidden="true"></span>
+    </summary>
+    <nav class="site-header__drawer-nav" aria-label="{{ 'header.menu' | t }}">
+      <ul>
+        {% for link in block.settings.menu.links %}
+          <li>
+            <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
+          </li>
+        {% endfor %}
+        <li><a href="{{ routes.search_url }}">{{ 'header.search' | t }}</a></li>
+        {% if shop.customer_accounts_enabled %}
+          <li><a href="{{ routes.account_url }}">{{ 'header.account' | t }}</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </details>
 
-  <div class="header__menu">
-    {% for link in block.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+  <a class="site-header__logo" href="{{ routes.root_url }}">
+    {%- if settings.logo -%}
+      {{
+        settings.logo
+        | image_url: height: 160
+        | image_tag: alt: shop.name, loading: 'eager', fetchpriority: 'high', class: 'site-header__logo-image'
+      }}
+    {%- else -%}
+      <span class="site-header__wordmark">{{ shop.name }}</span>
+    {%- endif -%}
+  </a>
 
-  <div class="header__icons">
+  <nav class="site-header__nav" aria-label="{{ 'header.menu' | t }}">
+    <ul>
+      {% for link in block.settings.menu.links %}
+        <li>
+          <a href="{{ link.url }}" {% if link.active %}aria-current="page"{% endif %}>{{ link.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <div class="site-header__icons">
+    <details class="header-search" data-predictive-search data-search-url="{{ routes.search_url }}">
+      <summary class="site-header__icon" aria-label="{{ 'header.search' | t }}">
+        {{ 'icon-search.svg' | inline_asset_content }}
+      </summary>
+      <div class="header-search__panel">
+        <form class="header-search__form" action="{{ routes.search_url }}" method="get" role="search">
+          <input type="hidden" name="type" value="product">
+          <label class="visually-hidden" for="HeaderSearchInput">{{ 'search.placeholder' | t }}</label>
+          <input
+            id="HeaderSearchInput"
+            type="search"
+            name="q"
+            placeholder="{{ 'search.placeholder' | t }}"
+            autocomplete="off"
+            aria-controls="HeaderSearchResults"
+          >
+          <button type="submit" class="button">{{ 'search.submit' | t }}</button>
+        </form>
+        <div id="HeaderSearchResults" class="header-search__results" data-predictive-results aria-live="polite"></div>
+      </div>
+    </details>
+
     {% if shop.customer_accounts_enabled %}
-      <shopify-account menu="{{ block.settings.customer_account_menu }}">
+      <shopify-account class="site-header__icon" menu="{{ block.settings.customer_account_menu }}">
         {{ 'icon-account.svg' | inline_asset_content }}
       </shopify-account>
     {% endif %}
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
-      {% endif %}
-
-      {{ 'icon-cart.svg' | inline_asset_content }}
+    <a class="site-header__bag" href="{{ routes.cart_url }}" data-cart-drawer-open>
+      <span class="site-header__bag-icon">{{ 'icon-bag.svg' | inline_asset_content }}</span>
+      <span class="site-header__bag-label">{{ 'header.bag' | t }}</span>
+      <span class="site-header__bag-count" data-cart-count-label>{{ cart.item_count }}</span>
     </a>
   </div>
 </header>
@@ -39,7 +93,8 @@
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "t:labels.menu",
+      "default": "main-menu"
     },
     {
       "type": "link_list",

@@ -1,0 +1,81 @@
+{% doc %}
+  Renders a clinical-style product tile: image on a neutral tile, the
+  product's claim line, title, size, price, and a one-tap "Add to bag"
+  form when the product has a single available variant.
+
+  The claim line reads the `custom.subtitle` metafield first, then falls
+  back to the first `Ingredient_*` tag so tiles still read well before
+  metafields are filled in.
+
+  @param {product} product - The product to render
+  @param {string} [image_loading] - 'lazy' (default) or 'eager' for above-the-fold tiles
+
+  @example
+  {% render 'product-card', product: product %}
+{% enddoc %}
+
+{%- liquid
+  assign image_loading = image_loading | default: 'lazy'
+  assign variant = product.selected_or_first_available_variant
+  assign claim = product.metafields.custom.subtitle.value
+  if claim == blank
+    for tag in product.tags
+      if tag contains 'Ingredient_'
+        assign claim = tag | remove_first: 'Ingredient_'
+        break
+      endif
+    endfor
+  endif
+-%}
+
+<article class="product-card">
+  <a class="product-card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+    {%- if product.featured_image -%}
+      {{
+        product.featured_image
+        | image_url: width: 800
+        | image_tag:
+          loading: image_loading,
+          widths: '300, 400, 600, 800',
+          sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+          alt: product.featured_image.alt
+      }}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder' }}
+    {%- endif -%}
+
+    {%- unless product.available -%}
+      <span class="badge">{{ 'products.sold_out' | t }}</span>
+    {%- endunless -%}
+  </a>
+
+  <div class="product-card__body">
+    {%- if claim != blank -%}
+      <p class="product-card__claim">{{ claim }}</p>
+    {%- endif -%}
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+    <p class="product-card__meta">
+      {%- if product.has_only_default_variant == false and product.variants.size == 1 -%}
+        <span>{{ variant.title }}</span>
+      {%- endif -%}
+      {% render 'price', product: product %}
+    </p>
+  </div>
+
+  {%- if product.variants.size == 1 -%}
+    {% form 'product', product, class: 'product-card__form' %}
+      <input type="hidden" name="id" value="{{ variant.id }}">
+      <button type="submit" class="button button--outline button--full" {% unless variant.available %}disabled{% endunless %}>
+        {%- if variant.available -%}
+          {{ 'products.add_to_bag' | t }}
+        {%- else -%}
+          {{ 'products.sold_out' | t }}
+        {%- endif -%}
+      </button>
+    {% endform %}
+  {%- else -%}
+    <a class="button button--outline button--full" href="{{ product.url }}">{{ 'products.choose_options' | t }}</a>
+  {%- endif -%}
+</article>

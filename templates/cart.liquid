@@ -1,25 +1,63 @@
 {% block 'container' %}
-  <h1>{{ 'cart.title' | t }}</h1>
+  <div class="page-header">
+    <h1 class="page-title">{{ 'cart.title' | t }}</h1>
+  </div>
 
-  <form action="{{ routes.cart_url }}" method="post">
-    <table>
-      {% for item in cart.items %}
-        <tr>
-          <td>
-            {% render 'image', image: item.image, url: item.url %}
-          </td>
-          <td>
-            <p>{{ item.product.title }}</p>
-            {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-          </td>
-          <td>
-            <input type="text" name="updates[]" value="{{ item.quantity }}">
-            <input type="submit" value="{{ 'cart.update' | t }}">
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
+  {%- if cart.item_count > 0 -%}
+    <form class="cart" action="{{ routes.cart_url }}" method="post" novalidate>
+      <ul class="cart__items" role="list">
+        {%- for item in cart.items -%}
+          <li class="cart-item">
+            <a class="cart-item__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+              {%- if item.image -%}
+                {{ item.image | image_url: width: 300 | image_tag: alt: item.image.alt, loading: 'lazy' }}
+              {%- endif -%}
+            </a>
 
-    <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-  </form>
+            <div class="cart-item__details">
+              <h2 class="cart-item__title"><a href="{{ item.url }}">{{ item.product.title }}</a></h2>
+              {%- unless item.product.has_only_default_variant -%}
+                <p class="cart-item__variant">{{ item.variant.title }}</p>
+              {%- endunless -%}
+              <p class="cart-item__price">{{ item.final_price | money }}</p>
+              <a class="cart-item__remove" href="{{ item.url_to_remove }}">{{ 'cart.remove' | t }}</a>
+            </div>
+
+            <div class="cart-item__quantity">
+              <label class="visually-hidden" for="Quantity-{{ forloop.index }}">{{ 'products.quantity' | t }}</label>
+              <input
+                id="Quantity-{{ forloop.index }}"
+                class="quantity__input quantity__input--boxed"
+                type="number"
+                name="updates[]"
+                value="{{ item.quantity }}"
+                min="0"
+                inputmode="numeric"
+              >
+            </div>
+
+            <p class="cart-item__total">{{ item.final_line_price | money }}</p>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      <div class="cart__footer">
+        <button type="submit" class="button button--outline" name="update">{{ 'cart.update' | t }}</button>
+
+        <div class="cart__summary">
+          <p class="cart__subtotal">
+            <span>{{ 'cart.subtotal' | t }}</span>
+            <span>{{ cart.total_price | money_with_currency }}</span>
+          </p>
+          <p class="cart__note">{{ 'cart.taxes_and_shipping' | t }}</p>
+          <button type="submit" class="button button--full" name="checkout">{{ 'cart.checkout' | t }}</button>
+        </div>
+      </div>
+    </form>
+  {%- else -%}
+    <div class="empty-state">
+      <p>{{ 'cart.empty' | t }}</p>
+      <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue_shopping' | t }}</a>
+    </div>
+  {%- endif -%}
 {% endblock %}

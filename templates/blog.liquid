@@ -1,23 +1,32 @@
 {% block 'container' %}
-  <h1>{{ blog.title }}</h1>
+  <div class="page-header">
+    <p class="eyebrow">{{ 'blog.eyebrow' | t }}</p>
+    <h1 class="page-title">{{ blog.title }}</h1>
+  </div>
 
-  {% paginate blog.articles by 5 %}
-    {% for article in blog.articles %}
-      <div>
-        {% if article.image %}
-          {{ article.image | image_url: width: 1000 | image_tag }}
-        {% endif %}
-        <h2>
-          {{ article.title | link_to: article.url }}
-        </h2>
-        {% assign date = article.published_at | time_tag: format: 'date' %}
-        <p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
-        <p>{{ article.excerpt }}</p>
-      </div>
-    {% endfor %}
+  {% paginate blog.articles by 9 %}
+    <ul class="article-grid" role="list">
+      {% for article in blog.articles %}
+        <li>
+          <article class="article-card">
+            {% if article.image %}
+              <a class="article-card__media" href="{{ article.url }}" tabindex="-1" aria-hidden="true">
+                {{ article.image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '400, 600, 900', sizes: '(min-width: 750px) 33vw, 100vw', alt: article.image.alt }}
+              </a>
+            {% endif %}
+            {% assign date = article.published_at | time_tag: format: 'date' %}
+            <p class="article-card__meta">{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
+            <h2 class="article-card__title">{{ article.title | link_to: article.url }}</h2>
+            <p>{{ article.excerpt_or_content | strip_html | truncatewords: 28 }}</p>
+          </article>
+        </li>
+      {% endfor %}
+    </ul>
 
     {%- if paginate.pages > 1 -%}
-      {{- paginate | default_pagination -}}
+      <nav class="pagination" aria-label="{{ 'general.pagination' | t }}">
+        {{- paginate | default_pagination -}}
+      </nav>
     {%- endif -%}
   {% endpaginate %}
 {% endblock %}

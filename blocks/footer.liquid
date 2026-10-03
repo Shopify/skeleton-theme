@@ -1,27 +1,81 @@
 {% doc %}
-  Renders the theme's storefront footer: copyright line, footer menu,
-  and optional payment icons. Composed directly in layout/theme.liquid
-  so it appears on every page.
+  Renders the storefront footer: newsletter sign-up, two menu columns,
+  the stacked brand logo, payment icons, and the copyright line. Composed
+  directly in layout/theme.liquid so it appears on every page.
+
+  Self-contained: callers leave the body empty.
 {% enddoc %}
 
-<footer {{ block.shopify_attributes }}>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
+<footer class="site-footer full-width" {{ block.shopify_attributes }}>
+  <div class="site-footer__inner">
+    <div class="site-footer__newsletter">
+      <h2 class="site-footer__heading">{{ 'footer.newsletter_title' | t }}</h2>
+      <p>{{ 'footer.newsletter_body' | t }}</p>
 
-  <div class="footer__links">
-    {% for link in block.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
+      {% form 'customer', id: 'FooterNewsletter', class: 'newsletter-form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        {% if form.posted_successfully? %}
+          <p class="form-message" role="status">{{ 'footer.newsletter_success' | t }}</p>
+        {% else %}
+          {% if form.errors %}
+            <p class="form-message form-message--error" role="alert">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>
+          {% endif %}
+          <div class="newsletter-form__field">
+            <label class="visually-hidden" for="FooterNewsletterEmail">{{ 'footer.newsletter_email' | t }}</label>
+            <input
+              id="FooterNewsletterEmail"
+              type="email"
+              name="contact[email]"
+              autocomplete="email"
+              placeholder="{{ 'footer.newsletter_email' | t }}"
+              required
+            >
+            <button type="submit" class="button">{{ 'footer.newsletter_submit' | t }}</button>
+          </div>
+        {% endif %}
+      {% endform %}
+    </div>
+
+    {% for menu in (1..2) %}
+      {%- liquid
+        if forloop.first
+          assign footer_menu = block.settings.menu
+        else
+          assign footer_menu = block.settings.menu_secondary
+        endif
+      -%}
+      {% if footer_menu.links.size > 0 %}
+        <nav class="site-footer__menu" aria-label="{{ footer_menu.title | escape }}">
+          <h2 class="site-footer__menu-title">{{ footer_menu.title }}</h2>
+          <ul>
+            {% for link in footer_menu.links %}
+              <li>{{ link.title | link_to: link.url }}</li>
+            {% endfor %}
+          </ul>
+        </nav>
+      {% endif %}
     {% endfor %}
+
+    <div class="site-footer__brand">
+      {%- if settings.logo_stacked -%}
+        {{ settings.logo_stacked | image_url: width: 480 | image_tag: alt: shop.name, loading: 'lazy', class: 'site-footer__logo' }}
+      {%- endif -%}
+      <p class="site-footer__origin">{{ 'footer.origin' | t }}</p>
+    </div>
   </div>
 
-  <div class="footer__payment">
+  <div class="site-footer__bottom">
+    <p class="site-footer__copyright">
+      &copy; {{ 'now' | date: '%Y' }}
+      {{ shop.name | link_to: routes.root_url }}
+    </p>
+
     {% if block.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
-      {% endfor %}
+      <ul class="site-footer__payment" aria-label="{{ 'footer.payment_methods' | t }}">
+        {% for type in shop.enabled_payment_types %}
+          <li>{{ type | payment_type_svg_tag }}</li>
+        {% endfor %}
+      </ul>
     {% endif %}
   </div>
 </footer>
@@ -33,7 +87,14 @@
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "t:labels.menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_secondary",
+      "label": "t:labels.menu_secondary",
+      "default": "footer"
     },
     {
       "type": "checkbox",
