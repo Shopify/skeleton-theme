@@ -27,7 +27,7 @@
       <p class="hero__text">{{ 'home.hero.text' | t }}</p>
       <div class="button-row">
         <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'home.hero.primary_cta' | t }}</a>
-        <a class="button button--outline" href="#regimen">{{ 'home.hero.secondary_cta' | t }}</a>
+        <a class="button button--outline" href="#quiz">{{ 'home.hero.quiz_cta' | t }}</a>
       </div>
     </div>
   </div>
@@ -48,6 +48,21 @@
   </nav>
 </section>
 
+<section class="block-container personal" data-personal hidden>
+  <div class="personal__header">
+    <div>
+      <p class="eyebrow">{{ 'personal.eyebrow' | t }}</p>
+      <h2 class="section-title">{{ 'personal.title' | t }}</h2>
+      <p class="personal__summary" data-personal-summary></p>
+    </div>
+    <div class="button-row">
+      <a class="button button--outline" href="#regimen">{{ 'personal.open_builder' | t }}</a>
+      <a class="link-button" href="#quiz" data-quiz-restart>{{ 'personal.retake' | t }}</a>
+    </div>
+  </div>
+  <ul class="mini-grid" role="list" data-personal-list></ul>
+</section>
+
 <section class="block-container">
   {%- liquid
     assign grid_eyebrow = 'home.collection.eyebrow' | t
@@ -60,6 +75,85 @@
     heading: grid_heading,
     show_view_all: true
   %}
+</section>
+
+<section class="block-container tone-accent quiz-section" id="quiz">
+  <div class="quiz" data-quiz hidden>
+    <div class="quiz__intro">
+      <p class="eyebrow">{{ 'quiz.eyebrow' | t }}</p>
+      <h2 class="section-title">{{ 'quiz.title' | t }}</h2>
+      <p>{{ 'quiz.intro' | t }}</p>
+    </div>
+
+    <form class="quiz__form" data-quiz-form novalidate>
+      <fieldset class="quiz__step" data-quiz-step>
+        <legend class="quiz__question">
+          <span class="quiz__count">1 / 3</span>
+          {{ 'quiz.q_concern' | t }}
+        </legend>
+        <div class="quiz__options">
+          <label class="quiz__option"><input type="radio" name="concern" value="hydration" required><span>{{ 'quiz.concern_hydration' | t }}</span></label>
+          <label class="quiz__option"><input type="radio" name="concern" value="brightness"><span>{{ 'quiz.concern_brightness' | t }}</span></label>
+          <label class="quiz__option"><input type="radio" name="concern" value="dark_spots"><span>{{ 'quiz.concern_dark_spots' | t }}</span></label>
+          <label class="quiz__option"><input type="radio" name="concern" value="pores"><span>{{ 'quiz.concern_pores' | t }}</span></label>
+          <label class="quiz__option"><input type="radio" name="concern" value="fine_lines"><span>{{ 'quiz.concern_fine_lines' | t }}</span></label>
+          <label class="quiz__option"><input type="radio" name="concern" value="barrier"><span>{{ 'quiz.concern_barrier' | t }}</span></label>
+          <label class="quiz__option"><input type="radio" name="concern" value="tone"><span>{{ 'quiz.concern_tone' | t }}</span></label>
+          <label class="quiz__option"><input type="radio" name="concern" value="texture"><span>{{ 'quiz.concern_texture' | t }}</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="quiz__step" data-quiz-step hidden>
+        <legend class="quiz__question">
+          <span class="quiz__count">2 / 3</span>
+          {{ 'quiz.q_sensitive' | t }}
+        </legend>
+        <div class="quiz__options">
+          <label class="quiz__option"><input type="radio" name="sensitive" value="yes" required><span>{{ 'quiz.sensitive_yes' | t }}</span></label>
+          <label class="quiz__option"><input type="radio" name="sensitive" value="no"><span>{{ 'quiz.sensitive_no' | t }}</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="quiz__step" data-quiz-step hidden>
+        <legend class="quiz__question">
+          <span class="quiz__count">3 / 3</span>
+          {{ 'quiz.q_time' | t }}
+        </legend>
+        <div class="quiz__options">
+          <label class="quiz__option"><input type="radio" name="time" value="am" required><span>{{ 'quiz.time_am' | t }}</span></label>
+          <label class="quiz__option"><input type="radio" name="time" value="pm"><span>{{ 'quiz.time_pm' | t }}</span></label>
+          <label class="quiz__option"><input type="radio" name="time" value="both"><span>{{ 'quiz.time_both' | t }}</span></label>
+        </div>
+      </fieldset>
+
+      <p class="quiz__error" role="alert" data-quiz-error hidden>{{ 'quiz.choose_one' | t }}</p>
+
+      <div class="quiz__nav">
+        <button type="button" class="button button--outline" data-quiz-back hidden>{{ 'quiz.back' | t }}</button>
+        <button type="submit" class="button" data-quiz-next data-label-next="{{ 'quiz.next' | t }}" data-label-finish="{{ 'quiz.finish' | t }}">
+          {{- 'quiz.next' | t -}}
+        </button>
+      </div>
+    </form>
+
+    <div class="quiz__result" data-quiz-result hidden tabindex="-1">
+      <h3 class="quiz__result-title">{{ 'quiz.result_title' | t }}</h3>
+      <p class="quiz__result-note" data-quiz-note></p>
+      <ul class="mini-grid" role="list" data-quiz-list></ul>
+      <div class="button-row">
+        <button type="button" class="button" data-quiz-add>{{ 'quiz.add_all' | t }}</button>
+        <a class="button button--outline" href="#regimen">{{ 'quiz.see_routine' | t }}</a>
+        <button type="button" class="link-button" data-quiz-restart>{{ 'quiz.restart' | t }}</button>
+      </div>
+    </div>
+  </div>
+  <noscript>
+    <div class="quiz__intro">
+      <h2 class="section-title">{{ 'quiz.title' | t }}</h2>
+      <p>{{ 'quiz.no_script' | t }}</p>
+      <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'home.hero.primary_cta' | t }}</a>
+    </div>
+  </noscript>
 </section>
 
 <section class="block-container tone-surface">
@@ -114,8 +208,37 @@
       </li>
     </ol>
 
-    <div class="pairing">
-      <h3 class="pairing__title">{{ 'home.pairing.title' | t }}</h3>
+    <div class="builder" data-routine-builder hidden>
+      <h3 class="pairing__title">{{ 'routine.title' | t }}</h3>
+      <p class="builder__intro">{{ 'routine.intro' | t }}</p>
+      <div class="builder__picker" role="group" aria-label="{{ 'routine.pick_label' | t }}" data-builder-picker></div>
+
+      <div class="builder__output" aria-live="polite">
+        <div class="builder__col">
+          <h4 class="builder__heading">{{ 'routine.am' | t }}</h4>
+          <ol class="builder__steps" data-builder-am></ol>
+        </div>
+        <div class="builder__col builder__col--pm">
+          <h4 class="builder__heading">{{ 'routine.pm' | t }}</h4>
+          <ol class="builder__steps" data-builder-pm></ol>
+        </div>
+      </div>
+      <div class="builder__alternate" data-builder-alternate hidden>
+        <h4 class="builder__heading">{{ 'routine.alternate_title' | t }}</h4>
+        <ul class="builder__steps" role="list"></ul>
+      </div>
+      <ul class="builder__notes" role="list" data-builder-notes></ul>
+
+      <div class="button-row">
+        <button type="button" class="button" data-builder-add disabled>{{ 'routine.add_routine' | t }}</button>
+        <button type="button" class="button button--outline" data-builder-share>{{ 'routine.share' | t }}</button>
+        <button type="button" class="link-button" data-builder-clear>{{ 'routine.clear' | t }}</button>
+      </div>
+      <p class="builder__status" role="status" data-builder-status></p>
+    </div>
+
+    <details class="pairing" open data-pairing-table>
+      <summary class="pairing__title">{{ 'home.pairing.title' | t }}</summary>
       <table class="pairing__table">
         <thead>
           <tr>
@@ -168,8 +291,15 @@
         </tbody>
       </table>
       <p class="pairing__note">{{ 'home.pairing.note' | t }}</p>
-    </div>
+    </details>
   </div>
+</section>
+
+<section class="block-container" data-recently-viewed hidden>
+  <div class="personal__header">
+    <h2 class="section-title">{{ 'personal.recently_viewed' | t }}</h2>
+  </div>
+  <ul class="mini-grid" role="list" data-recently-list></ul>
 </section>
 
 <section class="block-container tone-inverse">

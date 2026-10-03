@@ -1,0 +1,83 @@
+{% doc %}
+  Outputs a small JSON catalogue of the store's products, plus the
+  translated strings the interactive features need, for assets/routine.js
+  (skin quiz, routine builder, "Your routine", recently viewed). Prices and
+  text are formatted here by Liquid so the script never formats money.
+
+  Routine data comes from product metafields: `custom.when_to_use` (AM/PM),
+  `custom.concerns`, `custom.layer_order`, `custom.conflicts_with`, and
+  `custom.ingredients` (used to flag fragrance and salicylic acid).
+
+  @example
+  {% render 'product-catalog-json' %}
+{% enddoc %}
+
+<script type="application/json" id="GlowVerveCatalog">
+  {
+    "products": [
+      {%- for product in collections.all.products limit: 50 -%}
+        {%- liquid
+          assign variant = product.selected_or_first_available_variant
+          assign routine_words = product.metafields.custom.when_to_use.value | upcase | replace: ',', ' ' | replace: '·', ' ' | replace: '&', ' ' | split: ' '
+          assign is_am = false
+          assign is_pm = false
+          if routine_words contains 'AM'
+            assign is_am = true
+          endif
+          if routine_words contains 'PM'
+            assign is_pm = true
+          endif
+          assign inci = product.metafields.custom.ingredients.value | upcase
+          assign fragrance_free = true
+          if inci contains 'FRAGRANCE' or inci contains 'PARFUM'
+            assign fragrance_free = false
+          endif
+          assign has_salicylic = false
+          if inci contains 'SALICYLIC'
+            assign has_salicylic = true
+          endif
+          assign conflicts = product.metafields.custom.conflicts_with.value
+        -%}
+        {
+          "handle": {{ product.handle | json }},
+          "title": {{ product.title | json }},
+          "url": {{ product.url | json }},
+          "image": {% if product.featured_image %}{{ product.featured_image | image_url: width: 400 | json }}{% else %}""{% endif %},
+          "price": {{ product.price | money | json }},
+          "variantId": {{ variant.id | json }},
+          "available": {{ product.available | json }},
+          "singleVariant": {% if product.variants.size == 1 %}true{% else %}false{% endif %},
+          "claim": {{ product.metafields.custom.subtitle.value | default: '' | json }},
+          "when": {{ product.metafields.custom.when_to_use.value | default: '' | json }},
+          "am": {{ is_am | json }},
+          "pm": {{ is_pm | json }},
+          "concerns": {% if product.metafields.custom.concerns != blank %}{{ product.metafields.custom.concerns.value | json }}{% else %}[]{% endif %},
+          "layer": {{ product.metafields.custom.layer_order.value | default: 50 | json }},
+          "conflicts": {% if conflicts != blank %}{{ conflicts | map: 'handle' | json }}{% else %}[]{% endif %},
+          "fragranceFree": {{ fragrance_free | json }},
+          "salicylic": {{ has_salicylic | json }}
+        }
+        {%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ],
+    "strings": {
+      "am": {{ 'routine.am' | t | json }},
+      "pm": {{ 'routine.pm' | t | json }},
+      "cleanse": {{ 'routine.step_cleanse' | t | json }},
+      "moisturize": {{ 'routine.step_moisturize' | t | json }},
+      "spf": {{ 'routine.step_spf' | t | json }},
+      "emptySlot": {{ 'routine.empty_slot' | t | json }},
+      "conflictMoved": {{ 'routine.conflict_moved' | t | json }},
+      "conflictSplit": {{ 'routine.conflict_split' | t | json }},
+      "conflictAlternate": {{ 'routine.conflict_alternate' | t | json }},
+      "addRoutine": {{ 'routine.add_routine' | t | json }},
+      "adding": {{ 'routine.adding' | t | json }},
+      "added": {{ 'routine.added' | t | json }},
+      "copied": {{ 'routine.copied' | t | json }},
+      "match": {{ 'routine.your_match' | t | json }},
+      "fragranceFree": {{ 'routine.fragrance_free' | t | json }},
+      "patchTest": {{ 'routine.patch_test' | t | json }},
+      "addToBag": {{ 'products.add_to_bag' | t | json }}
+    }
+  }
+</script>

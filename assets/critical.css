@@ -69,6 +69,11 @@ p:empty {
   display: none;
 }
 
+/* Elements toggled by scripts stay hidden even when a class sets display. */
+[hidden] {
+  display: none !important;
+}
+
 ul[role='list'],
 ol[role='list'] {
   list-style: none;

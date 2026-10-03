@@ -84,6 +84,14 @@ errors in the Liquid instead of adding configuration exceptions.
   `caution`. `Ingredient_*` product tags are the fallback for key ingredients.
   Product cards derive AM/PM routine badges from `when_to_use` by matching
   the whole words "AM" and "PM".
+- Interactive features (skin quiz, routine builder, "Your routine", "Your
+  match" badges, recently viewed) live in `assets/routine.js`. It reads the
+  JSON catalogue from `snippets/product-catalog-json.liquid`, which takes its
+  routine data from the `custom.concerns`, `custom.layer_order` and
+  `custom.conflicts_with` metafields. Personal state stays in the visitor's
+  localStorage only (`glowverve:quiz`, `glowverve:routine`, `glowverve:recent`).
+  Sections it drives are server-rendered with `hidden` and revealed by the
+  script; add new translated strings to the catalogue's `strings` object.
 - To check that Liquid will upload before merging, zip the theme folders,
   upload the zip with `stagedUploadsCreate`, and create a `DEVELOPMENT`
   theme with `themeCreate`; any file missing from the new theme was rejected.
@@ -94,8 +102,8 @@ errors in the Liquid instead of adding configuration exceptions.
 templates/            *.liquid page structure (no JSON templates)
 layout/               theme.liquid document shell, password.liquid
 snippets/             announcement-bar, header, footer, cart-drawer, cart-drawer-content,
-                      collection-filters, product-grid, product-card, price, image,
-                      meta-tags, css-variables
+                      collection-filters, product-grid, product-card, product-catalog-json,
+                      price, image, meta-tags, css-variables
 assets/               CSS, JavaScript, and other static assets
 config/               settings_schema.json (all merchant controls), settings_data.json (theme styles)
 ```

@@ -89,7 +89,8 @@
       "title": "Illuminate your skin's true potential.",
       "text": "Serums built on powerful, clearly labelled actives. Brighten, hydrate, and rejuvenate with formulas that fit seamlessly into your routine.",
       "primary_cta": "Shop serums",
-      "secondary_cta": "Build your routine"
+      "secondary_cta": "Build your routine",
+      "quiz_cta": "Find your serum"
     },
     "concerns": {
       "label": "Shop by concern",
@@ -193,7 +194,9 @@
       "format": "Format",
       "format_default": "Serum",
       "origin": "Origin",
-      "origin_value": "Korean formulated"
+      "origin_value": "Korean formulated",
+      "dont_layer": "Don't layer with",
+      "dont_layer_note": "Use in a separate routine."
     },
     "tabs": {
       "about": "About",
@@ -218,5 +221,66 @@
       "one": "{{ count }} result",
       "other": "{{ count }} results"
     }
+  },
+  "routine": {
+    "title": "Build your routine",
+    "intro": "Choose the serums you use. We'll put them in layering order for morning and evening and keep apart any that shouldn't be used together.",
+    "pick_label": "Choose serums",
+    "am": "AM",
+    "pm": "PM",
+    "step_cleanse": "Cleanse & tone",
+    "step_moisturize": "Moisturize",
+    "step_spf": "Sunscreen (SPF)",
+    "empty_slot": "No serum in this routine yet.",
+    "conflict_moved": "[moved] goes in your [time] routine only, so it isn't layered with [other].",
+    "conflict_alternate": "[first] shouldn't be layered with [second]. Use them on alternate days.",
+    "add_routine": "Add routine to bag",
+    "adding": "Adding…",
+    "added": "Your routine is in the bag.",
+    "share": "Copy routine link",
+    "copied": "Link copied. Anyone with it sees this routine.",
+    "clear": "Clear",
+    "your_match": "Your match",
+    "fragrance_free": "Fragrance-free",
+    "patch_test": "Sensitive skin: patch test each serum before adding it to your routine.",
+    "conflict_split": "[first] stays in your [first_time] routine and [second] goes in your [second_time] routine, so they aren't layered together.",
+    "alternate_title": "On alternate days"
+  },
+  "quiz": {
+    "eyebrow": "Skin quiz",
+    "title": "Find your serum in three questions.",
+    "intro": "Tell us what you want from your skincare and we'll match you with serums that work together.",
+    "q_concern": "What's your main skin goal?",
+    "concern_hydration": "Deep hydration",
+    "concern_brightness": "Brighter, more radiant skin",
+    "concern_dark_spots": "Fading dark spots",
+    "concern_pores": "Pores & breakouts",
+    "concern_fine_lines": "Smoothing fine lines",
+    "concern_barrier": "A stronger skin barrier",
+    "concern_tone": "A more even tone",
+    "concern_texture": "Smoother texture",
+    "q_sensitive": "Is your skin sensitive?",
+    "sensitive_yes": "Yes, it reacts easily",
+    "sensitive_no": "No, it's fairly resilient",
+    "q_time": "When do you want to use your serums?",
+    "time_am": "Mornings",
+    "time_pm": "Evenings",
+    "time_both": "Morning and evening",
+    "choose_one": "Choose an option to continue.",
+    "back": "Back",
+    "next": "Next",
+    "finish": "See my matches",
+    "result_title": "Your matches",
+    "add_all": "Add all to bag",
+    "see_routine": "See my routine",
+    "restart": "Retake the quiz",
+    "no_script": "Turn on JavaScript to take the quiz, or browse every serum by concern above."
+  },
+  "personal": {
+    "eyebrow": "Welcome back",
+    "title": "Your routine",
+    "open_builder": "Open routine builder",
+    "retake": "Retake the quiz",
+    "recently_viewed": "Recently viewed"
   }
 }
