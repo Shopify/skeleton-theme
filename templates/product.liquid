@@ -148,7 +148,13 @@
       <div class="product__details">
         <details class="accordion" open>
           <summary>{{ 'products.tabs.about' | t }}</summary>
-          <div class="accordion__content rte product-description" data-accordionize>
+          <div
+            class="accordion__content rte product-description"
+            data-accordionize
+            {% if product.metafields.custom.directions != blank %}
+              data-skip-sections="how to use"
+            {% endif %}
+          >
             {{ product.description }}
           </div>
         </details>

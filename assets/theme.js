@@ -67,15 +67,23 @@ document.querySelectorAll("[data-accordionize]").forEach((description) => {
     node.firstElementChild.tagName === "STRONG" &&
     node.textContent.trim().endsWith(":");
 
+  /* Sections the page already shows from structured product data. */
+  const skip = (description.dataset.skipSections || "")
+    .split(",")
+    .map((name) => name.trim().toLowerCase())
+    .filter(Boolean);
+
   const labels = [...description.children].filter(isLabel);
   let anchor = host;
 
   labels.forEach((label) => {
+    const name = label.textContent.trim().replace(/:$/, "");
+    const skipped = skip.includes(name.toLowerCase());
     const details = document.createElement("details");
     details.className = "accordion";
 
     const summary = document.createElement("summary");
-    summary.textContent = label.textContent.trim().replace(/:$/, "");
+    summary.textContent = name;
 
     const body = document.createElement("div");
     body.className = "accordion__content rte";
@@ -88,6 +96,8 @@ document.querySelectorAll("[data-accordionize]").forEach((description) => {
     }
 
     label.remove();
+    if (skipped) return;
+
     details.append(summary, body);
     anchor.after(details);
     anchor = details;
