@@ -45,7 +45,7 @@
   endif
 -%}
 
-<article class="product-card">
+<article class="product-card" data-product-handle="{{ product.handle }}">
   <a class="product-card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
     {%- if product.featured_image -%}
       {{

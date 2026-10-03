@@ -227,6 +227,13 @@ if (drawer) {
   drawer.addEventListener("click", (event) => {
     if (event.target === drawer) close();
   });
+
+  /* Lets other scripts (routine builder, quiz) add several items at once. */
+  window.GlowVerve = window.GlowVerve || {};
+  window.GlowVerve.addToBag = async (items) => {
+    await update(cartAddUrl, { items });
+    open();
+  };
 }
 
 /*

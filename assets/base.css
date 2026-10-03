@@ -1845,3 +1845,438 @@ select:focus {
     flex: 1;
   }
 }
+
+/** Shared: accent tone, text-style buttons, "Your match" badge */
+.tone-accent {
+  background-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.badge--match {
+  top: auto;
+  bottom: var(--space-s);
+  background-color: var(--color-foreground);
+  color: var(--color-background);
+}
+
+/** Mini product cards (quiz results, your routine, recently viewed) */
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  gap: var(--space-l);
+}
+
+.mini-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+  padding: var(--space-s);
+  border-radius: var(--radius-card);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.mini-card__media {
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--color-tile);
+}
+
+.mini-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mini-card__body {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+}
+
+.mini-card__title {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mini-card__title:hover {
+  text-decoration: underline;
+}
+
+.mini-card__price {
+  font-size: 0.875rem;
+}
+
+.mini-card__routine {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.mini-card__routine .routine-badge--am {
+  border: 1px solid var(--color-border);
+}
+
+.mini-card__note {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.mini-card__add {
+  min-height: 2.5rem;
+  font-size: 0.6875rem;
+}
+
+/** Your routine (returning visitors) and recently viewed */
+.personal__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-m);
+  margin-block-end: var(--space-xl);
+}
+
+.personal__summary {
+  margin-block-start: var(--space-xs);
+  color: var(--color-foreground-muted);
+}
+
+.personal .mini-card,
+[data-recently-viewed] .mini-card {
+  padding: 0;
+}
+
+/** Skin quiz */
+.quiz {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+.quiz__intro > p:last-child {
+  max-width: 28rem;
+  margin-block-start: var(--space-m);
+}
+
+.quiz__form,
+.quiz__result {
+  padding: var(--space-xl);
+  border-radius: var(--radius-card);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.quiz__result:focus {
+  outline: none;
+}
+
+.quiz__step {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.quiz__question {
+  display: grid;
+  gap: var(--space-xs);
+  margin-block-end: var(--space-l);
+  font-family: var(--font-heading--family);
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  line-height: 1.15;
+}
+
+.quiz__count {
+  font-family: var(--font-primary--family);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.quiz__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: var(--space-xs);
+}
+
+.quiz__option input {
+  position: absolute;
+  opacity: 0;
+}
+
+.quiz__option span {
+  display: block;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-button);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color var(--transition), background-color var(--transition);
+}
+
+.quiz__option:hover span {
+  border-color: var(--color-foreground);
+}
+
+.quiz__option input:checked + span {
+  border-color: var(--color-foreground);
+  background-color: var(--color-foreground);
+  color: var(--color-background);
+}
+
+.quiz__option input:focus-visible + span {
+  outline: 2px solid var(--color-foreground);
+  outline-offset: 2px;
+}
+
+.quiz__error {
+  margin-block-start: var(--space-m);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.quiz__nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-s);
+  margin-block-start: var(--space-l);
+}
+
+.quiz__nav [data-quiz-next] {
+  margin-inline-start: auto;
+}
+
+.quiz__result {
+  display: grid;
+  gap: var(--space-l);
+}
+
+.quiz__result-title {
+  font-size: 2rem;
+}
+
+.quiz__result-note {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.quiz__result .mini-card {
+  padding: 0;
+}
+
+@media (max-width: 749px) {
+  .quiz {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+
+  .quiz__form,
+  .quiz__result {
+    padding: var(--space-l);
+  }
+}
+
+/** Routine builder */
+.builder {
+  display: grid;
+  gap: var(--space-l);
+  margin-block-start: var(--space-2xl);
+  padding: var(--space-xl);
+  border: 1px solid var(--color-foreground);
+  border-radius: var(--radius-card);
+}
+
+.builder__intro {
+  max-width: 40rem;
+  color: var(--color-foreground-muted);
+}
+
+.builder__picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.builder__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: none;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.builder__chip:hover {
+  border-color: var(--color-foreground);
+}
+
+.builder__chip[aria-pressed='true'] {
+  border-color: var(--color-foreground);
+  background-color: var(--color-foreground);
+  color: var(--color-background);
+}
+
+.builder__chip[aria-pressed='true'] .routine-badge--am {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.builder__chip[aria-pressed='true'] .routine-badge--pm {
+  background-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+.builder__chip .routine-badge {
+  padding: 0.1rem 0.35rem;
+  font-size: 0.5625rem;
+}
+
+.builder__chip .routine-badge--am {
+  border: 1px solid var(--color-border);
+}
+
+.builder__output {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-l);
+}
+
+.builder__col {
+  padding: var(--space-l);
+  border-radius: var(--radius-card);
+  background-color: var(--color-surface);
+}
+
+.builder__col--pm {
+  background-color: var(--color-foreground);
+  color: var(--color-background);
+}
+
+.builder__heading {
+  margin-block-end: var(--space-m);
+  font-family: var(--font-primary--family);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.builder__steps {
+  display: grid;
+  gap: var(--space-xs);
+  padding-inline-start: 1.25rem;
+}
+
+.builder__step {
+  padding-inline-start: var(--space-2xs);
+  font-size: 0.9375rem;
+}
+
+.builder__step::marker {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.builder__step--base,
+.builder__step--empty {
+  opacity: 0.7;
+}
+
+.builder__step--serum a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.builder__step--serum a:hover {
+  text-decoration: underline;
+}
+
+.builder__step-claim {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.builder__notes {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.builder__note {
+  padding: var(--space-s) var(--space-m);
+  border-inline-start: 3px solid var(--color-accent);
+  background-color: var(--color-tile);
+  font-size: 0.8125rem;
+}
+
+.builder__status {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 749px) {
+  .builder {
+    padding: var(--space-l);
+  }
+
+  .builder__output {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The static pairing table becomes a collapsible reference below the builder. */
+details.pairing > summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  cursor: pointer;
+}
+
+details.pairing > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.pairing > summary::after {
+  content: '+';
+  font-family: var(--font-primary--family);
+  font-size: 1.25rem;
+}
+
+details.pairing[open] > summary::after {
+  content: '\2212';
+}
+
+.product-facts__note {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-foreground-muted);
+}
+
+.builder__alternate {
+  padding: var(--space-l);
+  border: 1px dashed var(--color-foreground);
+  border-radius: var(--radius-card);
+}
+
+.builder__alternate .builder__steps {
+  padding-inline-start: 0;
+}
