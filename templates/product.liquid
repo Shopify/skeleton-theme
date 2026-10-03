@@ -56,7 +56,7 @@
         {%- endif -%}
       </p>
 
-      {% form 'product', product, class: 'product-form', data-product-form: '' %}
+      {% form 'product', product, id: 'ProductForm', class: 'product-form', data-product-form: '' %}
         {%- unless product.has_only_default_variant -%}
           <fieldset class="variant-picker">
             <legend>{{ product.options.first }}</legend>
@@ -112,6 +112,31 @@
 
         {{ form | payment_button }}
       {% endform %}
+
+      <div class="sticky-atc" data-sticky-atc aria-hidden="true">
+        <div class="sticky-atc__info">
+          <p class="sticky-atc__title">{{ product.title }}</p>
+          {% render 'price', variant: current_variant %}
+        </div>
+        <button
+          type="submit"
+          form="ProductForm"
+          class="button"
+          tabindex="-1"
+          data-add-to-bag
+          data-label-available="{{ 'products.add_to_bag' | t }}"
+          data-label-sold-out="{{ 'products.sold_out' | t }}"
+          {% unless current_variant.available %}
+            disabled
+          {% endunless %}
+        >
+          {%- if current_variant.available -%}
+            {{ 'products.add_to_bag' | t }}
+          {%- else -%}
+            {{ 'products.sold_out' | t }}
+          {%- endif -%}
+        </button>
+      </div>
 
       <dl class="product-facts">
         {%- if product.metafields.custom.key_ingredient != blank -%}

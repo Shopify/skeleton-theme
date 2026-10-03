@@ -376,6 +376,12 @@ main:focus {
 .site-header__icon {
   display: flex;
   color: inherit;
+  cursor: pointer;
+  list-style: none;
+}
+
+.site-header__icon::-webkit-details-marker {
+  display: none;
 }
 
 .site-header__icon svg {
@@ -384,8 +390,27 @@ main:focus {
 }
 
 .site-header__bag {
+  position: relative;
   display: inline-flex;
+  align-items: center;
   gap: 0.25em;
+}
+
+.site-header__bag-icon {
+  display: none;
+}
+
+.site-header__bag-count::before {
+  content: '(';
+}
+
+.site-header__bag-count::after {
+  content: ')';
+}
+
+.site-header__bag-icon svg {
+  width: 1.375rem;
+  height: 1.375rem;
 }
 
 .site-header__drawer {
@@ -403,13 +428,62 @@ main:focus {
     justify-content: center;
   }
 
-  .site-header__nav,
-  .site-header__icon--search {
+  .site-header__nav {
     display: none;
   }
 
   .site-header__icons {
     justify-content: flex-end;
+    gap: var(--space-s);
+  }
+
+  .site-header__icons shopify-account {
+    display: none;
+  }
+
+  /* Keep "Bag" as the link's accessible name while showing only the icon. */
+  .site-header__bag-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .site-header__bag-count::before,
+  .site-header__bag-count::after {
+    content: none;
+  }
+
+  .site-header__logo-image {
+    height: calc(var(--logo-height) * 0.8);
+  }
+
+  /* Icon with a small numeric badge instead of the "Bag (n)" label. */
+  .site-header__bag-icon {
+    display: flex;
+  }
+
+  .site-header__bag {
+    padding: 0;
+    border: 0;
+  }
+
+  .site-header__bag-count {
+    position: absolute;
+    top: -0.25rem;
+    right: -0.5rem;
+    min-width: 1.05rem;
+    height: 1.05rem;
+    padding-inline: 0.2rem;
+    border-radius: 999px;
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+    font-size: 0.625rem;
+    line-height: 1.05rem;
+    letter-spacing: 0;
+    text-align: center;
   }
 
   .site-header__drawer {

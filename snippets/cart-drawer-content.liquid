@@ -1,0 +1,94 @@
+{% doc %}
+  Renders the inside of the slide-out bag: header, line items with
+  quantity steppers, subtotal, and checkout. Shared by the cart-drawer
+  block (first paint) and templates/cart.drawer.liquid (refreshes after
+  add-to-bag or quantity changes), so both always render the same markup.
+
+  @example
+  {% render 'cart-drawer-content' %}
+{% enddoc %}
+
+<div class="cart-drawer__inner" data-cart-count="{{ cart.item_count }}">
+  <div class="cart-drawer__header">
+    <h2 class="cart-drawer__title" id="CartDrawerTitle">
+      {{ 'cart.title' | t }}
+      <span class="cart-drawer__count">({{ cart.item_count }})</span>
+    </h2>
+    <button type="button" class="cart-drawer__close" data-cart-drawer-close aria-label="{{ 'cart.close' | t }}">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <p class="cart-drawer__error" role="alert" data-cart-error hidden></p>
+
+  {%- if cart.item_count > 0 -%}
+    <ul class="cart-drawer__items" role="list">
+      {%- for item in cart.items -%}
+        <li class="cart-drawer__item">
+          <a class="cart-drawer__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+            {%- if item.image -%}
+              {{ item.image | image_url: width: 200 | image_tag: alt: '', loading: 'lazy' }}
+            {%- endif -%}
+          </a>
+
+          <div class="cart-drawer__details">
+            {%- assign claim = item.product.metafields.custom.subtitle.value -%}
+            {%- if claim != blank -%}
+              <p class="product-card__claim">{{ claim }}</p>
+            {%- endif -%}
+            <h3 class="cart-drawer__item-title"><a href="{{ item.url }}">{{ item.product.title }}</a></h3>
+            {%- unless item.product.has_only_default_variant -%}
+              <p class="cart-drawer__variant">{{ item.variant.title }}</p>
+            {%- endunless -%}
+
+            <div class="cart-drawer__row">
+              <div class="quantity quantity--small">
+                <button
+                  type="button"
+                  class="quantity__button"
+                  data-cart-line="{{ forloop.index }}"
+                  data-cart-quantity="{{ item.quantity | minus: 1 }}"
+                  aria-label="{{ 'products.decrease_quantity' | t }}"
+                >
+                  &minus;
+                </button>
+                <span class="quantity__value" aria-label="{{ 'products.quantity' | t }}">{{ item.quantity }}</span>
+                <button
+                  type="button"
+                  class="quantity__button"
+                  data-cart-line="{{ forloop.index }}"
+                  data-cart-quantity="{{ item.quantity | plus: 1 }}"
+                  aria-label="{{ 'products.increase_quantity' | t }}"
+                >
+                  +
+                </button>
+              </div>
+              <p class="cart-drawer__price">{{ item.final_line_price | money }}</p>
+            </div>
+
+            <button type="button" class="cart-drawer__remove" data-cart-line="{{ forloop.index }}" data-cart-quantity="0">
+              {{ 'cart.remove' | t }}
+            </button>
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <div class="cart-drawer__footer">
+      <p class="cart__subtotal">
+        <span>{{ 'cart.subtotal' | t }}</span>
+        <span>{{ cart.total_price | money_with_currency }}</span>
+      </p>
+      <p class="cart__note">{{ 'cart.taxes_and_shipping' | t }}</p>
+      <form action="{{ routes.cart_url }}" method="post">
+        <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
+      </form>
+      <a class="cart-drawer__view" href="{{ routes.cart_url }}">{{ 'cart.view_bag' | t }}</a>
+    </div>
+  {%- else -%}
+    <div class="cart-drawer__empty">
+      <p>{{ 'cart.empty' | t }}</p>
+      <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'cart.continue_shopping' | t }}</a>
+    </div>
+  {%- endif -%}
+</div>

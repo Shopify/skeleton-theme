@@ -20,7 +20,10 @@ file. The code is the source of truth.
   `content_for_layout` in a plain `<main>`; `layout/password.liquid` renders
   `content_for_layout` in a plain `<main>`, and its template owns the
   container. The exception is `gift_card.liquid` (`{% layout none %}`): it
-  manages its own document structure.
+  manages its own document structure. `cart.drawer.liquid` and
+  `search.predictive.liquid` are also `{% layout none %}` fragments that
+  `assets/theme.js` fetches with `?view=drawer` / `?view=predictive`; they
+  render a snippet only and have no container.
 - **Whitespace matters:** include whitespace between an HTML tag name and a
   following Liquid delimiter (`<li {% ... %}`, not `<li{% ... %}`).
 - **Translated UI only:** every user-facing string uses a literal
@@ -142,7 +145,7 @@ Skeleton keeps `.theme-check.yml` as a pristine
 errors in the Liquid instead of adding configuration exceptions.
 
 Current blocks: `container`, `announcement-bar`, `header`, `footer`, `hero`,
-`product-grid`.
+`product-grid`, `cart-drawer`.
 
 ## Glow Verve brand conventions
 
@@ -156,6 +159,10 @@ Current blocks: `container`, `announcement-bar`, `header`, `footer`, `hero`,
   `settings.logo_stacked` (images in Content > Files). Never alter them.
 - Headings use `--font-heading--family` (Alifira when its file URL is set,
   otherwise the heading font picker); body copy uses Montserrat.
+- Storefront JavaScript lives in `assets/theme.js` as progressive enhancement:
+  the bag drawer, predictive search, and sticky mobile add-to-bag all fall
+  back to plain links and form posts without it. Fetch server-rendered HTML
+  (alternate `view` templates) rather than formatting prices in JavaScript.
 - Product pages read optional `custom.*` metafields: `subtitle`,
   `key_ingredient`, `when_to_use`, `format`, `directions`, `ingredients`,
   `caution`. `Ingredient_*` product tags are the fallback for key ingredients.
@@ -163,9 +170,9 @@ Current blocks: `container`, `announcement-bar`, `header`, `footer`, `hero`,
 ## Theme map
 
 ```
-blocks/               container, announcement-bar, header, footer, hero, product-grid
+blocks/               container, announcement-bar, header, footer, hero, product-grid, cart-drawer
 templates/            *.liquid page structure (no JSON templates)
 layout/               theme.liquid document shell: header/footer container blocks + <main>
-snippets/             internal utilities (css-variables, image, meta-tags, price, product-card)
+snippets/             internal utilities (css-variables, image, meta-tags, price, product-card, cart-drawer-content)
 assets/               CSS, JavaScript, and other static assets
 ```

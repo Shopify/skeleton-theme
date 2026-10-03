@@ -50,9 +50,27 @@
   </nav>
 
   <div class="site-header__icons">
-    <a class="site-header__icon site-header__icon--search" href="{{ routes.search_url }}" aria-label="{{ 'header.search' | t }}">
-      {{ 'icon-search.svg' | inline_asset_content }}
-    </a>
+    <details class="header-search" data-predictive-search data-search-url="{{ routes.search_url }}">
+      <summary class="site-header__icon" aria-label="{{ 'header.search' | t }}">
+        {{ 'icon-search.svg' | inline_asset_content }}
+      </summary>
+      <div class="header-search__panel">
+        <form class="header-search__form" action="{{ routes.search_url }}" method="get" role="search">
+          <input type="hidden" name="type" value="product">
+          <label class="visually-hidden" for="HeaderSearchInput">{{ 'search.placeholder' | t }}</label>
+          <input
+            id="HeaderSearchInput"
+            type="search"
+            name="q"
+            placeholder="{{ 'search.placeholder' | t }}"
+            autocomplete="off"
+            aria-controls="HeaderSearchResults"
+          >
+          <button type="submit" class="button">{{ 'search.submit' | t }}</button>
+        </form>
+        <div id="HeaderSearchResults" class="header-search__results" data-predictive-results aria-live="polite"></div>
+      </div>
+    </details>
 
     {% if shop.customer_accounts_enabled %}
       <shopify-account class="site-header__icon" menu="{{ block.settings.customer_account_menu }}">
@@ -60,9 +78,10 @@
       </shopify-account>
     {% endif %}
 
-    <a class="site-header__bag" href="{{ routes.cart_url }}">
-      <span>{{ 'header.bag' | t }}</span>
-      <span class="site-header__bag-count" aria-label="{{ 'header.bag_count' | t: count: cart.item_count }}">({{ cart.item_count }})</span>
+    <a class="site-header__bag" href="{{ routes.cart_url }}" data-cart-drawer-open>
+      <span class="site-header__bag-icon">{{ 'icon-bag.svg' | inline_asset_content }}</span>
+      <span class="site-header__bag-label">{{ 'header.bag' | t }}</span>
+      <span class="site-header__bag-count" data-cart-count-label>{{ cart.item_count }}</span>
     </a>
   </div>
 </header>

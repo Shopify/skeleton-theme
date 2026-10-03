@@ -1,0 +1,45 @@
+{% layout none %}
+{% # Fragment template: theme.js fetches ?view=predictive for header search results. %}
+{%- if search.performed -%}
+  {%- assign product_count = 0 -%}
+  {%- for result in search.results -%}
+    {%- if result.object_type == 'product' -%}
+      {%- assign product_count = product_count | plus: 1 -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if product_count > 0 -%}
+    <p class="visually-hidden">{{ 'search.results_count' | t: count: search.results_count }}</p>
+    <ul class="predictive-results" role="list">
+      {%- assign shown = 0 -%}
+      {%- for result in search.results -%}
+        {%- if result.object_type != 'product' -%}{%- continue -%}{%- endif -%}
+        {%- if shown >= 6 -%}{%- break -%}{%- endif -%}
+        {%- assign shown = shown | plus: 1 -%}
+        <li>
+          <a class="predictive-result" href="{{ result.url }}">
+            <span class="predictive-result__media">
+              {%- if result.featured_image -%}
+                {{ result.featured_image | image_url: width: 160 | image_tag: alt: '', loading: 'lazy' }}
+              {%- endif -%}
+            </span>
+            <span class="predictive-result__body">
+              {%- assign claim = result.metafields.custom.subtitle.value -%}
+              {%- if claim != blank -%}
+                <span class="product-card__claim">{{ claim }}</span>
+              {%- endif -%}
+              <span class="predictive-result__title">{{ result.title }}</span>
+              {% render 'price', product: result %}
+            </span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+    <a class="link-arrow" href="{{ routes.search_url }}?q={{ search.terms | url_encode }}&type=product">
+      {{- 'search.view_all' | t: count: search.results_count -}}
+    </a>
+  {%- else -%}
+    {%- assign terms = search.terms | escape -%}
+    <p class="predictive-empty">{{ 'search.no_results_html' | t: terms: terms }}</p>
+  {%- endif -%}
+{%- endif -%}

@@ -30,7 +30,10 @@
     "subtotal": "Subtotal",
     "taxes_and_shipping": "Taxes and shipping are calculated at checkout.",
     "title": "Your bag",
-    "update": "Update bag"
+    "update": "Update bag",
+    "close": "Close bag",
+    "view_bag": "View full bag",
+    "error": "Something went wrong. Please try again."
   },
   "collections": {
     "apply": "Apply",
@@ -73,10 +76,6 @@
   "header": {
     "account": "Account",
     "bag": "Bag",
-    "bag_count": {
-      "one": "{{ count }} item in bag",
-      "other": "{{ count }} items in bag"
-    },
     "menu": "Menu",
     "search": "Search"
   },
@@ -198,6 +197,14 @@
     "placeholder": "Search serums and ingredients",
     "submit": "Search",
     "no_results_html": "No results found for “{{ terms }}”. Try an ingredient such as niacinamide or retinol.",
-    "results_for_html": "{{ count }} results for “{{ terms }}”"
+    "results_for_html": "{{ count }} results for “{{ terms }}”",
+    "view_all": {
+      "one": "View {{ count }} result",
+      "other": "View all {{ count }} results"
+    },
+    "results_count": {
+      "one": "{{ count }} result",
+      "other": "{{ count }} results"
+    }
   }
 }
