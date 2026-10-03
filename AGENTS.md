@@ -83,7 +83,17 @@ errors in the Liquid instead of adding configuration exceptions.
   `key_ingredient`, `when_to_use`, `format`, `directions`, `ingredients`,
   `caution`. `Ingredient_*` product tags are the fallback for key ingredients.
   Product cards derive AM/PM routine badges from `when_to_use` by matching
-  the whole words "AM" and "PM".
+  the whole words "AM" and "PM". Each card is tinted with its Skin Lab
+  element colour (first `custom.concerns` value; the colour map lives in
+  `snippets/product-card.liquid` and must match the orbs in
+  `templates/index.liquid`). The card title link is stretched over the card;
+  interactive controls inside it need `z-index: 2`.
+- The home page quiz is "The Skin Lab" (`assets/skin-lab.css`, loaded only by
+  `templates/index.liquid`): answers are element orbs orbiting a flask that
+  fills with each answer's colour, modelled on the mazenonline magnetic
+  ingredients lab. Orb colours are fixed design tokens in the template, not
+  brand settings. Tap/click pours an orb in immediately; keyboard users move
+  with arrow keys and confirm with Next. Honour `prefers-reduced-motion`.
 - Interactive features (skin quiz, routine builder, "Your routine", "Your
   match" badges, recently viewed) live in `assets/routine.js`. It reads the
   JSON catalogue from `snippets/product-catalog-json.liquid`, which takes its

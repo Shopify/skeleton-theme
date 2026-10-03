@@ -289,6 +289,7 @@
       addButton.disabled = selection.length === 0;
       status.textContent = "";
       write(KEYS.routine, selection);
+      syncToggles();
     };
 
     addButton.addEventListener("click", async () => {
@@ -328,12 +329,43 @@
     render();
   }
 
-  /* ---------- skin quiz ---------- */
+  /* ---------- "add to my routine" toggles on product cards ---------- */
+
+  /* Reflect the saved routine on every card toggle (they start hidden without JS). */
+  function syncToggles() {
+    const saved = known(read(KEYS.routine, []));
+    document.querySelectorAll("[data-routine-toggle]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(saved.includes(button.dataset.routineToggle)));
+      button.hidden = false;
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-routine-toggle]");
+    if (!button) return;
+    event.preventDefault();
+
+    const handle = button.dataset.routineToggle;
+    const saved = known(read(KEYS.routine, []));
+    const updated = saved.includes(handle) ? saved.filter((item) => item !== handle) : [...saved, handle];
+    write(KEYS.routine, updated);
+    setBuilderSelection(updated);
+    syncToggles();
+
+    button.classList.remove("is-popping");
+    void button.offsetWidth;
+    button.classList.add("is-popping");
+  });
+
+  syncToggles();
+
+  /* ---------- recommendations ---------- */
 
   /*
-   * Score each serum for the answers: concern match first, then whether it
-   * fits the chosen time of day, then sensitivity (fragrance-free favoured,
-   * salicylic acid avoided). Returns up to three serums that don't clash.
+   * Score each serum for the answers: only serums usable at the chosen time
+   * of day qualify; concern match counts most, then sensitivity
+   * (fragrance-free favoured, salicylic acid avoided). Returns up to three
+   * serums that don't clash.
    */
   const recommend = ({ concern, sensitive, time }) => {
     const related = { pores: ["pores", "breakouts"] };
@@ -343,15 +375,14 @@
       .map((product) => {
         let score = 0;
         if (product.concerns.some((key) => wanted.includes(key))) score += 5;
-        if (time === "am" && !product.am) score -= 3;
-        if (time === "pm" && !product.pm) score -= 3;
         if (sensitive === "yes") {
           score += product.fragranceFree ? 1 : -1;
           if (product.salicylic) score -= 2;
         }
         return { product, score };
       })
-      .filter(({ product }) => product.available)
+      /* A serum that can't be used at the chosen time of day is never recommended. */
+      .filter(({ product }) => product.available && (time !== "am" || product.am) && (time !== "pm" || product.pm))
       .sort((a, b) => b.score - a.score || a.product.layer - b.product.layer);
 
     const picks = [];
@@ -378,6 +409,8 @@
     return picks.map((product) => product.handle);
   };
 
+  /* ---------- the Skin Lab (quiz) ---------- */
+
   const quiz = document.querySelector("[data-quiz]");
   let concernLabel = () => "";
 
@@ -391,75 +424,308 @@
     const list = quiz.querySelector("[data-quiz-list]");
     const note = quiz.querySelector("[data-quiz-note]");
     const addAll = quiz.querySelector("[data-quiz-add]");
+    const flask = quiz.querySelector("[data-lab-flask]");
+    const layers = [...quiz.querySelectorAll("[data-lab-layer]")];
+    const bonds = quiz.querySelector("[data-lab-bonds]");
+    const particles = quiz.querySelector("[data-lab-particles]");
+    const status = quiz.querySelector("[data-lab-status]");
+    const formula = quiz.querySelector("[data-lab-formula]");
+    const code = quiz.querySelector("[data-lab-code]");
+    const check = quiz.querySelector("[data-lab-check]");
+    const labels = quiz.dataset;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    const wait = (ms) => new Promise((resolve) => setTimeout(resolve, reduceMotion ? 0 : ms));
+
     let current = 0;
+    let busy = false;
+    let pointerChoice = false;
 
     concernLabel = (value) =>
-      form.querySelector(`input[name="concern"][value="${value}"]`)?.nextElementSibling?.textContent.trim() || "";
+      form.querySelector(`input[name="concern"][value="${value}"]`)
+        ?.closest(".skin-lab__orb")
+        ?.querySelector(".skin-lab__name")
+        ?.textContent.trim() || "";
+
+    /* What each answered step put in the flask: symbol, name and colour. */
+    const pick = (input) => {
+      const orb = input.closest(".skin-lab__orb");
+      return {
+        orb,
+        symbol: orb.querySelector(".skin-lab__symbol").textContent.trim(),
+        name: orb.querySelector(".skin-lab__name").textContent.trim(),
+        color: orb.style.getPropertyValue("--orb-color").trim(),
+      };
+    };
+    const chosen = () =>
+      steps.map((step) => step.querySelector("input:checked")).map((input) => (input ? pick(input) : null));
+
+    /* The flask, bonds and particles move into the active step's orbit. */
+    const mountApparatus = (step) => {
+      const orbit = step.querySelector(".skin-lab__orbs");
+      orbit.prepend(bonds, flask, particles);
+    };
+
+    const updateFlask = () => {
+      const elements = chosen();
+      layers.forEach((layer, i) => {
+        const item = elements[i];
+        layer.classList.toggle("is-filled", Boolean(item));
+        if (item) layer.style.setProperty("--layer-color", item.color);
+      });
+      const filled = elements.filter(Boolean);
+      flask.style.setProperty("--level", String(filled.length / steps.length));
+      flask.style.setProperty("--surface-color", filled.at(-1)?.color || "transparent");
+      flask.classList.toggle("has-liquid", filled.length > 0);
+
+      formula.replaceChildren(
+        ...filled.map((item) => {
+          const row = document.createElement("li");
+          const chip = document.createElement("span");
+          chip.className = "skin-lab__chip";
+          chip.style.setProperty("--chip-color", item.color);
+          chip.textContent = item.symbol;
+          row.append(chip, document.createTextNode(item.name));
+          return row;
+        }),
+      );
+      if (!filled.length) status.textContent = labels.labelEmpty;
+    };
 
     const show = (index) => {
       current = index;
       steps.forEach((fieldset, i) => (fieldset.hidden = i !== index));
+      mountApparatus(steps[index]);
+      steps[index].querySelector(".skin-lab__orbs").classList.remove("is-pouring");
+      steps[index].querySelectorAll(".is-launched").forEach((orb) => orb.classList.remove("is-launched"));
       back.hidden = index === 0;
       next.textContent = index === steps.length - 1 ? next.dataset.labelFinish : next.dataset.labelNext;
       error.hidden = true;
+      bonds.replaceChildren();
+    };
+
+    /* Draw a flowing bond from the chosen orb to the flask. */
+    const drawBond = (orb, color) => {
+      const box = bonds.getBoundingClientRect();
+      const from = orb.querySelector(".skin-lab__tile").getBoundingClientRect();
+      const to = flask.getBoundingClientRect();
+      bonds.setAttribute("viewBox", `0 0 ${Math.round(box.width)} ${Math.round(box.height)}`);
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", (from.left + from.width / 2 - box.left).toFixed(1));
+      line.setAttribute("y1", (from.top + from.height / 2 - box.top).toFixed(1));
+      line.setAttribute("x2", (to.left + to.width / 2 - box.left).toFixed(1));
+      line.setAttribute("y2", (to.top + to.height / 2 - box.top).toFixed(1));
+      line.setAttribute("class", "skin-lab__bond");
+      line.style.stroke = color;
+      bonds.replaceChildren(line);
+    };
+
+    /* A drop of the element's colour flies from the orb into the flask. */
+    const pour = async (orb, color) => {
+      if (reduceMotion) return;
+      const from = orb.querySelector(".skin-lab__tile").getBoundingClientRect();
+      const to = flask.getBoundingClientRect();
+      const drop = document.createElement("span");
+      drop.className = "skin-lab__drop";
+      drop.style.setProperty("--drop-color", color);
+      drop.style.left = `${from.left + from.width / 2 - 10}px`;
+      drop.style.top = `${from.top + from.height / 2 - 10}px`;
+      document.body.append(drop);
+      orb.classList.add("is-launched");
+      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+      const dy = to.top + to.height * 0.7 - (from.top + from.height / 2);
+      await drop
+        .animate(
+          [
+            { transform: "translate(0, 0) scale(1.6)" },
+            { transform: `translate(${dx * 0.5}px, ${dy * 0.5 - 40}px) scale(1.1)`, offset: 0.6 },
+            { transform: `translate(${dx}px, ${dy}px) scale(0.5)`, opacity: 0.4 },
+          ],
+          { duration: 650, easing: "cubic-bezier(0.4, 0, 0.6, 1)" },
+        )
+        .finished.catch(() => {});
+      drop.remove();
+    };
+
+    const burst = () => {
+      if (reduceMotion) return;
+      const colors = chosen().filter(Boolean).map((item) => item.color);
+      particles.replaceChildren(
+        ...Array.from({ length: 20 }, (_, i) => {
+          const dot = document.createElement("span");
+          const angle = (i / 20) * Math.PI * 2;
+          const distance = 90 + Math.random() * 70;
+          dot.className = "skin-lab__particle";
+          dot.style.setProperty("--tx", `${Math.cos(angle) * distance}px`);
+          dot.style.setProperty("--ty", `${Math.sin(angle) * distance}px`);
+          dot.style.setProperty("--particle-color", colors[i % colors.length]);
+          return dot;
+        }),
+      );
+      setTimeout(() => particles.replaceChildren(), 1000);
+    };
+
+    const reasons = (product, answers) => {
+      const wanted = answers.concern === "pores" ? ["pores", "breakouts"] : [answers.concern];
+      const lines = [];
+      if (product.concerns.some((key) => wanted.includes(key))) {
+        lines.push(format(labels.labelTargets, { concern: concernLabel(answers.concern).toLowerCase() }));
+      } else {
+        lines.push(labels.labelSupport);
+      }
+      if (answers.sensitive === "yes" && product.fragranceFree) lines.push(strings.fragranceFree);
+      return lines.join(" · ");
     };
 
     const showResult = (answers) => {
       const picks = known(answers.picks);
-      list.replaceChildren(
-        ...picks.map((handle) => {
-          const product = byHandle.get(handle);
-          const extra = answers.sensitive === "yes" && product.fragranceFree ? strings.fragranceFree : undefined;
-          return miniCard(product, { note: extra });
-        }),
-      );
+      list.replaceChildren(...picks.map((handle) => miniCard(byHandle.get(handle), { note: reasons(byHandle.get(handle), answers) })));
       note.textContent = answers.sensitive === "yes" ? strings.patchTest : "";
+      code.textContent = chosen()
+        .filter(Boolean)
+        .map((item) => item.symbol)
+        .join("·");
+      check.textContent = picks.length > 1 ? labels.labelCompatible : "";
       addAll.onclick = () => addToBag(picks);
-      form.hidden = true;
+      status.textContent = labels.labelReady;
       result.hidden = false;
     };
 
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const answered = steps[current].querySelector("input:checked");
-      if (!answered) {
-        error.hidden = false;
-        return;
-      }
-      if (current < steps.length - 1) {
-        show(current + 1);
-        steps[current].querySelector("input")?.focus();
-        return;
-      }
+    /* Re-check the saved answers so the flask and formula show on return visits. */
+    const restore = (answers) => {
+      ["concern", "sensitive", "time"].forEach((name) => {
+        const input = form.querySelector(`input[name="${name}"][value="${answers[name]}"]`);
+        if (input) input.checked = true;
+      });
+      show(steps.length - 1);
+      updateFlask();
+      showResult(answers);
+    };
 
+    const finish = async () => {
       const data = new FormData(form);
-      const answers = {
-        concern: data.get("concern"),
-        sensitive: data.get("sensitive"),
-        time: data.get("time"),
-      };
+      const answers = { concern: data.get("concern"), sensitive: data.get("sensitive"), time: data.get("time") };
       answers.picks = recommend(answers);
       answers.at = Date.now();
+
+      status.textContent = labels.labelBrewing;
+      flask.classList.add("is-brewing");
+      await wait(1050);
+      flask.classList.remove("is-brewing");
+      flask.classList.add("is-done");
+      burst();
+      setTimeout(() => flask.classList.remove("is-done"), 900);
+
+      /* Let the shopper pick a different last answer and brew again. */
+      const orbit = steps[current].querySelector(".skin-lab__orbs");
+      orbit.classList.remove("is-pouring");
+      orbit.querySelectorAll(".is-launched").forEach((orb) => orb.classList.remove("is-launched"));
+
       write(KEYS.quiz, answers);
       setBuilderSelection(answers.picks);
       showResult(answers);
-      result.focus();
+      result.focus({ preventScroll: true });
+      result.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest" });
       personalize();
+    };
+
+    /* Commit the current step's choice: bond, pour, fill, then move on. */
+    const advance = async () => {
+      if (busy) return;
+      const input = steps[current].querySelector("input:checked");
+      if (!input) {
+        error.hidden = false;
+        return;
+      }
+      busy = true;
+      error.hidden = true;
+      const item = pick(input);
+      steps[current].querySelector(".skin-lab__orbs").classList.add("is-pouring");
+      drawBond(item.orb, item.color);
+      await wait(250);
+      await pour(item.orb, item.color);
+      updateFlask();
+      status.textContent = format(labels.labelAdded, { name: item.name });
+      await wait(250);
+
+      if (current < steps.length - 1) {
+        show(current + 1);
+        if (!pointerChoice) steps[current].querySelector("input")?.focus();
+      } else {
+        await finish();
+      }
+      busy = false;
+    };
+
+    /* A tap or click on an orb pours it straight in; keyboard users confirm with Next. */
+    form.addEventListener("pointerdown", (event) => {
+      pointerChoice = Boolean(event.target.closest(".skin-lab__orb"));
+    });
+    form.addEventListener("change", () => {
+      if (pointerChoice) advance();
+      pointerChoice = false;
+    });
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      advance();
     });
 
-    back.addEventListener("click", () => show(Math.max(0, current - 1)));
+    back.addEventListener("click", () => {
+      if (busy) return;
+      steps[current].querySelectorAll("input").forEach((input) => (input.checked = false));
+      const previous = Math.max(0, current - 1);
+      steps[previous].querySelectorAll("input").forEach((input) => (input.checked = false));
+      show(previous);
+      updateFlask();
+      status.textContent = labels.labelEmpty;
+    });
 
     document.addEventListener("click", (event) => {
       if (!event.target.closest("[data-quiz-restart]")) return;
       form.reset();
-      form.hidden = false;
       result.hidden = true;
       show(0);
+      updateFlask();
     });
 
+    /* Orbs lean toward a fine pointer, like ingredients drawn to a magnet. */
+    if (finePointer && !reduceMotion) {
+      let pointer = null;
+      let frame = 0;
+      const tick = () => {
+        frame = 0;
+        steps[current].querySelectorAll(".skin-lab__orb").forEach((orb) => {
+          let x = 0;
+          let y = 0;
+          if (pointer) {
+            const box = orb.getBoundingClientRect();
+            const dx = pointer.x - (box.left + box.width / 2);
+            const dy = pointer.y - (box.top + box.height / 2);
+            const distance = Math.hypot(dx, dy);
+            if (distance < 180 && distance > 1) {
+              const pull = (1 - distance / 180) * 14;
+              x = (dx / distance) * pull;
+              y = (dy / distance) * pull;
+            }
+          }
+          orb.style.setProperty("--mag-x", `${x.toFixed(1)}px`);
+          orb.style.setProperty("--mag-y", `${y.toFixed(1)}px`);
+        });
+      };
+      form.addEventListener("pointermove", (event) => {
+        pointer = { x: event.clientX, y: event.clientY };
+        if (!frame) frame = requestAnimationFrame(tick);
+      });
+      form.addEventListener("pointerleave", () => {
+        pointer = null;
+        if (!frame) frame = requestAnimationFrame(tick);
+      });
+    }
+
     show(0);
+    updateFlask();
     const saved = read(KEYS.quiz, null);
-    if (saved?.picks?.length) showResult(saved);
+    if (saved?.picks?.length) restore(saved);
     quiz.hidden = false;
   }
 
