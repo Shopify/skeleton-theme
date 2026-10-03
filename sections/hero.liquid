@@ -1,0 +1,133 @@
+{% comment %}
+  Home page hero: an optional full-bleed image (or the logo mark on cream),
+  eyebrow, heading, text and two buttons. Merchant-editable in the theme
+  editor.
+{% endcomment %}
+
+{%- liquid
+  assign image = section.settings.image
+  assign primary_link = section.settings.primary_link | default: routes.all_products_collection_url
+  assign secondary_link = section.settings.secondary_link | default: '#quiz'
+-%}
+
+<section class="block-container block-container--flush">
+  <div class="hero full-width hero--{{ section.settings.text_tone }}{% if image %} hero--has-image{% endif %}">
+    {%- if image -%}
+      <div class="hero__media">
+        {{
+          image
+          | image_url: width: 2400
+          | image_tag:
+            loading: 'eager',
+            fetchpriority: 'high',
+            widths: '750, 1100, 1500, 1800, 2400',
+            sizes: '100vw',
+            alt: image.alt
+        }}
+      </div>
+    {%- elsif settings.logo_mark -%}
+      <div class="hero__mark" aria-hidden="true">
+        {{ settings.logo_mark | image_url: width: 900 | image_tag: alt: '', loading: 'eager' }}
+      </div>
+    {%- endif -%}
+
+    <div class="hero__content">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h1 class="hero__title">{{ section.settings.heading | escape }}</h1>
+      {%- endif -%}
+      {%- if section.settings.text != blank -%}
+        <p class="hero__text">{{ section.settings.text | escape | newline_to_br }}</p>
+      {%- endif -%}
+      <div class="button-row">
+        {%- if section.settings.primary_label != blank -%}
+          <a class="button" href="{{ primary_link }}">{{ section.settings.primary_label | escape }}</a>
+        {%- endif -%}
+        {%- if section.settings.secondary_label != blank -%}
+          <a class="button button--outline" href="{{ secondary_link }}">{{ section.settings.secondary_label | escape }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.hero.name",
+  "class": "section-hero",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:sections.hero.settings.image",
+      "info": "t:sections.hero.settings.image_info"
+    },
+    {
+      "type": "select",
+      "id": "text_tone",
+      "label": "t:sections.hero.settings.text_tone",
+      "options": [
+        {
+          "value": "light",
+          "label": "t:sections.hero.options.light"
+        },
+        {
+          "value": "dark",
+          "label": "t:sections.hero.options.dark"
+        }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.hero.settings.eyebrow",
+      "default": "Korean formulated skincare"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.hero.settings.heading",
+      "default": "Illuminate your skin's true potential."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:sections.hero.settings.text",
+      "default": "Serums built on powerful, clearly labelled actives. Brighten, hydrate, and rejuvenate with formulas that fit seamlessly into your routine."
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "t:sections.hero.settings.primary_label",
+      "default": "Shop serums"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "t:sections.hero.settings.primary_link",
+      "info": "t:sections.hero.settings.primary_link_info"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "t:sections.hero.settings.secondary_label",
+      "default": "Find your serum"
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "t:sections.hero.settings.secondary_link",
+      "info": "t:sections.hero.settings.secondary_link_info"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hero.name"
+    }
+  ],
+  "tag": "div"
+}
+{% endschema %}

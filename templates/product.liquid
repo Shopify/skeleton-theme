@@ -1,37 +1,249 @@
-{% block 'container' %}
-  <div class="product-images">
-    {% for image in product.images %}
-      {% render 'image', class: 'product-image', image: image %}
-    {% endfor %}
-  </div>
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign subtitle = product.metafields.custom.subtitle.value
+  assign key_ingredients = ''
+  for tag in product.tags
+    if tag contains 'Ingredient_'
+      assign ingredient = tag | remove_first: 'Ingredient_'
+      assign key_ingredients = key_ingredients | append: ingredient | append: '||'
+    endif
+  endfor
+  assign key_ingredients = key_ingredients | split: '||'
+  assign hero_ingredient = product.metafields.custom.key_ingredient.value | default: key_ingredients.first
+-%}
 
-  <div class="product-info">
-    <h1>{{ product.title }}</h1>
-    <p>{{ product.price | money }}</p>
-    <p>{{ product.description }}</p>
-  </div>
+<section class="block-container product-page-container" data-product-page="{{ product.handle }}">
+  <nav class="breadcrumbs" aria-label="{{ 'products.breadcrumbs' | t }}">
+    <a href="{{ routes.root_url }}">{{ 'products.breadcrumb_home' | t }}</a>
+    <span aria-hidden="true">/</span>
+    <a href="{{ routes.all_products_collection_url }}">{{ 'products.breadcrumb_shop' | t }}</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{{ product.title }}</span>
+  </nav>
 
-  <div class="product-form">
-    {% form 'product', product %}
-      {% assign current_variant = product.selected_or_first_available_variant %}
+  <div class="product">
+    {%- assign image_count = 0 -%}
+    {%- for media in product.media -%}
+      {%- if media.media_type == 'image' -%}{%- assign image_count = image_count | plus: 1 -%}{%- endif -%}
+    {%- endfor -%}
+    <div class="product__gallery{% if image_count <= 2 %} product__gallery--stacked{% endif %}" data-gallery>
+      {%- for media in product.media -%}
+        {%- if media.media_type == 'image' -%}
+          <div class="product__media{% if forloop.first %} product__media--first{% endif %}">
+            {%- if forloop.first -%}
+              {{ media | image_url: width: 1400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '600, 900, 1200, 1400', sizes: '(min-width: 990px) 55vw, 100vw', alt: media.alt }}
+            {%- else -%}
+              {{ media | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '600, 900, 1200, 1400', sizes: '(min-width: 990px) 55vw, 100vw', alt: media.alt }}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- else -%}
+        <div class="product__media product__media--first">
+          {{ 'product-1' | placeholder_svg_tag: 'product__placeholder' }}
+        </div>
+      {%- endfor -%}
+    </div>
 
-      <select name="id">
-        {% for variant in product.variants %}
-          <option
-            value="{{ variant.id }}"
-            {% if variant == current_variant %}
-              selected="selected"
+    {%- if image_count > 1 -%}
+      <div class="product__dots" data-gallery-dots aria-hidden="true">
+        {%- for i in (1..image_count) -%}
+          <span class="product__dot{% if forloop.first %} is-active{% endif %}"></span>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="product__info">
+      {%- if subtitle != blank -%}
+        <p class="eyebrow">{{ subtitle }}</p>
+      {%- elsif hero_ingredient != blank -%}
+        <p class="eyebrow">{{ hero_ingredient }}</p>
+      {%- endif -%}
+
+      <h1 class="product__title">{{ product.title }}</h1>
+
+      <p class="product__price">
+        {% render 'price', variant: current_variant %}
+        {%- if current_variant.title != 'Default Title' -%}
+          <span class="product__size" data-variant-title>{{ current_variant.title }}</span>
+        {%- endif -%}
+      </p>
+
+      {% form 'product', product, id: 'ProductForm', class: 'product-form', data-product-form: '' %}
+        {%- unless product.has_only_default_variant -%}
+          <fieldset class="variant-picker">
+            <legend>{{ product.options.first }}</legend>
+            {%- for variant in product.variants -%}
+              <label class="variant-picker__option">
+                <input
+                  type="radio"
+                  name="id"
+                  value="{{ variant.id }}"
+                  data-price="{{ variant.price | money | escape }}"
+                  data-title="{{ variant.title | escape }}"
+                  data-available="{{ variant.available }}"
+                  {% if variant == current_variant %}
+                    checked
+                  {% endif %}
+                  {% unless variant.available %}
+                    data-sold-out
+                  {% endunless %}
+                >
+                <span>{{ variant.title }}</span>
+              </label>
+            {%- endfor -%}
+          </fieldset>
+        {%- else -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}">
+        {%- endunless -%}
+
+        <div class="product-form__row">
+          <label class="visually-hidden" for="Quantity">{{ 'products.quantity' | t }}</label>
+          <div class="quantity">
+            <button type="button" class="quantity__button" data-quantity-step="-1" aria-label="{{ 'products.decrease_quantity' | t }}">&minus;</button>
+            <input id="Quantity" class="quantity__input" type="number" name="quantity" min="1" value="1" inputmode="numeric">
+            <button type="button" class="quantity__button" data-quantity-step="1" aria-label="{{ 'products.increase_quantity' | t }}">+</button>
+          </div>
+
+          <button
+            type="submit"
+            class="button button--full"
+            data-add-to-bag
+            data-label-available="{{ 'products.add_to_bag' | t }}"
+            data-label-sold-out="{{ 'products.sold_out' | t }}"
+            {% unless current_variant.available %}
+              disabled
+            {% endunless %}
+          >
+            {%- if current_variant.available -%}
+              {{ 'products.add_to_bag' | t }}
+            {%- else -%}
+              {{ 'products.sold_out' | t }}
+            {%- endif -%}
+          </button>
+        </div>
+
+        {{ form | payment_button }}
+      {% endform %}
+
+      <div class="sticky-atc" data-sticky-atc aria-hidden="true">
+        <div class="sticky-atc__info">
+          <p class="sticky-atc__title">{{ product.title }}</p>
+          {% render 'price', variant: current_variant %}
+        </div>
+        <button
+          type="submit"
+          form="ProductForm"
+          class="button"
+          tabindex="-1"
+          data-add-to-bag
+          data-label-available="{{ 'products.add_to_bag' | t }}"
+          data-label-sold-out="{{ 'products.sold_out' | t }}"
+          {% unless current_variant.available %}
+            disabled
+          {% endunless %}
+        >
+          {%- if current_variant.available -%}
+            {{ 'products.add_to_bag' | t }}
+          {%- else -%}
+            {{ 'products.sold_out' | t }}
+          {%- endif -%}
+        </button>
+      </div>
+
+      <dl class="product-facts">
+        {%- if product.metafields.custom.key_ingredient != blank -%}
+          <div>
+            <dt>{{ 'products.facts.key_ingredients' | t }}</dt>
+            <dd>{{ product.metafields.custom.key_ingredient.value }}</dd>
+          </div>
+        {%- elsif key_ingredients.size > 0 -%}
+          <div>
+            <dt>{{ 'products.facts.key_ingredients' | t }}</dt>
+            <dd>{{ key_ingredients | join: ', ' }}</dd>
+          </div>
+        {%- endif -%}
+        {%- if product.metafields.custom.when_to_use != blank -%}
+          <div>
+            <dt>{{ 'products.facts.when_to_use' | t }}</dt>
+            <dd>{{ product.metafields.custom.when_to_use.value }}</dd>
+          </div>
+        {%- endif -%}
+        {%- assign conflicts = product.metafields.custom.conflicts_with.value -%}
+        {%- if conflicts != blank -%}
+          <div>
+            <dt>{{ 'products.facts.dont_layer' | t }}</dt>
+            <dd>
+              {%- for other in conflicts -%}
+                <a href="{{ other.url }}">{{ other.title }}</a>
+                {%- unless forloop.last %}, {% endunless -%}
+              {%- endfor -%}
+              <span class="product-facts__note">{{ 'products.facts.dont_layer_note' | t }}</span>
+            </dd>
+          </div>
+        {%- endif -%}
+        <div>
+          <dt>{{ 'products.facts.format' | t }}</dt>
+          <dd>
+            {%- assign format_default = 'products.facts.format_default' | t -%}
+            {{ product.metafields.custom.format.value | default: product.type | default: format_default }}
+            {%- if current_variant.title != 'Default Title' %} · {{ current_variant.title }}{% endif -%}
+          </dd>
+        </div>
+        <div>
+          <dt>{{ 'products.facts.origin' | t }}</dt>
+          <dd>{{ 'products.facts.origin_value' | t }}</dd>
+        </div>
+      </dl>
+
+      <div class="product__details">
+        <details class="accordion" open>
+          <summary>{{ 'products.tabs.about' | t }}</summary>
+          <div
+            class="accordion__content rte product-description"
+            data-accordionize
+            {% if product.metafields.custom.directions != blank %}
+              data-skip-sections="how to use"
             {% endif %}
           >
-            {{ variant.title }} - {{ variant.price | money }}
-          </option>
-        {% endfor %}
-      </select>
+            {{ product.description }}
+          </div>
+        </details>
 
-      <input type="text" name="quantity" min="1" value="1">
+        {%- if product.metafields.custom.directions != blank -%}
+          <details class="accordion">
+            <summary>{{ 'products.tabs.directions' | t }}</summary>
+            <div class="accordion__content rte">{{ product.metafields.custom.directions | metafield_tag }}</div>
+          </details>
+        {%- endif -%}
 
-      <input type="submit" value="Add to cart">
-      {{ form | payment_button }}
-    {% endform %}
+        {%- if product.metafields.custom.ingredients != blank -%}
+          <details class="accordion">
+            <summary>{{ 'products.tabs.ingredients' | t }}</summary>
+            <div class="accordion__content rte">
+              <p class="inci">{{ product.metafields.custom.ingredients.value }}</p>
+            </div>
+          </details>
+        {%- endif -%}
+
+        {%- if product.metafields.custom.caution != blank -%}
+          <details class="accordion">
+            <summary>{{ 'products.tabs.caution' | t }}</summary>
+            <div class="accordion__content rte">{{ product.metafields.custom.caution | metafield_tag }}</div>
+          </details>
+        {%- endif -%}
+      </div>
+    </div>
   </div>
-{% endblock %}
+</section>
+
+<section class="block-container" data-recently-viewed hidden>
+  <div class="personal__header">
+    <h2 class="section-title">{{ 'personal.recently_viewed' | t }}</h2>
+  </div>
+  <ul class="mini-grid" role="list" data-recently-list></ul>
+</section>
+
+<section class="block-container tone-surface">
+  {%- assign related_heading = 'products.related_title' | t -%}
+  {% render 'product-grid', limit: 4, exclude: product.handle, heading: related_heading, show_view_all: true %}
+</section>

@@ -1,28 +1,35 @@
-{% block 'container' %}
-  <h1>{{ collection.title }}</h1>
+<section class="block-container">
+  {% paginate collection.products by 24 %}
+    <div class="page-header">
+      <p class="eyebrow">{{ 'collections.eyebrow' | t }}</p>
+      <h1 class="page-title">{{ collection.title }}</h1>
+      {%- if collection.description != blank -%}
+        <div class="page-header__description rte">{{ collection.description }}</div>
+      {%- endif -%}
+    </div>
 
-  <div class="collection-products">
-    {% paginate collection.products by 20 %}
-      {% for product in collection.products %}
-        <div class="collection-product">
-          {% if product.featured_image %}
-            {% render 'image',
-              class: 'collection-product__image',
-              image: product.featured_image,
-              url: product.url,
-              width: 400,
-              height: 400,
-              crop: 'center'
-            %}
-          {% endif %}
-          <div class="collection-product__content">
-            <p>{{ product.title | escape | link_to: product.url }}</p>
-            <p>{{ product.price | money }}</p>
-          </div>
-        </div>
-      {% endfor %}
+    {% render 'collection-filters', results: collection, count: collection.products_count %}
 
-      {{ paginate | default_pagination }}
-    {% endpaginate %}
-  </div>
-{% endblock %}
+    {%- if collection.products.size > 0 -%}
+      <ul class="product-grid" role="list">
+        {%- for product in collection.products -%}
+          <li>
+            {%- if forloop.index <= 4 -%}
+              {% render 'product-card', product: product, image_loading: 'eager' %}
+            {%- else -%}
+              {% render 'product-card', product: product %}
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <p class="empty-state">{{ 'collections.empty' | t }}</p>
+    {%- endif -%}
+
+    {%- if paginate.pages > 1 -%}
+      <nav class="pagination" aria-label="{{ 'general.pagination' | t }}">
+        {{ paginate | default_pagination }}
+      </nav>
+    {%- endif -%}
+  {% endpaginate %}
+</section>

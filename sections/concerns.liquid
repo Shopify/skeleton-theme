@@ -1,0 +1,91 @@
+{% comment %}
+  A strip of concern links. Each block links to product search results for
+  its search words.
+{% endcomment %}
+
+<section class="block-container concerns-strip">
+  <nav class="concerns" aria-label="{{ section.settings.heading | escape }}">
+    {%- if section.settings.heading != blank -%}
+      <p class="concerns__label">{{ section.settings.heading | escape }}</p>
+    {%- endif -%}
+    <ul role="list">
+      {%- for block in section.blocks -%}
+        <li {{ block.shopify_attributes }}>
+          <a href="{{ routes.search_url }}?q={{ block.settings.query | url_encode }}&type=product">{{ block.settings.label | escape }}</a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.concerns.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.concerns.settings.heading",
+      "default": "Shop by concern"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "concern",
+      "name": "t:sections.concerns.blocks.concern.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "t:sections.concerns.blocks.concern.label",
+          "default": "Hydration"
+        },
+        {
+          "type": "text",
+          "id": "query",
+          "label": "t:sections.concerns.blocks.concern.query",
+          "info": "t:sections.concerns.blocks.concern.query_info",
+          "default": "hyaluronic"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "t:sections.concerns.name",
+      "blocks": [
+        {
+          "type": "concern",
+          "settings": {
+            "label": "Dehydration",
+            "query": "hyaluronic"
+          }
+        },
+        {
+          "type": "concern",
+          "settings": {
+            "label": "Dullness & dark spots",
+            "query": "vitamin c"
+          }
+        },
+        {
+          "type": "concern",
+          "settings": {
+            "label": "Pores & breakouts",
+            "query": "niacinamide"
+          }
+        },
+        {
+          "type": "concern",
+          "settings": {
+            "label": "Fine lines",
+            "query": "retinol"
+          }
+        }
+      ]
+    }
+  ],
+  "tag": "div"
+}
+{% endschema %}

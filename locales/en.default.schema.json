@@ -1,25 +1,24 @@
 {
   "general": {
     "404": "Not found",
+    "announcement_bar": "Announcement bar",
     "article": "Article",
     "block": "Block",
     "blog": "Blog",
+    "brand": "Brand",
     "cart": "Cart",
     "collection": "Collection",
-    "collections": "Collections",
     "collection_card": "Collection card",
+    "collections": "Collections",
     "collections_grid": "Collections grid",
     "colors": "Colors",
     "column": "Column",
-    "container": "Container",
     "content": "Content",
     "fonts": "Fonts",
     "footer": "Footer",
     "group": "Group",
     "header": "Header",
-    "hello_world": "Hello world",
     "layout": "Layout",
-    "liquid_tips": "Liquid tips",
     "main": "Main",
     "page": "Page",
     "password": "Password",
@@ -34,26 +33,36 @@
     "typography": "Typography"
   },
   "labels": {
-    "alignment": "Alignment",
+    "accent": "Accent (tan)",
+    "accent_foreground": "Text on accent",
     "background": "Background",
+    "body_font": "Body font (Montserrat)",
+    "custom_heading_font_url": "Brand heading font file URL",
+    "customer_account_menu": "Customer account menu",
+    "favicon": "Favicon",
     "foreground": "Foreground",
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
+    "heading_font": "Heading font",
     "input_corner_radius": "Input corner radius",
     "layout_direction": "Layout direction",
+    "link": "Link",
+    "logo": "Primary logo",
+    "logo_height": "Header logo height",
+    "logo_mark": "Logo mark (g)",
+    "logo_stacked": "Secondary (stacked) logo",
     "menu": "Menu",
-    "customer_account_menu": "Customer account menu",
+    "menu_secondary": "Secondary menu",
+    "message": "Message",
     "padding": "Padding",
     "page_margin": "Page margin",
     "page_width": "Page width",
-    "show_payment_icons": "Show payment icons"
+    "product_tile": "Product image background",
+    "show_payment_icons": "Show payment icons",
+    "surface": "Surface (cream)",
+    "text_tone": "Text colour"
   },
   "options": {
-    "alignment": {
-      "left": "Left",
-      "center": "Center",
-      "right": "Right"
-    },
     "direction": {
       "horizontal": "Horizontal",
       "vertical": "Vertical"
@@ -65,6 +74,154 @@
     "size": {
       "large": "Large",
       "small": "Small"
+    },
+    "tone": {
+      "light": "Light",
+      "dark": "Dark"
+    }
+  },
+  "info": {
+    "colors": "Brand palette: black primary, cream and white secondary, tan accent. Switch to the 'Packaging 2026' theme style to preview the new packaging colours.",
+    "custom_heading_font_url": "Optional. Upload the licensed Alifira .woff2 to Content > Files and paste its URL here. It replaces the heading font above.",
+    "announcement_message": "Leave blank to show the default message."
+  },
+  "sections": {
+    "hero": {
+      "name": "Hero",
+      "settings": {
+        "image": "Background image",
+        "image_info": "Leave empty to show the logo mark on cream.",
+        "text_tone": "Text colour over image",
+        "eyebrow": "Eyebrow",
+        "heading": "Heading",
+        "text": "Text",
+        "primary_label": "Primary button label",
+        "primary_link": "Primary button link",
+        "primary_link_info": "Empty links to all products.",
+        "secondary_label": "Secondary button label",
+        "secondary_link": "Secondary button link",
+        "secondary_link_info": "Empty jumps to the Skin Lab quiz."
+      },
+      "options": {
+        "light": "Light",
+        "dark": "Dark"
+      }
+    },
+    "concerns": {
+      "name": "Shop by concern",
+      "settings": {
+        "heading": "Label"
+      },
+      "blocks": {
+        "concern": {
+          "name": "Concern",
+          "label": "Label",
+          "query": "Search for",
+          "query_info": "Links to product search results for these words."
+        }
+      }
+    },
+    "product-showcase": {
+      "name": "Product showcase",
+      "settings": {
+        "eyebrow": "Eyebrow",
+        "heading": "Heading",
+        "collection": "Collection",
+        "collection_info": "Empty shows every product.",
+        "limit": "Products to show"
+      }
+    },
+    "featured-collection": {
+      "name": "Product grid",
+      "settings": {
+        "eyebrow": "Eyebrow",
+        "heading": "Heading",
+        "collection": "Collection",
+        "collection_info": "Empty shows every product.",
+        "limit": "Products to show",
+        "show_view_all": "Show \"View all\" link"
+      }
+    },
+    "skin-lab": {
+      "name": "The Skin Lab quiz",
+      "settings": {
+        "eyebrow": "Eyebrow",
+        "heading": "Heading",
+        "intro": "Intro",
+        "tone": "Background"
+      },
+      "tone": {
+        "default": "Page background",
+        "surface": "Cream surface",
+        "inverse": "Inverse (dark)"
+      }
+    },
+    "brand-story": {
+      "name": "Brand story",
+      "settings": {
+        "shape_label": "Shape label",
+        "eyebrow": "Eyebrow",
+        "heading": "Heading",
+        "body": "Text",
+        "tone": "Background"
+      },
+      "tone": {
+        "default": "Page background",
+        "surface": "Cream surface",
+        "inverse": "Inverse (dark)"
+      },
+      "blocks": {
+        "pillar": {
+          "name": "Brand word",
+          "text": "Word"
+        }
+      }
+    },
+    "regimen": {
+      "name": "Routine steps",
+      "settings": {
+        "eyebrow": "Eyebrow",
+        "heading": "Heading",
+        "body": "Text",
+        "show_pairing": "Show the serum pairing guide",
+        "tone": "Background"
+      },
+      "tone": {
+        "default": "Page background",
+        "surface": "Cream surface",
+        "inverse": "Inverse (dark)"
+      },
+      "blocks": {
+        "step": {
+          "name": "Step",
+          "title": "Title",
+          "text": "Text"
+        }
+      }
+    },
+    "recently-viewed": {
+      "name": "Recently viewed",
+      "settings": {
+        "heading": "Heading"
+      }
+    },
+    "promises": {
+      "name": "Brand promises",
+      "settings": {
+        "tone": "Background"
+      },
+      "tone": {
+        "default": "Page background",
+        "surface": "Cream surface",
+        "inverse": "Inverse (dark)"
+      },
+      "blocks": {
+        "promise": {
+          "name": "Promise",
+          "title": "Title",
+          "text": "Text"
+        }
+      }
     }
   }
 }

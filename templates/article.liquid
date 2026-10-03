@@ -1,14 +1,18 @@
-{% block 'container' %}
+<section class="block-container">
+  <article class="page-content">
+  <div class="page-header">
+    {% assign date = article.published_at | time_tag: format: 'date' %}
+    <p class="eyebrow">{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
+    <h1 class="page-title">{{ article.title }}</h1>
+  </div>
+
   {% if article.image %}
-    {{ article.image | image_url: width: 1000 | image_tag }}
+    {{ article.image | image_url: width: 1600 | image_tag: class: 'article__image', widths: '750, 1100, 1600', sizes: '(min-width: 990px) 960px, 100vw', alt: article.image.alt }}
   {% endif %}
 
-  <h1>{{ article.title }}</h1>
-
-  {% assign date = article.published_at | time_tag: format: 'date' %}
-  <p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
-
-  {{ article.content }}
+  <div class="rte">
+    {{ article.content }}
+  </div>
 
   {% if blog.comments_enabled? %}
     <h2>{{ 'blog.article_comments' | t }}</h2>
@@ -29,7 +33,7 @@
       {% endpaginate %}
     </div>
 
-    {% form 'new_comment', article %}
+    {% form 'new_comment', article, class: 'comment-form' %}
       <h2>{{ 'blog.comment_form_title' | t }}</h2>
 
       {{ form.errors | default_errors }}
@@ -49,7 +53,8 @@
         <textarea name="comment[body]" id="body" required>{{ form.body }}</textarea>
       </div>
 
-      <input type="submit" value="{{ 'blog.comment_form_submit' | t }}">
+      <button type="submit" class="button">{{ 'blog.comment_form_submit' | t }}</button>
     {% endform %}
   {% endif %}
-{% endblock %}
+  </article>
+</section>

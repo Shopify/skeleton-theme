@@ -1,0 +1,24 @@
+{% doc %}
+  Renders the slide-out bag as a modal <dialog>. assets/theme.js opens it
+  from the header bag link and after add-to-bag, and refreshes its
+  contents from templates/cart.drawer.liquid. Without JavaScript the bag
+  link and product forms fall back to the full cart page.
+
+  @example
+  {% render 'cart-drawer' %}
+{% enddoc %}
+
+<dialog
+  class="cart-drawer"
+  aria-labelledby="CartDrawerTitle"
+  data-cart-drawer
+  data-cart-url="{{ routes.cart_url }}"
+  data-cart-add-url="{{ routes.cart_add_url }}"
+  data-cart-change-url="{{ routes.cart_change_url }}"
+  data-error-message="{{ 'cart.error' | t | escape }}"
+  scroll-lock
+>
+  <div class="cart-drawer__content" data-cart-drawer-content>
+    {% render 'cart-drawer-content' %}
+  </div>
+</dialog>

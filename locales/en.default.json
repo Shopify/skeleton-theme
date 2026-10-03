@@ -1,23 +1,54 @@
 {
   "404": {
     "title": "404",
-    "not_found": "Page not found.",
-    "back_to_shopping": "Back to shopping"
+    "not_found": "This page has slipped away.",
+    "body": "The link may be broken or the page may have moved. Our serums are right where you left them.",
+    "back_to_shopping": "Shop all serums"
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content"
+  },
+  "announcement": {
+    "label": "Announcement",
+    "default": "Korean formulated skincare · New packaging coming soon"
   },
   "blog": {
+    "eyebrow": "The Journal",
     "article_comments": "Comments",
     "article_metadata_html": "{{ date }} by {{ author }}",
     "comment_form_body": "Comment",
     "comment_form_email": "Email",
     "comment_form_name": "Name",
-    "comment_form_submit": "Post",
+    "comment_form_submit": "Post comment",
     "comment_form_title": "Add a comment"
   },
   "cart": {
-    "checkout": "Checkout",
-    "title": "Cart",
-    "update": "Update",
-    "remove": "Remove"
+    "checkout": "Check out",
+    "continue_shopping": "Shop all serums",
+    "empty": "Your bag is empty.",
+    "remove": "Remove",
+    "subtotal": "Subtotal",
+    "taxes_and_shipping": "Taxes and shipping are calculated at checkout.",
+    "title": "Your bag",
+    "update": "Update bag",
+    "close": "Close bag",
+    "view_bag": "View full bag",
+    "error": "Something went wrong. Please try again."
+  },
+  "collections": {
+    "apply": "Apply",
+    "empty": "No products here yet. Check back soon.",
+    "eyebrow": "Shop",
+    "product_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "sort_by": "Sort by",
+    "title": "Collections",
+    "price_from": "From",
+    "price_to": "To",
+    "remove_filter": "Remove filter",
+    "clear_all": "Clear all"
   },
   "customers": {
     "login": {
@@ -27,8 +58,17 @@
       "title": "Login"
     }
   },
-  "collections": {
-    "title": "Collections"
+  "footer": {
+    "newsletter_title": "Join the glow list",
+    "newsletter_body": "Launches, routines, and ingredient notes. No noise, just skin that glows.",
+    "newsletter_email": "Email address",
+    "newsletter_submit": "Subscribe",
+    "newsletter_success": "Thank you. You're on the list.",
+    "origin": "Korean Formulated Skincare · Seoul, South Korea",
+    "payment_methods": "Payment methods"
+  },
+  "general": {
+    "pagination": "Pagination"
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
@@ -37,35 +77,163 @@
     "expires_on": "Expires on {{ expires_on }}",
     "use_at_checkout": "Use this gift card at checkout"
   },
-  "hello_world": {
-    "title": "Hello, World!",
-    "intro": "The Skeleton theme is a minimal, carefully structured Shopify theme designed to help you quickly get started. Designed with modularity, maintainability, and Shopify's best practices in mind.",
-    "description": "Themes shape the online store experience for merchants and their customers. Build fast, flexible themes at scale using Liquid, Shopify's theme templating language, along with HTML, CSS, JavaScript, and JSON.",
-    "key_concepts_title": "Key Concepts",
-    "key_concepts_body": "Shopify themes are a package of template files, building blocks, and supporting assets. Use these building blocks to create modular, customizable themes.",
-    "key_concepts_link": "Learn more about key concepts",
-    "liquid_title": "Liquid",
-    "liquid_body": "The Liquid templating language is the backbone of Shopify themes, and is used to load dynamic content on storefronts. Extend Liquid objects to store and present custom data using metafields.",
-    "liquid_link": "View the Liquid reference",
-    "best_practices_title": "Best Practices",
-    "best_practices_body": "To optimize your theme development experience, Shopify has established a set of best practices that you can refer to when developing your theme and setting up your toolchains and processes.",
-    "best_practices_link": "Follow best practices",
-    "liquid_tips_title": "Liquid tips",
-    "liquid_tips_refresh": "Show another tip",
-    "liquid_tips_1": "Prefer whitespace control with {%- -%} to keep rendered markup clean",
-    "liquid_tips_2": "Reach for the render tag instead of include so each snippet gets its own scope",
-    "liquid_tips_3": "Assign expensive lookups to a variable once and reuse it across the template"
+  "header": {
+    "account": "Account",
+    "bag": "Bag",
+    "menu": "Menu",
+    "search": "Search"
+  },
+  "home": {
+    "collection": {
+      "view_all": "View all"
+    },
+    "pairing": {
+      "title": "Pairing guide",
+      "col_serum": "Serum",
+      "col_when": "When",
+      "col_avoid": "Good to know",
+      "am": "AM",
+      "pm": "PM only",
+      "am_pm": "AM & PM",
+      "none": "Plays well with the whole range.",
+      "vitamin_c": "Vitamin C Radiance",
+      "vitamin_c_avoid": "Keep strong acids and retinoids to a separate routine; alternate sessions.",
+      "retinol": "Retinol",
+      "retinol_avoid": "Not with leave-on AHAs/BHAs or benzoyl peroxide in the same routine. Start 2–3× a week.",
+      "niacinamide": "Niacinamide",
+      "niacinamide_avoid": "Pairs with vitamin C (AM) or retinol (PM). Separate from low-pH exfoliating acids.",
+      "hyaluronic": "Hyaluronic Acid",
+      "snail": "Snail Recovery",
+      "snail_avoid": "Patch test first if you are allergic to mollusks or shellfish.",
+      "rice": "Rice Essence",
+      "note": "Always patch test new products. Daily sunscreen is essential when using vitamin C or retinol.",
+      "rice_note": "Contains fragrance; patch test if your skin is sensitive.",
+      "barrier": "Barrier Support",
+      "barrier_note": "Contains salicylic acid; patch test first and stop if irritation occurs.",
+      "clarifying": "Whitening + Clarifying",
+      "clarifying_note": "Apply before moisturizer; follow with sunscreen in the daytime."
+    },
+    "showcase": {
+      "tabs_label": "Serums",
+      "info": "Overview, directions & caution"
+    }
   },
   "password": {
-    "title": "This shop is private",
+    "title": "Something radiant is coming.",
+    "notify": "Notify me",
+    "owner": "Store owner? Enter password",
     "password": "Password",
     "enter": "Enter"
   },
+  "products": {
+    "add_to_bag": "Add to bag",
+    "breadcrumbs": "Breadcrumbs",
+    "breadcrumb_home": "Home",
+    "breadcrumb_shop": "Shop",
+    "choose_options": "Choose options",
+    "decrease_quantity": "Decrease quantity",
+    "increase_quantity": "Increase quantity",
+    "price_from": "From {{ price }}",
+    "quantity": "Quantity",
+    "regular_price": "Regular price",
+    "related_title": "Complete your routine",
+    "sale_price": "Sale price",
+    "sold_out": "Sold out",
+    "facts": {
+      "key_ingredients": "Key ingredients",
+      "when_to_use": "When to use",
+      "format": "Format",
+      "format_default": "Serum",
+      "origin": "Origin",
+      "origin_value": "Korean formulated",
+      "dont_layer": "Don't layer with",
+      "dont_layer_note": "Use in a separate routine."
+    },
+    "tabs": {
+      "about": "About",
+      "directions": "Directions",
+      "ingredients": "Full ingredients",
+      "caution": "Caution"
+    },
+    "routine_am": "AM",
+    "routine_pm": "PM",
+    "percent_off": "{{ percent }}% off",
+    "add_to_routine": "Add to my routine"
+  },
   "search": {
     "title": "Search",
-    "placeholder": "Search articles, pages, or products",
+    "placeholder": "Search serums and ingredients",
     "submit": "Search",
-    "no_results_html": "No results found for {{ terms }}",
-    "results_for_html": "{{ count }} results found for {{ terms }}"
+    "no_results_html": "No results found for “{{ terms }}”. Try an ingredient such as niacinamide or retinol.",
+    "results_for_html": "{{ count }} results for “{{ terms }}”",
+    "view_all": {
+      "one": "View {{ count }} result",
+      "other": "View all {{ count }} results"
+    },
+    "results_count": {
+      "one": "{{ count }} result",
+      "other": "{{ count }} results"
+    }
+  },
+  "routine": {
+    "am": "AM",
+    "pm": "PM",
+    "your_match": "Your match",
+    "fragrance_free": "Fragrance-free",
+    "patch_test": "Sensitive skin: patch test each serum before adding it to your routine."
+  },
+  "quiz": {
+    "q_concern": "What's your main skin goal?",
+    "concern_hydration": "Deep hydration",
+    "concern_brightness": "Brighter, more radiant skin",
+    "concern_dark_spots": "Fading dark spots",
+    "concern_pores": "Pores & breakouts",
+    "concern_fine_lines": "Smoothing fine lines",
+    "concern_barrier": "A stronger skin barrier",
+    "concern_tone": "A more even tone",
+    "concern_texture": "Smoother texture",
+    "q_sensitive": "Is your skin sensitive?",
+    "sensitive_yes": "Sensitive",
+    "sensitive_no": "Resilient",
+    "q_time": "When do you want to use your serums?",
+    "time_am": "Sunrise",
+    "time_pm": "Moonlight",
+    "time_both": "Round the clock",
+    "choose_one": "Choose an option to continue.",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Brew my formula",
+    "result_title": "Your formula",
+    "add_all": "Add all to bag",
+    "see_routine": "See my routine",
+    "restart": "Retake the quiz",
+    "no_script": "Turn on JavaScript to take the quiz, or browse every serum by concern above.",
+    "symbol_hydration": "Hy",
+    "symbol_brightness": "Br",
+    "symbol_dark_spots": "Ds",
+    "symbol_pores": "Po",
+    "symbol_fine_lines": "Fl",
+    "symbol_barrier": "Ba",
+    "symbol_tone": "To",
+    "symbol_texture": "Tx",
+    "symbol_sensitive_yes": "Se",
+    "symbol_sensitive_no": "Rs",
+    "symbol_time_am": "Am",
+    "symbol_time_pm": "Pm",
+    "symbol_time_both": "24",
+    "lab_notes": "Lab notes",
+    "lab_formula": "Your formula so far",
+    "lab_empty": "The flask is empty. Pick your first element.",
+    "lab_added": "[name] added to the flask.",
+    "lab_brewing": "Brewing your formula…",
+    "lab_ready": "Formula ready.",
+    "lab_targets": "Targets [concern]",
+    "lab_support": "Adds hydration and barrier support",
+    "lab_compatible": "Lab check: every serum in this formula can be layered together.",
+    "result_eyebrow": "Formula ready",
+    "shop_all": "Shop all serums"
+  },
+  "personal": {
+    "recently_viewed": "Recently viewed"
   }
 }

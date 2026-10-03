@@ -1,27 +1,32 @@
-{% block 'container' %}
-  <h1>{{ 'collections.title' | t }}</h1>
-
-  <div class="collections collections--full" style="--grid-gap: 10px">
-    {% for collection in collections %}
-      <a class="collection-card" href="{{ collection.url }}">
-        {% if collection.featured_image %}
-          {% render 'image',
-            class: 'collection-card__image',
-            image: collection.featured_image,
-            width: 600,
-            height: 600,
-            crop: 'center'
-          %}
-        {% endif %}
-
-        <div class="collection-card__content">
-          <p>{{ collection.title }}</p>
-
-          {% if collection.description %}
-            <p>{{ collection.description | strip_html | truncatewords: 15 }}</p>
-          {% endif %}
-        </div>
-      </a>
-    {% endfor %}
+<section class="block-container">
+  <div class="page-header">
+    <h1 class="page-title">{{ 'collections.title' | t }}</h1>
   </div>
-{% endblock %}
+
+  <ul class="collections collections--full" role="list">
+    {% for collection in collections %}
+      <li>
+        <a class="collection-card" href="{{ collection.url }}">
+          <div class="collection-card__media">
+            {%- if collection.featured_image -%}
+              {% render 'image',
+                class: 'collection-card__image',
+                image: collection.featured_image,
+                width: 800,
+                height: 800,
+                crop: 'center'
+              %}
+            {%- elsif settings.logo_mark -%}
+              {{ settings.logo_mark | image_url: width: 300 | image_tag: alt: '', class: 'collection-card__mark', loading: 'lazy' }}
+            {%- endif -%}
+          </div>
+
+          <div class="collection-card__content">
+            <h2 class="collection-card__title">{{ collection.title }}</h2>
+            <p>{{ 'collections.product_count' | t: count: collection.products_count }}</p>
+          </div>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</section>

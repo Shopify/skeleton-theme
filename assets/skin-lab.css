@@ -1,0 +1,693 @@
+/**
+ * The Skin Lab: the home page quiz as a playful mixing bench. Each answer
+ * is an "element" orb orbiting a flask; picking one bonds it to the flask,
+ * flies it in, and fills the flask with that element's colour. Inspired by
+ * the magnetic ingredients lab on mazenonline.
+ *
+ * Orb colours are fixed design tokens (they echo the product label colours),
+ * not brand settings. Motion is removed for prefers-reduced-motion.
+ */
+
+.skin-lab-section {
+  overflow: hidden;
+}
+
+.skin-lab {
+  --lab-ink: var(--color-background);
+  --lab-glass: color-mix(in srgb, var(--color-background) 22%, transparent);
+  --lab-panel: color-mix(in srgb, var(--color-background) 6%, var(--color-foreground));
+
+  display: grid;
+  gap: var(--space-xl);
+  color: var(--lab-ink);
+}
+
+.skin-lab__intro {
+  max-width: 40rem;
+}
+
+.skin-lab__intro > p:last-child {
+  margin-block-start: var(--space-m);
+  opacity: 0.8;
+}
+
+.skin-lab__intro .eyebrow {
+  color: var(--color-accent);
+}
+
+.skin-lab__bench {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 1fr);
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+/* ---------- stage, steps and orbit ---------- */
+
+.skin-lab__stage {
+  position: relative;
+}
+
+.skin-lab__step {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.skin-lab__question {
+  display: grid;
+  gap: var(--space-2xs);
+  margin-block-end: var(--space-m);
+  padding: 0;
+  font-family: var(--font-heading--family);
+  font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+  line-height: 1.15;
+}
+
+.skin-lab__count {
+  font-family: var(--font-primary--family);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--color-accent);
+}
+
+.skin-lab__orbs {
+  position: relative;
+  width: min(100%, 34rem);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+
+/* Soft ambient glow behind the orbit. */
+.skin-lab__orbs::before {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 30%, transparent), transparent 70%);
+  filter: blur(20px);
+}
+
+.skin-lab__orb {
+  --angle: calc(360deg / var(--n) * var(--i) - 90deg);
+  --radius: 38cqi;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--angle))
+    translate(var(--radius))
+    rotate(calc(-1 * var(--angle)))
+    translate(var(--mag-x, 0px), var(--mag-y, 0px));
+  cursor: pointer;
+}
+
+.skin-lab__orbs--2 .skin-lab__orb {
+  --angle: calc(180deg * var(--i) + 180deg);
+}
+
+.skin-lab__orb input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.skin-lab__tile {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.15rem;
+  width: clamp(4.5rem, 19cqi, 6.25rem);
+  aspect-ratio: 1;
+  border: 1.5px solid var(--orb-color);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 28%,
+    color-mix(in srgb, var(--orb-color) 40%, transparent),
+    color-mix(in srgb, var(--orb-color) 10%, var(--color-foreground)) 70%
+  );
+  box-shadow:
+    0 0 24px -6px color-mix(in srgb, var(--orb-color) 70%, transparent),
+    inset 0 0 12px color-mix(in srgb, var(--orb-color) 25%, transparent);
+  text-align: center;
+  animation: lab-float calc(3s + var(--i) * 0.35s) ease-in-out infinite;
+  transition: transform 220ms ease, background-color 220ms ease, box-shadow 220ms ease, opacity 220ms ease;
+}
+
+.skin-lab__symbol {
+  font-family: var(--font-heading--family);
+  font-size: clamp(1.25rem, 5.5cqi, 1.75rem);
+  line-height: 1;
+  color: var(--orb-color);
+}
+
+.skin-lab__name {
+  max-width: 90%;
+  font-size: clamp(0.5625rem, 2.2cqi, 0.6875rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.skin-lab__orb:hover .skin-lab__tile {
+  transform: scale(1.08);
+  box-shadow:
+    0 0 36px -4px color-mix(in srgb, var(--orb-color) 85%, transparent),
+    inset 0 0 14px color-mix(in srgb, var(--orb-color) 35%, transparent);
+}
+
+.skin-lab__orb input:focus-visible + .skin-lab__tile {
+  outline: 2px solid var(--lab-ink);
+  outline-offset: 4px;
+}
+
+.skin-lab__orb input:checked + .skin-lab__tile {
+  background: var(--orb-color);
+  color: var(--color-foreground);
+  transform: scale(1.12);
+}
+
+.skin-lab__orb input:checked + .skin-lab__tile .skin-lab__symbol {
+  color: var(--color-foreground);
+}
+
+/* Unchosen orbs dim once a choice is being poured in. */
+.skin-lab__orbs.is-pouring .skin-lab__orb:not(:has(input:checked)) .skin-lab__tile {
+  opacity: 0.35;
+}
+
+.skin-lab__orb.is-launched .skin-lab__tile {
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+/* ---------- flask ---------- */
+
+.skin-lab__flask {
+  --level: 0;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 40cqi;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1.5px solid var(--lab-glass);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, color-mix(in srgb, var(--lab-ink) 10%, transparent), transparent 60%);
+  overflow: hidden;
+}
+
+/* Flask neck, drawn as a short tube on top of the bulb. */
+.skin-lab__flask::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  width: 22%;
+  height: 10%;
+  transform: translateX(-50%);
+  border-inline: 1.5px solid var(--lab-glass);
+}
+
+.skin-lab__liquid {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column-reverse;
+  height: calc(var(--level) * 92%);
+  transition: height 700ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+/* Sloshing surface on top of the liquid. */
+.skin-lab__liquid::before {
+  content: '';
+  position: absolute;
+  top: -5%;
+  left: -10%;
+  z-index: 1;
+  width: 120%;
+  height: 10%;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface-color, transparent) 70%, #fff);
+  opacity: min(1, calc(var(--level) * 10));
+  animation: lab-slosh 3.2s ease-in-out infinite;
+}
+
+.skin-lab__layer {
+  flex: 0 0 0;
+  background: var(--layer-color, transparent);
+  transition: flex-grow 600ms ease;
+}
+
+.skin-lab__layer.is-filled {
+  flex-grow: 1;
+}
+
+.skin-lab__liquid i {
+  position: absolute;
+  bottom: 0;
+  width: 6px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--lab-ink) 70%, transparent);
+  opacity: 0;
+}
+
+.skin-lab__flask.has-liquid .skin-lab__liquid i {
+  animation: lab-bubble 2.6s ease-in infinite;
+}
+
+.skin-lab__liquid i:nth-of-type(1) { left: 25%; animation-delay: 0s; }
+.skin-lab__liquid i:nth-of-type(2) { left: 42%; width: 4px; animation-delay: 0.6s; }
+.skin-lab__liquid i:nth-of-type(3) { left: 58%; animation-delay: 1.2s; }
+.skin-lab__liquid i:nth-of-type(4) { left: 70%; width: 4px; animation-delay: 1.7s; }
+.skin-lab__liquid i:nth-of-type(5) { left: 34%; width: 5px; animation-delay: 2.1s; }
+
+.skin-lab__mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34%;
+  height: auto;
+  transform: translate(-50%, -50%);
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.35));
+}
+
+/* Slow dashed dial around the flask. */
+.skin-lab__ring {
+  position: absolute;
+  inset: 6%;
+  border: 1px dashed color-mix(in srgb, var(--lab-ink) 25%, transparent);
+  border-radius: 50%;
+  animation: lab-spin 30s linear infinite;
+}
+
+.skin-lab__burst {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.skin-lab__flask.is-brewing {
+  animation: lab-shake 0.35s ease-in-out 3;
+}
+
+.skin-lab__flask.is-brewing .skin-lab__liquid i {
+  animation-duration: 0.8s;
+}
+
+.skin-lab__flask.is-done .skin-lab__burst {
+  animation: lab-burst 0.9s ease-out;
+}
+
+/* ---------- bonds, flying drops, particles ---------- */
+
+.skin-lab__bonds {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.skin-lab__bond {
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 6 8;
+  animation: lab-bond-flow 0.6s linear infinite;
+}
+
+.skin-lab__drop {
+  position: fixed;
+  z-index: 40;
+  width: 1.25rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--drop-color);
+  box-shadow: 0 0 18px var(--drop-color);
+  pointer-events: none;
+}
+
+.skin-lab__particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.skin-lab__particle {
+  position: absolute;
+  width: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--particle-color);
+  animation: lab-particle 0.9s ease-out forwards;
+}
+
+/* ---------- navigation ---------- */
+
+.skin-lab__error {
+  margin-block-start: var(--space-m);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-accent);
+}
+
+.skin-lab__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-s);
+  margin-block-start: var(--space-m);
+}
+
+.skin-lab__nav [data-quiz-next] {
+  margin-inline-start: auto;
+  background-color: var(--lab-ink);
+  border-color: var(--lab-ink);
+  color: var(--color-foreground);
+}
+
+.skin-lab__nav [data-quiz-next]:hover {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* ---------- lab notes panel ---------- */
+
+.skin-lab__notes {
+  display: grid;
+  gap: var(--space-m);
+  padding: var(--space-l);
+  border: 1px solid var(--lab-glass);
+  border-radius: var(--radius-card);
+  background: var(--lab-panel);
+}
+
+.skin-lab__notes-title {
+  font-family: var(--font-primary--family);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.skin-lab__status {
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+.skin-lab__formula-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.skin-lab__formula {
+  display: grid;
+  gap: var(--space-xs);
+  min-height: 2.5rem;
+}
+
+.skin-lab__formula li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  font-size: 0.875rem;
+  animation: lab-pop 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.skin-lab__chip {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.25rem;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  background: var(--chip-color);
+  color: var(--color-foreground);
+  font-family: var(--font-heading--family);
+  font-size: 1rem;
+}
+
+/* ---------- result ---------- */
+
+.skin-lab__result {
+  display: grid;
+  gap: var(--space-l);
+  padding: var(--space-xl);
+  border-radius: var(--radius-card);
+  background: var(--color-background);
+  color: var(--color-foreground);
+  animation: lab-emerge 0.6s cubic-bezier(0.2, 1.2, 0.4, 1);
+}
+
+.skin-lab__result:focus {
+  outline: none;
+}
+
+.skin-lab__result-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-m);
+}
+
+.skin-lab__result-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-s);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.skin-lab__code {
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  background: var(--color-foreground);
+  color: var(--color-background);
+  font-family: var(--font-primary--family);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.skin-lab__result-note,
+.skin-lab__check {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.skin-lab__check::before {
+  content: '\2713';
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  aspect-ratio: 1;
+  margin-inline-end: 0.5rem;
+  border-radius: 50%;
+  background: #6bc48c;
+  color: #000;
+  font-size: 0.75rem;
+}
+
+.skin-lab__check:empty::before {
+  content: none;
+}
+
+.skin-lab__result .mini-card {
+  padding: 0;
+}
+
+.skin-lab__result .mini-card__note {
+  color: var(--color-foreground-muted);
+  font-weight: 500;
+}
+
+/* ---------- small screens: the orbit becomes a grid ---------- */
+
+@media (max-width: 749px) {
+  .skin-lab__bench {
+    grid-template-columns: 1fr;
+    gap: var(--space-l);
+  }
+
+  .skin-lab__orbs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-s);
+    width: 100%;
+    aspect-ratio: auto;
+    padding-block-start: calc(9rem + var(--space-m));
+  }
+
+  .skin-lab__orbs--2,
+  .skin-lab__orbs--3 {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-l);
+  }
+
+  .skin-lab__orbs::before {
+    inset: 0 25% auto;
+    height: 9rem;
+  }
+
+  .skin-lab__orb {
+    position: relative;
+    top: auto;
+    left: auto;
+    justify-self: center;
+    width: min(100%, 4.75rem);
+    transform: none;
+  }
+
+  .skin-lab__tile {
+    width: 100%;
+  }
+
+  .skin-lab__symbol {
+    font-size: 1.25rem;
+  }
+
+  .skin-lab__name {
+    font-size: 0.5625rem;
+  }
+
+  .skin-lab__flask {
+    top: 0;
+    width: 9rem;
+    transform: translateX(-50%);
+  }
+
+  .skin-lab__particles {
+    top: 4.5rem;
+  }
+
+  .skin-lab__result {
+    padding: var(--space-l);
+  }
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes lab-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+@keyframes lab-slosh {
+  0%,
+  100% {
+    transform: translateX(-4%) rotate(-2deg);
+  }
+  50% {
+    transform: translateX(4%) rotate(2deg);
+  }
+}
+
+@keyframes lab-bubble {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-140px) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes lab-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lab-shake {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  25% {
+    rotate: -4deg;
+  }
+  75% {
+    rotate: 4deg;
+  }
+}
+
+@keyframes lab-burst {
+  0% {
+    opacity: 0.9;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 80%, transparent);
+  }
+  100% {
+    opacity: 0;
+    box-shadow: 0 0 0 40px color-mix(in srgb, var(--color-accent) 0%, transparent);
+  }
+}
+
+@keyframes lab-bond-flow {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
+@keyframes lab-particle {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes lab-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes lab-emerge {
+  from {
+    transform: translateY(24px) scale(0.97);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skin-lab *,
+  .skin-lab *::before,
+  .skin-lab *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

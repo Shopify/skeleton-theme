@@ -1,0 +1,60 @@
+{% comment %}
+  A heading and a grid of product cards from one collection.
+{% endcomment %}
+
+<section class="block-container">
+  {% render 'product-grid',
+    collection: section.settings.collection,
+    limit: section.settings.limit,
+    eyebrow: section.settings.eyebrow,
+    heading: section.settings.heading,
+    show_view_all: section.settings.show_view_all
+  %}
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.featured-collection.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.featured-collection.settings.eyebrow",
+      "default": "The serums"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.featured-collection.settings.heading",
+      "default": "One active. One job. Visible results."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.featured-collection.settings.collection",
+      "info": "t:sections.featured-collection.settings.collection_info"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "t:sections.featured-collection.settings.limit",
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "t:sections.featured-collection.settings.show_view_all",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.featured-collection.name"
+    }
+  ],
+  "tag": "div"
+}
+{% endschema %}

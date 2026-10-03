@@ -1,0 +1,153 @@
+{% doc %}
+  Renders the collection toolbar: product count, Shopify storefront filters
+  (list, boolean, and price range), active-filter chips, and the sort menu,
+  all in one GET form so filters and sorting are kept together in the URL.
+  assets/theme.js submits the form on change; without JavaScript the Apply
+  button in <noscript> submits it.
+
+  Which filters appear is configured in the Shopify Search & Discovery app;
+  availability and price are available by default.
+
+  @param {collection} results - The collection being filtered
+  @param {number} count - Number of products matching the current filters
+
+  @example
+  {% render 'collection-filters', results: collection, count: collection.products_count %}
+{% enddoc %}
+
+{%- assign sort_by = results.sort_by | default: results.default_sort_by -%}
+
+<form class="facets" method="get" data-auto-submit>
+  <div class="facets__bar">
+    {%- for filter in results.filters -%}
+      <details class="facet" data-facet>
+        <summary class="facet__summary">
+          {{ filter.label }}
+          {%- if filter.active_values.size > 0 %}
+            <span class="facet__active-count">({{ filter.active_values.size }})</span>
+          {%- endif -%}
+        </summary>
+
+        <div class="facet__panel">
+          {%- case filter.type -%}
+            {%- when 'list', 'boolean' -%}
+              <ul class="facet__options" role="list">
+                {%- for value in filter.values -%}
+                  {%- assign unavailable = false -%}
+                  {%- if value.count == 0 and value.active == false -%}
+                    {%- assign unavailable = true -%}
+                  {%- endif -%}
+                  <li>
+                    <label class="facet__option{% if unavailable %} is-disabled{% endif %}">
+                      <input
+                        type="checkbox"
+                        name="{{ value.param_name }}"
+                        value="{{ value.value }}"
+                        {% if value.active %}
+                          checked
+                        {% endif %}
+                        {% if unavailable %}
+                          disabled
+                        {% endif %}
+                      >
+                      <span>{{ value.label }}</span>
+                      <span class="facet__option-count">({{ value.count }})</span>
+                    </label>
+                  </li>
+                {%- endfor -%}
+              </ul>
+
+            {%- when 'price_range' -%}
+              {%- liquid
+                assign price_min = filter.min_value.value | money_without_currency | remove: ','
+                assign price_max = filter.max_value.value | money_without_currency | remove: ','
+                assign range_max = filter.range_max | money_without_currency | remove: ','
+                if filter.min_value.value == nil
+                  assign price_min = ''
+                endif
+                if filter.max_value.value == nil
+                  assign price_max = ''
+                endif
+              -%}
+              <div class="facet__price">
+                <label>
+                  <span>{{ 'collections.price_from' | t }}</span>
+                  <input
+                    type="number"
+                    name="{{ filter.min_value.param_name }}"
+                    value="{{ price_min }}"
+                    placeholder="0"
+                    min="0"
+                    max="{{ range_max }}"
+                    step="0.01"
+                    inputmode="decimal"
+                  >
+                </label>
+                <label>
+                  <span>{{ 'collections.price_to' | t }}</span>
+                  <input
+                    type="number"
+                    name="{{ filter.max_value.param_name }}"
+                    value="{{ price_max }}"
+                    placeholder="{{ range_max }}"
+                    min="0"
+                    max="{{ range_max }}"
+                    step="0.01"
+                    inputmode="decimal"
+                  >
+                </label>
+              </div>
+          {%- endcase -%}
+        </div>
+      </details>
+    {%- endfor -%}
+
+    <div class="facets__sort">
+      <label for="SortBy">{{ 'collections.sort_by' | t }}</label>
+      <select id="SortBy" name="sort_by">
+        {%- for option in results.sort_options -%}
+          <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>{{ option.name }}</option>
+        {%- endfor -%}
+      </select>
+    </div>
+
+    <noscript><button type="submit" class="button button--small">{{ 'collections.apply' | t }}</button></noscript>
+  </div>
+
+  <div class="facets__status">
+    <p class="collection-toolbar__count" role="status">{{ 'collections.product_count' | t: count: count }}</p>
+
+    {%- assign has_active = false -%}
+    <ul class="facets__chips" role="list">
+      {%- for filter in results.filters -%}
+        {%- for value in filter.active_values -%}
+          {%- assign has_active = true -%}
+          <li>
+            <a class="facet-chip" href="{{ value.url_to_remove }}">
+              <span class="visually-hidden">{{ 'collections.remove_filter' | t }}</span>
+              {{ filter.label }}: {{ value.label }} <span aria-hidden="true">&times;</span>
+            </a>
+          </li>
+        {%- endfor -%}
+        {%- if filter.type == 'price_range' -%}
+          {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+            {%- assign has_active = true -%}
+            <li>
+              <a class="facet-chip" href="{{ filter.url_to_remove }}">
+                <span class="visually-hidden">{{ 'collections.remove_filter' | t }}</span>
+                {{ filter.label }}:
+                {{ filter.min_value.value | default: 0 | money }}–{{ filter.max_value.value | default: filter.range_max | money }}
+                <span aria-hidden="true">&times;</span>
+              </a>
+            </li>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if has_active -%}
+        <li>
+          <a class="facets__clear" href="{{ results.url }}?sort_by={{ sort_by }}">{{ 'collections.clear_all' | t }}</a>
+        </li>
+      {%- endif -%}
+    </ul>
+  </div>
+</form>

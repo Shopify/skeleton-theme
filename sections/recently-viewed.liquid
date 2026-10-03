@@ -1,0 +1,31 @@
+{% comment %}
+  Products the visitor viewed recently, filled in by assets/routine.js from
+  localStorage. Stays hidden for first-time visitors.
+{% endcomment %}
+
+<section class="block-container" data-recently-viewed hidden>
+  <div class="personal__header">
+    <h2 class="section-title">{{ section.settings.heading | escape }}</h2>
+  </div>
+  <ul class="mini-grid" role="list" data-recently-list></ul>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.recently-viewed.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.recently-viewed.settings.heading",
+      "default": "Recently viewed"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.recently-viewed.name"
+    }
+  ],
+  "tag": "div"
+}
+{% endschema %}

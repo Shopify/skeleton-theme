@@ -1,0 +1,198 @@
+{% comment %}
+  Routine steps (numbered blocks) and the optional serum pairing guide.
+{% endcomment %}
+
+<section class="block-container{%- case section.settings.tone -%}{%- when 'surface' -%} tone-surface{%- when 'inverse' -%} tone-inverse{%- endcase -%}">
+  <div class="regimen" id="regimen">
+    <div class="regimen__intro">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="section-title">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <p>{{ section.settings.body | escape }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- if section.blocks.size > 0 -%}
+      <ol class="regimen__steps" role="list">
+        {%- for block in section.blocks -%}
+          <li {{ block.shopify_attributes }}>
+            <span class="regimen__number">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+            <h3>{{ block.settings.title | escape }}</h3>
+            <p>{{ block.settings.text | escape }}</p>
+          </li>
+        {%- endfor -%}
+      </ol>
+    {%- endif -%}
+
+    {%- if section.settings.show_pairing -%}
+  <div class="pairing">
+        <h3 class="pairing__title">{{ 'home.pairing.title' | t }}</h3>
+        <table class="pairing__table">
+          <thead>
+            <tr>
+              <th scope="col">{{ 'home.pairing.col_serum' | t }}</th>
+              <th scope="col">{{ 'home.pairing.col_when' | t }}</th>
+              <th scope="col">{{ 'home.pairing.col_avoid' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">{{ 'home.pairing.vitamin_c' | t }}</th>
+              <td>{{ 'home.pairing.am' | t }}</td>
+              <td>{{ 'home.pairing.vitamin_c_avoid' | t }}</td>
+            </tr>
+            <tr>
+              <th scope="row">{{ 'home.pairing.retinol' | t }}</th>
+              <td>{{ 'home.pairing.pm' | t }}</td>
+              <td>{{ 'home.pairing.retinol_avoid' | t }}</td>
+            </tr>
+            <tr>
+              <th scope="row">{{ 'home.pairing.niacinamide' | t }}</th>
+              <td>{{ 'home.pairing.am_pm' | t }}</td>
+              <td>{{ 'home.pairing.niacinamide_avoid' | t }}</td>
+            </tr>
+            <tr>
+              <th scope="row">{{ 'home.pairing.hyaluronic' | t }}</th>
+              <td>{{ 'home.pairing.am_pm' | t }}</td>
+              <td>{{ 'home.pairing.none' | t }}</td>
+            </tr>
+            <tr>
+              <th scope="row">{{ 'home.pairing.snail' | t }}</th>
+              <td>{{ 'home.pairing.am_pm' | t }}</td>
+              <td>{{ 'home.pairing.snail_avoid' | t }}</td>
+            </tr>
+            <tr>
+              <th scope="row">{{ 'home.pairing.rice' | t }}</th>
+              <td>{{ 'home.pairing.am_pm' | t }}</td>
+              <td>{{ 'home.pairing.rice_note' | t }}</td>
+            </tr>
+            <tr>
+              <th scope="row">{{ 'home.pairing.barrier' | t }}</th>
+              <td>{{ 'home.pairing.am_pm' | t }}</td>
+              <td>{{ 'home.pairing.barrier_note' | t }}</td>
+            </tr>
+            <tr>
+              <th scope="row">{{ 'home.pairing.clarifying' | t }}</th>
+              <td>{{ 'home.pairing.am_pm' | t }}</td>
+              <td>{{ 'home.pairing.clarifying_note' | t }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="pairing__note">{{ 'home.pairing.note' | t }}</p>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.regimen.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.regimen.settings.eyebrow",
+      "default": "Your routine"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.regimen.settings.heading",
+      "default": "Four steps to a considered glow."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "t:sections.regimen.settings.body",
+      "default": "Apply serums from thinnest to thickest texture, after cleansing and toning and before your moisturizer."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pairing",
+      "label": "t:sections.regimen.settings.show_pairing",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "tone",
+      "label": "t:sections.regimen.settings.tone",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.regimen.tone.default"
+        },
+        {
+          "value": "surface",
+          "label": "t:sections.regimen.tone.surface"
+        },
+        {
+          "value": "inverse",
+          "label": "t:sections.regimen.tone.inverse"
+        }
+      ],
+      "default": "default"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "t:sections.regimen.blocks.step.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.regimen.blocks.step.title",
+          "default": "Cleanse"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.regimen.blocks.step.text",
+          "default": "Start with a clean, toned face."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "t:sections.regimen.name",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "title": "Cleanse",
+            "text": "Start with a clean, toned face so actives can absorb evenly."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Treat",
+            "text": "Press 2–3 drops of your Glow Verve serum onto face and neck."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Moisturize",
+            "text": "Seal in hydration with a barrier-supporting cream."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Protect",
+            "text": "Every morning, finish with a high-protection SPF."
+          }
+        }
+      ]
+    }
+  ],
+  "tag": "div"
+}
+{% endschema %}
