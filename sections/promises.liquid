@@ -1,0 +1,92 @@
+{% comment %}
+  A row of short brand promises (blocks).
+{% endcomment %}
+
+<section class="block-container{%- case section.settings.tone -%}{%- when 'surface' -%} tone-surface{%- when 'inverse' -%} tone-inverse{%- endcase -%}">
+  <ul class="promises" role="list">
+    {%- for block in section.blocks -%}
+      <li {{ block.shopify_attributes }}>
+        <h3>{{ block.settings.title | escape }}</h3>
+        <p>{{ block.settings.text | escape }}</p>
+      </li>
+    {%- endfor -%}
+  </ul>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.promises.name",
+  "settings": [
+    {
+      "type": "select",
+      "id": "tone",
+      "label": "t:sections.promises.settings.tone",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.promises.tone.default"
+        },
+        {
+          "value": "surface",
+          "label": "t:sections.promises.tone.surface"
+        },
+        {
+          "value": "inverse",
+          "label": "t:sections.promises.tone.inverse"
+        }
+      ],
+      "default": "inverse"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "promise",
+      "name": "t:sections.promises.blocks.promise.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.promises.blocks.promise.title",
+          "default": "Korean formulated"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.promises.blocks.promise.text",
+          "default": "Developed with Seoul's skincare expertise."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "t:sections.promises.name",
+      "blocks": [
+        {
+          "type": "promise",
+          "settings": {
+            "title": "Korean formulated",
+            "text": "Developed with Seoul's skincare expertise for lightweight textures that layer without pilling."
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "title": "Nothing hidden",
+            "text": "Every product lists its full ingredients, so you always know what you're putting on your skin."
+          }
+        },
+        {
+          "type": "promise",
+          "settings": {
+            "title": "Clear directions",
+            "text": "Morning, night, or both: each serum tells you exactly when and how to use it."
+          }
+        }
+      ]
+    }
+  ],
+  "tag": "div"
+}
+{% endschema %}

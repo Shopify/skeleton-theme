@@ -84,52 +84,8 @@
     "search": "Search"
   },
   "home": {
-    "hero": {
-      "eyebrow": "Korean formulated skincare",
-      "title": "Illuminate your skin's true potential.",
-      "text": "Serums built on powerful, clearly labelled actives. Brighten, hydrate, and rejuvenate with formulas that fit seamlessly into your routine.",
-      "primary_cta": "Shop serums",
-      "quiz_cta": "Find your serum"
-    },
-    "concerns": {
-      "label": "Shop by concern",
-      "hydration": "Dehydration",
-      "brightening": "Dullness & dark spots",
-      "pores": "Pores & breakouts",
-      "ageing": "Fine lines",
-      "barrier": "Barrier repair",
-      "dullness": "Uneven texture",
-      "tone": "Uneven tone"
-    },
     "collection": {
-      "eyebrow": "The serums",
-      "title": "One active. One job. Visible results.",
       "view_all": "View all"
-    },
-    "story": {
-      "shape_label": "About our brand",
-      "eyebrow": "Glow Verve",
-      "title": "Premium skincare, meticulously formulated.",
-      "body": "Glow Verve is a premium skincare brand dedicated to illuminating your skin's true potential. Our serums are formulated with powerful, active ingredients designed to deliver visible results. Whether you're looking to brighten, hydrate, or rejuvenate, Glow Verve offers tailored solutions that fit seamlessly into your skincare routine.",
-      "pillar_powerful": "Powerful",
-      "pillar_potential": "Potential",
-      "pillar_hydrate": "Hydrate",
-      "pillar_empower": "Empower",
-      "pillar_rejuvenate": "Rejuvenate",
-      "pillar_natural": "Natural"
-    },
-    "regimen": {
-      "eyebrow": "Your routine",
-      "title": "Four steps to a considered glow.",
-      "body": "Apply serums from thinnest to thickest texture, after cleansing and toning and before your moisturizer.",
-      "step_1_title": "Cleanse",
-      "step_1_body": "Start with a clean, toned face so actives can absorb evenly.",
-      "step_2_title": "Treat",
-      "step_2_body": "Press 2–3 drops of your Glow Verve serum onto face and neck.",
-      "step_3_title": "Moisturize",
-      "step_3_body": "Seal in hydration with a barrier-supporting cream.",
-      "step_4_title": "Protect",
-      "step_4_body": "Every morning, finish with a high-protection SPF."
     },
     "pairing": {
       "title": "Pairing guide",
@@ -157,17 +113,7 @@
       "clarifying": "Whitening + Clarifying",
       "clarifying_note": "Apply before moisturizer; follow with sunscreen in the daytime."
     },
-    "promises": {
-      "origin_title": "Korean formulated",
-      "origin_body": "Developed with Seoul's skincare expertise for lightweight textures that layer without pilling.",
-      "inci_title": "Nothing hidden",
-      "inci_body": "Every product lists its full ingredients, so you always know what you're putting on your skin.",
-      "directions_title": "Clear directions",
-      "directions_body": "Morning, night, or both: each serum tells you exactly when and how to use it."
-    },
     "showcase": {
-      "eyebrow": "The formulas",
-      "title": "Find the one your skin is asking for.",
       "tabs_label": "Serums",
       "info": "Overview, directions & caution"
     }
@@ -237,9 +183,6 @@
     "patch_test": "Sensitive skin: patch test each serum before adding it to your routine."
   },
   "quiz": {
-    "eyebrow": "The Skin Lab",
-    "title": "Mix your formula in three drops.",
-    "intro": "Pick an element for each question. Watch your flask fill, then we'll brew the serums that work best together for your skin.",
     "q_concern": "What's your main skin goal?",
     "concern_hydration": "Deep hydration",
     "concern_brightness": "Brighter, more radiant skin",
@@ -287,7 +230,8 @@
     "lab_targets": "Targets [concern]",
     "lab_support": "Adds hydration and barrier support",
     "lab_compatible": "Lab check: every serum in this formula can be layered together.",
-    "result_eyebrow": "Formula ready"
+    "result_eyebrow": "Formula ready",
+    "shop_all": "Shop all serums"
   },
   "personal": {
     "recently_viewed": "Recently viewed"

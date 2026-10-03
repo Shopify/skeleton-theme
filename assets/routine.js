@@ -204,10 +204,9 @@
 
   /* ---------- the Skin Lab (quiz) ---------- */
 
-  const quiz = document.querySelector("[data-quiz]");
   let concernLabel = () => "";
 
-  if (quiz) {
+  function initQuiz(quiz) {
     const form = quiz.querySelector("[data-quiz-form]");
     const steps = [...quiz.querySelectorAll("[data-quiz-step]")];
     const back = quiz.querySelector("[data-quiz-back]");
@@ -472,7 +471,7 @@
       status.textContent = labels.labelEmpty;
     });
 
-    document.addEventListener("click", (event) => {
+    quiz.addEventListener("click", (event) => {
       if (!event.target.closest("[data-quiz-restart]")) return;
       form.reset();
       result.hidden = true;
@@ -521,6 +520,8 @@
     quiz.hidden = false;
   }
 
+  document.querySelectorAll("[data-quiz]").forEach(initQuiz);
+
   /* ---------- "Your match" badges ---------- */
 
   function personalize() {
@@ -549,12 +550,24 @@
     write(KEYS.recent, recent);
   }
 
-  document.querySelectorAll("[data-recently-viewed]").forEach((section) => {
-    const handles = recent.filter((handle) => handle !== currentHandle).slice(0, 4);
-    if (!handles.length) return;
-    section
-      .querySelector("[data-recently-list]")
-      .replaceChildren(...handles.map((handle) => miniCard(byHandle.get(handle))));
-    section.hidden = false;
+  function renderRecent(root) {
+    root.querySelectorAll("[data-recently-viewed]").forEach((section) => {
+      const handles = recent.filter((handle) => handle !== currentHandle).slice(0, 4);
+      if (!handles.length) return;
+      section
+        .querySelector("[data-recently-list]")
+        .replaceChildren(...handles.map((handle) => miniCard(byHandle.get(handle))));
+      section.hidden = false;
+    });
+  }
+
+  renderRecent(document);
+
+  /* Theme editor: set up a home page section again when it's added or re-rendered. */
+  document.addEventListener("shopify:section:load", (event) => {
+    event.target.querySelectorAll("[data-quiz]").forEach(initQuiz);
+    renderRecent(event.target);
+    personalize();
+    syncToggles();
   });
 })();

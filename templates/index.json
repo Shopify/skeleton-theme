@@ -1,0 +1,260 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "text_tone": "light",
+        "eyebrow": "Korean formulated skincare",
+        "heading": "Illuminate your skin's true potential.",
+        "text": "Serums built on powerful, clearly labelled actives. Brighten, hydrate, and rejuvenate with formulas that fit seamlessly into your routine.",
+        "primary_label": "Shop serums",
+        "secondary_label": "Find your serum"
+      }
+    },
+    "concerns": {
+      "type": "concerns",
+      "settings": {
+        "heading": "Shop by concern"
+      },
+      "blocks": {
+        "concern_1": {
+          "type": "concern",
+          "settings": {
+            "label": "Dehydration",
+            "query": "hyaluronic"
+          }
+        },
+        "concern_2": {
+          "type": "concern",
+          "settings": {
+            "label": "Dullness & dark spots",
+            "query": "vitamin c"
+          }
+        },
+        "concern_3": {
+          "type": "concern",
+          "settings": {
+            "label": "Pores & breakouts",
+            "query": "niacinamide"
+          }
+        },
+        "concern_4": {
+          "type": "concern",
+          "settings": {
+            "label": "Fine lines",
+            "query": "retinol"
+          }
+        },
+        "concern_5": {
+          "type": "concern",
+          "settings": {
+            "label": "Barrier repair",
+            "query": "barrier"
+          }
+        },
+        "concern_6": {
+          "type": "concern",
+          "settings": {
+            "label": "Uneven tone",
+            "query": "clarifying"
+          }
+        },
+        "concern_7": {
+          "type": "concern",
+          "settings": {
+            "label": "Uneven texture",
+            "query": "rice"
+          }
+        }
+      },
+      "block_order": [
+        "concern_1",
+        "concern_2",
+        "concern_3",
+        "concern_4",
+        "concern_5",
+        "concern_6",
+        "concern_7"
+      ]
+    },
+    "product-showcase": {
+      "type": "product-showcase",
+      "settings": {
+        "eyebrow": "The formulas",
+        "heading": "Find the one your skin is asking for.",
+        "limit": 6
+      }
+    },
+    "featured-collection": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "The serums",
+        "heading": "One active. One job. Visible results.",
+        "limit": 8,
+        "show_view_all": true
+      }
+    },
+    "skin-lab": {
+      "type": "skin-lab",
+      "settings": {
+        "eyebrow": "The Skin Lab",
+        "heading": "Mix your formula in three drops.",
+        "intro": "Pick an element for each question. Watch your flask fill, then we'll brew the serums that work best together for your skin.",
+        "tone": "inverse"
+      }
+    },
+    "brand-story": {
+      "type": "brand-story",
+      "settings": {
+        "shape_label": "About our brand",
+        "eyebrow": "Glow Verve",
+        "heading": "Premium skincare, meticulously formulated.",
+        "body": "Glow Verve is a premium skincare brand dedicated to illuminating your skin's true potential. Our serums are formulated with powerful, active ingredients designed to deliver visible results. Whether you're looking to brighten, hydrate, or rejuvenate, Glow Verve offers tailored solutions that fit seamlessly into your skincare routine.",
+        "tone": "surface"
+      },
+      "blocks": {
+        "pillar_1": {
+          "type": "pillar",
+          "settings": {
+            "text": "Powerful"
+          }
+        },
+        "pillar_2": {
+          "type": "pillar",
+          "settings": {
+            "text": "Potential"
+          }
+        },
+        "pillar_3": {
+          "type": "pillar",
+          "settings": {
+            "text": "Hydrate"
+          }
+        },
+        "pillar_4": {
+          "type": "pillar",
+          "settings": {
+            "text": "Empower"
+          }
+        },
+        "pillar_5": {
+          "type": "pillar",
+          "settings": {
+            "text": "Rejuvenate"
+          }
+        },
+        "pillar_6": {
+          "type": "pillar",
+          "settings": {
+            "text": "Natural"
+          }
+        }
+      },
+      "block_order": [
+        "pillar_1",
+        "pillar_2",
+        "pillar_3",
+        "pillar_4",
+        "pillar_5",
+        "pillar_6"
+      ]
+    },
+    "regimen": {
+      "type": "regimen",
+      "settings": {
+        "eyebrow": "Your routine",
+        "heading": "Four steps to a considered glow.",
+        "body": "Apply serums from thinnest to thickest texture, after cleansing and toning and before your moisturizer.",
+        "show_pairing": true,
+        "tone": "default"
+      },
+      "blocks": {
+        "step_1": {
+          "type": "step",
+          "settings": {
+            "title": "Cleanse",
+            "text": "Start with a clean, toned face so actives can absorb evenly."
+          }
+        },
+        "step_2": {
+          "type": "step",
+          "settings": {
+            "title": "Treat",
+            "text": "Press 2–3 drops of your Glow Verve serum onto face and neck."
+          }
+        },
+        "step_3": {
+          "type": "step",
+          "settings": {
+            "title": "Moisturize",
+            "text": "Seal in hydration with a barrier-supporting cream."
+          }
+        },
+        "step_4": {
+          "type": "step",
+          "settings": {
+            "title": "Protect",
+            "text": "Every morning, finish with a high-protection SPF."
+          }
+        }
+      },
+      "block_order": [
+        "step_1",
+        "step_2",
+        "step_3",
+        "step_4"
+      ]
+    },
+    "recently-viewed": {
+      "type": "recently-viewed",
+      "settings": {
+        "heading": "Recently viewed"
+      }
+    },
+    "promises": {
+      "type": "promises",
+      "settings": {
+        "tone": "inverse"
+      },
+      "blocks": {
+        "promise_1": {
+          "type": "promise",
+          "settings": {
+            "title": "Korean formulated",
+            "text": "Developed with Seoul's skincare expertise for lightweight textures that layer without pilling."
+          }
+        },
+        "promise_2": {
+          "type": "promise",
+          "settings": {
+            "title": "Nothing hidden",
+            "text": "Every product lists its full ingredients, so you always know what you're putting on your skin."
+          }
+        },
+        "promise_3": {
+          "type": "promise",
+          "settings": {
+            "title": "Clear directions",
+            "text": "Morning, night, or both: each serum tells you exactly when and how to use it."
+          }
+        }
+      },
+      "block_order": [
+        "promise_1",
+        "promise_2",
+        "promise_3"
+      ]
+    }
+  },
+  "order": [
+    "hero",
+    "concerns",
+    "product-showcase",
+    "featured-collection",
+    "skin-lab",
+    "brand-story",
+    "regimen",
+    "recently-viewed",
+    "promises"
+  ]
+}

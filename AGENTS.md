@@ -11,8 +11,11 @@ file. The code is the source of truth.
   unpublishable ("missing required file"). Do not use the preview
   `{% block %}` or `{% partial %}` tags. Local Theme Check may accept tags the
   store does not, so passing Theme Check is not proof a file will upload.
-- **No sections:** no `sections/` folder, no `{% section %}`/`{% sections %}`
-  tags, no JSON templates.
+- **Sections on the home page only:** `templates/index.json` composes the
+  home page from `sections/*.liquid` so the merchant can reorder, hide, add
+  and edit them in the theme editor. Every other page stays a direct
+  `templates/*.liquid` template: don't add JSON templates, section groups or
+  `{% section %}`/`{% sections %}` tags elsewhere.
 - **No Liquid-embedded assets:** no `{% stylesheet %}`, no `{% javascript %}`.
   All CSS and JavaScript live in `assets/`.
 - **Direct Liquid templates:** templates render page content from snippets
@@ -39,15 +42,32 @@ file. The code is the source of truth.
 layout/theme.liquid    → announcement-bar + .block-container (header) + <main> content_for_layout + .block-container (footer) + cart-drawer
 layout/password.liquid → <main> content_for_layout
 templates/*.liquid     → <section class="block-container"> → snippets / inline HTML
+templates/index.json   → sections/*.liquid → <section class="block-container"> → snippets / inline HTML
 ```
 
 ## Merchant settings
 
 Without sections or theme blocks, every merchant-editable control is a theme
 setting in `config/settings_schema.json` (Brand, Typography, Layout, Colors,
-Announcement bar, Header, Home page, Footer). Snippets read them from the
+Announcement bar, Header, Footer). Snippets read them from the
 global `settings` object. Add new controls there rather than hardcoding
 content.
+
+## Home page sections
+
+- Each section wraps its markup in `<section class="block-container">` (tone
+  sections offer a `tone` select that adds `tone-surface` / `tone-inverse`)
+  and ends with a `{% schema %}` that has a `presets` entry so it appears
+  under "Add section". Schema labels are `t:sections.<name>.*` keys in
+  `locales/en.default.schema.json`.
+- Sections start with a `{% comment %}` header (Theme Check only allows
+  `{% doc %}` in snippets and blocks).
+- Merchant text comes from section settings and blocks; output it with
+  `| escape`. Fixed UI copy (quiz questions, pairing guide, buttons) still
+  uses `{{ 'key' | t }}`. Section-only CSS (`skin-lab.css`, `showcase.css`)
+  is loaded by the section that needs it.
+- Scripts initialise sections on load and again on the theme editor's
+  `shopify:section:load` event, so a re-rendered section keeps working.
 
 ## Snippets
 
@@ -86,10 +106,10 @@ errors in the Liquid instead of adding configuration exceptions.
   the whole words "AM" and "PM". Each card is tinted with its Skin Lab
   element colour (first `custom.concerns` value; the colour map lives in
   `snippets/product-card.liquid` and must match the orbs in
-  `templates/index.liquid`). The card title link is stretched over the card;
+  `sections/skin-lab.liquid`). The card title link is stretched over the card;
   interactive controls inside it need `z-index: 2`.
 - The home page quiz is "The Skin Lab" (`assets/skin-lab.css`, loaded only by
-  `templates/index.liquid`): answers are element orbs orbiting a flask that
+  `sections/skin-lab.liquid`): answers are element orbs orbiting a flask that
   fills with each answer's colour, modelled on the mazenonline magnetic
   ingredients lab. Orb colours are fixed design tokens in the template, not
   brand settings. Tap/click pours an orb in immediately; keyboard users move
@@ -109,7 +129,9 @@ errors in the Liquid instead of adding configuration exceptions.
 ## Theme map
 
 ```
-templates/            *.liquid page structure (no JSON templates)
+templates/            *.liquid page structure; index.json (home page) is the only JSON template
+sections/             home page only: hero, concerns, product-showcase, featured-collection,
+                      skin-lab, brand-story, regimen, recently-viewed, promises
 layout/               theme.liquid document shell, password.liquid
 snippets/             announcement-bar, header, footer, cart-drawer, cart-drawer-content,
                       collection-filters, product-grid, product-card, product-showcase, product-catalog-json,

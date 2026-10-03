@@ -1,75 +1,13 @@
+{% comment %}
+  "The Skin Lab": a three-question quiz where element orbs pour into a
+  flask, then recommends serums that layer well together. Driven by
+  assets/routine.js; orb colours are fixed design tokens. Only one per page
+  (the hero's quiz button links to #quiz).
+{% endcomment %}
+
 {{ 'skin-lab.css' | asset_url | stylesheet_tag }}
-{{ 'showcase.css' | asset_url | stylesheet_tag }}
 
-<section class="block-container block-container--flush">
-  <div
-    class="hero full-width hero--{{ settings.hero_text_tone }}{% if settings.hero_image %} hero--has-image{% endif %}"
-  >
-    {%- if settings.hero_image -%}
-      <div class="hero__media">
-        {{
-          settings.hero_image
-          | image_url: width: 2400
-          | image_tag:
-            loading: 'eager',
-            fetchpriority: 'high',
-            widths: '750, 1100, 1500, 1800, 2400',
-            sizes: '100vw',
-            alt: settings.hero_image.alt
-        }}
-      </div>
-    {%- elsif settings.logo_mark -%}
-      <div class="hero__mark" aria-hidden="true">
-        {{ settings.logo_mark | image_url: width: 900 | image_tag: alt: '', loading: 'eager' }}
-      </div>
-    {%- endif -%}
-
-    <div class="hero__content">
-      <p class="eyebrow">{{ 'home.hero.eyebrow' | t }}</p>
-      <h1 class="hero__title">{{ 'home.hero.title' | t }}</h1>
-      <p class="hero__text">{{ 'home.hero.text' | t }}</p>
-      <div class="button-row">
-        <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'home.hero.primary_cta' | t }}</a>
-        <a class="button button--outline" href="#quiz">{{ 'home.hero.quiz_cta' | t }}</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="block-container concerns-strip">
-  <nav class="concerns" aria-label="{{ 'home.concerns.label' | t }}">
-    <p class="concerns__label">{{ 'home.concerns.label' | t }}</p>
-    <ul role="list">
-      <li><a href="{{ routes.search_url }}?q=hyaluronic&type=product">{{ 'home.concerns.hydration' | t }}</a></li>
-      <li><a href="{{ routes.search_url }}?q=vitamin+c&type=product">{{ 'home.concerns.brightening' | t }}</a></li>
-      <li><a href="{{ routes.search_url }}?q=niacinamide&type=product">{{ 'home.concerns.pores' | t }}</a></li>
-      <li><a href="{{ routes.search_url }}?q=retinol&type=product">{{ 'home.concerns.ageing' | t }}</a></li>
-      <li><a href="{{ routes.search_url }}?q=barrier&type=product">{{ 'home.concerns.barrier' | t }}</a></li>
-      <li><a href="{{ routes.search_url }}?q=clarifying&type=product">{{ 'home.concerns.tone' | t }}</a></li>
-      <li><a href="{{ routes.search_url }}?q=rice&type=product">{{ 'home.concerns.dullness' | t }}</a></li>
-    </ul>
-  </nav>
-</section>
-
-<section class="block-container">
-  {% render 'product-showcase', collection: settings.home_collection, limit: 6 %}
-</section>
-
-<section class="block-container">
-  {%- liquid
-    assign grid_eyebrow = 'home.collection.eyebrow' | t
-    assign grid_heading = 'home.collection.title' | t
-  -%}
-  {% render 'product-grid',
-    collection: settings.home_collection,
-    limit: 8,
-    eyebrow: grid_eyebrow,
-    heading: grid_heading,
-    show_view_all: true
-  %}
-</section>
-
-<section class="block-container tone-inverse skin-lab-section" id="quiz">
+<section class="block-container skin-lab-section{%- case section.settings.tone -%}{%- when 'surface' -%} tone-surface{%- when 'inverse' -%} tone-inverse{%- endcase -%}" id="quiz">
   <div
     class="skin-lab"
     data-quiz
@@ -83,9 +21,13 @@
     hidden
   >
     <div class="skin-lab__intro">
-      <p class="eyebrow">{{ 'quiz.eyebrow' | t }}</p>
-      <h2 class="section-title">{{ 'quiz.title' | t }}</h2>
-      <p>{{ 'quiz.intro' | t }}</p>
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="section-title">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.intro != blank -%}
+        <p>{{ section.settings.intro | escape }}</p>
+      {%- endif -%}
     </div>
 
     <div class="skin-lab__bench">
@@ -266,143 +208,62 @@
   </div>
   <noscript>
     <div class="skin-lab__intro">
-      <h2 class="section-title">{{ 'quiz.title' | t }}</h2>
+      <h2 class="section-title">{{ section.settings.heading | escape }}</h2>
       <p>{{ 'quiz.no_script' | t }}</p>
-      <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'home.hero.primary_cta' | t }}</a>
+      <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'quiz.shop_all' | t }}</a>
     </div>
   </noscript>
 </section>
 
-<section class="block-container tone-surface">
-  <div class="brand-story">
-    <div class="clover" aria-hidden="true">
-      <span class="clover__label">{{ 'home.story.shape_label' | t }}</span>
-    </div>
-    <div class="brand-story__copy">
-      <p class="eyebrow">{{ 'home.story.eyebrow' | t }}</p>
-      <h2 class="section-title">{{ 'home.story.title' | t }}</h2>
-      <p>{{ 'home.story.body' | t }}</p>
-      <ul class="pillars" role="list">
-        <li>{{ 'home.story.pillar_powerful' | t }}</li>
-        <li>{{ 'home.story.pillar_potential' | t }}</li>
-        <li>{{ 'home.story.pillar_hydrate' | t }}</li>
-        <li>{{ 'home.story.pillar_empower' | t }}</li>
-        <li>{{ 'home.story.pillar_rejuvenate' | t }}</li>
-        <li>{{ 'home.story.pillar_natural' | t }}</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section class="block-container">
-  <div class="regimen" id="regimen">
-    <div class="regimen__intro">
-      <p class="eyebrow">{{ 'home.regimen.eyebrow' | t }}</p>
-      <h2 class="section-title">{{ 'home.regimen.title' | t }}</h2>
-      <p>{{ 'home.regimen.body' | t }}</p>
-    </div>
-
-    <ol class="regimen__steps" role="list">
-      <li>
-        <span class="regimen__number">01</span>
-        <h3>{{ 'home.regimen.step_1_title' | t }}</h3>
-        <p>{{ 'home.regimen.step_1_body' | t }}</p>
-      </li>
-      <li>
-        <span class="regimen__number">02</span>
-        <h3>{{ 'home.regimen.step_2_title' | t }}</h3>
-        <p>{{ 'home.regimen.step_2_body' | t }}</p>
-      </li>
-      <li>
-        <span class="regimen__number">03</span>
-        <h3>{{ 'home.regimen.step_3_title' | t }}</h3>
-        <p>{{ 'home.regimen.step_3_body' | t }}</p>
-      </li>
-      <li>
-        <span class="regimen__number">04</span>
-        <h3>{{ 'home.regimen.step_4_title' | t }}</h3>
-        <p>{{ 'home.regimen.step_4_body' | t }}</p>
-      </li>
-    </ol>
-
-    <div class="pairing">
-      <h3 class="pairing__title">{{ 'home.pairing.title' | t }}</h3>
-      <table class="pairing__table">
-        <thead>
-          <tr>
-            <th scope="col">{{ 'home.pairing.col_serum' | t }}</th>
-            <th scope="col">{{ 'home.pairing.col_when' | t }}</th>
-            <th scope="col">{{ 'home.pairing.col_avoid' | t }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">{{ 'home.pairing.vitamin_c' | t }}</th>
-            <td>{{ 'home.pairing.am' | t }}</td>
-            <td>{{ 'home.pairing.vitamin_c_avoid' | t }}</td>
-          </tr>
-          <tr>
-            <th scope="row">{{ 'home.pairing.retinol' | t }}</th>
-            <td>{{ 'home.pairing.pm' | t }}</td>
-            <td>{{ 'home.pairing.retinol_avoid' | t }}</td>
-          </tr>
-          <tr>
-            <th scope="row">{{ 'home.pairing.niacinamide' | t }}</th>
-            <td>{{ 'home.pairing.am_pm' | t }}</td>
-            <td>{{ 'home.pairing.niacinamide_avoid' | t }}</td>
-          </tr>
-          <tr>
-            <th scope="row">{{ 'home.pairing.hyaluronic' | t }}</th>
-            <td>{{ 'home.pairing.am_pm' | t }}</td>
-            <td>{{ 'home.pairing.none' | t }}</td>
-          </tr>
-          <tr>
-            <th scope="row">{{ 'home.pairing.snail' | t }}</th>
-            <td>{{ 'home.pairing.am_pm' | t }}</td>
-            <td>{{ 'home.pairing.snail_avoid' | t }}</td>
-          </tr>
-          <tr>
-            <th scope="row">{{ 'home.pairing.rice' | t }}</th>
-            <td>{{ 'home.pairing.am_pm' | t }}</td>
-            <td>{{ 'home.pairing.rice_note' | t }}</td>
-          </tr>
-          <tr>
-            <th scope="row">{{ 'home.pairing.barrier' | t }}</th>
-            <td>{{ 'home.pairing.am_pm' | t }}</td>
-            <td>{{ 'home.pairing.barrier_note' | t }}</td>
-          </tr>
-          <tr>
-            <th scope="row">{{ 'home.pairing.clarifying' | t }}</th>
-            <td>{{ 'home.pairing.am_pm' | t }}</td>
-            <td>{{ 'home.pairing.clarifying_note' | t }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p class="pairing__note">{{ 'home.pairing.note' | t }}</p>
-    </div>
-  </div>
-</section>
-
-<section class="block-container" data-recently-viewed hidden>
-  <div class="personal__header">
-    <h2 class="section-title">{{ 'personal.recently_viewed' | t }}</h2>
-  </div>
-  <ul class="mini-grid" role="list" data-recently-list></ul>
-</section>
-
-<section class="block-container tone-inverse">
-  <ul class="promises" role="list">
-    <li>
-      <h3>{{ 'home.promises.origin_title' | t }}</h3>
-      <p>{{ 'home.promises.origin_body' | t }}</p>
-    </li>
-    <li>
-      <h3>{{ 'home.promises.inci_title' | t }}</h3>
-      <p>{{ 'home.promises.inci_body' | t }}</p>
-    </li>
-    <li>
-      <h3>{{ 'home.promises.directions_title' | t }}</h3>
-      <p>{{ 'home.promises.directions_body' | t }}</p>
-    </li>
-  </ul>
-</section>
+{% schema %}
+{
+  "name": "t:sections.skin-lab.name",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.skin-lab.settings.eyebrow",
+      "default": "The Skin Lab"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.skin-lab.settings.heading",
+      "default": "Mix your formula in three drops."
+    },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "t:sections.skin-lab.settings.intro",
+      "default": "Pick an element for each question. Watch your flask fill, then we'll brew the serums that work best together for your skin."
+    },
+    {
+      "type": "select",
+      "id": "tone",
+      "label": "t:sections.skin-lab.settings.tone",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.skin-lab.tone.default"
+        },
+        {
+          "value": "surface",
+          "label": "t:sections.skin-lab.tone.surface"
+        },
+        {
+          "value": "inverse",
+          "label": "t:sections.skin-lab.tone.inverse"
+        }
+      ],
+      "default": "inverse"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.skin-lab.name"
+    }
+  ],
+  "tag": "div"
+}
+{% endschema %}

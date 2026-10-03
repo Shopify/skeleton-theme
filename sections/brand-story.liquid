@@ -1,0 +1,123 @@
+{% comment %}
+  Brand story: the clover shape, eyebrow, heading, text and a list of brand
+  words (blocks).
+{% endcomment %}
+
+<section class="block-container{%- case section.settings.tone -%}{%- when 'surface' -%} tone-surface{%- when 'inverse' -%} tone-inverse{%- endcase -%}">
+  <div class="brand-story">
+    <div class="clover" aria-hidden="true">
+      <span class="clover__label">{{ section.settings.shape_label | escape }}</span>
+    </div>
+    <div class="brand-story__copy">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="section-title">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+      {%- if section.settings.body != blank -%}
+        <p>{{ section.settings.body | escape | newline_to_br }}</p>
+      {%- endif -%}
+      {%- if section.blocks.size > 0 -%}
+        <ul class="pillars" role="list">
+          {%- for block in section.blocks -%}
+            <li {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "t:sections.brand-story.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "shape_label",
+      "label": "t:sections.brand-story.settings.shape_label",
+      "default": "About our brand"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:sections.brand-story.settings.eyebrow",
+      "default": "Glow Verve"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.brand-story.settings.heading",
+      "default": "Premium skincare, meticulously formulated."
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "t:sections.brand-story.settings.body",
+      "default": "Glow Verve is a premium skincare brand dedicated to illuminating your skin's true potential. Our serums are formulated with powerful, active ingredients designed to deliver visible results. Whether you're looking to brighten, hydrate, or rejuvenate, Glow Verve offers tailored solutions that fit seamlessly into your skincare routine."
+    },
+    {
+      "type": "select",
+      "id": "tone",
+      "label": "t:sections.brand-story.settings.tone",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:sections.brand-story.tone.default"
+        },
+        {
+          "value": "surface",
+          "label": "t:sections.brand-story.tone.surface"
+        },
+        {
+          "value": "inverse",
+          "label": "t:sections.brand-story.tone.inverse"
+        }
+      ],
+      "default": "surface"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "pillar",
+      "name": "t:sections.brand-story.blocks.pillar.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:sections.brand-story.blocks.pillar.text",
+          "default": "Powerful"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "t:sections.brand-story.name",
+      "blocks": [
+        {
+          "type": "pillar",
+          "settings": {
+            "text": "Powerful"
+          }
+        },
+        {
+          "type": "pillar",
+          "settings": {
+            "text": "Potential"
+          }
+        },
+        {
+          "type": "pillar",
+          "settings": {
+            "text": "Hydrate"
+          }
+        }
+      ]
+    }
+  ],
+  "tag": "div"
+}
+{% endschema %}

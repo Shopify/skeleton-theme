@@ -10,7 +10,7 @@
   @param {boolean} [show_view_all] - Show a "View all" link to the full catalogue.
 
   @example
-  {% render 'product-grid', collection: settings.home_collection, heading: heading, limit: 4 %}
+  {% render 'product-grid', collection: section.settings.collection, heading: heading, limit: 4 %}
 {% enddoc %}
 
 {%- liquid
@@ -24,10 +24,10 @@
     <div class="product-grid-block__header">
       <div>
         {%- if eyebrow != blank -%}
-          <p class="eyebrow">{{ eyebrow }}</p>
+          <p class="eyebrow">{{ eyebrow | escape }}</p>
         {%- endif -%}
         {%- if heading != blank -%}
-          <h2 class="section-title">{{ heading }}</h2>
+          <h2 class="section-title">{{ heading | escape }}</h2>
         {%- endif -%}
       </div>
       {%- if show_view_all -%}

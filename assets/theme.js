@@ -352,7 +352,7 @@ document.addEventListener("click", (event) => {
  * Home page product showcase: the serum links become tabs that swap the
  * colour panel in place. Without this script each link opens its product.
  */
-document.querySelectorAll("[data-showcase]").forEach((showcase) => {
+const initShowcase = (showcase) => {
   const list = showcase.querySelector("[data-showcase-tabs]");
   const tabs = [...showcase.querySelectorAll("[data-showcase-tab]")];
   const panels = [...showcase.querySelectorAll("[data-showcase-panel]")];
@@ -414,4 +414,11 @@ document.querySelectorAll("[data-showcase]").forEach((showcase) => {
   });
 
   select(0);
+};
+
+document.querySelectorAll("[data-showcase]").forEach(initShowcase);
+
+/* Theme editor: set up a re-rendered or newly added showcase section. */
+document.addEventListener("shopify:section:load", (event) => {
+  event.target.querySelectorAll("[data-showcase]").forEach(initShowcase);
 });

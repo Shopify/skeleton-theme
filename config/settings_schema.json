@@ -189,39 +189,6 @@
     ]
   },
   {
-    "name": "t:general.home_page",
-    "settings": [
-      {
-        "type": "image_picker",
-        "id": "hero_image",
-        "label": "t:labels.hero_image",
-        "info": "t:info.hero_image"
-      },
-      {
-        "type": "select",
-        "id": "hero_text_tone",
-        "label": "t:labels.text_tone",
-        "options": [
-          {
-            "value": "light",
-            "label": "t:options.tone.light"
-          },
-          {
-            "value": "dark",
-            "label": "t:options.tone.dark"
-          }
-        ],
-        "default": "light"
-      },
-      {
-        "type": "collection",
-        "id": "home_collection",
-        "label": "t:labels.home_collection",
-        "info": "t:info.home_collection"
-      }
-    ]
-  },
-  {
     "name": "t:general.footer",
     "settings": [
       {

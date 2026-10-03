@@ -11,9 +11,11 @@
 
   @param {collection} [collection] - Collection to show. Default: all products.
   @param {number} [limit] - Maximum number of serums. Default: 6.
+  @param {string} [eyebrow] - Small label above the heading.
+  @param {string} [heading] - Section heading.
 
   @example
-  {% render 'product-showcase', collection: settings.home_collection, limit: 6 %}
+  {% render 'product-showcase', collection: section.settings.collection, limit: 6, heading: section.settings.heading %}
 {% enddoc %}
 
 {%- liquid
@@ -24,8 +26,12 @@
 <div class="showcase" data-showcase>
   <div class="showcase__header">
     <div>
-      <p class="eyebrow">{{ 'home.showcase.eyebrow' | t }}</p>
-      <h2 class="section-title">{{ 'home.showcase.title' | t }}</h2>
+      {%- if eyebrow != blank -%}
+        <p class="eyebrow">{{ eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if heading != blank -%}
+        <h2 class="section-title">{{ heading | escape }}</h2>
+      {%- endif -%}
     </div>
 
     <nav class="showcase__tabs" aria-label="{{ 'home.showcase.tabs_label' | t }}" data-showcase-tabs>
