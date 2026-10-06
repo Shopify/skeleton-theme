@@ -1,13 +1,6 @@
 # MVP 
 
 
-Product variant swatches are not keyboard-friendly
-
-In snippets/variant-selector.liquid, the radio inputs are visually hidden using opacity: 0 and pointer-events: none.
-
-The visible label has no focus-visible styling, so keyboard users can tab to the hidden input but won’t get a clear visual cue.
-
-This should be updated to keep the control focus visible while preserving the custom appearance.
 
 Mobile navigation needs a bit more keyboard polish
 
@@ -18,7 +11,6 @@ But when the menu is open, there is no visible focus treatment on the summary tr
 
 
 - better styles overall
-- accessability
 
 - Go through all templates again
 - Clean up all code - particularly cart and pdp js

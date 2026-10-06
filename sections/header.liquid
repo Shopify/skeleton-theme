@@ -86,6 +86,13 @@
     navMenu.classList.add('anim-ready');
   }
 
+  function closeMenu() {
+    if (!navMenu.classList.contains('open')) return;
+
+    navMenu.classList.remove('open');
+    updateMenuAccessibility();
+  }
+
   if (navToggle && navMenu) {
     updateMenuAccessibility();
 
@@ -95,10 +102,16 @@
       document.body.classList.toggle('overflow-hidden', isOpen && mobileQuery.matches);
     });
 
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && mobileQuery.matches && navMenu.classList.contains('open')) {
+        closeMenu();
+        navToggle.focus();
+      }
+    });
+
     siteHeader?.addEventListener('click', function (event) {
       if (event.target === siteHeader && navMenu.classList.contains('open')) {
-        navMenu.classList.remove('open');
-        updateMenuAccessibility();
+        closeMenu();
       }
     });
 
