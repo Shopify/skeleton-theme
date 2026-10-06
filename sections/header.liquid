@@ -8,7 +8,21 @@
 
 <header class="site-header">
   <{{ head_tag }} class="site-header-title">
-    {{ shop.name | link_to: routes.root_url }}
+    {% if settings.logo != blank %}
+      {% assign logo_width = settings.logo_width | default: 240 %}
+      {% assign logo_image_width = logo_width | times: 2 %}
+      {% assign sizes = logo_width | append: 'px' %}
+
+      <a href="{{ routes.root_url }}" aria-label="{{ shop.name }}" class="site-header-logo-link">
+        {{
+          settings.logo
+          | image_url: width: logo_image_width
+          | image_tag: alt: shop.name, width: logo_width, class: 'site-header-logo', loading: 'eager', sizes: sizes
+        }}
+      </a>
+    {% else %}
+      {{ shop.name | link_to: routes.root_url }}
+    {% endif %}
   </{{ head_tag }}>
 
   <nav id="site-nav" class="site-nav" aria-label="{{ 'general.main_navigation' | t }}" aria-hidden="false">

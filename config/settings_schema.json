@@ -13,7 +13,23 @@
       {
         "type": "image_picker",
         "id": "favicon",
-        "label": "t:general.favicon_image"
+        "label": "t:general.favicon_image",
+        "info": "t:general.favicon_image_info"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "t:general.logo_image"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "min": 40,
+        "max": 500,
+        "step": 10,
+        "unit": "px",
+        "label": "t:labels.logo_width",
+        "default": 240
       }
     ]
   },
