@@ -1,6 +1,7 @@
 # MVP 
 
-
+- Add logo
+- Color schemes?
 
 - better styles overall
 
@@ -8,7 +9,6 @@
 - Clean up all code - particularly cart and pdp js
 - html validation
 - performance
-- Review all Dawn settings & sections to see what we might want
 
 # Templates https://shopify.dev/docs/storefronts/themes/architecture/templates
 

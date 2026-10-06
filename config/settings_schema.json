@@ -8,17 +8,12 @@
     "theme_support_url": "https://support.shopify.com/"
   },
   {
-    "name": "t:general.typography",
+    "name": "t:general.branding",
     "settings": [
       {
-        "type": "header",
-        "content": "t:general.fonts"
-      },
-      {
-        "type": "font_picker",
-        "id": "type_primary_font",
-        "default": "assistant_n4",
-        "label": "t:general.primary"
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "t:general.favicon_image"
       }
     ]
   },
@@ -54,6 +49,21 @@
     ]
   },
   {
+    "name": "t:general.typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "t:general.fonts"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_primary_font",
+        "default": "assistant_n4",
+        "label": "t:general.primary"
+      }
+    ]
+  },
+  {
     "name": "t:general.colors",
     "settings": [
       {
@@ -74,6 +84,11 @@
         "default": "#B8B8B8",
         "label": "t:labels.border_color"
       },
+    ]
+  },
+  {
+    "name": "t:general.styles",
+    "settings": [
       {
         "type": "range",
         "id": "input_corner_radius",
@@ -83,7 +98,7 @@
         "unit": "px",
         "label": "t:labels.input_corner_radius",
         "default": 4
-      }, 
+      },
       {
         "type": "range",
         "id": "button_corner_radius",
