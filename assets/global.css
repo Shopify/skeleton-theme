@@ -83,6 +83,11 @@ body {
   color: var(--color-foreground);
 }
 
+:where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
+  outline: 0.2rem solid var(--color-foreground);
+  outline-offset: 0.2rem;
+}
+
 /* --------------- Full Width Page Grid --------------- */
 
 .shopify-section {

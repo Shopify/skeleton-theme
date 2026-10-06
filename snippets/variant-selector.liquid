@@ -73,6 +73,11 @@
     color: var(--color-background);
   }
 
+  .product-option-input:focus-visible + .product-option-button {
+    outline: 0.2rem solid var(--color-foreground);
+    outline-offset: 0.2rem;
+  }
+
   .product-option-input.disabled + .product-option-button {
     opacity: 0.45;
     text-decoration: line-through;
