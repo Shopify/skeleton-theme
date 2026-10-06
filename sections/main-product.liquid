@@ -121,11 +121,14 @@
                       disabled
                     {% endif %}
                   >
-                    {% if product.selected_or_first_available_variant.available == false %}
-                      {{ 'product.sold_out' | t }}
-                    {% else %}
-                      {{ 'product.add_to_cart' | t }}
-                    {% endif %}
+                    <span class="button-text">
+                      {% if product.selected_or_first_available_variant.available == false %}
+                        {{ 'product.sold_out' | t }}
+                      {% else %}
+                        {{ 'product.add_to_cart' | t }}
+                      {% endif %}
+                    </span>
+                    {{ 'icon-loader.svg' | inline_asset_content }}
                   </button>
                 </div>
               {%- when 'quantity' -%}
@@ -236,6 +239,10 @@
   .product-gallery-nav-button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+  }
+
+  .product-buy-button svg {
+    fill: var(--color-background);
   }
 {% endstylesheet %}
 
@@ -377,7 +384,7 @@
 
       buyButton.disabled = !isAvailable;
       buyButton.setAttribute('aria-disabled', String(!isAvailable));
-      buyButton.textContent = label;
+      buyButton.querySelector('.product-buy-button .button-text').textContent = label;
     }
 
     function updatePriceDisplay(selectedVariant) {

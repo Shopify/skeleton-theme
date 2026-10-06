@@ -335,6 +335,7 @@ h6 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   padding: 0;
   border: none;
   appearance: none;
@@ -350,6 +351,15 @@ h6 {
 .button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.button .icon-loader {
+  display: none;
+  width: 1.5rem;
+}
+
+.button-loading .icon-loader {
+  display: block;
 }
 
 /* --------------- Utility Classes --------------- */

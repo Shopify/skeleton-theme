@@ -661,11 +661,10 @@
         e.preventDefault();
 
         const submitButton = productForm.querySelector('.product-buy-button');
-        const originalButtonText = submitButton.value;
 
         if (submitButton) {
           submitButton.disabled = true;
-          submitButton.value = 'Adding...';
+          submitButton.classList.add('button-loading');
         }
 
         try {
@@ -706,7 +705,7 @@
           }
 
           if (submitButton) {
-            submitButton.value = originalButtonText;
+            submitButton.classList.remove('button-loading');
             submitButton.disabled = false;
           }
         } catch (error) {
