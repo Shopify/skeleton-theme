@@ -1,6 +1,5 @@
 # MVP 
 
-- featured collection section
 - better styles overall
 - accessability
 
