@@ -1,8 +1,12 @@
 {% assign current_variant = product.selected_or_first_available_variant %}
 
 <div class="product-price">
-  {% if current_variant.compare_at_price > current_variant.price %}
-    <span class="product-price-compare">{{ current_variant.compare_at_price | money }}</span>
+  {% if product.price_varies %}
+    <span class="product-price-current">from {{ product.price_min | money }}</span>
+  {% else %}
+    {% if current_variant.compare_at_price > current_variant.price %}
+      <span class="product-price-compare">{{ current_variant.compare_at_price | money }}</span>
+    {% endif %}
+    <span class="product-price-current">{{ current_variant.price | money }}</span>
   {% endif %}
-  <span class="product-price-current">{{ current_variant.price | money }}</span>
 </div>
