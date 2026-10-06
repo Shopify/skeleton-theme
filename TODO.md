@@ -1,6 +1,5 @@
 # MVP 
 
-- Quick add on collection pages 
 - featured collection section
 - better styles overall
 - accessability

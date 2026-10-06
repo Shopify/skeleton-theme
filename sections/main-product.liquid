@@ -99,59 +99,57 @@
   </div>
   <div>
     <div class="product-main-info">
-      <div class="product-form">
-        {% form 'product', product %}
-          {%- for block in section.blocks -%}
-            {%- case block.type -%}
-              {%- when '@app' -%}
-                {% render block %}
-              {%- when 'title' -%}
-                <h1>{{ product.title }}</h1>
-              {%- when 'description' -%}
-                <div class="product-description">{{ product.description }}</div>
-              {%- when 'price' -%}
-                {% render 'price' %}
-              {%- when 'buy_button' -%}
-                <div class="product-buy-button-wrap">
-                  <button
-                    type="submit"
-                    value="{{ 'product.add_to_cart' | t }}"
-                    class="product-buy-button button"
+      {% form 'product', product, class: 'product-form' %}
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when '@app' -%}
+              {% render block %}
+            {%- when 'title' -%}
+              <h1>{{ product.title }}</h1>
+            {%- when 'description' -%}
+              <div class="product-description">{{ product.description }}</div>
+            {%- when 'price' -%}
+              {% render 'price' %}
+            {%- when 'buy_button' -%}
+              <div class="product-buy-button-wrap">
+                <button
+                  type="submit"
+                  value="{{ 'product.add_to_cart' | t }}"
+                  class="product-buy-button button"
+                  {% if product.selected_or_first_available_variant.available == false %}
+                    disabled
+                  {% endif %}
+                >
+                  <span class="button-text">
                     {% if product.selected_or_first_available_variant.available == false %}
-                      disabled
+                      {{ 'product.sold_out' | t }}
+                    {% else %}
+                      {{ 'product.add_to_cart' | t }}
                     {% endif %}
-                  >
-                    <span class="button-text">
-                      {% if product.selected_or_first_available_variant.available == false %}
-                        {{ 'product.sold_out' | t }}
-                      {% else %}
-                        {{ 'product.add_to_cart' | t }}
-                      {% endif %}
-                    </span>
-                    {{ 'icon-loader.svg' | inline_asset_content }}
-                  </button>
-                </div>
-              {%- when 'quantity' -%}
-                <input type="number" name="quantity" min="1" value="1">
-              {%- when 'variant_selector' -%}
-                {% render 'variant-selector', product: product %}
-            {%- endcase -%}
-          {%- endfor -%}
+                  </span>
+                  {{ 'icon-loader.svg' | inline_asset_content }}
+                </button>
+              </div>
+            {%- when 'quantity' -%}
+              <input type="number" name="quantity" min="1" value="1">
+            {%- when 'variant_selector' -%}
+              {% render 'variant-selector', product: product %}
+          {%- endcase -%}
+        {%- endfor -%}
 
-          <select name="id" class="product-variant-select hidden">
-            {% for variant in product.variants %}
-              <option
-                value="{{ variant.id }}"
-                {% if variant == product.selected_or_first_available_variant %}
-                  selected="selected"
-                {% endif %}
-              >
-                {{ variant.title }} - {{ variant.price | money }}
-              </option>
-            {% endfor %}
-          </select>
-        {% endform %}
-      </div>
+        <select name="id" class="product-variant-select hidden">
+          {% for variant in product.variants %}
+            <option
+              value="{{ variant.id }}"
+              {% if variant == product.selected_or_first_available_variant %}
+                selected="selected"
+              {% endif %}
+            >
+              {{ variant.title }} - {{ variant.price | money }}
+            </option>
+          {% endfor %}
+        </select>
+      {% endform %}
     </div>
   </div>
 </div>
@@ -165,7 +163,7 @@
     }
   }
 
-  .shopify-product-form {
+  .product-form {
     display: grid;
     gap: 1rem;
   }
