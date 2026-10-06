@@ -695,20 +695,20 @@
             throw new Error('Unable to add item to cart.');
           }
 
+          await refreshCartDrawer();
+          await refreshCartCounts();
+
           const activeDrawer = document.querySelector('.cart-drawer-container');
 
           if (activeDrawer) {
             activeDrawer.classList.add('active');
-            document.querySelector('body').classList.add('overflow-hidden');
+            document.body.classList.add('overflow-hidden');
           }
 
           if (submitButton) {
             submitButton.value = originalButtonText;
             submitButton.disabled = false;
           }
-
-          refreshCartDrawer();
-          refreshCartCounts();
         } catch (error) {
           console.error(error);
 

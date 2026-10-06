@@ -1,6 +1,8 @@
 # MVP 
 
+- Cart shouldnt open until after update
 - Filter styles
+- MAx width on mobile menu
 - Quick add on collection pages 
 - better styles overall
 - accessability
