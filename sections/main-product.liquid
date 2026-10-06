@@ -52,7 +52,13 @@
       <div class="product-gallery-nav swiper">
         <div class="swiper-wrapper">
           {% if selected_variant.image != blank %}
-            <div class="swiper-slide" data-variant-ids="{{ selected_variant.image.variants | map: 'id' | join: ',' }}">
+            <div
+              class="swiper-slide"
+              data-variant-ids="{{ selected_variant.image.variants | map: 'id' | join: ',' }}"
+              tabindex="0"
+              role="button"
+              aria-label="View gallery item 1"
+            >
               {{
                 selected_variant.image
                 | image_url: width: 400, height: 400, crop: 'center'
@@ -62,7 +68,13 @@
           {% endif %}
           {% for image in variant_images %}
             {% unless image.id == selected_variant.image.id %}
-              <div class="swiper-slide" data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}">
+              <div
+                class="swiper-slide"
+                data-variant-ids="{{ image.variants | map: 'id' | join: ',' }}"
+                tabindex="0"
+                role="button"
+                aria-label="View gallery item {{ forloop.index | plus: 1 }}"
+              >
                 <div class="product-image">
                   {{
                     image
@@ -75,7 +87,13 @@
           {% endfor %}
           {% for media in product.media %}
             {% unless variant_images contains media %}
-              <div class="swiper-slide" data-variant-ids="">
+              <div
+                class="swiper-slide"
+                data-variant-ids=""
+                tabindex="0"
+                role="button"
+                aria-label="View gallery item {{ forloop.index | plus: 1 }}"
+              >
                 <div class="product-image">
                   {{
                     media.preview_image
@@ -297,16 +315,48 @@
       slide.dataset.index = String(index);
     });
 
-    const gallerySlides = Array.from(document.querySelectorAll('.product-gallery .swiper-slide'));
-    const galleryNavSlides = Array.from(document.querySelectorAll('.product-gallery-nav .swiper-slide'));
+    // Add keyboard accessibility to gallery navigation slides
+    let gallerySlides = Array.from(document.querySelectorAll('.product-gallery .swiper-slide'));
+    let galleryNavSlides = Array.from(document.querySelectorAll('.product-gallery-nav .swiper-slide'));
     const galleryNavWrapper = document.querySelector('.product-gallery-nav .swiper-wrapper');
 
-    galleryNavWrapper.addEventListener('click', (event) => {
-      const slide = event.target.closest('.swiper-slide');
+    function activateGallerySlide(slide) {
       if (!slide || !galleryNavWrapper.contains(slide)) return;
 
       const index = Number(slide.dataset.index);
-      if (!Number.isNaN(index)) gallery.slideTo(index);
+      if (Number.isNaN(index)) return;
+
+      gallery.slideTo(index);
+      slide.focus();
+    }
+
+    galleryNavWrapper.addEventListener('click', (event) => {
+      activateGallerySlide(event.target.closest('.swiper-slide'));
+    });
+
+    galleryNavWrapper.addEventListener('keydown', (event) => {
+      const slide = event.target.closest('.swiper-slide');
+      if (!slide || !galleryNavWrapper.contains(slide)) return;
+
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        activateGallerySlide(slide);
+        return;
+      }
+
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        const nextIndex = Number(slide.dataset.index) + 1;
+        const nextSlide = galleryNavSlides[nextIndex] || galleryNavSlides[0];
+        if (nextSlide) nextSlide.focus();
+      }
+
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        const prevIndex = Number(slide.dataset.index) - 1;
+        const prevSlide = galleryNavSlides[prevIndex] || galleryNavSlides[galleryNavSlides.length - 1];
+        if (prevSlide) prevSlide.focus();
+      }
     });
 
     // Update price on variant change
@@ -406,16 +456,25 @@
         return indexes;
       }, []);
       const matchingGallerySlides = matchingIndexes.map((index) => gallerySlides[index]);
-      const matchingGalleryNavSlides = matchingIndexes.map((index, activeIndex) => {
-        const slide = galleryNavSlides[index];
-        slide.dataset.index = String(activeIndex);
-        return slide;
-      });
+      const matchingGalleryNavSlides = matchingIndexes
+        .map((index, activeIndex) => {
+          const slide = galleryNavSlides[index];
+          if (!slide) return null;
+
+          slide.dataset.index = String(activeIndex);
+          slide.setAttribute('tabindex', '0');
+          slide.setAttribute('role', 'button');
+          slide.setAttribute('aria-label', `View gallery item ${activeIndex + 1}`);
+          return slide;
+        })
+        .filter(Boolean);
 
       galleryNav.removeAllSlides();
       galleryNav.appendSlide(matchingGalleryNavSlides);
       gallery.removeAllSlides();
       gallery.appendSlide(matchingGallerySlides);
+      gallerySlides = matchingGallerySlides;
+      galleryNavSlides = matchingGalleryNavSlides;
       galleryNav.slideTo(0, 0);
       gallery.slideTo(0, 0);
     }

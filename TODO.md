@@ -2,14 +2,6 @@
 
 
 
-Mobile navigation needs a bit more keyboard polish
-
-sections/header.liquid toggles aria-expanded and aria-hidden, which is good.
-
-But when the menu is open, there is no visible focus treatment on the summary trigger and no obvious keyboard close behavior like Escape handling.
-
-
-
 - better styles overall
 
 - Go through all templates again
