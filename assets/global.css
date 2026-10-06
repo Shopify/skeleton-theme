@@ -187,18 +187,40 @@ h6 {
 /* --------------- Site Nav --------------- */
 
 @media (max-width: 767px) {
+  .site-header::before {
+    content: '';
+    position: fixed;
+    top: 5rem;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1;
+  }
+
+  .site-header.menu-open::before {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .site-nav {
-    position: absolute;
-    left: calc(-1 * var(--page-margin));
-    top: 100%;
+    position: fixed;
+    left: 0;
+    top: 5rem;
+    bottom: 0;
     background: var(--color-background);
-    width: calc(100% + (2 * var(--page-margin)));
-    height: calc(100vh - 50px);
+    width: min(50rem, 100vw);
+    max-width: 100vw;
+    height: auto;
     visibility: hidden;
     transform: translate(-100%);
     padding: 0 var(--page-margin);
     font-size: 2rem;
     overflow-y: auto;
+    z-index: 2;
   }
 
   .site-nav.anim-ready {

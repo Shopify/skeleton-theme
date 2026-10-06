@@ -64,6 +64,7 @@
   // Mobile menu toggle
   const navToggle = document.querySelector('.site-nav-toggle');
   const navMenu = document.querySelector('.site-nav');
+  const siteHeader = document.querySelector('.site-header');
   const mobileQuery = window.matchMedia('(max-width: 768px)');
 
   function updateMenuAccessibility() {
@@ -74,12 +75,14 @@
       navToggle?.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('overflow-hidden');
       navMenu.classList.remove('anim-ready');
+      siteHeader?.classList.remove('menu-open');
       return;
     }
 
     navMenu.setAttribute('aria-hidden', String(!isOpen));
     navToggle?.setAttribute('aria-expanded', String(isOpen));
     document.body.classList.toggle('overflow-hidden', isOpen);
+    siteHeader?.classList.toggle('menu-open', isOpen);
     navMenu.classList.add('anim-ready');
   }
 
@@ -90,6 +93,13 @@
       const isOpen = navMenu.classList.toggle('open');
       updateMenuAccessibility();
       document.body.classList.toggle('overflow-hidden', isOpen && mobileQuery.matches);
+    });
+
+    siteHeader?.addEventListener('click', function (event) {
+      if (event.target === siteHeader && navMenu.classList.contains('open')) {
+        navMenu.classList.remove('open');
+        updateMenuAccessibility();
+      }
     });
 
     window.addEventListener('resize', updateMenuAccessibility);
