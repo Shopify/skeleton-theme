@@ -1,7 +1,7 @@
 # MVP 
 
-- Max width on mobile menu
 - Quick add on collection pages 
+- featured collection section
 - better styles overall
 - accessability
 
@@ -9,7 +9,7 @@
 - Clean up all code - particularly cart and pdp js
 - html validation
 - performance
-- Review all Dawn settings to see what we might want
+- Review all Dawn settings & sections to see what we might want
 
 # Templates https://shopify.dev/docs/storefronts/themes/architecture/templates
 

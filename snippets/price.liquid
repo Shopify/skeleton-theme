@@ -1,7 +1,7 @@
 {% assign current_variant = product.selected_or_first_available_variant %}
 
 <div class="product-price">
-  {% if product.price_varies %}
+  {% if template != 'product' and product.price_varies %}
     <span class="product-price-current">from {{ product.price_min | money }}</span>
   {% else %}
     {% if current_variant.compare_at_price > current_variant.price %}

@@ -426,6 +426,14 @@ h6 {
   }
 }
 
+/* --------------- Generic Tags --------------- */
+
+p,
+ul,
+ol {
+  margin: 0 0 1.5rem;
+}
+
 /* --------------- Accessibility Skip Link --------------- */
 
 .skip-to-content {
