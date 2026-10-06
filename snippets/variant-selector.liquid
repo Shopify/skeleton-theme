@@ -74,8 +74,9 @@
   }
 
   .product-option-input:focus-visible + .product-option-button {
-    outline: 0.2rem solid var(--color-foreground);
-    outline-offset: 0.2rem;
+    border-color: var(--color-foreground);
+    box-shadow: 0 0 0 0.2rem var(--color-background), 0 0 0 0.4rem var(--color-foreground);
+    outline: none;
   }
 
   .product-option-input.disabled + .product-option-button {
