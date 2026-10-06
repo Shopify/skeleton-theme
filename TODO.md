@@ -1,7 +1,6 @@
 # MVP 
 
-- Filter styles
-- MAx width on mobile menu
+- Max width on mobile menu
 - Quick add on collection pages 
 - better styles overall
 - accessability
