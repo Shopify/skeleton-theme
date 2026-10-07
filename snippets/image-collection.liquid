@@ -20,4 +20,8 @@
   | append: 'px)'
 %}
 
-{{ image | image_url: width: 1000, height: 1000, crop: 'center' | image_tag: sizes: sizes }}
+{{
+  image
+  | image_url: width: 1000, height: 1000, crop: 'center'
+  | image_tag: sizes: sizes, fetchpriority: fetchpriority
+}}

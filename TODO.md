@@ -1,12 +1,10 @@
 # MVP 
 
-- html validation CURRENTLY AT CART
 - move drawer css/js to files? move header js into file
 - better styles overall
 
 - Go through all templates again
 - Clean up all code - particularly cart and pdp js
-- performance
 
 # Templates https://shopify.dev/docs/storefronts/themes/architecture/templates
 

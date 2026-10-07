@@ -10,7 +10,12 @@
           <div class="collection-product">
             <a href="{{ product.url }}" class="link-reset">
               {% if product.featured_image %}
-                {% render 'image-collection', image: product.featured_image %}
+                {% if forloop.first %}
+                  {% assign fetchpriority = 'high' %}
+                {% else %}
+                  {% assign fetchpriority = 'auto' %}
+                {% endif %}
+                {% render 'image-collection', image: product.featured_image, fetchpriority: fetchpriority %}
               {% else %}
                 <div class="collection-image-placeholder"></div>
               {% endif %}

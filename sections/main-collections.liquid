@@ -7,7 +7,16 @@
     {% for collection in collections %}
       <a class="collections-card link-reset" href="{{ collection.url }}">
         {% if collection.featured_image %}
-          {% render 'image-collection', image: collection.featured_image, class: 'collections-card-image' %}
+          {% if forloop.first %}
+            {% assign fetchpriority = 'high' %}
+          {% else %}
+            {% assign fetchpriority = 'low' %}
+          {% endif %}
+          {% render 'image-collection',
+            image: collection.featured_image,
+            class: 'collections-card-image',
+            fetchpriority: fetchpriority
+          %}
         {% else %}
           <div class="collections-card-placeholder"></div>
         {% endif %}

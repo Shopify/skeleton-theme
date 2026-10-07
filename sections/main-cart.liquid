@@ -16,10 +16,15 @@
             <tr class="cart-table-row" data-key="{{ item.key }}">
               <td class="cart-table-image">
                 <a href="{{ item.url }}">
+                  {% if forloop.first %}
+                    {% assign fetchpriority = 'high' %}
+                  {% else %}
+                    {% assign fetchpriority = 'auto' %}
+                  {% endif %}
                   {{
                     item.image
                     | image_url: width: 400, height: 400, crop: 'center'
-                    | image_tag: sizes: '90px', loading: 'lazy'
+                    | image_tag: sizes: '90px', fetchpriority: fetchpriority
                   }}
                 </a>
               </td>
@@ -58,6 +63,7 @@
                 <div class="cart-item-actions">
                   <div
                     class="cart-item-quantity"
+                    role="group"
                     aria-label="{{ 'cart.quantity_selector_html' | t: product: item.product.title | escape }}"
                   >
                     <button

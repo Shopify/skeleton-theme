@@ -6,7 +6,12 @@
       {% for article in blog.articles %}
         <article class="blog-grid-article">
           {% if article.image %}
-            {% render 'image-blog', image: article.image, url: article.url %}
+            {% if forloop.index <= 2 %}
+              {% assign fetchpriority = 'high' %}
+            {% else %}
+              {% assign fetchpriority = 'auto' %}
+            {% endif %}
+            {% render 'image-blog', image: article.image, url: article.url, fetchpriority: fetchpriority %}
           {% endif %}
           <h2>
             {{ article.title | link_to: article.url }}
