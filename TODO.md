@@ -1,8 +1,6 @@
 # MVP 
 
-- Add logo
-- Color schemes?
-
+- move drawer css/js to files? move header js into file
 - better styles overall
 
 - Go through all templates again
@@ -51,3 +49,4 @@
 - html validation
 - Remove comments from main layout file?
 - Work on accessability https://shopify.dev/docs/storefronts/themes/best-practices
+- Color schemes? https://shopify.dev/docs/api/liquid/objects/color_scheme_group
