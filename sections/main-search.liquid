@@ -31,11 +31,13 @@
           {% for result in search.results %}
             <div class="search-result search-result-{{ result.object_type }}">
               {% assign featured_image = result.featured_image | default: result.image %}
-              {% if featured_image %}
-                {% render 'image-collection', image: featured_image, url: result.url, class: 'search-result-image' %}
-              {% else %}
-                <div class="search-result-image-holder"></div>
-              {% endif %}
+              <a href="{{ result.url }}" class="link-reset">
+                {% if featured_image %}
+                  {% render 'image-collection', image: featured_image, class: 'search-result-image' %}
+                {% else %}
+                  <div class="search-result-image-holder"></div>
+                {% endif %}
+              </a>
               <div class="search-result-content">
                 <h2>
                   <a href="{{ result.url }}" class="link-reset">

@@ -8,9 +8,13 @@
       <div class="collection-products-grid">
         {% for product in collection.products %}
           <div class="collection-product">
-            {% if product.featured_image %}
-              {% render 'image-collection', image: product.featured_image, url: product.url %}
-            {% endif %}
+            <a href="{{ product.url }}" class="link-reset">
+              {% if product.featured_image %}
+                {% render 'image-collection', image: product.featured_image %}
+              {% else %}
+                <div class="collection-image-placeholder"></div>
+              {% endif %}
+            </a>
             <div class="collection-product-content">
               <h2 class="collection-product-title">
                 <a href="{{ product.url }}" class="link-reset">{{ product.title | escape }}</a>
@@ -51,6 +55,11 @@
   .collection-product {
     display: grid;
     gap: 1rem;
+  }
+
+  .collection-image-placeholder {
+    padding-top: 100%;
+    background-color: var(--color-border);
   }
 
   .collection-product-content {

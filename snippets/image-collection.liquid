@@ -20,6 +20,4 @@
   | append: 'px)'
 %}
 
-<a href="{{ url }}">
-  {{ image | image_url: width: 1000, height: 1000, crop: 'center' | image_tag: sizes: sizes }}
-</a>
+{{ image | image_url: width: 1000, height: 1000, crop: 'center' | image_tag: sizes: sizes }}

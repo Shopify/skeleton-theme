@@ -5,12 +5,14 @@
     class="collections"
   >
     {% for collection in collections %}
-      <a class="collection-card link-reset" href="{{ collection.url }}">
+      <a class="collections-card link-reset" href="{{ collection.url }}">
         {% if collection.featured_image %}
-          {% render 'image-collection', image: collection.featured_image, class: 'collection-card-image' %}
+          {% render 'image-collection', image: collection.featured_image, class: 'collections-card-image' %}
+        {% else %}
+          <div class="collections-card-placeholder"></div>
         {% endif %}
 
-        <div class="collection-card-content">
+        <div class="collections-card-content">
           <h2>{{ collection.title }}</h2>
 
           {% if collection.description %}
@@ -40,11 +42,16 @@
     }
   }
 
-  .collection-card {
+  .collections-card {
     display: flex;
     flex-direction: column;
     width: 100%;
     gap: 1rem;
+  }
+
+  .collections-card-placeholder {
+    padding-top: 100%;
+    background-color: var(--color-border);
   }
 {% endstylesheet %}
 

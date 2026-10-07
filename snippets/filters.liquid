@@ -10,10 +10,10 @@
 
     <details class="collection-toolbar-details">
       <summary class="hide-md">
-        <div class="collection-toolbar-toggle">
+        <span class="collection-toolbar-toggle">
           {{ 'icon-filter.svg' | inline_asset_content }}
           {{ 'filters.filter_and_sort' | t }}
-        </div>
+        </span>
       </summary>
       <div class="collection-toolbar-content">
         <form class="collection-filters" action="{{ collection.url }}" method="get">
@@ -102,6 +102,7 @@
                             <div class="form-group">
                               <input
                                 type="number"
+                                id="{{ filter.min_value.param_name }}"
                                 name="{{ filter.min_value.param_name }}"
                                 value="{{ min_value }}"
                                 min="{{ slider_min }}"
@@ -119,6 +120,7 @@
                             <div class="form-group">
                               <input
                                 type="number"
+                                id="{{ filter.max_value.param_name }}"
                                 name="{{ filter.max_value.param_name }}"
                                 value="{{ max_value }}"
                                 min="{{ slider_min }}"
