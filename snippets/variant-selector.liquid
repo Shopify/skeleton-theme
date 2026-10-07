@@ -3,7 +3,7 @@
 <div class="product-option">
   {%- for option in product.options -%}
     <div class="product-option-group" data-option-name="{{ option }}">
-      <label class="product-option-label" for="option-{{ option | handleize }}">{{ option }}</label>
+      <span class="product-option-label">{{ option }}</span>
       <div class="product-option-values">
         {% for value in product.options_with_values[forloop.index0].values %}
           <input
