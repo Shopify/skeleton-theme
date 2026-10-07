@@ -275,11 +275,13 @@
 
 {% javascript %}
   document.addEventListener('DOMContentLoaded', () => {
+    // Main product gallery
     const gallery = new Swiper('.product-gallery', {
       slidesPerView: 1,
       allowTouchMove: true,
     });
 
+    // Gallery thumbnails
     const galleryNav = new Swiper('.product-gallery-nav', {
       slidesPerView: 'auto',
       spaceBetween: 12,
@@ -290,6 +292,7 @@
       },
     });
 
+    // Pause videos when the gallery slide changes
     function pauseGalleryVideos() {
       document.querySelectorAll('.product-gallery .swiper-slide video').forEach((video) => {
         if (!video.paused) {
@@ -311,15 +314,16 @@
 
     gallery.on('slideChange', pauseGalleryVideos);
 
+    // Assign data-index attributes to gallery navigation slides
     Array.from(document.querySelectorAll('.product-gallery-nav .swiper-slide')).forEach((slide, index) => {
       slide.dataset.index = String(index);
     });
 
-    // Add keyboard accessibility to gallery navigation slides
     let gallerySlides = Array.from(document.querySelectorAll('.product-gallery .swiper-slide'));
     let galleryNavSlides = Array.from(document.querySelectorAll('.product-gallery-nav .swiper-slide'));
     const galleryNavWrapper = document.querySelector('.product-gallery-nav .swiper-wrapper');
 
+    // Activate a gallery slide based on the clicked or focused navigation slide
     function activateGallerySlide(slide) {
       if (!slide || !galleryNavWrapper.contains(slide)) return;
 
@@ -334,6 +338,7 @@
       activateGallerySlide(event.target.closest('.swiper-slide'));
     });
 
+    // Add keyboard accessibility to gallery navigation slides
     galleryNavWrapper.addEventListener('keydown', (event) => {
       const slide = event.target.closest('.swiper-slide');
       if (!slide || !galleryNavWrapper.contains(slide)) return;
@@ -371,6 +376,7 @@
     const priceCompareEl = document.querySelector('.product-price-compare');
     const moneyFormat = productData.moneyFormat || '$';
 
+    // Update the url with the selected variant
     function updateURLWithVariant(variantId) {
       if (!variantId) return;
 
@@ -387,6 +393,7 @@
       return '$' + (cents / 100).toFixed(2);
     }
 
+    // Check if a variant matches the selected options
     function matchesVariantOptions(variant, optionValues) {
       if (!variant || !variant.options || variant.options.length !== optionValues.length) {
         return false;
@@ -422,6 +429,7 @@
       });
     }
 
+    // Update the state of the buy button based on the selected variant (oos)
     function updateBuyButtonState(selectedVariant) {
       const buyButton = document.querySelector('.product-buy-button');
 
@@ -435,6 +443,7 @@
       buyButton.querySelector('.product-buy-button .button-text').textContent = label;
     }
 
+    // Update the displayed price based on the selected variant
     function updatePriceDisplay(selectedVariant) {
       if (!priceCurrentEl) return;
 
@@ -448,6 +457,7 @@
       }
     }
 
+    // Update the gallery to show slides relevant to the selected variant
     function updateGalleryForVariant(selectedVariant) {
       const selectedVariantId = Number(selectedVariant.id);
       const matchingIndexes = gallerySlides.reduce((indexes, slide, index) => {
@@ -479,6 +489,7 @@
       gallery.slideTo(0, 0);
     }
 
+    // Update the UI to reflect the selected variant - calls various update functions for options, buy button, price, and gallery
     function updateVariantUI(syncUrl = true) {
       if (!variantSelect) return;
 

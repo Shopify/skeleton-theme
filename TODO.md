@@ -1,10 +1,7 @@
 # MVP 
 
-- move drawer css/js to files? move header js into file
-- better styles overall
-
-- Go through all templates again
 - Clean up all code - particularly cart and pdp js
+- better styles overall
 
 # Templates https://shopify.dev/docs/storefronts/themes/architecture/templates
 
@@ -37,9 +34,9 @@
 
 # Various
 
+- move drawer css to files?
 - Make sure all section previews work
 - Add to cart errors should be show on page rather than in js alert
-- Potential global js - header.liquid
 - Replace icons with consistent library
 - Theme Blocks https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/quick-start?framework=liquid (deal with custom-section.liquid & blocks folder)
 - Modify readme

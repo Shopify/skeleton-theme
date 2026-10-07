@@ -2,6 +2,7 @@
   const cartDrawerContainer = document.querySelector('.cart-drawer-container');
   const cartDrawer = cartDrawerContainer ? cartDrawerContainer.querySelector('.cart-drawer') : null;
 
+  // Close the cart drawer
   const closeCartDrawer = () => {
     if (cartDrawerContainer) {
       cartDrawerContainer.classList.remove('active');
@@ -18,6 +19,7 @@
   }
 
   const closeButton = document.querySelector('.cart-drawer-close');
+
   if (closeButton) {
     closeButton.addEventListener('click', closeCartDrawer);
   }
@@ -27,6 +29,7 @@
     credentials: 'same-origin',
   };
 
+  // Refresh the cart drawer contents
   const refreshCartDrawer = async () => {
     try {
       const response = await fetch('/?sections=cart-drawer', fetchOptions);
@@ -63,6 +66,7 @@
     }
   };
 
+  // Refresh the cart item counts displayed in the UI
   const refreshCartCounts = async () => {
     try {
       const response = await fetch('/cart.js', fetchOptions);
@@ -88,6 +92,7 @@
   const queuedQuantityUpdates = new Map();
   let queuedQuantityTimer = null;
 
+  // Queue a quantity update for a specific cart item
   const queueQuantityUpdate = (itemKey, nextQuantity) => {
     const normalizedQuantity = Math.max(0, Number.isFinite(nextQuantity) ? Number(nextQuantity) : 0);
     queuedQuantityUpdates.set(itemKey, normalizedQuantity);
@@ -101,6 +106,7 @@
     }, 1000);
   };
 
+  // Flush all queued quantity updates to the server
   const flushQueuedQuantityUpdates = async () => {
     if (!queuedQuantityUpdates.size) return;
 
@@ -152,6 +158,7 @@
     }
   };
 
+  // Handle click events within the cart drawer, including removing items and updating quantities
   if (cartDrawerContainer) {
     cartDrawerContainer.addEventListener('click', async (event) => {
       const removeButton = event.target.closest('.cart-drawer-item-remove');
@@ -220,6 +227,7 @@
     });
   }
 
+  // Handle change events for quantity inputs within the cart drawer
   document.addEventListener('change', (event) => {
     const quantityInput = event.target.closest('.cart-drawer-item-quantity-value');
 
@@ -245,6 +253,7 @@
 
   const productForm = document.querySelector('.product-form');
 
+  // Handle the submission of the product form to add items to the cart
   if (productForm) {
     productForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -312,6 +321,7 @@
 
   const cartToggle = document.querySelector('.cart-toggle');
 
+  // Handle the click event for the cart toggle button to open/close the cart drawer
   if (cartToggle) {
     cartToggle.addEventListener('click', (e) => {
       e.preventDefault();
