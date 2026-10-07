@@ -5,7 +5,7 @@
 {% assign selected_variant = product.selected_or_first_available_variant %}
 {% assign first_shown = false %}
 
-<div class="product-main">
+<div class="product-main space-top">
   <div class="product-main-images">
     <div class="product-gallery swiper">
       <div class="swiper-wrapper">
@@ -44,10 +44,10 @@
     <div class="product-gallery-nav-wrap">
       <button
         type="button"
-        class="product-gallery-nav-button product-gallery-nav-button-prev"
+        class="product-gallery-nav-button product-gallery-nav-button-prev button-reset"
         aria-label="Previous thumbnail"
       >
-        ←
+        {{ 'icon-caret-circle-left.svg' | inline_asset_content }}
       </button>
       <div class="product-gallery-nav swiper">
         <div class="swiper-wrapper">
@@ -108,10 +108,10 @@
       </div>
       <button
         type="button"
-        class="product-gallery-nav-button product-gallery-nav-button-next"
+        class="product-gallery-nav-button product-gallery-nav-button-next button-reset"
         aria-label="Next thumbnail"
       >
-        →
+        {{ 'icon-caret-circle-right.svg' | inline_asset_content }}
       </button>
     </div>
   </div>
@@ -242,12 +242,7 @@
     width: 2.5rem;
     height: 2.5rem;
     min-width: 2.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    background: #fff;
-    color: #111;
-    border-radius: 999px;
     cursor: pointer;
-    font-size: 1.25rem;
     line-height: 1;
     z-index: 1;
   }

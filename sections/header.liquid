@@ -64,7 +64,9 @@
 
       {% if shop.customer_accounts_enabled %}
         <shopify-account menu="{{ section.settings.customer_account_menu }}">
-          {{ 'icon-account.svg' | inline_asset_content }}
+          <span slot="signed-out-avatar" class="site-header-account-icon">
+            {{ 'icon-account.svg' | inline_asset_content }}
+          </span>
         </shopify-account>
       {% endif %}
 

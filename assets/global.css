@@ -190,7 +190,11 @@ h6 {
 }
 
 .site-header-icons svg {
-  width: 3rem;
+  width: 2.5rem;
+}
+
+.site-header-account-icon svg {
+  width: 2.5rem;
 }
 
 /* --------------- Site Nav --------------- */
@@ -280,7 +284,7 @@ h6 {
 }
 
 .site-nav-summary .icon-dropdown {
-  width: 1rem;
+  width: 1.25rem;
   position: relative;
   top: 0.1rem;
 }
@@ -458,6 +462,10 @@ h6 {
   .hide-md {
     display: none;
   }
+}
+
+.space-top {
+  margin-top: 1rem;
 }
 
 /* --------------- Generic Tags --------------- */
