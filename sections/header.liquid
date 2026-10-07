@@ -6,74 +6,75 @@
   endif
 -%}
 
-<header class="site-header">
-  <{{ head_tag }} class="site-header-title">
-    {% if settings.logo != blank %}
-      {% assign logo_width = settings.logo_width | default: 240 %}
-      {% assign logo_image_width = logo_width | times: 2 %}
-      {% assign sizes = logo_width | append: 'px' %}
+<header class="site-header full-width contained">
+  <div class="container">
+    <{{ head_tag }} class="site-header-title">
+      {% if settings.logo != blank %}
+        {% assign logo_width = settings.logo_width | default: 240 %}
+        {% assign logo_image_width = logo_width | times: 2 %}
+        {% assign sizes = logo_width | append: 'px' %}
 
-      <a href="{{ routes.root_url }}" aria-label="{{ shop.name }}" class="site-header-logo-link">
-        {{
-          settings.logo
-          | image_url: width: logo_image_width
-          | image_tag: alt: shop.name, width: logo_width, class: 'site-header-logo', loading: 'eager', sizes: sizes
-        }}
+        <a href="{{ routes.root_url }}" aria-label="{{ shop.name }}" class="site-header-logo-link">
+          {{
+            settings.logo
+            | image_url: width: logo_image_width
+            | image_tag: alt: shop.name, width: logo_width, class: 'site-header-logo', loading: 'eager', sizes: sizes
+          }}
+        </a>
+      {% else %}
+        {{ shop.name | link_to: routes.root_url }}
+      {% endif %}
+    </{{ head_tag }}>
+
+    <nav id="site-nav" class="site-nav" aria-label="{{ 'general.main_navigation' | t }}" aria-hidden="false">
+      <ul class="site-nav-menu list-reset">
+        {% for link in section.settings.menu.links %}
+          {% if link.links != blank %}
+            <li class="site-nav-item has-submenu">
+              <details class="site-nav-details">
+                <summary class="site-nav-summary">
+                  {{ link.title }}
+                  {{ 'icon-dropdown.svg' | inline_asset_content }}
+                </summary>
+                <ul class="site-nav-submenu">
+                  {% for child_link in link.links %}
+                    <li>{{ child_link.title | link_to: child_link.url }}</li>
+                  {% endfor %}
+                </ul>
+              </details>
+            </li>
+          {% else %}
+            <li>{{ link.title | link_to: link.url }}</li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <div class="site-header-icons">
+      <button
+        class="site-nav-toggle button-reset"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        aria-label="{{ 'general.toggle_navigation' | t }}"
+      >
+        {{ 'icon-menu.svg' | inline_asset_content }}
+        {{ 'icon-close.svg' | inline_asset_content }}
+      </button>
+
+      {% if shop.customer_accounts_enabled %}
+        <shopify-account menu="{{ section.settings.customer_account_menu }}">
+          {{ 'icon-account.svg' | inline_asset_content }}
+        </shopify-account>
+      {% endif %}
+
+      <a href="{{ routes.cart_url }}" class="cart-toggle">
+        <sup class="cart-item-count {% if cart.item_count == 0 %}hidden{% endif %}">{{ cart.item_count }}</sup>
+        {{ 'icon-cart.svg' | inline_asset_content }}
       </a>
-    {% else %}
-      {{ shop.name | link_to: routes.root_url }}
-    {% endif %}
-  </{{ head_tag }}>
-
-  <nav id="site-nav" class="site-nav" aria-label="{{ 'general.main_navigation' | t }}" aria-hidden="false">
-    <ul class="site-nav-menu list-reset">
-      {% for link in section.settings.menu.links %}
-        {% if link.links != blank %}
-          <li class="site-nav-item has-submenu">
-            <details class="site-nav-details">
-              <summary class="site-nav-summary">
-                {{ link.title }}
-                {{ 'icon-dropdown.svg' | inline_asset_content }}
-              </summary>
-              <ul class="site-nav-submenu">
-                {% for child_link in link.links %}
-                  <li>{{ child_link.title | link_to: child_link.url }}</li>
-                {% endfor %}
-              </ul>
-            </details>
-          </li>
-        {% else %}
-          <li>{{ link.title | link_to: link.url }}</li>
-        {% endif %}
-      {% endfor %}
-    </ul>
-  </nav>
-
-  <div class="site-header-icons">
-    <button
-      class="site-nav-toggle button-reset"
-      type="button"
-      aria-expanded="false"
-      aria-controls="site-nav"
-      aria-label="{{ 'general.toggle_navigation' | t }}"
-    >
-      {{ 'icon-menu.svg' | inline_asset_content }}
-      {{ 'icon-close.svg' | inline_asset_content }}
-    </button>
-
-    {% if shop.customer_accounts_enabled %}
-      <shopify-account menu="{{ section.settings.customer_account_menu }}">
-        {{ 'icon-account.svg' | inline_asset_content }}
-      </shopify-account>
-    {% endif %}
-
-    <a href="{{ routes.cart_url }}" class="cart-toggle">
-      <sup class="cart-item-count {% if cart.item_count == 0 %}hidden{% endif %}">{{ cart.item_count }}</sup>
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+    </div>
   </div>
 </header>
-
 
 {% schema %}
 {

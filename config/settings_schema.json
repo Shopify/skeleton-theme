@@ -74,7 +74,7 @@
       {
         "type": "font_picker",
         "id": "type_primary_font",
-        "default": "assistant_n4",
+        "default": "instrument_sans_n4",
         "label": "t:general.primary"
       }
     ]

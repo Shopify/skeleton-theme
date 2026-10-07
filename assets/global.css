@@ -131,11 +131,16 @@ h6 {
 /* --------------- Site Header --------------- */
 
 .site-header {
+  position: relative;
+  z-index: 2;
+  padding: 1rem 0;
+  background: lightgrey;
+}
+
+.site-header .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative;
-  z-index: 2;
 }
 
 .site-header-title {
@@ -193,11 +198,12 @@ h6 {
 @media (max-width: 767px) {
   .site-header::before {
     content: '';
-    position: fixed;
-    top: 5rem;
+    position: absolute;
+    top: 100%;
     right: 0;
     bottom: 0;
     left: 0;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.5);
     opacity: 0;
     pointer-events: none;
@@ -211,14 +217,14 @@ h6 {
   }
 
   .site-nav {
-    position: fixed;
+    position: absolute;
     left: 0;
-    top: 5rem;
-    bottom: 0;
+    top: 100%;
+    /* bottom: 0; */
     background: var(--color-background);
     width: min(50rem, 100vw);
     max-width: 100vw;
-    height: auto;
+    height: 100vh;
     visibility: hidden;
     transform: translate(-100%);
     padding: 0 var(--page-margin);
@@ -337,16 +343,21 @@ h6 {
 /* --------------- Site Footer --------------- */
 
 .site-footer {
+  margin-top: 1rem;
+  padding: 2rem 0;
+  background: lightgrey;
+}
+
+.site-footer .container {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  margin-top: 2rem;
 }
 
 @media (min-width: 768px) {
-  .site-footer {
+  .site-footer .container {
     flex-direction: row;
   }
 }

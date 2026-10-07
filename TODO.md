@@ -1,6 +1,6 @@
 # MVP 
-
-- Clean up all code - particularly cart and pdp js
+instrument sans
+gowun batang
 - better styles overall
 
 # Templates https://shopify.dev/docs/storefronts/themes/architecture/templates
@@ -34,6 +34,7 @@
 
 # Various
 
+- Clean up all code - particularly cart and pdp js
 - move drawer css to files?
 - Make sure all section previews work
 - Add to cart errors should be show on page rather than in js alert
