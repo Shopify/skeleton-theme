@@ -20,6 +20,8 @@
     {% # Load and preload the critical CSS %}
     {{ 'global.css' | asset_url | stylesheet_tag: preload: true }}
 
+    <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
+
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
