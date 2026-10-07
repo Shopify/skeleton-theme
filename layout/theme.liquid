@@ -24,7 +24,12 @@
     {% render 'meta-tags' %}
 
     {% if settings.favicon != blank %}
-      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32, crop: 'center' }}" sizes="32x32">
+      <link
+        rel="icon"
+        type="image/png"
+        href="{{ settings.favicon | image_url: width: 32, height: 32, crop: 'center' }}"
+        sizes="32x32"
+      >
     {% endif %}
 
     {{ content_for_header }}
@@ -41,6 +46,7 @@
 
     {%- if settings.cart_drawer -%}
       {% render 'cart-drawer' %}
+      <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     {% endif %}
 
     {% sections 'footer-group' %}
