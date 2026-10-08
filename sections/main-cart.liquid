@@ -1,4 +1,4 @@
-<main class="cart-main">
+<main class="cart-main space-main">
   <h1>{{ 'cart.title' | t }}</h1>
 
   {% if cart.item_count > 0 %}
@@ -66,6 +66,9 @@
                     role="group"
                     aria-label="{{ 'cart.quantity_selector_html' | t: product: item.product.title | escape }}"
                   >
+                    <label class="visually-hidden" for="cart-item-quantity-{{ item.key }}">
+                      {{ 'cart.quantity' | t }}: {{ item.product.title | escape }}
+                    </label>
                     <button
                       type="button"
                       class="cart-item-qty-button"
@@ -80,6 +83,8 @@
                       min="0"
                       step="1"
                       class="cart-item-quantity-value"
+                      id="cart-item-quantity-{{ item.key }}"
+                      aria-label="{{ 'cart.quantity' | t }}: {{ item.product.title | escape }}"
                       aria-live="polite"
                       value="{{ item.quantity }}"
                       inputmode="numeric"

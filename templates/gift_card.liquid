@@ -41,21 +41,20 @@
         {% endif %}
 
         <p>
-          {% if settings.logo %}
-            {{ settings.logo | image_url: width: 300 | image_tag: alt: shop.name }}
-          {% else %}
-            <img
-              src="{{ 'gift-card/card.svg' | shopify_asset_url }}"
-              alt="{{ 'gift_card.card' | t }}"
-              width="300"
-              height="200"
-            >
-          {% endif %}
+          <img
+            src="{{ 'gift-card/card.svg' | shopify_asset_url }}"
+            alt="{{ 'gift_card.card' | t }}"
+            width="300"
+            height="200"
+            fetchpriority="high"
+          >
         </p>
 
         <h2>{{ shop.name }}</h2>
         <p>{{ 'gift_card.use_at_checkout' | t }}</p>
-        <p>{{ gift_card.code | format_code }}</p>
+        <p>
+          {{- gift_card.code | format_code -}}
+        </p>
 
         {% if gift_card.pass_url %}
           <a href="{{ gift_card.pass_url }}">

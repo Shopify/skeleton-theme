@@ -63,6 +63,9 @@
                     role="group"
                     aria-label="{{ 'cart.quantity_selector_html' | t: product: item.product.title | escape }}"
                   >
+                    <label class="visually-hidden" for="cart-drawer-item-quantity-{{ item.key }}">
+                      {{ 'cart.quantity' | t }}: {{ item.product.title | escape }}
+                    </label>
                     <button
                       type="button"
                       class="cart-drawer-item-qty-button"
@@ -77,10 +80,11 @@
                       min="0"
                       step="1"
                       class="cart-drawer-item-quantity-value"
+                      id="cart-drawer-item-quantity-{{ item.key }}"
                       aria-live="polite"
                       value="{{ item.quantity }}"
                       inputmode="numeric"
-                      aria-label="{{ 'cart.quantity' | t }}"
+                      aria-label="{{ 'cart.quantity' | t }}: {{ item.product.title | escape }}"
                     >
                     <button
                       type="button"
