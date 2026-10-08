@@ -12,12 +12,6 @@
     "settings": [
       {
         "type": "image_picker",
-        "id": "favicon",
-        "label": "t:general.favicon_image",
-        "info": "t:general.favicon_image_info"
-      },
-      {
-        "type": "image_picker",
         "id": "logo",
         "label": "t:general.logo_image"
       },
@@ -30,6 +24,12 @@
         "unit": "px",
         "label": "t:labels.logo_width",
         "default": 240
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "t:general.favicon_image",
+        "info": "t:general.favicon_image_info"
       }
     ]
   },
