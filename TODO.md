@@ -1,7 +1,12 @@
 # MVP 
-instrument sans
-gowun batang
+
+- lighthouse accessability & other tests
 - better styles overall
+- create project steps
+
+# Icons 
+
+- https://phosphoricons.com
 
 # Templates https://shopify.dev/docs/storefronts/themes/architecture/templates
 
@@ -19,7 +24,7 @@ gowun batang
 
 # Sections
 
-- Cart drawer (should css/js go in global?)
+- Cart drawer
 - Mobile menu
 - Announcement bar
 - Category filtering
@@ -35,10 +40,9 @@ gowun batang
 # Various
 
 - Clean up all code - particularly cart and pdp js
-- move drawer css to files?
+- move drawer css to file?
 - Make sure all section previews work
 - Add to cart errors should be show on page rather than in js alert
-- Replace icons with consistent library
 - Theme Blocks https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/quick-start?framework=liquid (deal with custom-section.liquid & blocks folder)
 - Modify readme
 - Work on performance https://shopify.dev/docs/storefronts/themes/best-practices - - defer css - use assets instead of inline? - https://shopify.dev/docs/storefronts/themes/best-practices/performance/defer-non-critical-resources

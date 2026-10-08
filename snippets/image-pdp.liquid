@@ -22,6 +22,7 @@
   {{
     image
     | image_url: width: 1800, height: 1800, crop: 'center'
-    | image_tag: sizes: sizes, preload: preload, loading: loading
+    | image_tag: sizes: sizes, preload: preload, loading: loading, alt: image.alt
+    | default: product.title
   }}
 </div>

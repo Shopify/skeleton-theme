@@ -2,7 +2,8 @@
   "general": {
     "skip_to_content": "Skip to main content",
     "main_navigation": "Main navigation",
-    "toggle_navigation": "Toggle navigation"
+    "toggle_navigation": "Toggle navigation",
+    "view_cart": "View cart"
   },
   "404": {
     "title": "404",
@@ -78,10 +79,11 @@
   },
   "password": {
     "email": "Email",
-    "enter": "Enter using password",
+    "enter": "Enter",
+    "enter_password": "Enter using password",
     "title": "Opening soon",
     "password": "Password",
-    "submit": "Enter",
+    "submit": "Submit",
     "subscribe_success": "Thanks for subscribing"
   },
   "product": {

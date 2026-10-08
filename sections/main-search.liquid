@@ -31,7 +31,13 @@
           {% for result in search.results %}
             <div class="search-result search-result-{{ result.object_type }}">
               {% assign featured_image = result.featured_image | default: result.image %}
-              <a href="{{ result.url }}" class="link-reset">
+              <a
+                href="{{ result.url }}"
+                class="link-reset"
+                {% unless featured_image %}
+                  aria-label="View {{ result.title }}"
+                {% endunless %}
+              >
                 {% if featured_image %}
                   {% render 'image-collection', image: featured_image, class: 'search-result-image' %}
                 {% else %}

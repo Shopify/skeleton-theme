@@ -70,7 +70,7 @@
         </shopify-account>
       {% endif %}
 
-      <a href="{{ routes.cart_url }}" class="cart-toggle">
+      <a href="{{ routes.cart_url }}" class="cart-toggle" aria-label="{{ 'general.view_cart' | t }}">
         <sup class="cart-item-count {% if cart.item_count == 0 %}hidden{% endif %}">{{ cart.item_count }}</sup>
         {{ 'icon-cart.svg' | inline_asset_content }}
       </a>

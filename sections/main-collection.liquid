@@ -8,7 +8,13 @@
       <div class="collection-products-grid">
         {% for product in collection.products %}
           <div class="collection-product">
-            <a href="{{ product.url }}" class="link-reset">
+            <a
+              href="{{ product.url }}"
+              class="link-reset"
+              {% unless product.featured_image %}
+                aria-label="View {{ product.title }}"
+              {% endunless %}
+            >
               {% if product.featured_image %}
                 {% if forloop.first %}
                   {% assign fetchpriority = 'high' %}

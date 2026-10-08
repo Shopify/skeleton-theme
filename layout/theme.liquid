@@ -42,9 +42,9 @@
 
     {% sections 'header-group' %}
 
-    <div id="content" tabindex="-1">
+    <main id="content" tabindex="-1">
       {{ content_for_layout }}
-    </div>
+    </main>
 
     {%- if settings.cart_drawer -%}
       {% render 'cart-drawer' %}
