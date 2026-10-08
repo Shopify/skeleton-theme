@@ -1,8 +1,22 @@
 # MVP 
 
 - better styles overall
-- create project steps
 - Modify readme
+
+# Various
+
+- Create skills for functionality below
+- Clean up all code - particularly cart and pdp js
+- move drawer css to file?
+- Make sure all section previews work
+- Add to cart errors should be show on page rather than in js alert
+- Theme Blocks https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/quick-start?framework=liquid (deal with custom-section.liquid & blocks folder)
+- Work on performance https://shopify.dev/docs/storefronts/themes/best-practices - - defer css - use assets instead of inline? - https://shopify.dev/docs/storefronts/themes/best-practices/performance/defer-non-critical-resources
+- html validation
+- Remove comments from main layout file?
+- Work on accessability https://shopify.dev/docs/storefronts/themes/best-practices
+- Color schemes? https://shopify.dev/docs/api/liquid/objects/color_scheme_group
+- Lighthouse workflow
 
 # Icons 
 
@@ -37,16 +51,12 @@
 - Subscription app support
 - Related products
 
-# Various
+# Project Steps
 
-- Clean up all code - particularly cart and pdp js
-- move drawer css to file?
-- Make sure all section previews work
-- Add to cart errors should be show on page rather than in js alert
-- Theme Blocks https://shopify.dev/docs/storefronts/themes/architecture/blocks/theme-blocks/quick-start?framework=liquid (deal with custom-section.liquid & blocks folder)
-- Work on performance https://shopify.dev/docs/storefronts/themes/best-practices - - defer css - use assets instead of inline? - https://shopify.dev/docs/storefronts/themes/best-practices/performance/defer-non-critical-resources
-- html validation
-- Remove comments from main layout file?
-- Work on accessability https://shopify.dev/docs/storefronts/themes/best-practices
-- Color schemes? https://shopify.dev/docs/api/liquid/objects/color_scheme_group
-- Lighthouse workflow
+Test all templates
+Validate html
+Browser test (safari - chrome - firefox - edge - android - iphone)
+Perfomance test (lighthouse & pingdom)
+SEO basic audit - https://www.heymeta.com
+Test forms
+Add site to letter
